@@ -46,6 +46,23 @@ def test_emit_writes_identity_and_payload(tmp_path):
     assert event["ts"]
 
 
+def test_training_progress_event_carries_reward_and_success():
+    from runner.execution import training_progress_event
+
+    event = training_progress_event(
+        "T4",
+        72000,
+        120000,
+        728.0,
+        {"ep_rew_mean": 86.3, "success_rate": 0.97},
+    )
+    assert event["kind"] == "training_progress"
+    assert event["steps"] == 72000
+    assert event["target"] == 120000
+    assert event["ep_rew_mean"] == 86.3
+    assert event["training_success"] == 0.97
+
+
 def test_disabled_feed_writes_nothing(monkeypatch, tmp_path):
     path = tmp_path / "events.jsonl"
     monkeypatch.setenv("TUI_OBSERVATIONS", "off")

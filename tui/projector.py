@@ -17,6 +17,7 @@ zero.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
@@ -102,6 +103,28 @@ class ModelRow:
 
 
 @dataclass(frozen=True)
+class GoalSummary:
+    """Recorded human goal and the latest development evidence against it."""
+
+    text: str = ""
+    target_percent: float | None = None
+    best_percent: float | None = None
+    gap_points: float | None = None
+    gap_text: str = ""
+
+
+@dataclass(frozen=True)
+class TrainingProxy:
+    """Best checkpoint of the last completed training operation."""
+
+    operation_id: str
+    candidate: str
+    steps: str = "unavailable"
+    reward: str = "unavailable"
+    success: str = "unavailable"
+
+
+@dataclass(frozen=True)
 class UsageSummary:
     total_aiu: float | None = None
     copilot_accounting: bool = False
@@ -138,6 +161,8 @@ class TrainingProgress:
     steps: int | None = None
     target: int | None = None
     elapsed_seconds: float | None = None
+    reward: float | None = None
+    success: float | None = None
     stale: bool = False
 
 
@@ -162,6 +187,10 @@ class CampaignSnapshot:
     started_at: datetime | None = None
     status: str = "Loading"
     human_goal: str = ""
+    goal: GoalSummary = field(default_factory=GoalSummary)
+    stage_ids: str = ""
+    counters_text: str = ""
+    pending_text: str = ""
     stage_text: str = "Preparation"
     session_id: str = ""
     inquiry_id: str = ""
@@ -176,6 +205,7 @@ class CampaignSnapshot:
     model_rows: tuple[ModelRow, ...] = ()
     timeline: tuple[TimelineEntry, ...] = ()
     training: TrainingProgress | None = None
+    last_training: TrainingProxy | None = None
     evaluation: EvaluationProgress | None = None
     official_text: str = ""
     terminal: bool = False
@@ -238,6 +268,227 @@ def terminal_stage_text(state: dict) -> str:
         else status.replace("_", " ")
     )
     return f"Campaign ended - goal {verb}"
+
+
+# --------------------------------------------------------------------------
+# Header facts: stage ids, goal, counters and pending operation.
+# --------------------------------------------------------------------------
+
+_PERCENT_RE = re.compile(r"(\d+(?:\.\d+)?)\s*%")
+
+
+def _human_goal_text(state: dict) -> str:
+    goal = state.get("human_goal")
+    if isinstance(goal, dict):
+        return str(goal.get("summary") or goal.get("source") or "").strip()
+    return str(goal or "").strip()
+
+
+def _goal_target(text: str) -> float | None:
+    matches = _PERCENT_RE.findall(text)
+    if not matches:
+        return None
+    try:
+        return float(matches[-1])
+    except ValueError:
+        return None
+
+
+def _goal_gap_text(state: dict, records: list[dict]) -> str:
+    checkpoint = _as_dict(state.get("pi_checkpoint"))
+    text = str(checkpoint.get("current_goal_gap") or "").strip()
+    if text:
+        return text
+    for record in reversed(records):
+        if record.get("kind") != "checkpoint":
+            continue
+        request = _as_dict(record.get("request"))
+        result = _as_dict(record.get("result"))
+        text = str(
+            request.get("current_goal_gap") or result.get("current_goal_gap") or ""
+        ).strip()
+        if text:
+            return text
+    return ""
+
+
+def _best_development_percent(records: list[dict]) -> float | None:
+    best: float | None = None
+    for record in records:
+        if record.get("kind") != "measurement" or record.get("status") != "completed":
+            continue
+        for panel in _as_list(_as_dict(record.get("result")).get("measurements")):
+            if not isinstance(panel, dict):
+                continue
+            metrics = _as_dict(panel.get("metrics"))
+            if metrics.get("official_benchmark"):
+                continue
+            value = metrics.get("success_percent")
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                best = float(value) if best is None else max(best, float(value))
+    return best
+
+
+def _goal_summary(state: dict, records: list[dict]) -> GoalSummary:
+    text = _human_goal_text(state)
+    target = _goal_target(text)
+    best = _best_development_percent(records)
+    gap = round(best - target, 1) if best is not None and target is not None else None
+    return GoalSummary(
+        text=text,
+        target_percent=target,
+        best_percent=best,
+        gap_points=gap,
+        gap_text=_goal_gap_text(state, records),
+    )
+
+
+def _stage_ids(state: dict) -> str:
+    counters = _as_dict(state.get("counters"))
+    session = _as_dict(state.get("scientific_session"))
+
+    def number(name: str) -> int | None:
+        value = counters.get(name)
+        return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+    inquiry = number("inquiry")
+    session_number = number("session")
+    training = number("training")
+    measurement = number("measurement")
+    event = number("event")
+    session_id = str(session.get("id") or "")
+    if not session_id and session_number is not None:
+        session_id = f"S{session_number}"
+    parts: list[str] = []
+    if inquiry is not None:
+        parts.append(f"I{inquiry}")
+    if session_id:
+        parts.append(session_id)
+    if training is not None:
+        parts.append(f"T{training}")
+    if measurement is not None:
+        parts.append(f"M{measurement}")
+    if event is not None:
+        parts.append(f"E{event}")
+    return " / ".join(parts)
+
+
+def _counters_text(state: dict) -> str:
+    counters = _as_dict(state.get("counters"))
+    campaign = _as_dict(state.get("campaign"))
+
+    def count(name: str) -> int | None:
+        value = counters.get(name)
+        return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+    parts: list[str] = []
+    inquiries = count("inquiry")
+    if inquiries is not None:
+        maximum = campaign.get("max_inquiries")
+        label = f"Inquiries {inquiries}"
+        if isinstance(maximum, int) and not isinstance(maximum, bool):
+            label += f"/{maximum}"
+        parts.append(label)
+    trainings = count("training")
+    if trainings is not None:
+        parts.append(f"Trainings {trainings}")
+    measurements = count("measurement")
+    if measurements is not None:
+        parts.append(f"Measurements {measurements}")
+    sessions = count("session")
+    if sessions is not None:
+        parts.append(f"Sessions {sessions}")
+    return " | ".join(parts) if parts else "Counters unavailable"
+
+
+def _pending_text(state: dict) -> str:
+    pending = _as_dict(state.get("pending_operation"))
+    if not pending:
+        return ""
+    identity = str(pending.get("id") or "")
+    kind = str(pending.get("kind") or "operation")
+    label = f"Pending {identity} {kind}".strip()
+    session = str(pending.get("session_id") or "")
+    inquiry = str(pending.get("inquiry_id") or "")
+    context = " / ".join(part for part in (session, inquiry) if part)
+    if context:
+        label += f" ({context})"
+    return label
+
+
+def _last_training_proxy(records: list[dict]) -> TrainingProxy | None:
+    for record in reversed(records):
+        if record.get("kind") != "training" or record.get("status") != "completed":
+            continue
+        operation = str(record.get("id") or "training")
+        result = _as_dict(record.get("result"))
+        dynamics = [
+            packet
+            for packet in _as_list(result.get("learning_dynamics"))
+            if isinstance(packet, dict)
+        ]
+        candidates = [
+            str(candidate)
+            for candidate in _as_list(result.get("candidates"))
+            if isinstance(candidate, str) and candidate
+        ]
+        if not candidates:
+            candidates = [
+                str(packet.get("candidate"))
+                for packet in dynamics
+                if isinstance(packet.get("candidate"), str) and packet.get("candidate")
+            ]
+        if not candidates:
+            return TrainingProxy(operation_id=operation, candidate="unavailable")
+        best = candidates[-1]
+        best_packet: dict = {}
+        if dynamics:
+
+            def score(packet: dict) -> tuple[int, float, int]:
+                success = packet.get("training_success")
+                reward = packet.get("ep_rew_mean")
+                steps = packet.get("training_steps")
+                success_rank = (
+                    2
+                    if isinstance(success, (int, float))
+                    and not isinstance(success, bool)
+                    else 0
+                )
+                reward_rank = (
+                    1
+                    if isinstance(reward, (int, float)) and not isinstance(reward, bool)
+                    else 0
+                )
+                value = (
+                    float(success)
+                    if success_rank
+                    else float(reward)
+                    if reward_rank
+                    else 0.0
+                )
+                step_value = (
+                    steps
+                    if isinstance(steps, int) and not isinstance(steps, bool)
+                    else 0
+                )
+                return (success_rank or reward_rank, value, step_value)
+
+            best_packet = max(dynamics, key=score)
+            candidate = best_packet.get("candidate")
+            if isinstance(candidate, str) and candidate:
+                best = candidate
+        steps = best_packet.get("training_steps")
+        if not isinstance(steps, int) or isinstance(steps, bool):
+            match = re.search(r"checkpoint-(\d+)$", best)
+            steps = int(match.group(1)) if match else None
+        return TrainingProxy(
+            operation_id=operation,
+            candidate=best,
+            steps=_number(steps),
+            reward=_reward_text(best_packet.get("ep_rew_mean")),
+            success=_fraction_percent(best_packet.get("training_success")),
+        )
+    return None
 
 
 # --------------------------------------------------------------------------
@@ -708,8 +959,8 @@ def _activity_text(state: dict, records: list[dict], terminal: bool) -> str:
         latest = records[-1]
         identity = str(latest.get("id") or "")
         kind = str(latest.get("kind") or "operation")
-        return f"after {identity} {kind} - current activity not observed"
-    return "unavailable"
+        return f"last completed {identity} {kind} - live activity not observed"
+    return "waiting for the first operation"
 
 
 def build_snapshot(
@@ -747,6 +998,11 @@ def build_snapshot(
         if state
         else ()
     )
+    goal = _goal_summary(state, records) if state else GoalSummary()
+    stage_ids = _stage_ids(state) if state else ""
+    counters_text = _counters_text(state) if state else ""
+    pending_text = _pending_text(state) if state else ""
+    last_training = _last_training_proxy(records) if records else None
 
     question, question_source = _question(state, records)
     synthesis, synthesis_session = _synthesis(state, records)
@@ -771,7 +1027,11 @@ def build_snapshot(
         campaign_id=campaign_id,
         started_at=started_at,
         status=status,
-        human_goal=str(state.get("human_goal") or "").strip(),
+        human_goal=_human_goal_text(state),
+        goal=goal,
+        stage_ids=stage_ids,
+        counters_text=counters_text,
+        pending_text=pending_text,
         stage_text=stage,
         session_id=session_id,
         inquiry_id=inquiry_id,
@@ -786,6 +1046,7 @@ def build_snapshot(
         model_rows=model_rows,
         timeline=_timeline(state, records),
         training=training,
+        last_training=last_training,
         evaluation=evaluation,
         official_text=official_text,
         terminal=terminal,

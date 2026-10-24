@@ -236,3 +236,131 @@ def test_unrecogized_candidate_metrics_stay_unavailable():
     assert best.success_training == "unavailable"
     assert best.success_dev == "not measured"
     assert best.training_steps == "unavailable"
+
+
+def test_activity_after_completed_operation_is_explicit():
+    state, records, _ = _observation_args()
+    state["pending_operation"] = None
+    snapshot = projector.build_snapshot(state, records, [])
+    assert snapshot.activity_text == (
+        "last completed E14 inquiry - live activity not observed"
+    )
+
+
+def test_stage_ids_goal_counters_and_pending():
+    snapshot = _demo_snapshot()
+    assert snapshot.stage_ids == "I3 / S7 / T4 / M5 / E13"
+    assert snapshot.goal.target_percent == 98.0
+    assert snapshot.goal.best_percent == 94.0
+    assert snapshot.goal.gap_points == -4.0
+    assert snapshot.counters_text == (
+        "Inquiries 3/15 | Trainings 4 | Measurements 5 | Sessions 7"
+    )
+    assert snapshot.pending_text == "Pending M6 measurement (S7 / I3)"
+
+
+def test_goal_gap_text_falls_back_to_checkpoint():
+    state, _, _ = _observation_args()
+    state["pi_checkpoint"]["current_goal_gap"] = (
+        "Best development success is still below the target."
+    )
+    snapshot = projector.build_snapshot(state, [], [])
+    assert snapshot.goal.gap_points is None
+    assert snapshot.goal.gap_text == (
+        "Best development success is still below the target."
+    )
+
+
+def test_last_training_proxy_prefers_training_success():
+    records = [
+        {
+            "id": "T7",
+            "kind": "training",
+            "status": "completed",
+            "result": {
+                "candidates": ["T7:checkpoint-10", "T7:checkpoint-20"],
+                "learning_dynamics": [
+                    {
+                        "candidate": "T7:checkpoint-10",
+                        "training_steps": 10,
+                        "training_success": 0.5,
+                        "ep_rew_mean": 10.0,
+                    },
+                    {
+                        "candidate": "T7:checkpoint-20",
+                        "training_steps": 20,
+                        "training_success": 0.9,
+                        "ep_rew_mean": 8.0,
+                    },
+                ],
+            },
+        }
+    ]
+    snapshot = projector.build_snapshot({}, records, [])
+    proxy = snapshot.last_training
+    assert proxy is not None
+    assert proxy.operation_id == "T7"
+    assert proxy.candidate == "T7:checkpoint-20"
+    assert proxy.steps == "20"
+    assert proxy.reward == "8.0"
+    assert proxy.success == "90%"
+
+
+def test_last_training_proxy_falls_back_to_reward():
+    records = [
+        {
+            "id": "T8",
+            "kind": "training",
+            "status": "completed",
+            "result": {
+                "candidates": ["T8:checkpoint-10", "T8:checkpoint-20"],
+                "learning_dynamics": [
+                    {
+                        "candidate": "T8:checkpoint-10",
+                        "training_steps": 10,
+                        "ep_rew_mean": 12.0,
+                    },
+                    {
+                        "candidate": "T8:checkpoint-20",
+                        "training_steps": 20,
+                        "ep_rew_mean": 9.0,
+                    },
+                ],
+            },
+        }
+    ]
+    proxy = projector.build_snapshot({}, records, []).last_training
+    assert proxy is not None
+    assert proxy.candidate == "T8:checkpoint-10"
+    assert proxy.success == "unavailable"
+
+
+def test_goal_gap_uses_human_goal_dict_and_best_development():
+    state, _, _ = _observation_args()
+    state["human_goal"] = {
+        "source": "contracts/scenario.md",
+        "summary": "Reach at least 98% success on the official panel.",
+    }
+    records = [
+        {
+            "id": "M9",
+            "kind": "measurement",
+            "status": "completed",
+            "completed_at": _now().isoformat(),
+            "request": {},
+            "result": {
+                "measurements": [
+                    {
+                        "candidate_id": "T4:checkpoint-120000",
+                        "instrument": "task_reference",
+                        "metrics": {"success_percent": 68.1, "episodes": 100},
+                    }
+                ]
+            },
+        }
+    ]
+    snapshot = projector.build_snapshot(state, records, [])
+    assert snapshot.goal.text.startswith("Reach at least 98%")
+    assert snapshot.goal.target_percent == 98.0
+    assert snapshot.goal.best_percent == 68.1
+    assert snapshot.goal.gap_points == -29.9

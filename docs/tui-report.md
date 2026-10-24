@@ -40,21 +40,27 @@ Directly: `uv run python -m tui --help` (options: `--campaign-root`,
 
 Reference size is 160x45; the layout adapts down to an 80x24 and 60-column
 fallback and below 48x16 shows a `Terminal too small - need 48x16` message.
-`NO_COLOR` and the terminal's color capability are respected; `--light`
-selects the light theme.
+At 80x24 the report keeps the header, the PI role table and the last-training
+line, and hides the output log first. `NO_COLOR` and the terminal's color
+capability are respected; `--light` selects the light theme.
 
 Reading keys: mouse wheel, Page Up/Down, Home/End inside the output;
 Tab/Shift+Tab move between the output and the model table; Ctrl+Q or Ctrl+C
 closes the report (presentation only, never the campaign).
 
+The durable snapshot and the elapsed clock refresh every 15 seconds. The
+observation feed is drained every second so PI messages and console lines stay
+live; training progress events arrive every 15 seconds, matching the console
+heartbeat.
+
 ## Data the report reads now
 
 | Facts | Source (read-only) |
 |---|---|
-| Campaign, inquiry, session, synthesis, roles, pending operation | `runner/state/research_state.json` |
-| Completed operations, training dynamics, measurement panels | `campaigns/results.jsonl` |
+| Campaign, human goal, counters, stage IDs, inquiry, session, synthesis, roles, pending operation | `runner/state/research_state.json` |
+| Completed operations, training dynamics, measurement panels, last-training proxy | `campaigns/results.jsonl` |
 | Recorded usage (AIU / token rows) | `reports/session_usage/<campaign-id>.jsonl` |
-| Live observations | `reports/tui_observations/<campaign-id>.jsonl` (written by `runner/observation_feed.py` and the launcher) |
+| Live training reward/success and progress | `reports/tui_observations/<campaign-id>.jsonl` (written by `runner/observation_feed.py` and the launcher) |
 
 Projection rules follow the specification: roles come only from
 `model_roles`; development success is the latest completed evaluation for a
@@ -62,6 +68,13 @@ candidate in recorded order with its source shown; official panels never
 become development evidence; usage excludes price and currency and keeps the
 PI, coder and reviewer scopes; missing values render as `unavailable` or
 `not measured`, never zero.
+
+The header shows the latest allocated operation IDs (`I / S / T / M / E`),
+the recorded human goal with the best development success and gap, the
+recorded counters and the pending operation. The last-training line shows the
+checkpoint with the highest recorded training success (falling back to reward
+and then to the last checkpoint by steps). The development-success interval is
+deferred and is not shown.
 
 ## Observation feed (producer and consumer)
 
@@ -103,16 +116,18 @@ Events follow this shape (one JSON object per line):
 
 ```json
 {"campaign_id": "...", "ts": "2026-10-24T12:41:04+00:00", "kind": "training_progress",
- "operation_id": "T4", "steps": 72000, "target": 120000, "elapsed_seconds": 728}
+ "operation_id": "T4", "steps": 72000, "target": 120000, "elapsed_seconds": 728,
+ "ep_rew_mean": 86.3, "training_success": 0.97}
 ```
 
 Kinds: `pi_message {text, final, turn}` (whole-word snapshots while the PI
 writes, `final: true` at turn end; the report appends only the new text, so a
 growing message never duplicates), `console_line {scope, text}`,
-`training_progress`, `eval_progress` (`operation_id, instrument, official,
-episodes, episodes_total, elapsed_seconds`), `execution_end {operation_id,
-status, text}`, `liveness {}`. The consumer still tolerates the optional
-`session_start`, `activity` and `tool` kinds for future emitters.
+`training_progress` (`operation_id, steps, target, elapsed_seconds,
+ep_rew_mean, training_success`), `eval_progress` (`operation_id, instrument,
+official, episodes, episodes_total, elapsed_seconds`), `execution_end
+{operation_id, status, text}`, `liveness {}`. The consumer still tolerates the
+optional `session_start`, `activity` and `tool` kinds for future emitters.
 
 Without an event file the report still renders the durable state, the
 reconstructed operation timeline and recorded usage; the output states the
@@ -127,9 +142,11 @@ uv run pytest tests/autoresearch/test_observation_feed.py tests/autoresearch/tes
 
 The tests cover the feed writer and its console emit points, the projector
 contracts and the headless rendering behavior:
-single-screen composition, streamed/final PI deduplication, the progress
-lifecycle (training and evaluation, official assessment label, module
-measurement with unavailable counters, end-of-execution removal), reading
-position while new output arrives, the too-small fallback and stale counter
-labeling. Real campaign state is exercised read-only by starting the report
-against the campaign root; no integration check starts execution.
+single-screen composition, stage IDs, goal gap, counters, pending chip,
+last-training proxy, live training reward/success, streamed/final PI
+deduplication, the progress lifecycle (training and evaluation, official
+assessment label, module measurement with unavailable counters,
+end-of-execution removal), reading position while new output arrives, the
+80x24 compact floor, the too-small fallback and stale counter labeling. Real
+campaign state is exercised read-only by starting the report against the
+campaign root; no integration check starts execution.

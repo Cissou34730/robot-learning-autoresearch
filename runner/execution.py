@@ -312,6 +312,29 @@ def announce_training_checkpoints(
     )
 
 
+def training_progress_event(
+    operation_id: str,
+    steps: int | None,
+    target: int | None,
+    elapsed_seconds: float,
+    record: dict | None,
+) -> dict:
+    """Maintainer-only training progress payload for the TUI feed."""
+    record = record or {}
+    success = record.get("success_rate")
+    if success is None:
+        success = record.get("training_success")
+    return {
+        "kind": "training_progress",
+        "operation_id": operation_id,
+        "steps": steps,
+        "target": target,
+        "elapsed_seconds": round(elapsed_seconds, 1),
+        "ep_rew_mean": record.get("ep_rew_mean"),
+        "training_success": success,
+    }
+
+
 def train_candidate(
     output_dir: Path,
     timesteps: int,
@@ -376,13 +399,9 @@ def train_candidate(
                 observation_feed.emit({"kind": "liveness"})
                 if steps is None:
                     observation_feed.emit(
-                        {
-                            "kind": "training_progress",
-                            "operation_id": operation_id,
-                            "steps": None,
-                            "target": None,
-                            "elapsed_seconds": round(elapsed, 1),
-                        }
+                        training_progress_event(
+                            operation_id, None, None, elapsed, record
+                        )
                     )
                     console.progress(
                         f"TRAIN {operation_id} | starting | "
@@ -422,13 +441,9 @@ def train_candidate(
                         )
                     )
                     observation_feed.emit(
-                        {
-                            "kind": "training_progress",
-                            "operation_id": operation_id,
-                            "steps": steps,
-                            "target": progress_target,
-                            "elapsed_seconds": round(elapsed, 1),
-                        }
+                        training_progress_event(
+                            operation_id, steps, progress_target, elapsed, record
+                        )
                     )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:

@@ -69,7 +69,10 @@ async def _initial():
         await pilot.pause()
         ctx = str(app.query_one("#context").render())
         assert "Autoresearch | RUNNING (observed)" in ctx
-        assert "Stage: Inquiry I3 / S7" in ctx
+        assert "Stage: I3 / S7 / T4 / M5 / E13 | Inquiry I3 / S7" in ctx
+        assert "Goal >=98% | best 94% | -4.0 pts" in ctx
+        assert "Pending M6 measurement" in ctx
+        assert "Inquiries 3/15" in ctx
         assert "PI record S6" in ctx
         assert "Usage recorded:" in ctx
         assert app.query_one("#progress").display is False
@@ -351,7 +354,7 @@ def test_output_lines_fit_and_keep_long_words_at_several_widths():
 
 
 async def _fit_widths():
-    for width, height in ((80, 24), (120, 40), (160, 45)):
+    for width, height in ((100, 30), (120, 40), (160, 45)):
         app = _demo_app()
         async with app.run_test(size=(width, height)) as pilot:
             await pilot.pause()
@@ -526,6 +529,82 @@ async def _light_palette():
         await pilot.pause()
         assert app._palette.name == "light"
         assert "Autoresearch" in str(app.query_one("#context").render())
+
+
+def test_training_status_shows_last_training_proxy():
+    _run(_training_status())
+
+
+async def _training_status():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        widget = app.query_one("#training")
+        assert widget.display is True
+        rendered = str(widget.render())
+        assert "Last training T4" in rendered
+        assert "best proxy T4:checkpoint-120000" in rendered
+        assert "reward 86.3" in rendered
+        assert "success 97%" in rendered
+
+
+def test_active_training_line_includes_reward_and_success():
+    _run(_active_training_metrics())
+
+
+async def _active_training_metrics():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        app._process_events(
+            [
+                Observation(
+                    "training_progress",
+                    datetime(2026, 10, 24, 12, 0, tzinfo=UTC),
+                    {
+                        "operation_id": "T9",
+                        "attempt": 1,
+                        "steps": 24000,
+                        "target": 80000,
+                        "elapsed_seconds": 720,
+                        "ep_rew_mean": 86.3,
+                        "training_success": 0.97,
+                    },
+                )
+            ]
+        )
+        await pilot.pause()
+        rendered = str(app.query_one("#progress").render())
+        assert "Reward 86.3" in rendered
+        assert "Success 97%" in rendered
+        assert app.query_one("#training").display is False
+
+
+def test_compact_floor_hides_output_and_keeps_training_status():
+    _run(_compact_floor())
+
+
+async def _compact_floor():
+    app = _demo_app()
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        assert app.query_one("#output").display is False
+        assert app.query_one("#output-heading").display is False
+        assert app.query_one("#reading").display is False
+        assert app.query_one("#training").display is True
+        table = app.query_one("#models")
+        assert len(table.columns) == 3
+        assert [str(column.label) for column in table.columns.values()] == [
+            "PI-assigned role",
+            "Candidate",
+            "Success (development) / source",
+        ]
+        assert len(table.rows) == 3
+        assert table.virtual_size.width <= table.size.width
+        context = str(app.query_one("#context").render())
+        assert "Stage: I3 / S7 / T4 / M5 / E13" in context
+        assert "Goal >=98% | best 94% | -4.0 pts" in context
+        assert "Pending M6 measurement" in context
 
 
 def test_display_text_rounds_floats_and_compacts_paths(monkeypatch, tmp_path):

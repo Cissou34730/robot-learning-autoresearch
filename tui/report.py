@@ -33,8 +33,11 @@ from tui.observations import JsonlFeed, Observation
 
 MIN_COLUMNS = 48
 MIN_ROWS = 16
-SNAPSHOT_SECONDS = 2.0
-TICK_SECONDS = 1.0
+SNAPSHOT_SECONDS = 15.0
+TICK_SECONDS = 15.0
+FEED_SECONDS = 1.0
+COMPACT_WIDTH = 100
+COMPACT_HEIGHT = 30
 LIVENESS_SECONDS = 300.0
 PROGRESS_STALE_SECONDS = 300.0
 MAX_RENDERED_ENTRIES = 100_000
@@ -259,6 +262,14 @@ def _hang_styled(
     return out
 
 
+def _fit_text(text: Text, width: int) -> Text:
+    if len(text.plain) <= width:
+        return text
+    clipped = text.copy()
+    clipped.truncate(max(1, width))
+    return clipped
+
+
 def _elapsed_text(seconds: float | None, label: str) -> str:
     if seconds is None:
         return f"{label} unavailable"
@@ -437,6 +448,11 @@ class CampaignReport(App):
         margin-top: 1;
         height: auto;
     }
+    #training {
+        display: none;
+        margin-top: 1;
+        height: auto;
+    }
     #output-heading {
         height: 1;
         color: $text;
@@ -478,6 +494,9 @@ class CampaignReport(App):
         self._attached = False
         self._context_rows = 0
         self._progress_rows = 0
+        self._training_rows = 0
+        self._models_layout_key = ""
+        self._output_hidden = False
         self._training: dict | None = None
         self._evaluation: dict | None = None
         self._stage_started: datetime | None = None
@@ -514,6 +533,7 @@ class CampaignReport(App):
         )
         yield table
         yield Static("", id="progress")
+        yield Static("", id="training")
         yield Static("", id="output-heading")
         yield OutputLog(id="output")
         yield Static("", id="reading")
@@ -527,7 +547,7 @@ class CampaignReport(App):
         self.drain_feed()
         self.set_interval(SNAPSHOT_SECONDS, self._on_snapshot_interval)
         self.set_interval(TICK_SECONDS, self.tick_clock)
-        self.set_interval(TICK_SECONDS, self.drain_feed)
+        self.set_interval(FEED_SECONDS, self.drain_feed)
         self._apply_layout()
 
     def _resolve_palette(self) -> Palette:
@@ -599,6 +619,7 @@ class CampaignReport(App):
         self._render_context()
         self._render_models(snapshot.model_rows)
         self._render_progress()
+        self._render_training_status()
         self._apply_layout()
         self._detect_context_changes(snapshot)
 
@@ -638,6 +659,8 @@ class CampaignReport(App):
             steps=state.get("steps"),
             target=state.get("target"),
             elapsed_seconds=state.get("elapsed_seconds"),
+            reward=state.get("reward"),
+            success=state.get("success"),
             stale=self._progress_stale(state),
         )
 
@@ -688,8 +711,8 @@ class CampaignReport(App):
         if width < 60:
             return 4
         if width < 120 or self.size.height < 40:
-            return 5
-        return 6
+            return 6
+        return 8
 
     def _context_lines(
         self, snapshot: projector.CampaignSnapshot, width: int
@@ -724,6 +747,9 @@ class CampaignReport(App):
 
         stage = Text()
         stage.append("Stage: ", style=palette.muted)
+        if snapshot.stage_ids:
+            stage.append(snapshot.stage_ids, style=f"bold {palette.accent}")
+            stage.append(" | ", style=palette.muted)
         stage.append(
             snapshot.stage_text,
             style=f"bold {palette.warning}"
@@ -745,9 +771,45 @@ class CampaignReport(App):
             second.append_text(activity)
         else:
             second = stage
-        lines.append(second)
+        lines.append(_fit_text(second, width))
 
-        excerpt_rows = self._context_budget() - 3
+        goal = snapshot.goal
+        goal_line = Text()
+        goal_line.append("Goal", style=palette.muted)
+        if goal.target_percent is not None:
+            goal_line.append(" >=", style=palette.muted)
+            goal_line.append(
+                f"{goal.target_percent:g}%", style=f"bold {palette.heading}"
+            )
+        elif goal.text:
+            goal_line.append(f": {goal.text}", style=palette.text)
+        else:
+            goal_line.append(" unavailable", style=palette.muted)
+        if goal.best_percent is not None:
+            goal_line.append(" | best ", style=palette.muted)
+            goal_line.append(f"{goal.best_percent:g}%", style=palette.text)
+        else:
+            goal_line.append(" | best not measured", style=palette.muted)
+        if goal.gap_points is not None:
+            gap_style = palette.error if goal.gap_points < 0 else palette.success
+            goal_line.append(
+                f" | {goal.gap_points:+.1f} pts", style=f"bold {gap_style}"
+            )
+        elif goal.gap_text:
+            goal_line.append(f" | {goal.gap_text}", style=palette.muted)
+        lines.append(_fit_text(goal_line, width))
+
+        counters_line = Text()
+        if snapshot.pending_text:
+            counters_line.append(snapshot.pending_text, style=f"bold {palette.warning}")
+            if snapshot.counters_text:
+                counters_line.append(" | ", style=palette.muted)
+        if snapshot.counters_text:
+            counters_line.append(snapshot.counters_text, style=palette.muted)
+        if counters_line.plain:
+            lines.append(_fit_text(counters_line, width))
+
+        excerpt_rows = self._context_budget() - 4
         leads: list[Text] = []
         question = _clean_text(snapshot.question) or _clean_text(snapshot.objective)
         if question:
@@ -803,9 +865,35 @@ class CampaignReport(App):
             return f"bold {self._palette.pi}"
         return self._palette.muted
 
+    def _models_layout(self) -> str:
+        if self.size.width < COMPACT_WIDTH or self.size.height < COMPACT_HEIGHT:
+            return "compact"
+        return "full"
+
+    def _ensure_model_columns(self, table: DataTable, layout: str) -> None:
+        if self._models_layout_key == layout:
+            return
+        self._models_layout_key = layout
+        table.clear(columns=True)
+        if layout == "full":
+            table.add_columns(
+                "PI-assigned role",
+                "Candidate",
+                "Training steps",
+                "Reward (tr)",
+                "Success (tr)",
+                "Success (development) / source",
+            )
+        else:
+            table.add_column("PI-assigned role", width=15)
+            table.add_column("Candidate", width=24)
+            table.add_column("Success (development) / source", width=30)
+
     def _render_models(self, rows: tuple) -> None:
         palette = self._palette
         table = self.query_one("#models", DataTable)
+        layout = self._models_layout()
+        self._ensure_model_columns(table, layout)
         table.clear()
         for row in rows:
             if row.roles:
@@ -816,14 +904,21 @@ class CampaignReport(App):
                     role_cell.append(role, style=self._role_style(role))
             else:
                 role_cell = Text("-", style=palette.muted)
-            table.add_row(
-                role_cell,
-                Text(row.candidate_id, style=f"bold {palette.text}"),
-                _metric_cell(row.training_steps, "unavailable", palette.muted),
-                _metric_cell(row.reward_training, "unavailable", palette.muted),
-                _metric_cell(row.success_training, "unavailable", palette.muted),
-                _metric_cell(row.success_dev, "not measured", palette.muted),
-            )
+            if layout == "full":
+                table.add_row(
+                    role_cell,
+                    Text(row.candidate_id, style=f"bold {palette.text}"),
+                    _metric_cell(row.training_steps, "unavailable", palette.muted),
+                    _metric_cell(row.reward_training, "unavailable", palette.muted),
+                    _metric_cell(row.success_training, "unavailable", palette.muted),
+                    _metric_cell(row.success_dev, "not measured", palette.muted),
+                )
+            else:
+                table.add_row(
+                    role_cell,
+                    Text(row.candidate_id, style=f"bold {palette.text}"),
+                    _metric_cell(row.success_dev, "not measured", palette.muted),
+                )
         heading = Text()
         if not rows:
             heading.append("PI-assigned models", style=f"bold {palette.heading}")
@@ -833,6 +928,10 @@ class CampaignReport(App):
         heading.append("PI-assigned models", style=f"bold {palette.heading}")
         if self._attached:
             heading.append(f" ({len(rows)} assigned)", style=palette.muted)
+        if layout == "compact":
+            heading.append(
+                " - compact: steps and training metrics hidden", style=palette.muted
+            )
         budget = self._models_budget_rows()
         if len(rows) > budget:
             heading.append(
@@ -842,10 +941,12 @@ class CampaignReport(App):
 
     def _models_budget_rows(self) -> int:
         height = self.size.height
-        # context band, models heading, output heading, reading line, progress
-        reserved = self._context_rows + 1 + 1 + 1 + self._progress_rows + 1
-        output_min = self._output_min_rows()
-        return max(2, min(20, height - reserved - output_min))
+        reserved = self._context_rows + 1
+        if not self._output_hidden:
+            reserved += 2
+        reserved += self._progress_rows + self._training_rows
+        output_min = 0 if self._output_hidden else self._output_min_rows()
+        return max(1, min(20, height - reserved - output_min))
 
     def _output_min_rows(self) -> int:
         height = self.size.height
@@ -920,6 +1021,14 @@ class CampaignReport(App):
         palette = self._palette
         parts = [f"Attempt {training.attempt}"]
         parts.append(_elapsed_text(training.elapsed_seconds, "Elapsed"))
+        if isinstance(training.reward, (int, float)) and not isinstance(
+            training.reward, bool
+        ):
+            parts.append(f"Reward {training.reward:.1f}")
+        if isinstance(training.success, (int, float)) and not isinstance(
+            training.success, bool
+        ):
+            parts.append(f"Success {round(training.success * 100)}%")
         title = self._progress_title(
             f"Training {training.operation_id}",
             f"bold {palette.accent}",
@@ -984,6 +1093,37 @@ class CampaignReport(App):
             )
         )
         return lines
+
+    def _render_training_status(self) -> None:
+        widget = self.query_one("#training", Static)
+        snapshot = self.snapshot
+        if (
+            self._training is not None
+            or snapshot is None
+            or snapshot.last_training is None
+        ):
+            self._training_rows = 0
+            widget.display = False
+            widget.update("")
+            return
+        palette = self._palette
+        proxy = snapshot.last_training
+        line = Text()
+        compact = self.size.width < COMPACT_WIDTH or self.size.height < COMPACT_HEIGHT
+        line.append("Last " if compact else "Last training ", style=palette.muted)
+        line.append(proxy.operation_id, style=f"bold {palette.accent}")
+        line.append(" | proxy " if compact else " | best proxy ", style=palette.muted)
+        line.append(proxy.candidate, style=palette.text)
+        if not compact:
+            line.append(" | steps ", style=palette.muted)
+            line.append(proxy.steps, style=palette.text)
+        line.append(" | rwd " if compact else " | reward ", style=palette.muted)
+        line.append(proxy.reward, style=palette.text)
+        line.append(" | succ " if compact else " | success ", style=palette.muted)
+        line.append(proxy.success, style=palette.text)
+        self._training_rows = 1
+        widget.display = True
+        widget.update(_fit_text(line, max(20, self.size.width - 2)))
 
     # ------------------------------------------------------------------
     # Clock-driven animations (elapsed counters and stale labels only)
@@ -1354,9 +1494,13 @@ class CampaignReport(App):
             "steps": event.fields.get("steps"),
             "target": event.fields.get("target"),
             "elapsed_seconds": event.fields.get("elapsed_seconds"),
+            "reward": event.fields.get("ep_rew_mean"),
+            "success": event.fields.get("training_success"),
             "last_ts": event.ts or _now(),
         }
         self._render_progress()
+        self._render_training_status()
+        self._apply_layout()
 
     def _event_eval_progress(self, event: Observation) -> None:
         self._evaluation = {
@@ -1388,6 +1532,8 @@ class CampaignReport(App):
         if self._evaluation and self._evaluation.get("operation_id") == operation:
             self._evaluation = None
         self._render_progress()
+        self._render_training_status()
+        self._apply_layout()
 
     # ------------------------------------------------------------------
     # Reading status
@@ -1397,6 +1543,8 @@ class CampaignReport(App):
         self._render_reading()
 
     def _render_reading(self) -> None:
+        if self._output_hidden:
+            return
         widget = self.query_one("#reading", Static)
         out = self._output()
         if self.size.width < 80:
@@ -1445,6 +1593,14 @@ class CampaignReport(App):
                 )
             )
             return
+        compact = size.width < COMPACT_WIDTH or size.height < COMPACT_HEIGHT
+        self._output_hidden = compact
+        output = self.query_one("#output", OutputLog)
+        output.display = not compact
+        self.query_one("#output-heading", Static).display = not compact
+        self.query_one("#reading", Static).display = not compact
+        if compact and self.focused is output:
+            self.query_one("#models", DataTable).focus()
         self._render_output_heading()
         table = self.query_one("#models", DataTable)
         rows = len(table.rows)
@@ -1456,6 +1612,8 @@ class CampaignReport(App):
         self._render_reading()
 
     def _render_output_heading(self) -> None:
+        if self._output_hidden:
+            return
         width = max(12, self.size.width - 2)
         heading = Text("Output", style=f"bold {self._palette.heading}")
         heading.append(" " + "-" * (width - 8), style=self._palette.muted)
