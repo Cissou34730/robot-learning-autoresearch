@@ -19,8 +19,7 @@ freely, but it turns the network's output into the motor command at that step
 through a fixed transformation. That transformation may include fixed-gain
 feedback towards a target the network outputs, but no planner, trajectory
 generator, inverse kinematics or model of the robot. This defines the policy
-that the official assessment evaluates; measurements and diagnostics may use any
-controller, planner or model of the robot.
+that the official assessment evaluates.
 
 ## Success criterion
 

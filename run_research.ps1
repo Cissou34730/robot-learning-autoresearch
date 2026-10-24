@@ -20,6 +20,9 @@ param(
     [ValidateRange(1, [int]::MaxValue)]
     [int]$Timesteps = 120000,
 
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$MaxTimesteps = 360000,
+
     [string]$StopRequestPath,
 
     [ValidateRange(1, 3600)]
@@ -326,7 +329,8 @@ function Invoke-Runner {
         Select-Object -First 1
     $runnerArguments = @(
         "run", "--project", $PSScriptRoot, "python", "-m",
-        "runner.run_experiment", "--timesteps", "$Timesteps"
+        "runner.run_experiment", "--timesteps", "$Timesteps",
+        "--max-timesteps", "$MaxTimesteps"
     )
     $runnerArguments += $Arguments
     $processOptions = @{}
@@ -821,7 +825,7 @@ function New-ScientificSessionPrompt {
         "Training allocation: up to $Timesteps requested steps per run."
     }
     else {
-        "Training allocation: $Timesteps steps per run."
+        "Training allocation: $Timesteps steps per run; a run may extend to $MaxTimesteps steps."
     }
     $sourceGuidance = "Begin with campaigns/brief.md and the latest scientific session record. Consult other evidence as the scientific question requires."
     # A resumed conversation already holds the brief sent when it was created.
@@ -908,7 +912,7 @@ function Get-FirstMessageFiles {
 function Test-OperationRequest {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
-        uv run --project $PSScriptRoot python -m runner.run_experiment --timesteps $Timesteps --check-operation 2>&1
+        uv run --project $PSScriptRoot python -m runner.run_experiment --timesteps $Timesteps --max-timesteps $MaxTimesteps --check-operation 2>&1
     )
     $exitCode = $LASTEXITCODE
     $script:OperationValidationFeedback = (

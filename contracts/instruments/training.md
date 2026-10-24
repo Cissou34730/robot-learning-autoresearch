@@ -23,10 +23,14 @@ The seed must be non-negative.
 The `description` and `rationale` strings must be non-empty.
 The `steps` value must be a positive integer.
 
-The session context states the training allocation. During startup, `steps`
-can be any positive value up to the allocation. During an inquiry, `steps` must
-equal the allocation. The PI cannot change the allocation. Runner rejects
-other values during validation, acceptance and training dispatch.
+The session context states the training allocation and the longest permitted
+run. During startup, `steps` can be any positive value up to the allocation.
+During an inquiry, `steps` lies between the allocation and the longest run. The
+PI cannot change either value. Runner rejects other values during validation,
+acceptance and training dispatch.
+
+A standard run uses the allocation. A longer run takes proportionally more
+time. Each run adds to the campaign's time and AI usage.
 
 For transfer training, `parent` is required and must be non-empty.
 For fresh training, omit `parent`.

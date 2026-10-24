@@ -602,12 +602,11 @@ def planned_paired_comparisons(
     for comparison in request.get("paired_comparisons", []):
         candidate = resolve_candidate(state, str(comparison["candidate"]))
         reference = resolve_candidate(state, str(comparison["reference"]))
-        for role, resolved in (("candidate", candidate), ("reference", reference)):
-            if resolved["id"] not in research_measurements:
-                raise ValueError(
-                    f"paired comparison {role} {resolved['id']!r} must have a "
-                    "planned research_evaluation measurement"
-                )
+        if candidate["id"] not in research_measurements:
+            raise ValueError(
+                f"paired comparison candidate {candidate['id']!r} must have a "
+                "planned research_evaluation measurement"
+            )
         candidate_episodes = {
             seed
             for _, entry in research_measurements[candidate["id"]]
@@ -615,13 +614,26 @@ def planned_paired_comparisons(
                 int(entry["seed"]), int(entry["seed"]) + int(entry["episodes"])
             )
         }
-        reference_episodes = {
-            seed
-            for _, entry in research_measurements[reference["id"]]
-            for seed in range(
-                int(entry["seed"]), int(entry["seed"]) + int(entry["episodes"])
+        stored: list[dict] = []
+        if reference["id"] in research_measurements:
+            reference_episodes = {
+                seed
+                for _, entry in research_measurements[reference["id"]]
+                for seed in range(
+                    int(entry["seed"]), int(entry["seed"]) + int(entry["episodes"])
+                )
+            }
+        else:
+            stored, reference_episodes = _stored_reference_measurements(
+                state, reference, candidate_episodes
             )
-        }
+            if not stored:
+                raise ValueError(
+                    f"paired comparison reference {reference['id']!r} must have a "
+                    "planned research_evaluation measurement or an earlier completed "
+                    "research_evaluation of the same saved artifact on shared "
+                    "episode seeds under the current evaluation semantics"
+                )
         shared_episode_seeds = sorted(candidate_episodes & reference_episodes)
         if not shared_episode_seeds:
             raise ValueError(
@@ -640,7 +652,7 @@ def planned_paired_comparisons(
         ]
         reference_measurement_indexes = [
             index
-            for index, entry in research_measurements[reference["id"]]
+            for index, entry in research_measurements.get(reference["id"], [])
             if shared.intersection(
                 range(
                     int(entry["seed"]),
@@ -648,18 +660,69 @@ def planned_paired_comparisons(
                 )
             )
         ]
-        planned.append(
-            {
-                "candidate": candidate["id"],
-                "reference": reference["id"],
-                "candidate_model_fingerprint": candidate["fingerprint"],
-                "reference_model_fingerprint": reference["fingerprint"],
-                "shared_episode_seeds": shared_episode_seeds,
-                "candidate_measurement_indexes": candidate_measurement_indexes,
-                "reference_measurement_indexes": reference_measurement_indexes,
-            }
-        )
+        plan = {
+            "candidate": candidate["id"],
+            "reference": reference["id"],
+            "candidate_model_fingerprint": candidate["fingerprint"],
+            "reference_model_fingerprint": reference["fingerprint"],
+            "shared_episode_seeds": shared_episode_seeds,
+            "candidate_measurement_indexes": candidate_measurement_indexes,
+            "reference_measurement_indexes": reference_measurement_indexes,
+        }
+        if stored:
+            plan[STORED_REFERENCE_FIELD] = stored
+        planned.append(plan)
     return planned
+
+
+STORED_REFERENCE_FIELD = "reference_stored_measurements"
+STORED_MEASUREMENT_FIELDS = (
+    "evaluation_artifact",
+    "evaluation_artifact_fingerprint",
+    "evaluation_semantics",
+    "model_fingerprint",
+    "seed",
+    "episodes",
+)
+
+
+def _stored_reference_measurements(
+    state: dict, reference: dict, seeds: set[int]
+) -> tuple[list[dict], set[int]]:
+    """Earlier research evaluations of the same saved artifact covering `seeds`."""
+    semantics = evaluation_semantics_fingerprint()
+    stored: list[dict] = []
+    covered: set[int] = set()
+    for event in state.get("operation_events", []):
+        if event.get("kind") != "measurement" or event.get("status") != "completed":
+            continue
+        for item in (event.get("result") or {}).get("measurements", []):
+            metrics = item.get("metrics") or {}
+            if (
+                item.get("instrument") != "research_evaluation"
+                or item.get("candidate_id") != reference["id"]
+                or metrics.get("model_fingerprint") != reference["fingerprint"]
+                or metrics.get("evaluation_semantics") != semantics
+            ):
+                continue
+            panel = set(
+                range(
+                    int(metrics["seed"]),
+                    int(metrics["seed"]) + int(metrics["episodes"]),
+                )
+            )
+            new = (panel & seeds) - covered
+            if new:
+                stored.append(
+                    {
+                        "operation_id": event["id"],
+                        "metrics": {
+                            field: metrics[field] for field in STORED_MEASUREMENT_FIELDS
+                        },
+                    }
+                )
+                covered |= new
+    return stored, covered
 
 
 def validate_panel_independence(

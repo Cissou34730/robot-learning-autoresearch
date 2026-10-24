@@ -112,8 +112,9 @@ saved, the launcher pauses before the next goal review. It records no campaign
 conclusion and requests no official assessment. Launch again with a higher
 `-MaxInquiries` to continue the same campaign; the value can only increase.
 
-`-Timesteps` (default 120,000) sets the training allocation per run. The PI
-sees the allocation in its session context and cannot change it.
+`-Timesteps` (default 120,000) sets the training allocation per run. During an
+inquiry a run may extend up to `-MaxTimesteps` (default 360,000). The PI sees
+both values in its session context and cannot change them.
 
 ### Known restart limitation
 

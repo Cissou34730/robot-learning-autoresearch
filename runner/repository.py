@@ -1123,10 +1123,14 @@ def _validate_pending_data(kind: str, data: object) -> None:
                     or set(entry["inputs"]) != set(entry["input_artifacts"])
                 ):
                     raise ValueError("pending measurement input bindings are invalid")
-            if entry["instrument"] in {
-                "research_evaluation",
-                "task_reference",
-            } and "repeats_earlier_measurements" in entry:
+            if (
+                entry["instrument"]
+                in {
+                    "research_evaluation",
+                    "task_reference",
+                }
+                and "repeats_earlier_measurements" in entry
+            ):
                 fields = fields | {"repeats_earlier_measurements"}
                 repeats = entry["repeats_earlier_measurements"]
                 if not isinstance(repeats, list):
@@ -1195,8 +1199,12 @@ def _validate_pending_data(kind: str, data: object) -> None:
         if not isinstance(data["paired_comparisons"], list):
             raise TypeError("pending paired_comparisons must be a list")
         for comparison in data["paired_comparisons"]:
+            stored_field = "reference_stored_measurements"
             _require_exact_fields(
-                comparison, comparison_fields, "pending paired comparison"
+                comparison,
+                comparison_fields
+                | ({stored_field} if stored_field in comparison else set()),
+                "pending paired comparison",
             )
         if not isinstance(data["partial_results"], list):
             raise TypeError("pending partial_results must be a list")
