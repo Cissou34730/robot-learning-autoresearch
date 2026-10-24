@@ -36,7 +36,7 @@ TICK_SECONDS = 1.0
 LIVENESS_SECONDS = 300.0
 PROGRESS_STALE_SECONDS = 300.0
 MAX_RENDERED_ENTRIES = 100_000
-EVENTS_PATH = Path("reports") / "tui_observations.jsonl"
+EVENTS_DIR = Path("reports") / "tui_observations"
 
 
 def _now() -> datetime:
@@ -329,8 +329,9 @@ class CampaignReport(App):
         self._observed_signature: tuple | None = None
         self._last_error: str = ""
         self._source_note_sent: bool = False
-        self._console_seen: set = set()
         self._pi_seen: deque = deque(maxlen=256)
+        self._pi_stream: dict = {}
+        self._feed_campaign: str | None = None
 
     # ------------------------------------------------------------------
     # Composition
@@ -375,8 +376,22 @@ class CampaignReport(App):
 
             self._feed = SyntheticFeed(demo_schedule())
             return
-        source = self._events_path or (paths.ROOT / EVENTS_PATH)
-        self._feed = JsonlFeed(source, campaign_id=None)
+        if self._events_path is not None:
+            self._feed = JsonlFeed(self._events_path)
+            return
+        # The per-campaign file is known only once the campaign identity is read.
+        self._feed = None
+
+    def _ensure_feed(self, campaign_id: str | None) -> None:
+        """Follow this campaign's own file; a reset cannot surface old events."""
+        if self._demo or self._events_path is not None or not campaign_id:
+            return
+        campaign = str(campaign_id)
+        if isinstance(self._feed, JsonlFeed) and self._feed_campaign == campaign:
+            return
+        source = paths.ROOT / EVENTS_DIR / f"{campaign}.jsonl"
+        self._feed = JsonlFeed(source, campaign_id=campaign)
+        self._feed_campaign = campaign
 
     # ------------------------------------------------------------------
     # Snapshot refresh
@@ -389,11 +404,8 @@ class CampaignReport(App):
                 "Campaign state file unavailable - recorded operations shown without state-derived roles"
             )
         campaign_id = (state or {}).get("campaign", {}).get("id")
-        if (
-            isinstance(self._feed, JsonlFeed)
-            and not self._feed.campaign_id
-            and campaign_id
-        ):
+        self._ensure_feed(campaign_id)
+        if isinstance(self._feed, JsonlFeed) and campaign_id:
             self._feed.campaign_id = str(campaign_id)
 
         snapshot = projector.build_snapshot(
@@ -867,10 +879,8 @@ class CampaignReport(App):
                 "Demonstration mode: every value here is synthetic.",
                 style="bold red",
             )
-        if (
-            not self._demo
-            and not (self._events_path or (paths.ROOT / EVENTS_PATH)).exists()
-        ):
+        feed_ready = isinstance(self._feed, JsonlFeed) and self._feed.path.exists()
+        if not self._demo and not feed_ready:
             self._append(
                 now,
                 "No structured observation feed is available: live PI messages and "
@@ -996,18 +1006,46 @@ class CampaignReport(App):
         self._append(event.ts, f"activity: {label}", style="cyan")
 
     def _event_pi_message(self, event: Observation) -> None:
-        text = _clean_text(event.fields.get("text") or "")
-        if not text:
+        raw = _clean_text(event.fields.get("text") or "")
+        if not raw:
             return
         session = _clean_text(event.fields.get("session_id") or "")
+        turn = event.fields.get("turn")
+        final = bool(event.fields.get("final", True))
+        shown = self._pi_stream.get(turn, "") if turn is not None else ""
+        # A partial carries only the text added since the previous partial.
+        text = raw if final or turn is None else shown + raw
         fingerprint = (session, text)
-        if fingerprint in self._pi_seen:
-            # A streamed/final replay of the same message renders once.
+        if turn is None:
+            # Whole-message events (demo fixtures and replayed finals).
+            if fingerprint in self._pi_seen:
+                return
+            self._pi_seen.append(fingerprint)
+            stamp = event.ts or _now()
+            prefix = (
+                f"{_ts(stamp)} PI ({session}): " if session else f"{_ts(stamp)} PI: "
+            )
+            self._hang_block(prefix, text, prefix_style="bold magenta")
             return
-        self._pi_seen.append(fingerprint)
+        if final and fingerprint in self._pi_seen:
+            return
         stamp = event.ts or _now()
-        prefix = f"{_ts(stamp)} PI ({session}): " if session else f"{_ts(stamp)} PI: "
-        self._hang_block(prefix, text, prefix_style="bold magenta")
+        label = f"{_ts(stamp)} PI ({session}): " if session else f"{_ts(stamp)} PI: "
+        if not text.startswith(shown):
+            shown = ""
+        addition = text[len(shown) :]
+        if shown:
+            addition = addition.lstrip()
+        if addition.strip():
+            if shown:
+                # Continue the message under the same gutter, no repeated stamp.
+                self._hang_block(" " * len(label), addition)
+            else:
+                self._hang_block(label, addition, prefix_style="bold magenta")
+        self._pi_stream[turn] = text
+        if final:
+            self._pi_seen.append(fingerprint)
+            self._pi_stream.pop(turn, None)
 
     def _event_tool(self, event: Observation) -> None:
         name = _clean_text(event.fields.get("name") or "tool")
@@ -1022,10 +1060,6 @@ class CampaignReport(App):
         scope = _clean_text(event.fields.get("scope") or "")
         if not text:
             return
-        marker = (scope, text)
-        if marker in self._console_seen:
-            return
-        self._console_seen.add(marker)
         style = None
         if scope == "error":
             style = "bold red"

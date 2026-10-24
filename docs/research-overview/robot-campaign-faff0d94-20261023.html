@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Campaign faff0d94 passed at 200/200 with an analytic controller and a gated learned residual. It ran on a confounded OI-041 system prompt and is information only.">
+    <title>Campaign faff0d94: hybrid controller, official pass at 200/200 (confounded run)</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 24px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cp-bg);
+            color: var(--cp-text);
+            font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        main {
+            max-width: 1120px;
+            margin: auto;
+            padding: 32px 24px 64px;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.15;
+            letter-spacing: -.025em;
+        }
+
+        h2 {
+            margin-bottom: 16px;
+            font-size: 1.55rem;
+            line-height: 1.3;
+        }
+
+        h3 {
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        p+p {
+            margin-top: 8px;
+        }
+
+        a {
+            color: var(--cp-link);
+            text-underline-offset: 3px;
+        }
+
+        code {
+            font: .88em Consolas, "Courier New", Courier, monospace;
+            overflow-wrap: anywhere;
+        }
+
+        button {
+            padding: 8px 12px;
+            background: var(--cp-surface);
+            color: var(--cp-text);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        button:hover {
+            border-color: var(--cp-accent);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--cp-accent);
+            outline-offset: 4px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            margin-bottom: 12px;
+            color: var(--cp-accent);
+            font-size: .85rem;
+            font-weight: 700;
+        }
+
+        .intro {
+            max-width: 900px;
+            margin-top: 16px;
+            font-size: 1.15rem;
+        }
+
+        .small {
+            color: var(--cp-text-muted);
+            font-size: .9rem;
+        }
+
+        .snapshot {
+            margin-top: 16px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin-top: 24px;
+        }
+
+        section {
+            margin-top: 40px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .four {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .card,
+        .note,
+        details {
+            min-width: 0;
+            padding: 20px;
+            border: 1px solid var(--cp-border);
+            border-radius: 16px;
+            background: var(--cp-surface);
+            box-shadow: 0 1px 2px var(--cp-border);
+        }
+
+        .note {
+            margin-top: 16px;
+            border-left: 4px solid var(--cp-accent);
+            background: var(--cp-bg-elevated);
+        }
+
+        .note.warn {
+            border-left-color: var(--cp-warning);
+        }
+
+        .metric {
+            margin-bottom: 8px;
+            font-size: 1.9rem;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .ok {
+            color: var(--cp-success);
+        }
+
+        .label {
+            font-weight: 600;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .94rem;
+        }
+
+        caption {
+            padding: 16px;
+            text-align: left;
+            color: var(--cp-text-muted);
+        }
+
+        th,
+        td {
+            padding: 12px 16px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid var(--cp-border);
+        }
+
+        th {
+            background: var(--cp-surface-soft);
+            font-weight: 600;
+        }
+
+        tbody tr:last-child td,
+        tbody tr:last-child th {
+            border-bottom: 0;
+        }
+
+        .wide table {
+            min-width: 680px;
+        }
+
+        .spaced {
+            margin-top: 16px;
+        }
+
+        .flow {
+            padding: 16px;
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            background: var(--cp-surface-soft);
+        }
+
+        .flow-label {
+            margin: 12px 0;
+            text-align: center;
+            color: var(--cp-text-muted);
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 24px;
+        }
+
+        li+li {
+            margin-top: 8px;
+        }
+
+        details {
+            margin-top: 16px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        details[open] summary {
+            margin-bottom: 16px;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--cp-border);
+        }
+
+        @media (max-width: 760px) {
+
+            .four,
+            .two {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding: 20px 16px 40px;
+            }
+
+            .four,
+            .two {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .top {
+                align-items: flex-start;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        @media print {
+            main {
+                max-width: none;
+                padding: 0;
+            }
+
+            button,
+            nav {
+                display: none;
+            }
+
+            .card,
+            .note,
+            details {
+                box-shadow: none;
+            }
+
+            .table-wrap {
+                overflow: visible;
+            }
+
+            .wide table {
+                min-width: 0;
+            }
+
+            h2,
+            h3 {
+                break-after: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>
+            <div class="top">
+                <a href="robot-learning-overview-20261002.html#reports">All campaign reports</a>
+                <button id="theme-toggle" type="button">Change theme</button>
+            </div>
+            <p class="eyebrow">Campaign faff0d94 / final report / 23 October 2026</p>
+            <h1>A hybrid controller passes at 200/200 on a confounded system prompt</h1>
+            <p class="intro">The arm passed the official test with <strong>200 successes in 200 episodes</strong>.
+                The goal was 196. The final controller is an analytic inverse-kinematics and computed-torque controller
+                with a small learned PPO residual, which is switched off in one local target sector.</p>
+            <p class="intro">This campaign ran on harness commit <code>ba92677f</code> of the OI-041 branch. That
+                system prompt contains behavioural directives that the <code>harness</code> branch never had.
+                <strong>The run is information only.</strong> It is not evidence about moving content into the
+                system prompt. See <a href="#confound">section 2</a>.
+            </p>
+            <p class="snapshot small">Harness: <code>ba92677f</code> on branch <code>system-prompt</code>.
+                Start: 23 October 2026, 14:20:42. Official completion: 16:49:09. Elapsed: 2 hours 28 minutes 27 seconds.
+                Times are local, UTC+2.</p>
+            <nav aria-label="Report sections">
+                <a href="#summary">Summary</a><a href="#confound">Confound</a><a href="#task">Task</a>
+                <a href="#controller">Controller</a><a href="#timeline">Research path</a><a href="#results">Results</a>
+                <a href="#behavior">Decisions</a><a href="#comparison">Comparison</a><a
+                    href="#attribution">Attribution</a>
+                <a href="#resources">Resources</a><a href="#sources">Sources and limits</a>
+            </nav>
+        </header>
+
+        <section id="summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">1. The result</h2>
+            <div class="grid four">
+                <article class="card">
+                    <p class="metric ok">200 / 200</p>
+                    <p class="label">Official successes</p>
+                    <p class="small">100%. Four successes above the required count.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">T6:115712</p>
+                    <p class="label">Selected checkpoint</p>
+                    <p class="small">T3's learned weights with a local residual gate in the saved runtime.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">6 runs</p>
+                    <p class="label">Training operations</p>
+                    <p class="small">3 fresh, 3 transfer. The last one updated no weights.</p>
+                </article>
+                <article class="card">
+                    <p class="metric">54.60</p>
+                    <p class="label">AI usage units</p>
+                    <p class="small">81% more than campaign cfa88359 (30.09).</p>
+                </article>
+            </div>
+            <div class="note">
+                <p><strong>Final selection:</strong> <code>T6:checkpoint-115712</code>. The official score belongs to
+                    this
+                    exact saved package, identified by its <a href="#artifact-identity">fingerprint</a>.</p>
+                <p>The campaign completed 4 inquiries, 6 training operations, 16 measurement operations (31 measurement
+                    records) and 11 scientific sessions. There were no failed or superseded operations. It ended with no
+                    active session, active inquiry or pending operation. <a href="#source-state">[State]</a></p>
+                <p>The official pass belongs to a hybrid controller. A zero-residual version of the same analytic
+                    controller succeeded in every episode on which it was measured: 80/80, 43/43, 99/99 and 200/200 in
+                    four diagnostics (M4, M6, M10, M12; M6 and M10 replay earlier seeds).
+                    The campaign did not show that learning improved on the analytic controller.</p>
+            </div>
+        </section>
+
+        <section id="confound" aria-labelledby="confound-title">
+            <h2 id="confound-title">2. Read this first: the prompt confound</h2>
+            <div class="note warn">
+                <p><strong>Campaigns <code>c06b15e4</code>, <code>4991570c</code> and <code>faff0d94</code> cannot be
+                        used as evidence about moving content into the system prompt.</strong> The adaptation commits
+                    <code>0b64ea66</code> and <code>ec21e7bf</code> added behavioural directives to the PI system
+                    prompt.
+                    These directives never existed on <code>harness</code> (<code>d07a21c9</code>) and were not in the
+                    first OI-041 commit <code>3afe89f2</code>. The maintainer's coding assistant wrote them during the
+                    adaptation; the maintainer did not draft them. Each later campaign therefore changed placement and
+                    behavioural instructions together.
+                </p>
+            </div>
+            <div class="card table-wrap wide spaced">
+                <table>
+                    <caption>Directive text in <code>runner/copilot/system_prompt.py</code>, checked with
+                        <code>git show</code> at each commit. "Absent" means the phrase is in neither the system prompt
+                        module nor <code>run_research.ps1</code> nor <code>contracts/program.md</code>.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Directive (as in <code>ba92677f</code>)</th>
+                            <th scope="col">First commit</th>
+                            <th scope="col"><code>d07a21c9</code> harness</th>
+                            <th scope="col"><code>3afe89f2</code></th>
+                            <th scope="col"><code>ba92677f</code></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">"No human answers questions during the campaign; you decide and act."</th>
+                            <td><code>0b64ea66</code></td>
+                            <td>Absent</td>
+                            <td>Absent</td>
+                            <td>Present</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">"When a result points to a cause, derive the change from the robot's
+                                mechanics
+                                and the evidence, implement it, and test it."</th>
+                            <td><code>ec21e7bf</code> (<code>0b64ea66</code> had "test the change it implies: retrain,
+                                change the method, or build the tool")</td>
+                            <td>Absent</td>
+                            <td>Absent</td>
+                            <td>Present</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">"Measure again only when the result could change your next action."</th>
+                            <td><code>0b64ea66</code></td>
+                            <td>Absent</td>
+                            <td>Absent</td>
+                            <td>Present</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">"When adjustments within one method stop improving the result, change the
+                                method."</th>
+                            <td><code>ec21e7bf</code> (<code>0b64ea66</code> named representation, controller structure
+                                and training from scratch)</td>
+                            <td>Absent</td>
+                            <td>Absent</td>
+                            <td>Present</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">"A gain that leaves the main failure in place is partial; keep working on
+                                that failure."</th>
+                            <td><code>0b64ea66</code></td>
+                            <td>Absent</td>
+                            <td>Absent</td>
+                            <td>Present</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">"An inquiry continues across tests until its question is answered or
+                                redirected;
+                                a negative test does not close it by itself."</th>
+                            <td><code>0b64ea66</code></td>
+                            <td>Absent</td>
+                            <td>Absent</td>
+                            <td>Present</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Tone: "Report as a scientist briefing a colleague ..."</th>
+                            <td><code>0b64ea66</code></td>
+                            <td>SDK default tone</td>
+                            <td>"Write as for a laboratory record ..."</td>
+                            <td>Present</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Reference scope: "They limit claims, not the methods you may try."</th>
+                            <td><code>0b64ea66</code></td>
+                            <td>Absent</td>
+                            <td>Absent</td>
+                            <td>Present</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid two spaced">
+                <article class="card">
+                    <h3>Which campaign ran on which commit</h3>
+                    <ul>
+                        <li><code>5d94bf8a</code>: <code>3afe89f2</code> (committed 23:54:53 on 22 October; campaign
+                            started 23:56:33). Its startup PI session received the "laboratory record" tone and none
+                            of the three checked directive phrases. <a
+                                href="robot-campaign-5d94bf8a-20261023.html">Report</a>.</li>
+                        <li><code>c06b15e4</code>: <code>0b64ea66</code> (committed 09:10:30; first usage record
+                            09:18:01).</li>
+                        <li><code>4991570c</code>: <code>ec21e7bf</code> (committed 10:49:46; usage records 10:57:53 to
+                            11:58:32). The experiment log does not record this run.</li>
+                        <li><code>faff0d94</code>: <code>ba92677f</code> (committed 14:19:50; campaign started
+                            14:20:42).
+                            Its startup PI session received "you decide and act", "briefing a colleague" and "keep
+                            working on that failure".</li>
+                    </ul>
+                    <p class="small spaced">Commit times come from the harness reflog; campaign times from the usage
+                        files and campaign state. The prompt phrases were checked in the SDK event logs of startup
+                        sessions <code>cb6b0718</code> (5d94bf8a) and <code>acc771e3</code> (faff0d94).</p>
+                </article>
+                <article class="card">
+                    <h3>What <code>ba92677f</code> delivered to the PI</h3>
+                    <ul>
+                        <li>System prompt: the PI persona, the tone and autonomy texts above, and the contract reference
+                            (scenario, authority, program, instruments and parts, policy runtime). Contract re-reads are
+                            refused.</li>
+                        <li>First user message: one role line, then the full
+                            <code>pi_workspace/scientific_model.md</code>,
+                            then state, guidance and the brief.</li>
+                        <li>The two sentences about "conditions the physics treats as equivalent" were removed in this
+                            commit, so the PI had no symmetry hint in either channel.</li>
+                    </ul>
+                    <p class="small spaced">On <code>harness</code>, related but weaker wording existed: the launcher
+                        said
+                        "The inquiry may remain active across sessions. Close it when completed evidence warrants
+                        closure.",
+                        and the SDK's default autonomy block was in place (the log calls it "bias to action").
+                        <code>3afe89f2</code> removed both.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section id="task" aria-labelledby="task-title">
+            <h2 id="task-title">3. What the arm had to do</h2>
+            <div class="card">
+                <p>A simulated two-joint planar arm had to reach targets 6 to 20 cm from its base, at any bearing.
+                    Its hand had to stay within 1 cm of the target for 100 uninterrupted control steps (two seconds).
+                    The official goal was at least 196 successes in 200 episodes, with a frozen learned policy.</p>
+                <p>The <strong>PI</strong> is the AI principal investigator. <strong>Runner</strong> executes
+                    operations,
+                    enforces boundaries and records results. Coder and reviewer agents implement and check scientific
+                    code.
+                    A <strong>panel</strong> is a set of test episodes. <strong>Research evaluation</strong> uses the
+                    PI-owned evaluator; it is development evidence, not the official result.</p>
+            </div>
+        </section>
+
+        <section id="controller" aria-labelledby="controller-title">
+            <h2 id="controller-title">4. The final controller: analytic control with a gated learned residual</h2>
+            <div class="card">
+                <div class="flow"><strong>Target and arm state:</strong> select one feasible inverse-kinematics (IK)
+                    branch per episode and latch it.</div>
+                <p class="flow-label">Compute joint torques analytically</p>
+                <div class="flow"><strong>Computed-torque joint feedback:</strong> mass, bias and passive-force terms
+                    drive the joints toward the IK solution.</div>
+                <p class="flow-label">Add a bounded learned correction</p>
+                <div class="grid two">
+                    <div class="flow"><strong>Everywhere else</strong>
+                        <p>Add the PPO residual (bounded, tapered to zero inside the 1 cm hold region).</p>
+                    </div>
+                    <div class="flow"><strong>Local gate (T5 and T6 runtime)</strong>
+                        <p>Suppress the residual, with a smooth taper, in a core around 12.5–14.5 cm and 128–146°
+                            where only one IK branch is feasible.</p>
+                    </div>
+                </div>
+                <p class="spaced"><strong>This is a hybrid controller, not pure PPO.</strong> The analytic part does
+                    most
+                    of the work. Diagnostics with the residual fixed at zero succeeded on M4 (80/80 fresh seeds), M6
+                    (43/43 replay seeds), M10 (99/99 replay seeds) and M12 (200/200 fresh seeds). Every T3 failure that
+                    was replayed with zero residual (three from M5, three from M9, one from M12) was a non-entry that
+                    the
+                    zero-residual controller solved on the same seed. These replays place the tested failures in the
+                    learned residual.</p>
+                <p>The final candidate T6 contains no new learning. T6 was a transfer "training" run from
+                    <code>T3:checkpoint-115712</code> with PPO updates disabled and VecNormalize statistics frozen
+                    (120,832 rollout steps). Only <code>robot_learning/train.py</code> changed for it. The PI called it
+                    "runtime-only candidate materialization, not policy learning". <a href="#source-state">[State]</a>
+                </p>
+            </div>
+            <div class="note">
+                <p><strong>Rule B.</strong> <code>contracts/instruments/coding.md</code> (lines 24–32, decided 22
+                    October,
+                    see OI-046 in the log) states that only a training operation creates a candidate, and a runtime
+                    change
+                    reaches a candidate only through a training run. T6 follows the wording. It does not follow the
+                    intent: the network never trained under the gate and paid no learning cost. In effect it is the
+                    repackaging operation that the maintainer had postponed. This gap is in the contract and does not
+                    depend on the prompt.</p>
+                <p>Runner's exact serialized-component comparison records T6's policy as equal to T3 at 1 of 24
+                    corresponding checkpoints and its normalization component as equal at 0 of 24. The PI recorded that
+                    T6 "preserved policy and normalization digests". This report did not investigate the difference.</p>
+            </div>
+        </section>
+
+        <section id="timeline" aria-labelledby="timeline-title">
+            <h2 id="timeline-title">5. How the research progressed</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>Completed operations in order. M = measurement, T = training, E = event. Local times.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Stage</th>
+                            <th scope="col">Evidence</th>
+                            <th scope="col">Decision</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Startup, 14:20–14:44: T1, M1</th>
+                            <td>T1 trained fresh PPO on the full 6–20 cm range (only
+                                <code>training/environment.py</code>
+                                changed). M1: 146/160 for both late checkpoints. The five non-entries lay at bearings
+                                −150.6° to −129.7°.</td>
+                            <td>T1:checkpoint-120832 best-known. Pass probability 0.00195.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">I1, 14:45–15:14: M2, T2, M3</th>
+                            <td>M2 replayed 2-ms traces of the 14 M1 failures. T2 trained fresh with changes to
+                                <code>scenario/environment.py</code>, <code>scenario/observations.py</code> and
+                                <code>training/reward.py</code> at once (two IK-feasibility observations and a
+                                near-target
+                                speed penalty). M3: T2 0/160 versus T1 148/160.
+                            </td>
+                            <td>The PI called T2 "a combined method test rather than a causal isolation". I1 closed
+                                negative.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">I2, 15:17–15:52: M4, T3, M5–M8, T4</th>
+                            <td>M4: zero-residual analytic controller 80/80. T3 trained fresh as IK computed-torque
+                                control
+                                plus a bounded PPO residual. M5 157/160, M7 196/200, M8 199/200 for
+                                T3:checkpoint-115712.
+                                M6: zero residual solved T3's three M5 failures. T4 (branch-conditioned residual gate,
+                                transfer) 197/200 on M8.</td>
+                            <td>T3 best-known (E10). I2 closed positive. E11 pass probability 0.894 from M8.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Goal review S7, 15:53–15:59: M9, M10</th>
+                            <td>M9: T3 197/200, unmeasured checkpoint 110592 195/200. M10: zero residual solved T3's
+                                three M9 failures (13.28–13.66 cm, 133.5–140.1°). M8+M9: 396/400, pass probability
+                                0.858.</td>
+                            <td>The PI opened I3 instead of assessing: "I prefer one bounded, more selective refinement
+                                over
+                                terminal assessment now because the repeated, mechanistically discriminated local
+                                failures
+                                are plausibly avoidable ..." (E13).</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">I3, 15:59–16:11: T5, M11</th>
+                            <td>T5: transfer with the localized residual gate. M11: T5 195/200, T3 195/200; five wins
+                                each.
+                                T3's five failures lay in or near the gate sector; T5's five lay elsewhere (16.89–19.89
+                                cm,
+                                148.67–162.76°).</td>
+                            <td>Closure condition: "do not continue open-ended tuning". E15: "return to goal review for
+                                the
+                                terminal decision rather than continue tuning".</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Goal review S9, 16:12–16:17: M12</th>
+                            <td>M12: T3 199/200, zero residual 200/200 on the same 200 fresh seeds. T3's miss at 12.51
+                                cm,
+                                128.83°.</td>
+                            <td>The PI opened I4 on the same residual-gate mechanism.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">I4, 16:18–16:46: M13, M14, T6, M15</th>
+                            <td>M13: gate on T3's frozen runtime reproduced M12 exactly and repaired the miss. M14: T5
+                                192/200,
+                                T3 195/200. T6: frozen transfer of T3 with the gate. M15: T6 200/200, T3 198/200 (2
+                                discordant).</td>
+                            <td>T6 best-known (E19, pass probability 0.9699). I4 closed positive.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Goal review S11, 16:46–16:49: M16</th>
+                            <td>M16: T6 200/200, T3 200/200 (0 discordant). T6 pooled 400/400, pass probability 0.9961.
+                            </td>
+                            <td>Official assessment requested, "based on T6's absolute performance, not a superiority
+                                claim".
+                                <strong class="ok">Passed 200/200.</strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="small spaced">Sources: <a href="#source-state">operation records and checkpoint history</a>;
+                times are Runner completion times converted from UTC.</p>
+        </section>
+
+        <section id="results" aria-labelledby="results-title">
+            <h2 id="results-title">6. The same candidate on many panels</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>T3:checkpoint-115712 and its comparators. All research panels use semantics
+                        <code>dc3a62404477</code>. M5 has 160 episodes; the others 200.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Panel (seeds)</th>
+                            <th scope="col">T3:115712</th>
+                            <th scope="col">Comparator</th>
+                            <th scope="col">Pass probability recorded by the PI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">M5 (8000)</th>
+                            <td>157/160</td>
+                            <td>T1 139/160</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M7 (9000)</th>
+                            <td>196/200</td>
+                            <td>T1 182/200</td>
+                            <td>0.503 (M7 alone)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M8 (11000)</th>
+                            <td>199/200</td>
+                            <td>T4:90112 197/200</td>
+                            <td>0.894 (M8 alone, E11)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M9 (13000)</th>
+                            <td>197/200</td>
+                            <td>T3:110592 195/200</td>
+                            <td>0.858 (M8+M9)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M11 (15000)</th>
+                            <td>195/200</td>
+                            <td>T5 195/200</td>
+                            <td>0.744 (M8+M9+M11)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M12 (17000)</th>
+                            <td>199/200</td>
+                            <td>Zero residual 200/200</td>
+                            <td>0.838 (790/800)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M14 (19000)</th>
+                            <td>195/200</td>
+                            <td>T5 192/200</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M15 (21000)</th>
+                            <td>198/200</td>
+                            <td>T6 200/200</td>
+                            <td>T3 0.805 (1183/1200); T6 0.9699</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M16 (23000)</th>
+                            <td>200/200</td>
+                            <td>T6 200/200</td>
+                            <td>T6 0.9961 (400/400)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="spaced">T3:checkpoint-115712 was measured on nine research panels: 1,736/1,760 episodes. On the
+                seven
+                panels after its selection (M8–M16) it scored 1,383/1,400 (98.8%). T6 and T3 differ by 2 episodes in 400
+                (M15 and M16). The pass probability rose from 0.858 at the S7 goal review to 0.9961 mostly because more
+                panels were measured and T6's two panels were perfect, not because a large improvement was shown.</p>
+            <div class="note">
+                <p><strong>The failure sector is mirrored, but the PI never compared the mirror.</strong> T1's five M1
+                    non-entries lay at −150.6° to −129.7°, the same one-sided sector seen in <code>6882b9ec</code>
+                    and <code>5d94bf8a</code>. T3's later failures lay at +125° to +146°. No faff0d94 record
+                    (<code>campaigns/results.jsonl</code>, <code>runner/state/research_state.json</code>,
+                    <code>campaigns/brief.md</code>) or its scientific model mentions mirror symmetry; "reflect" occurs
+                    only as a verb.
+                </p>
+            </div>
+        </section>
+
+        <section id="behavior" aria-labelledby="behavior-title">
+            <h2 id="behavior-title">7. Decision behaviour</h2>
+            <p>These are observations from one campaign. Section 9 gives the attribution.</p>
+            <div class="grid two spaced">
+                <article class="card">
+                    <h3>Differences from the last clean pass (cfa88359)</h3>
+                    <ul>
+                        <li><strong>Refine instead of assess.</strong> At the S7 goal review T3 had 396/400 on fresh
+                            panels
+                            and pass probability 0.858. The PI opened I3 (quote in section 5). In <code>cfa88359</code>
+                            the PI assessed at 0.97 after one fresh panel and the task reference, without a third
+                            inquiry.</li>
+                        <li><strong>Persistence on the same ~1% failure.</strong> I3 set its own limit ("do not continue
+                            open-ended tuning") and closed with "rather than continue tuning". The next goal review ran
+                            M12 and opened I4 on the same mechanism. A reasoning summary in the I4 session reads:
+                            "Building an exact-copy candidate ... seems like a credible next step rather than
+                            prematurely
+                            closing the inquiry." and "I think I should keep working on creating the exact runtime-only
+                            candidate." At that point T3 had 10 failures in 800 post-selection episodes.</li>
+                        <li><strong>Confirmation by panel count.</strong> T3 was measured on nine panels; the final
+                            choice between T6 and T3 rests on 2 episodes in 400.</li>
+                        <li><strong>Bundled change.</strong> T2 changed environment, observations and reward together
+                            and
+                            scored 0/160; the cause was not isolated.</li>
+                        <li><strong>Learning displaced.</strong> The analytic controller carried the task; the learned
+                            residual caused the failures and was then gated off locally. The final candidate's weights
+                            are T3's, untrained under the gate.</li>
+                        <li><strong>Rule B workaround.</strong> A training run that updated nothing produced the
+                            candidate.</li>
+                        <li><strong>Missed symmetry.</strong> The mirror sector of the failure region was never tested.
+                        </li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>Similarities with cfa88359</h3>
+                    <ul>
+                        <li><strong>Robotics framing.</strong> The PI reasoned in IK branches, joint limits, computed
+                            torque
+                            and acquisition versus hold. Robotics-to-RL vocabulary ratio of PI text: 0.52 (messages
+                            0.80),
+                            against 0.48 for <code>cfa88359</code> and 0.14 for <code>5d94bf8a</code>.</li>
+                        <li><strong>Clean mechanism diagnostics.</strong> Zero-residual replays on the exact failure
+                            seeds
+                            (M6, M10, M12) and a gate-only replay that reproduced all 200 M12 baseline episodes (M13).
+                        </li>
+                        <li><strong>Honest uncertainty.</strong> Each role assignment stated its interval and that it
+                            was
+                            not an official result; selection optimism was named.</li>
+                        <li><strong>Bounded final claim.</strong> The assessment request said the choice was "not a
+                            superiority claim" over T3.</li>
+                        <li>No failed or superseded operation.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section id="comparison" aria-labelledby="comparison-title">
+            <h2 id="comparison-title">8. Comparison with recent campaigns</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>Separate runs, not a controlled comparison. AIU totals include coders and reviewers.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Campaign</th>
+                            <th scope="col">Harness</th>
+                            <th scope="col">Result</th>
+                            <th scope="col">Wall time</th>
+                            <th scope="col">Sessions</th>
+                            <th scope="col">Inquiries</th>
+                            <th scope="col">Training (fresh/transfer)</th>
+                            <th scope="col">Measurements</th>
+                            <th scope="col">PI AIU</th>
+                            <th scope="col">Total AIU</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row"><a href="robot-campaign-cfa88359-20261022.html">cfa88359</a></th>
+                            <td><code>fa6a34ff</code></td>
+                            <td>passed 199/200</td>
+                            <td>66 min</td>
+                            <td>6</td>
+                            <td>2</td>
+                            <td>2/0</td>
+                            <td>7</td>
+                            <td>23.00</td>
+                            <td>30.09</td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><a href="robot-campaign-5d94bf8a-20261023.html">5d94bf8a</a></th>
+                            <td><code>3afe89f2</code></td>
+                            <td>failed 193/200</td>
+                            <td>286 min</td>
+                            <td>31</td>
+                            <td>13</td>
+                            <td>1/6</td>
+                            <td>35 (3 failed)</td>
+                            <td>102.95</td>
+                            <td>151.17</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">faff0d94</th>
+                            <td><code>ba92677f</code></td>
+                            <td>passed 200/200</td>
+                            <td>148 min</td>
+                            <td>11</td>
+                            <td>4</td>
+                            <td>3/3</td>
+                            <td>16</td>
+                            <td>40.45</td>
+                            <td>54.60</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid two spaced">
+                <article class="card">
+                    <h3>cfa88359: learned symmetry</h3>
+                    <p>A pure PPO policy with reflection canonicalization in its policy I/O, found by a mirrored-target
+                        test (M3) and trained fresh. Assessed after one fresh research panel and the task reference at
+                        96.99% pass probability. Official 199/200.</p>
+                </article>
+                <article class="card">
+                    <h3>faff0d94: analytic control</h3>
+                    <p>An IK computed-torque controller with a learned residual, gated off in one sector. Two more
+                        inquiries after a 0.858 goal review. Official 200/200. The failure sector's mirror was never
+                        tested.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="attribution" aria-labelledby="attribution-title">
+            <h2 id="attribution-title">9. What can be attributed to what</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>One campaign cannot establish causes. This table states the most likely source and its
+                        strength.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Behaviour</th>
+                            <th scope="col">Most likely source</th>
+                            <th scope="col">Basis and limit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Refine at 0.858–0.894 instead of assessing</th>
+                            <td>Added AUTONOMY sentences ("A gain that leaves the main failure in place is partial; keep
+                                working on that failure.")</td>
+                            <td>E13 justifies refinement by "repeated ... local failures" that are "plausibly
+                                avoidable".
+                                The match is in meaning; no persisted record repeats the directive verbatim.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Persistence across I3 and I4 on one ~1% failure</th>
+                            <td>Added AUTONOMY sentences ("An inquiry continues across tests ...; a negative test does
+                                not
+                                close it by itself.")</td>
+                            <td>The I4 reasoning summary: "rather than prematurely closing the inquiry", "keep working".
+                                Wording in an internal summary, not a verified causal link.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Repeated confirmation panels</th>
+                            <td>Selection-bias wording in <code>contracts/program.md</code> "Goal review"</td>
+                            <td>"A development result tends to overstate performance on new episodes when the same
+                                episodes
+                                were also used to select the candidate ..." This text is also on <code>harness</code>.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Hybrid route, missed symmetry, bundled T2 change</th>
+                            <td>Not attributable from one run</td>
+                            <td>The scientific model and both prompt channels had no symmetry statement. Run-to-run
+                                variation
+                                cannot be excluded.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Rule B workaround (T6)</th>
+                            <td>Contract gap, independent of prompts</td>
+                            <td>The rule permits a training run with no updates. The repackaging route stays unbuilt.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="resources" aria-labelledby="resources-title">
+            <h2 id="resources-title">10. Resources</h2>
+            <p>AIU means the runtime's recorded AI usage units, not a currency amount.
+                <a href="#source-usage">[Usage]</a>
+            </p>
+            <div class="grid two spaced">
+                <div class="card table-wrap">
+                    <table>
+                        <caption>Usage by role, 34 recorded invocations.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Role</th>
+                                <th scope="col">Invocations</th>
+                                <th scope="col">AIU</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Analyst (scientific model)</th>
+                                <td>1</td>
+                                <td>3.710027</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">PI scientific sessions</th>
+                                <td>11</td>
+                                <td>36.744314</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Scientific coders</th>
+                                <td>11</td>
+                                <td>9.610021</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Scientific reviewers</th>
+                                <td>11</td>
+                                <td>4.537616</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Total</th>
+                                <td>34</td>
+                                <td><strong>54.601978</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card table-wrap">
+                    <table>
+                        <caption>Usage from the S7 goal review (15:53) to the end, all roles.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Stage</th>
+                                <th scope="col">AIU</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">S7 goal review (opened I3)</th>
+                                <td>2.5354</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">I3 (S8 and its coder and reviewer)</th>
+                                <td>3.8717</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">S9 goal review (opened I4)</th>
+                                <td>3.5481</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">I4 (S10 and its coders and reviewers)</th>
+                                <td>12.0716</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">S11 goal review (assessment)</th>
+                                <td>0.5334</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Total after 15:53</th>
+                                <td><strong>22.5602</strong> (41.3% of 54.60)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <p class="spaced">The PI alone spent 17.14 of its 40.45 AIU after 15:53. The 22.56 AIU bought one inquiry
+                with
+                a tie (I3), one inquiry that produced the frozen-weight T6, and a final panel. Recorded PI tool calls:
+                368
+                (view 112, artifact_evidence_query 101, submit_operation 44, read_agent 20, episode_outcome_breakdown
+                15,
+                success_rate_pass_probability 15, training_log_query 15, training_series_statistics 15). Child sessions
+                made 240 further calls.</p>
+        </section>
+
+        <section id="sources" aria-labelledby="sources-title">
+            <h2 id="sources-title">11. Sources, identities and limits</h2>
+            <div class="card">
+                <ul>
+                    <li id="source-state"><strong>Campaign state:</strong> <code>runner/state/research_state.json</code>
+                        and <code>campaigns/results.jsonl</code> in the local campaign repository. Campaign
+                        <code>faff0d94-c036-47d1-811d-3ad3b0d87ddb</code>; base commit <code>7b18937c</code>; recipe
+                        <code>d8efe217</code>; scientific model commit <code>67d088bd</code>; final campaign commit
+                        <code>78828eb</code>. A factual summary was generated with
+                        <code>tools/campaign_report.py</code>.
+                    </li>
+                    <li id="source-usage"><strong>Usage:</strong>
+                        <code>reports/session_usage/faff0d94-c036-47d1-811d-3ad3b0d87ddb.jsonl</code>. The factual
+                        report
+                        labels all 34 invocations as "PI invocations" and their 54.60 AIU as "PI AIU"; the file's
+                        <code>role</code> field separates 12 PI, 11 coder and 11 reviewer rows.
+                    </li>
+                    <li><strong>Prompt verification:</strong> <code>git show</code> of
+                        <code>runner/copilot/system_prompt.py</code>, <code>run_research.ps1</code> and
+                        <code>contracts/program.md</code> at <code>d07a21c9</code>, <code>3afe89f2</code>,
+                        <code>0b64ea66</code>, <code>ec21e7bf</code> and <code>ba92677f</code>; SDK event logs of the
+                        startup and I4 sessions.
+                    </li>
+                    <li><strong>Harness commit at launch:</strong> not recorded in campaign state. <code>ba92677f</code>
+                        was committed 52 seconds before the campaign started and is still the branch head; the launcher
+                        refuses a dirty worktree.</li>
+                    <li><strong>Vocabulary ratio:</strong> 0.52 and 0.80 are maintainer counts supplied for this report;
+                        the experiment log records 0.48, 0.14 and 0.72 for other campaigns. The counting method is not
+                        recorded in the log.</li>
+                    <li><strong>History:</strong> <a href="../harness-experiment-log.md">maintainer experiment log</a>
+                        (OI-041 plan, OI-046, ledger rows of 22 and 23 October).</li>
+                </ul>
+            </div>
+            <details id="artifact-identity">
+                <summary>Exact selected artifact</summary>
+                <p>Selected model: <code>T6:checkpoint-115712</code> (parent <code>T3:checkpoint-115712</code>,
+                    transfer,
+                    seed 83).</p>
+                <p>Fingerprint: <code>c62ad5941b04d868c777b07de32408c67a4053a4c7516a058488917dc7804777</code>.</p>
+                <p>Retained package:
+                    <code>campaigns/checkpoints/retained/faff0d94-c036-47d1-811d-3ad3b0d87ddb/t6-cfbc9e22f-c62ad5941b04d868c777b07de32408c67a4053a4c7516a058488917dc7804777</code>.
+                </p>
+                <p>T3:checkpoint-115712 fingerprint:
+                    <code>7017df8ef3d73afc186d96a97e2d3d65cc474960f27d491694cf9117cfd81d46</code>.
+                </p>
+                <p>Raw measurements under <code>campaigns/evaluations/faff0d94-c036-47d1-811d-3ad3b0d87ddb/</code> are
+                    local ignored archives and are not in Git.</p>
+            </details>
+            <p class="spaced">The supported conclusion is narrow: this saved hybrid package passed its official
+                assessment.
+                The campaign does not show that learning contributed beyond the analytic controller, and it carries no
+                evidence about the system-prompt placement because the prompt also changed behavioural instructions.</p>
+        </section>
+
+        <footer class="small">
+            <p>Prepared on 23 October 2026 for the maintainer. No campaign source, state or operations were changed.
+                No training, reset, resume or scientific re-evaluation was performed to prepare this report.</p>
+        </footer>
+    </main>
+    <script>
+        const themeButton = document.getElementById("theme-toggle");
+        const updateThemeLabel = () => {
+            const dark = document.documentElement.getAttribute("data-theme") === "dark";
+            themeButton.textContent = dark ? "Use light theme" : "Use dark theme";
+            themeButton.setAttribute("aria-pressed", String(dark));
+        };
+        themeButton.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme");
+            document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+            updateThemeLabel();
+        });
+        updateThemeLabel();
+    </script>
+</body>
+
+</html>

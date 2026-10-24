@@ -229,6 +229,8 @@ def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
         return FILE_READ_DENIAL
     if relative == "campaigns/results.jsonl":
         return RESULTS_READ_DENIAL
+    if relative.startswith("reports/tui_observations/"):
+        return FILE_READ_DENIAL
     if preliminary and relative.startswith("robot_learning/"):
         return None
     if is_pi_writable_path(target):

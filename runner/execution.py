@@ -18,7 +18,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from runner import console, paths, repository
+from runner import console, observation_feed, paths, repository
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
@@ -373,7 +373,17 @@ def train_candidate(
                 log_text = read_training_log(train_log, progress_offset)
                 record = latest_training_record(log_text)
                 steps = latest_step_count(log_text)
+                observation_feed.emit({"kind": "liveness"})
                 if steps is None:
+                    observation_feed.emit(
+                        {
+                            "kind": "training_progress",
+                            "operation_id": operation_id,
+                            "steps": None,
+                            "target": None,
+                            "elapsed_seconds": round(elapsed, 1),
+                        }
+                    )
                     console.progress(
                         f"TRAIN {operation_id} | starting | "
                         f"{console.format_duration(elapsed)} elapsed"
@@ -410,6 +420,15 @@ def train_candidate(
                             fps,
                             record,
                         )
+                    )
+                    observation_feed.emit(
+                        {
+                            "kind": "training_progress",
+                            "operation_id": operation_id,
+                            "steps": steps,
+                            "target": progress_target,
+                            "elapsed_seconds": round(elapsed, 1),
+                        }
                     )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
@@ -686,6 +705,18 @@ def evaluate_artifact(
                         f"{100 * completed_episodes // episodes}% | "
                         f"{console.format_duration(time.monotonic() - started)}"
                     )
+                    observation_feed.emit(
+                        {
+                            "kind": "eval_progress",
+                            "operation_id": operation_id,
+                            "instrument": label,
+                            "official": bool(official_benchmark),
+                            "episodes": completed_episodes,
+                            "episodes_total": episodes,
+                            "elapsed_seconds": round(time.monotonic() - started, 1),
+                        }
+                    )
+                    observation_feed.emit({"kind": "liveness"})
                     if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
                         stop_process(process, graceful=False)
                         raise TimeoutError(

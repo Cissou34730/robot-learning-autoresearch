@@ -58,14 +58,6 @@ TONE = (
     "Be concise."
 )
 
-EXPLORATION = (
-    "The campaign reference in this prompt does not change during the campaign. "
-    "The scientific model of the system you study is in the first message of "
-    "each session and in pi_workspace/scientific_model.md.\n\n"
-    "Explain each result through the scientific model before choosing a change. "
-    "Read results, artifacts and recipe code as the explanation requires."
-)
-
 ANALYST_EXPLORATION = (
     "Build a complete understanding of the system before writing: use the "
     "definitions in the campaign reference and read the whole current recipe. "
@@ -74,17 +66,11 @@ ANALYST_EXPLORATION = (
 )
 
 AUTONOMY = (
-    "No human answers questions during the campaign; you decide and act.\n\n"
-    "Act on the evidence. When a result points to a cause, derive the change "
-    "from the robot's mechanics and the evidence, implement it, and test it. "
-    "Measure again only when the result could change your next action.\n\n"
-    "When an approach fails, decide whether the idea or its implementation "
-    "failed. When adjustments within one method stop improving the result, "
-    "change the method.\n\n"
-    "A gain that leaves the main failure in place is partial; keep working on "
-    "that failure.\n\n"
-    "An inquiry continues across tests until its question is answered or "
-    "redirected; a negative test does not close it by itself.\n\n"
+    "You own this campaign from its first session to the official assessment. "
+    "The campaign is judged on whether the official assessment reaches the "
+    "human goal, and on the time and AI usage spent to get there. Only "
+    "submitted operations change the campaign; analysis advances it only when "
+    "it leads to one.\n\n"
     "Call submit_operation with the request object. Results and changed state "
     "return directly to this conversation. Continue within this context until "
     "checkpoint or terminal commitment ends it."
@@ -128,8 +114,6 @@ REFERENCE_HEADER = (
     "campaign. They define the task, the rules and what a result may claim."
 )
 
-PI_REFERENCE_SCOPE = "They limit claims, not the methods you may try."
-
 PI_REFERENCE = (
     "contracts/scenario.md",
     "contracts/authority.md",
@@ -172,10 +156,7 @@ def _reference_file(relative: str) -> str:
 
 def campaign_reference(preliminary: bool) -> str:
     files = [_reference_file(relative) for relative in reference_paths(preliminary)]
-    header = (
-        REFERENCE_HEADER if preliminary else f"{REFERENCE_HEADER} {PI_REFERENCE_SCOPE}"
-    )
-    return "\n\n".join([header, *files])
+    return "\n\n".join([REFERENCE_HEADER, *files])
 
 
 def _block(tag: str) -> re.Pattern:
@@ -187,11 +168,13 @@ def _runtime_transform(
     preliminary: bool, warn: Callable[[str], None]
 ) -> Callable[[str], str]:
     replaced = {
-        "exploration_and_reading_files": ANALYST_EXPLORATION
-        if preliminary
-        else EXPLORATION,
-        "autonomy_and_persistence": ANALYST_AUTONOMY if preliminary else AUTONOMY,
+        "autonomy_and_persistence": ANALYST_AUTONOMY if preliminary else AUTONOMY
     }
+    removed = REMOVED_RUNTIME_BLOCKS
+    if preliminary:
+        replaced["exploration_and_reading_files"] = ANALYST_EXPLORATION
+    else:
+        removed += ("exploration_and_reading_files",)
 
     def transform(content: str) -> str:
         for tag, text in replaced.items():
@@ -201,7 +184,7 @@ def _runtime_transform(
             )
             if not count:
                 warn(f"system prompt: runtime block <{tag}> not found; not replaced")
-        for tag in REMOVED_RUNTIME_BLOCKS:
+        for tag in removed:
             content = _block(tag).sub("", content, count=1)
         return content.rstrip()
 

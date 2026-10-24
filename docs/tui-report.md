@@ -54,7 +54,7 @@ closes the report (presentation only, never the campaign).
 | Campaign, inquiry, session, synthesis, roles, pending operation | `runner/state/research_state.json` |
 | Completed operations, training dynamics, measurement panels | `campaigns/results.jsonl` |
 | Recorded usage (AIU / token rows) | `reports/session_usage/<campaign-id>.jsonl` |
-| Live observations | optional JSONL event file (below) |
+| Live observations | `reports/tui_observations/<campaign-id>.jsonl` (written by `runner/observation_feed.py` and the launcher) |
 
 Projection rules follow the specification: roles come only from
 `model_roles`; development success is the latest completed evaluation for a
@@ -63,44 +63,70 @@ become development evidence; usage excludes price and currency and keeps the
 PI, coder and reviewer scopes; missing values render as `unavailable` or
 `not measured`, never zero.
 
-## Observation feed (consumer implemented; producers intentionally out of this pass)
+## Observation feed (producer and consumer)
 
-Per the maintainer's direction this pass changed no campaign-side code, so no
-runner/PI producer writes observation events yet. The consumer is ready and
-events follow this shape (one JSON object per line):
+The Runner appends presentation events to
+`reports/tui_observations/<campaign-id>.jsonl` under the campaign root (that
+directory is presentation-only, ignored by campaign Git, and refused to PI and
+analyst reads). One file per campaign means a reset cannot surface earlier
+events. `runner/observation_feed.py` owns the writer: it is best-effort,
+appends one JSON object per line, binds the campaign identity from durable
+state (also in the Copilot adapter process), and swallows every failure so
+presenting can never alter acceptance, execution, publication or recovery.
+Setting `TUI_OBSERVATIONS` to another path moves the file; setting it to `off`
+disables the feed. The report follows the current campaign's file
+automatically, by byte offset: only appended complete lines are read, and a
+shrunken or replaced file restarts from the beginning.
+
+Emit points are the existing console funnels and structured counters, never
+message-text matching:
+
+- Launcher (`researcher_session.ps1`, `run_research.ps1`) - the status lines
+  and cards the launcher displays, including session start and resume
+  identity; `session_start` supplies the live stage timer.
+- `runner/console.py` `announce()` and `card()` - every visible Runner line
+  and lifecycle card, with its existing scope classification (`pi`,
+  `operation`, `warning`, `error`, ...) as the color channel.
+- `runner/copilot/copilot_console.py` `Console.line()` - tool calls, results,
+  failures and coder/reviewer lines; `Console.delta()`/`_close_message()` -
+  PI text published while it is still being written (whole-word snapshots at
+  most every 2 s, immediately on a paragraph break) and a final snapshot at
+  turn end.
+- `runner/execution.py` training and evaluation loops - structured
+  `training_progress` and `eval_progress` (the progress panels never read
+  formatted console text), plus `liveness` every status interval.
+- `runner/run_experiment.py` - `execution_end` for completed, failed,
+  interrupted and official-assessment operations; official assessment progress
+  comes from its existing callback.
+
+Events follow this shape (one JSON object per line):
 
 ```json
-{"campaign_id": "...", "ts": "2026-10-23T12:41:04Z", "kind": "training_progress",
- "operation_id": "T4", "attempt": 1, "steps": 72000, "target": 120000,
- "elapsed_seconds": 728}
+{"campaign_id": "...", "ts": "2026-10-24T12:41:04+00:00", "kind": "training_progress",
+ "operation_id": "T4", "steps": 72000, "target": 120000, "elapsed_seconds": 728}
 ```
 
-Kinds: `session_start {session_id, stage_started_at}`, `activity {label}`,
-`pi_message {session_id, text}` (full message text once, deduplicated by the
-consumer against streamed/final replays), `tool {agent, name, detail}`,
-`console_line {scope, text}`, `training_progress`, `eval_progress`
-(`operation_id, instrument, official, panel_index, panel_total,
-completed_panels, episodes, episodes_total, elapsed_seconds`,
-`execution_end {operation_id, status, text}`, `liveness {}`.
+Kinds: `pi_message {text, final, turn}` (whole-word snapshots while the PI
+writes, `final: true` at turn end; the report appends only the new text, so a
+growing message never duplicates), `console_line {scope, text}`,
+`training_progress`, `eval_progress` (`operation_id, instrument, official,
+episodes, episodes_total, elapsed_seconds`), `execution_end {operation_id,
+status, text}`, `liveness {}`. The consumer still tolerates the optional
+`session_start`, `activity` and `tool` kinds for future emitters.
 
 Without an event file the report still renders the durable state, the
 reconstructed operation timeline and recorded usage; the output states the
-live-observation limitation on attachment, and progress panels appear only
-from structured events, never from message-text matching. Foreign-campaign
-events are rejected; replayed events are deduplicated.
-
-Future work authorized later: small emit taps (console cards, the structured
-training/evaluation heartbeat call sites and the copilot Console stream) that
-append this JSONL under the campaign's `reports/` directory when an
-environment variable selects it, plus launcher wiring.
+live-observation limitation on attachment. Foreign-campaign events are
+rejected; replayed events are deduplicated.
 
 ## Validation
 
 ```powershell
-uv run pytest tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py
+uv run pytest tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py
 ```
 
-The tests cover the projector contracts and the headless rendering behavior:
+The tests cover the feed writer and its console emit points, the projector
+contracts and the headless rendering behavior:
 single-screen composition, streamed/final PI deduplication, the progress
 lifecycle (training and evaluation, official assessment label, module
 measurement with unavailable counters, end-of-execution removal), reading

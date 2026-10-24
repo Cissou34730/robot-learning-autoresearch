@@ -29,7 +29,6 @@ rather than rendered, and a streamed/final duplicate is rendered once.
 
 from __future__ import annotations
 
-import hashlib
 import json
 from collections.abc import Iterator
 from dataclasses import dataclass, field
@@ -72,34 +71,50 @@ def feed_age_seconds(stamp: datetime | None, now: datetime) -> float | None:
 
 @dataclass
 class JsonlFeed:
-    """Re-reads an observation JSONL file across reconnects.
+    """Follows one campaign's observation file by byte offset.
 
-    The file is treated as append-only content; a replayed line is rejected
-    by fingerprint and a foreign campaign by its identity. That keeps the
-    cursor trivial across atomic replacement and reconnects.
+    Only new complete lines are read, so polling cost is proportional to what
+    was appended, not to the file size, and replayed lines cannot resurface.
+    A shrunken or replaced file restarts from the beginning.
     """
 
     path: Path
     campaign_id: str | None = None
-    max_dedupe: int = 4096
-
-    _seen: dict = field(default_factory=dict)
     rejected: str | None = None
+    _offset: int = 0
+
+    def reset(self) -> None:
+        """Read the file from the beginning on the next poll."""
+        self._offset = 0
 
     def poll(self) -> list[Observation]:
         """All complete new events in the file, in file order."""
         try:
-            text = self.path.read_text(encoding="utf-8")
+            size = self.path.stat().st_size
         except OSError:
             return []
+        if size < self._offset:
+            self._offset = 0
+        if size == self._offset:
+            return []
+        try:
+            with self.path.open("rb") as handle:
+                handle.seek(self._offset)
+                chunk = handle.read()
+        except OSError:
+            return []
+        newline = chunk.rfind(b"\n")
+        if newline < 0:
+            # A partial trailing line; it is read once it is complete.
+            return []
+        complete = chunk[: newline + 1]
+        self._offset += len(complete)
         events: list[Observation] = []
-        lines = text.splitlines()
-        complete = lines if text.endswith("\n") else lines[:-1]
-        for line in complete:
-            stripped = line.strip()
-            if not stripped:
+        for raw in complete.splitlines():
+            line = raw.decode("utf-8", errors="replace").strip()
+            if not line:
                 continue
-            event = self._event(stripped)
+            event = self._event(line)
             if event is not None:
                 events.append(event)
         return events
@@ -112,21 +127,14 @@ class JsonlFeed:
         if not isinstance(record, dict):
             return None
         kind = record.get("kind")
-        if kind != "liveness" and kind not in KNOWN_KINDS:
+        if kind not in KNOWN_KINDS:
             return None
-        if self.campaign_id and record.get("campaign_id") not in (
-            None,
-            self.campaign_id,
+        if (
+            self.campaign_id is not None
+            and record.get("campaign_id") != self.campaign_id
         ):
             self.rejected = "foreign campaign observation"
             return None
-        fingerprint = hashlib.sha1(line.encode()).hexdigest()
-        if fingerprint in self._seen:
-            return None
-        self._seen[fingerprint] = True
-        if len(self._seen) > self.max_dedupe:
-            for stale in list(self._seen)[: self.max_dedupe // 2]:
-                del self._seen[stale]
         stamp = parse_timestamp(record.get("ts")) or datetime.now(tz=UTC)
         return Observation(
             kind=str(kind),
