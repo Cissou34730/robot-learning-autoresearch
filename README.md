@@ -13,6 +13,8 @@ Current operating guidance, reviewed 19 October 2026:
   implementation stages, validation and migration corrections.
 - [Reset guide](docs/reset-research.md), [external stop contract](docs/external-campaign-stop.md)
   and [saved-policy runtime](docs/policy-runtime.md): operator procedures.
+- [Terminal report](docs/tui-report.md): the read-only single-screen campaign
+  report (`tools\run-report.ps1`, `-Demo` for synthetic rendering).
 - [Maintainer instructions](AGENTS.md) and [runtime mechanics](docs/runtime-mechanics.md):
   maintainer conventions and agent-runtime internals, reserved from campaign agents.
 - [Authority](contracts/authority.md), [scientific program](contracts/program.md)

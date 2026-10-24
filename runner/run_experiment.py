@@ -15,7 +15,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from runner import assessment, console, execution, paths, protocol, repository
+from runner import (
+    assessment,
+    console,
+    execution,
+    observation_feed,
+    paths,
+    protocol,
+    repository,
+)
 from runner.stop_control import interrupt_on_stop_request
 
 PROPOSAL_ERRORS = (
@@ -2097,6 +2105,14 @@ def _announce_consequential_completion(presentation: dict) -> None:
 def _announce_completed_operation(presentation: dict) -> None:
     pending = copy.deepcopy(presentation["pending"])
     kind = pending["kind"]
+    observation_feed.emit(
+        {
+            "kind": "execution_end",
+            "operation_id": str(pending.get("id") or ""),
+            "status": "completed",
+            "text": f"{pending.get('id') or kind}: operation complete",
+        }
+    )
     # Inquiry, checkpoint and conclusion cards already carry the operation and its context.
     if kind not in {"inquiry", "checkpoint", "campaign_conclusion"}:
         detail = _operation_completion_detail(pending)
@@ -2125,6 +2141,7 @@ def _campaign_resource_summary(state: dict) -> str:
 
 def execute_pending_operation() -> int:
     state = repository.load_state(allow_missing_artifact=True)
+    observation_feed.set_campaign(repository.current_campaign_id(state))
     pending = state["pending_operation"]
     if not isinstance(pending, dict):
         raise TypeError("there is no pending Runner operation")
@@ -2181,6 +2198,14 @@ def execute_pending_operation() -> int:
         if not publication_failure:
             pending["failure"] = str(error)
             repository.write_state(state)
+        observation_feed.emit(
+            {
+                "kind": "execution_end",
+                "operation_id": str(pending.get("id") or ""),
+                "status": "failed",
+                "text": str(error),
+            }
+        )
         console.boundary(
             "error",
             "PUBLICATION FAILED" if publication_failure else "OPERATION FAILED",
@@ -2191,6 +2216,13 @@ def execute_pending_operation() -> int:
         error.operation_reported = True
         raise
     if exit_code == 130:
+        observation_feed.emit(
+            {
+                "kind": "execution_end",
+                "operation_id": str(pending.get("id") or ""),
+                "status": "interrupted",
+            }
+        )
         console.boundary("warning", "OPERATION PAUSED", subject)
         return exit_code
     _announce_completed_operation(presentation)
@@ -2271,6 +2303,17 @@ def check_scientific_model_deliverable(*, quiet: bool = False) -> int:
 
 def official_assessment_progress(completed: int, total: int) -> None:
     percent = 100 * completed // total if total else 0
+    observation_feed.emit(
+        {
+            "kind": "eval_progress",
+            "operation_id": "official",
+            "instrument": "official assessment",
+            "official": True,
+            "episodes": completed,
+            "episodes_total": total,
+            "elapsed_seconds": None,
+        }
+    )
     console.progress(f"ASSESS | {completed}/{total} | {percent}%")
 
 
@@ -2328,6 +2371,7 @@ def _validate_official_assessment_artifact(
 
 def run_official_assessment() -> int:
     state = repository.load_state(allow_missing_artifact=True)
+    observation_feed.set_campaign(repository.current_campaign_id(state))
     terminal = state["terminal_state"]
     if not isinstance(terminal, dict) or not terminal["status"].startswith(
         "official_assessment_"
@@ -2349,6 +2393,14 @@ def run_official_assessment() -> int:
             )
         if not repository.commit_runner_memory("record official assessment"):
             repository.push_head()
+        observation_feed.emit(
+            {
+                "kind": "execution_end",
+                "operation_id": "official",
+                "status": "completed" if existing["status"] == "passed" else "failed",
+                "text": str(existing["summary"]),
+            }
+        )
         console.boundary(
             "assessment",
             "COMPLETE",
@@ -2391,6 +2443,14 @@ def run_official_assessment() -> int:
         )
     if not repository.commit_runner_memory("record official assessment"):
         repository.push_head()
+    observation_feed.emit(
+        {
+            "kind": "execution_end",
+            "operation_id": "official",
+            "status": "completed" if passed else "failed",
+            "text": summary,
+        }
+    )
     console.boundary(
         "assessment",
         "COMPLETE",

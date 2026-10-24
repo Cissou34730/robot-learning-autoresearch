@@ -426,6 +426,13 @@ function Invoke-PISession {
     Write-ConsoleCard `
         -Title "PI | $displaySession" `
         -Color Magenta
+    Write-TuiObservation -Kind session_start -Fields @{
+        session_id = $script:PISessionId
+        stage = $displaySession
+        phase = $Phase
+        resumed = [bool]$Continue
+        preliminary = [bool]$Preliminary
+    }
     $sessionArgs = @(
         "--session-id", $script:PISessionId
         "--model", $Model
