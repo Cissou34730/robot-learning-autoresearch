@@ -592,7 +592,7 @@
         accepted operations. It does not choose the science.</p>
       <p class="intro">The example is a two-joint arm that must reach a target and hold still. Training is one tool, not
         the whole process.</p>
-      <p class="snapshot">Last reviewed <time datetime="2026-10-21">21 October 2026</time>. This is a static
+      <p class="snapshot">Last reviewed <time datetime="2026-10-24">24 October 2026</time>. This is a static
         architecture and status overview, not a live campaign monitor. The filename is retained for existing links. The
         <a href="../harness-experiment-log.md">harness tracker</a> records engineering status; local campaign records
         establish measured results.
@@ -601,6 +601,7 @@
         <a href="#status">1 Status</a>
         <a href="#repositories">Repositories and commands</a>
         <a href="#roles">2 Roles</a>
+        <a href="#architecture">Agents and data flow</a>
         <a href="#task">3 Task</a>
         <a href="#lifecycle">4 Campaign lifecycle</a>
         <a href="#issues">5 Issue register</a>
@@ -622,11 +623,15 @@
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
           refuses submissions even though Runner records an active session. The maintainer closed OI-037 on
           21 October without claiming verified recovery. Folder and training-log repairs do not fix it.</p>
-        <p><strong>Latest documented result:</strong> <code>cfa88359</code> passed the official assessment at 199/200 on
-          22 October. See its <a href="robot-campaign-cfa88359-20261022.html">campaign report</a>. A symmetry-aware
-          coordinate mapping kept the learned policy in control, with no analytic-controller takeover.
-          Two training runs and independent final validation used 30.095 AIU in 66 minutes 23 seconds.
-          One training seed and one official pass do not establish repeatability.</p>
+        <p><strong>Latest documented result:</strong> <code>f83fca4d</code> passed the official assessment at 200/200 on
+          24 October, the first run on the goal-focused OI-041 system prompt (<code>a969f07b</code>). See its <a
+            href="robot-campaign-f83fca4d-20261024.html">campaign report</a>. The final runtime is an analytic IK,
+          quintic-reference and computed-torque controller; the learned policy selects one posture per episode.
+          Four training runs and five inquiries used 58.697 AIU in 2 hours 19 minutes 35 seconds. One run cannot
+          separate the prompt's effect from run-to-run variation.</p>
+        <p><strong>Last pure learned-policy pass:</strong> <code>cfa88359</code> passed at 199/200 on 22 October with a
+          symmetry-aware coordinate mapping and no analytic-controller takeover. See its <a
+            href="robot-campaign-cfa88359-20261022.html">campaign report</a>.</p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
         <p><strong>Historical evidence:</strong> <code>dc48cc2f</code> passed at 196/200 in its <a
@@ -684,7 +689,7 @@
           <span class="tag">Current agent runtime</span>
           <h3 style="margin-top: 12px">One SDK, multiple inference providers</h3>
           <ul>
-            <li>Copilot SDK 1.0.19 handles sessions, tools, native coding and independent review. OpenCode Zen/Go are
+            <li>Copilot SDK 1.0.26 handles sessions, tools, native coding and independent review. OpenCode Zen/Go are
               inference routes within that runtime.</li>
             <li>The default PI is Copilot GPT-6 Luna with high reasoning. Copilot scientific-model preparation uses max
               reasoning.</li>
@@ -854,7 +859,7 @@
         </p>
         <p>The preliminary phase keeps its scientific-model publication permission and phase-specific tools. Runner
           executes scientific checks, training and evaluation using the harness environment.</p>
-        <p>Copilot SDK 1.0.19 supplies agent lifecycle, custom tools and native subagents for Copilot and OpenCode
+        <p>Copilot SDK 1.0.26 supplies agent lifecycle, custom tools and native subagents for Copilot and OpenCode
           inference. OpenCode adds a scoped <code>read</code> alias; it is not a separate legacy TypeScript runtime.</p>
         <p>The PI chooses complete evidence or scoped queries through <code>artifact_evidence_query</code> and
           <code>training_log_query</code>. Large results identify continuation. Partial content never appears as
@@ -868,6 +873,272 @@
         <p class="small muted">Read-only review uses high reasoning. Max reasoning applies to Copilot scientific-model
           preparation, not the reviewer. Engineering checks do not establish scientific effectiveness.</p>
         <p class="small muted">The read limits are tool controls. They are not an operating-system sandbox.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="architecture-heading" id="architecture">
+      <p class="section-label">AGENTS AND DATA FLOW / 24 OCTOBER</p>
+      <h2 id="architecture-heading">How the agents, Runner and records connect</h2>
+      <p>Verified against harness <code>a969f07b</code>. Campaign agents receive only the contracts, the system
+        message, the first message and tool results. This page and the report tools are maintainer material.</p>
+      <figure class="card">
+        <div class="diagram loop" tabindex="0" aria-label="Scrollable agents and data flow diagram">
+          <svg viewBox="0 0 1000 1030" role="img" aria-labelledby="arch-title arch-description">
+            <title id="arch-title">Research lifecycle: agents, Runner and campaign records</title>
+            <desc id="arch-description">The maintainer starts the launcher, run_research.ps1. The launcher first runs
+              the preliminary analyst session, which writes the fixed scientific model in
+              pi_workspace/scientific_model.md, then starts PI sessions one at a time. Each PI session receives a system
+              prompt with persona, autonomy and campaign reference contracts, and a first message with the scientific
+              model for new conversations, state, guidance, permitted operations and the brief. PI sessions are
+              startup, goal review and inquiry; each ends with a checkpoint that saves the scientific session record.
+              Startup leads to goal review. Goal review either opens one bounded inquiry or requests the official
+              assessment through campaign_conclusion. An inquiry can continue or be reframed in fresh sessions, and
+              closing it returns to goal review. Inside an inquiry the PI calls scientific_coding, where a coder child
+              agent writes PI-owned source and a read-only reviewer child agent reviews it and can request repairs from
+              the same coder before the package returns to the PI. The PI calls submit_operation; the trusted
+              controller and Runner validate and execute training (fresh or transfer, producing candidates),
+              measurement (research_evaluation, python_module diagnostics, task_reference) and model role operations,
+              and return results to the same conversation. Runner publishes completed operations to the local campaign
+              Git repository, which evidence readers read for the PI. The official assessment uses the protected
+              benchmark and ends the campaign with pass or fail. The launcher and Runner write an observation feed
+              that the read-only TUI report follows.</desc>
+            <defs>
+              <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+                orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 Z" class="tip" />
+              </marker>
+              <marker id="arch-return" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+                orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 Z" class="return-tip" />
+              </marker>
+            </defs>
+            <rect x="20" y="286" width="740" height="724" rx="14" fill="none" stroke="var(--cp-border-strong)"
+              stroke-width="1.5" stroke-dasharray="8 5" />
+            <text x="40" y="312" class="label" font-weight="700">PI sessions</text>
+            <text x="145" y="312" class="caption">one at a time; each ends with a checkpoint (scientific session
+              record)</text>
+            <rect x="40" y="480" width="700" height="514" rx="12" fill="var(--cp-accent-soft)"
+              stroke="var(--cp-accent)" stroke-width="1.5" stroke-dasharray="8 5" />
+            <text x="60" y="506" class="label" font-weight="700">Inquiry</text>
+            <text x="132" y="506" class="caption">one bounded question; may span several sessions</text>
+            <text x="60" y="528" class="caption">Startup can use the same tools. Goal review: coding, measurement,
+              model_role.</text>
+
+            <rect x="20" y="20" width="200" height="76" rx="10" class="end-box" />
+            <text x="120" y="50" text-anchor="middle" class="label" font-weight="700">Maintainer</text>
+            <text x="120" y="76" text-anchor="middle" class="caption">goal, limits, launch, stop</text>
+            <path d="M 220 58 H 270" class="flow" marker-end="url(#arch-arrow)" />
+            <rect x="270" y="20" width="260" height="76" rx="10" class="box" />
+            <text x="400" y="50" text-anchor="middle" class="label" font-weight="700">Launcher</text>
+            <text x="400" y="76" text-anchor="middle" class="caption">run_research.ps1</text>
+            <path d="M 530 58 H 780" class="return" stroke-dasharray="6 4" marker-end="url(#arch-return)" />
+            <text x="655" y="50" text-anchor="middle" class="caption">observation feed</text>
+            <rect x="780" y="20" width="200" height="76" rx="10" class="end-box" />
+            <text x="880" y="50" text-anchor="middle" class="label" font-weight="700">TUI report</text>
+            <text x="880" y="76" text-anchor="middle" class="caption">read-only, maintainer</text>
+
+            <path d="M 310 96 V 121 H 120 V 146" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="130" y="114" class="caption">first</text>
+            <path d="M 490 96 V 121 H 775 V 146" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="505" y="114" class="caption">then each PI session</text>
+            <rect x="20" y="146" width="200" height="100" rx="10" class="box" />
+            <text x="120" y="174" text-anchor="middle" class="label" font-weight="700">Analyst session</text>
+            <text x="120" y="198" text-anchor="middle" class="caption">preliminary, runs once</text>
+            <text x="120" y="220" text-anchor="middle" class="caption">selects no intervention</text>
+            <path d="M 220 196 H 260" class="flow" marker-end="url(#arch-arrow)" />
+            <rect x="260" y="146" width="270" height="100" rx="10" class="box" />
+            <text x="395" y="174" text-anchor="middle" class="label" font-weight="700">Scientific model</text>
+            <text x="395" y="198" text-anchor="middle" class="caption">pi_workspace/scientific_model.md</text>
+            <text x="395" y="220" text-anchor="middle" class="caption">fixed for the campaign</text>
+            <path d="M 530 196 H 570" class="flow" marker-end="url(#arch-arrow)" />
+            <rect x="570" y="146" width="410" height="100" rx="10" class="end-box" />
+            <text x="775" y="170" text-anchor="middle" class="label" font-weight="700">Inputs of each PI session</text>
+            <text x="775" y="192" text-anchor="middle" class="caption">System prompt: persona, autonomy, campaign
+              contracts</text>
+            <text x="775" y="212" text-anchor="middle" class="caption">First message: scientific model (new
+              conversations),</text>
+            <text x="775" y="232" text-anchor="middle" class="caption">state, guidance, permitted operations,
+              brief</text>
+            <path d="M 680 246 V 286" class="flow" marker-end="url(#arch-arrow)" />
+
+            <rect x="40" y="330" width="210" height="80" rx="10" class="box" />
+            <text x="145" y="360" text-anchor="middle" class="label" font-weight="700">Startup</text>
+            <text x="145" y="386" text-anchor="middle" class="caption">sets the first direction</text>
+            <path d="M 250 370 H 340" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="295" y="362" text-anchor="middle" class="caption">checkpoint</text>
+            <rect x="340" y="330" width="260" height="80" rx="10" class="box" />
+            <text x="470" y="360" text-anchor="middle" class="label" font-weight="700">Goal review</text>
+            <text x="470" y="386" text-anchor="middle" class="caption">one inquiry or the assessment</text>
+            <path d="M 600 370 H 780" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="690" y="362" text-anchor="middle" class="caption">campaign_conclusion</text>
+            <rect x="780" y="320" width="200" height="100" rx="10" class="end-box" />
+            <text x="880" y="346" text-anchor="middle" class="label" font-weight="700">Official assessment</text>
+            <text x="880" y="368" text-anchor="middle" class="caption">protected benchmark</text>
+            <text x="880" y="388" text-anchor="middle" class="caption">best-known candidate</text>
+            <text x="880" y="408" text-anchor="middle" class="caption">pass/fail ends campaign</text>
+
+            <path d="M 420 410 V 480" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="410" y="462" text-anchor="end" class="caption">open inquiry, checkpoint</text>
+            <path d="M 540 480 V 410" class="return" marker-end="url(#arch-return)" />
+            <text x="550" y="450" class="caption">close inquiry, checkpoint</text>
+            <path d="M 80 480 V 456 H 180 V 480" class="return" marker-end="url(#arch-return)" />
+            <text x="80" y="440" class="caption">continue or reframe, checkpoint</text>
+
+            <rect x="60" y="550" width="160" height="80" rx="10" class="box" />
+            <text x="140" y="578" text-anchor="middle" class="label" font-weight="700">Coder</text>
+            <text x="140" y="600" text-anchor="middle" class="caption">child agent, writes</text>
+            <text x="140" y="620" text-anchor="middle" class="caption">PI-owned source</text>
+            <path d="M 350 575 H 220" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="285" y="567" text-anchor="middle" class="caption">scientific_coding</text>
+            <rect x="350" y="550" width="240" height="80" rx="10" class="accent-box" />
+            <text x="470" y="582" text-anchor="middle" class="heading">PI</text>
+            <text x="470" y="608" text-anchor="middle" class="caption">chooses each next step</text>
+            <path d="M 175 630 V 670" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="183" y="655" class="caption">diff</text>
+            <path d="M 105 670 V 630" class="return" marker-end="url(#arch-return)" />
+            <text x="97" y="655" text-anchor="end" class="caption">repairs</text>
+            <rect x="60" y="670" width="160" height="80" rx="10" class="box" />
+            <text x="140" y="698" text-anchor="middle" class="label" font-weight="700">Reviewer</text>
+            <text x="140" y="720" text-anchor="middle" class="caption">child agent, read-only</text>
+            <text x="140" y="740" text-anchor="middle" class="caption">requests repairs</text>
+            <path d="M 220 710 H 290 V 615 H 350" class="return" marker-end="url(#arch-return)" />
+            <text x="228" y="702" class="caption">package</text>
+
+            <rect x="780" y="540" width="200" height="100" rx="10" class="box" />
+            <text x="880" y="566" text-anchor="middle" class="label" font-weight="700">Evidence readers</text>
+            <text x="880" y="588" text-anchor="middle" class="caption">artifact_evidence_query,</text>
+            <text x="880" y="608" text-anchor="middle" class="caption">training_log_query,</text>
+            <text x="880" y="628" text-anchor="middle" class="caption">source, API, statistics</text>
+            <path d="M 780 595 H 590" class="return" stroke-dasharray="6 4" marker-end="url(#arch-return)" />
+            <text x="685" y="587" text-anchor="middle" class="caption">evidence</text>
+
+            <path d="M 430 630 V 790" class="flow" marker-end="url(#arch-arrow)" />
+            <text x="420" y="712" text-anchor="end" class="caption">submit_operation</text>
+            <path d="M 540 790 V 630" class="return" marker-end="url(#arch-return)" />
+            <text x="550" y="712" class="caption">results, same conversation</text>
+            <rect x="60" y="790" width="660" height="56" rx="10" class="end-box" />
+            <text x="390" y="814" text-anchor="middle" class="label" font-weight="700">Runner + trusted
+              controller</text>
+            <text x="390" y="836" text-anchor="middle" class="caption">validates, executes, records, publishes; same
+              in every session</text>
+            <path d="M 720 818 H 780" class="flow" marker-end="url(#arch-arrow)" />
+            <rect x="780" y="760" width="200" height="120" rx="10" class="box" />
+            <text x="880" y="786" text-anchor="middle" class="label" font-weight="700">Campaign Git</text>
+            <text x="880" y="808" text-anchor="middle" class="caption">local, never pushed</text>
+            <text x="880" y="828" text-anchor="middle" class="caption">results.jsonl, brief.md,</text>
+            <text x="880" y="848" text-anchor="middle" class="caption">research_state.json,</text>
+            <text x="880" y="868" text-anchor="middle" class="caption">source, checkpoints</text>
+            <path d="M 880 760 V 640" class="return" stroke-dasharray="6 4" marker-end="url(#arch-return)" />
+            <text x="890" y="705" class="caption">read</text>
+
+            <path d="M 160 846 V 876" class="flow" marker-end="url(#arch-arrow)" />
+            <path d="M 400 846 V 876" class="flow" marker-end="url(#arch-arrow)" />
+            <path d="M 630 846 V 876" class="flow" marker-end="url(#arch-arrow)" />
+            <rect x="60" y="876" width="200" height="100" rx="10" class="box" />
+            <text x="160" y="902" text-anchor="middle" class="label" font-weight="700">Training</text>
+            <text x="160" y="924" text-anchor="middle" class="caption">fresh or transfer</text>
+            <text x="160" y="944" text-anchor="middle" class="caption">saves policy checkpoints</text>
+            <text x="160" y="964" text-anchor="middle" class="caption">as candidates</text>
+            <rect x="285" y="876" width="230" height="100" rx="10" class="box" />
+            <text x="400" y="902" text-anchor="middle" class="label" font-weight="700">Measurement</text>
+            <text x="400" y="924" text-anchor="middle" class="caption">research_evaluation,</text>
+            <text x="400" y="944" text-anchor="middle" class="caption">python_module diagnostic,</text>
+            <text x="400" y="964" text-anchor="middle" class="caption">task_reference</text>
+            <rect x="540" y="876" width="180" height="100" rx="10" class="box" />
+            <text x="630" y="902" text-anchor="middle" class="label" font-weight="700">Model role</text>
+            <text x="630" y="924" text-anchor="middle" class="caption">working, best-known,</text>
+            <text x="630" y="944" text-anchor="middle" class="caption">retained</text>
+            <text x="630" y="964" text-anchor="middle" class="caption">+ restore_recipe</text>
+
+            <text x="780" y="930" class="caption">Grey: request or control.</text>
+            <text x="780" y="952" class="caption">Accent: result or read.</text>
+            <text x="780" y="974" class="caption">Dashed line: read-only.</text>
+            <text x="780" y="996" class="caption">Dashed box: grouping.</text>
+          </svg>
+        </div>
+        <figcaption>The launcher and Runner both write the observation feed. The PI and analyst cannot read it, the
+          maintainer documents, or the reference files already in their system message.</figcaption>
+      </figure>
+      <div class="card table-wrap wide" style="margin-top: 16px">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" style="width: 22%">Part</th>
+              <th scope="col">What it does now</th>
+              <th scope="col" style="width: 26%">Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>System message (OI-041)</td>
+              <td>A customize-mode SDK system message. The preamble is the PI persona or the analyst persona. The tone
+                section is replaced. The autonomy block is replaced: the PI text states that the PI owns the campaign to
+                the official assessment and that the campaign is judged on reaching the goal and on time and AI usage;
+                the analyst text says to complete the model in one session. SDK coding-assistant sections are removed;
+                the PI also loses the exploration block. The custom-instructions section carries the campaign reference:
+                for the PI the contracts and the policy runtime; for the analyst the scenario, task spec, robot files,
+                authority, policy runtime and scientific-model instrument.</td>
+              <td><code>runner/copilot/system_prompt.py</code></td>
+            </tr>
+            <tr>
+              <td>Reference reads refused</td>
+              <td>PI and analyst reads of a reference file already in the system message return
+                <code>REFERENCE_READ_DENIAL</code>. Maintainer files, protected evaluators and the observation feed are
+                also refused.
+              </td>
+              <td><code>runner/copilot/path_policy.py</code></td>
+            </tr>
+            <tr>
+              <td>First user message</td>
+              <td>A role line, then, for a new PI conversation that is not a checkpoint transition, the full scientific
+                model; then the state, decision guidance, permitted operations and the brief. The analyst's first
+                message carries the human goal and the model-writing instructions.</td>
+              <td><code>run_research.ps1</code></td>
+            </tr>
+            <tr>
+              <td>Scientific coding</td>
+              <td>The PI calls <code>scientific_coding</code> with an intent and a binding of exact PI-owned files. A
+                coder child agent edits those files; a read-only reviewer child agent reviews and can request one batch
+                of repairs from the same coder. The PI receives the package or a blocked requirement. Neither child
+                executes checks or submits operations.</td>
+              <td><code>runner/copilot/coding_session.py</code>, <code>contracts/instruments/coding.md</code></td>
+            </tr>
+            <tr>
+              <td>Operations</td>
+              <td>The PI calls <code>submit_operation</code>. The trusted controller passes the request to Runner, which
+                validates shape, phase, ownership and allocation, executes it, records it, publishes to campaign Git and
+                returns compact results and state to the same conversation. A failed accepted operation returns its
+                error;
+                after a source repair the PI can re-accept the same request.</td>
+              <td><code>runner/copilot/operation_submission.py</code>,
+                <code>runner/copilot/copilot_controller.ps1</code>, <code>runner/run_experiment.py</code>
+              </td>
+            </tr>
+            <tr>
+              <td>Sessions</td>
+              <td>Scientific model (analyst), startup, goal review and inquiry sessions. A <code>checkpoint</code>
+                operation saves the session record and ends the context. Goal review alone can request the official
+                assessment through <code>campaign_conclusion</code>.</td>
+              <td><code>contracts/program.md</code></td>
+            </tr>
+            <tr>
+              <td>TUI report and observation feed</td>
+              <td>A read-only Textual screen for the maintainer. It reads campaign state, results and usage, and follows
+                <code>reports/tui_observations/&lt;campaign-id&gt;.jsonl</code>, which Runner and the launcher append
+                to. Feed failures are swallowed and cannot change operation acceptance or execution.
+              </td>
+              <td><code>tui/</code>, <code>runner/observation_feed.py</code>, <code>tools/run-report.ps1</code>,
+                <a href="../tui-report.md">TUI report notes</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Factual campaign report</td>
+              <td>A read-only Markdown summary of state, operations, measurements, roles and usage. Usage is split by
+                role: analyst, PI, scientific coder and scientific reviewer.</td>
+              <td><code>tools/campaign_report.py</code></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -939,7 +1210,8 @@
         <div class="diagram loop" tabindex="0" aria-label="Scrollable campaign loop diagram">
           <svg viewBox="0 0 1000 680" role="img" aria-labelledby="loop-title loop-description">
             <title id="loop-title">Current lifecycle with an operational inquiry-cap pause</title>
-            <desc id="loop-description">The fixed scientific model informs startup, which develops a direction before
+            <desc id="loop-description">An analyst session writes the fixed scientific model. It informs startup, which
+              develops a direction before
               goal review permits an inquiry or official assessment. Inquiry measurements and training return to the
               same session. A saved session record permits a fresh session to continue, reframe, or return to goal
               review after closure. At the inquiry cap, the launcher pauses after saving active scientific work. A pause
@@ -956,7 +1228,7 @@
             </defs>
             <rect x="35" y="30" width="225" height="82" rx="10" class="box" />
             <text x="147" y="62" text-anchor="middle" class="heading">Scientific model</text>
-            <text x="147" y="88" text-anchor="middle" class="caption">Write once. Then freeze it.</text>
+            <text x="147" y="88" text-anchor="middle" class="caption">Analyst writes it once</text>
             <path d="M 260 71 H 320" class="flow" marker-end="url(#flow-arrow)" />
             <rect x="320" y="30" width="250" height="82" rx="10" class="box" />
             <text x="445" y="62" text-anchor="middle" class="heading">Startup</text>
@@ -1021,7 +1293,8 @@
           <tbody>
             <tr>
               <td>Scientific model</td>
-              <td>The PI reads the robot and task contracts. It writes a model with four headings: Established facts,
+              <td>An analyst session, with its own persona and reference in the system message, reads the robot and task
+                definitions and the current recipe. It writes a model with four headings: Established facts,
                 Physical consequences, Unknowns, and Decision-relevant synthesis.</td>
               <td>The Runner accepts and publishes the model. It stays fixed for the campaign.</td>
             </tr>
@@ -1079,12 +1352,13 @@
         <summary>From a PI request to a recorded result</summary>
         <div class="details-body">
           <ol class="steps-list">
-            <li>The Copilot PI picks an action and calls <code>submit_operation</code> with the existing instrument
-              payload. The exchange file stays internal to the trusted controller and Runner.</li>
+            <li>The Copilot PI picks an action and calls <code>submit_operation</code> with the request envelope. The
+              exchange file stays internal to the trusted controller and Runner.</li>
             <li>The Runner checks the shape, the phase, the file ownership, and the allocation.</li>
             <li>The Runner accepts the request and gives it an id. M# identifies a measurement. T# identifies a training
               run. E# identifies another event.</li>
-            <li>The Runner runs it and saves the result, the files, and the history.</li>
+            <li>The Runner runs it, saves the result, the files and the history, and commits them to the local campaign
+              Git repository.</li>
             <li>The launcher rebuilds the brief. It returns concise results, errors and changed state to the same
               conversation. A checkpoint ends that context. The next bounded context is fresh, on the same SDK runtime.
             </li>
@@ -2299,6 +2573,14 @@
               <td colspan="3">Prompts</td>
             </tr>
             <tr>
+              <td>SDK system message for PI and analyst (OI-041)</td>
+              <td>Persona, tone, autonomy text and campaign reference move into the system message; coding-assistant
+                sections are removed. The PI autonomy text states ownership to the official assessment and judgment on
+                goal, time and AI usage. See <a href="#architecture">agents and data flow</a>.</td>
+              <td>On branch <code>system-prompt</code>, <code>a969f07b</code>. One campaign, <code>f83fca4d</code>,
+                passed at 200/200; one run gives no effect estimate.</td>
+            </tr>
+            <tr>
               <td>Scientific-model phase: analyst persona, four headings</td>
               <td>The PI builds a physical reference from the human-owned robot, simulator, and task. The closing
                 section picks the items that most affect the first decisions.</td>
@@ -2469,6 +2751,18 @@
                 Directory lists use scoped <code>glob</code>, not <code>view</code>.</td>
               <td>OI-023 repairs parent-directory leakage. Tool-level controls, not an operating-system sandbox.</td>
             </tr>
+            <tr>
+              <td>Read-only TUI report and observation feed</td>
+              <td>The maintainer follows a campaign on one terminal screen without touching execution. Feed writing is
+                best-effort and refused to campaign agents.</td>
+              <td>Implemented <code>d967bcfa</code>, <code>2aff3081</code>. Presentation only.</td>
+            </tr>
+            <tr>
+              <td>Factual report usage by role</td>
+              <td><code>tools/campaign_report.py</code> separates analyst, PI, coder and reviewer usage instead of
+                labelling all usage as PI.</td>
+              <td>Implemented <code>36264a55</code>.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -2585,6 +2879,14 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><code>f83fca4d</code></td>
+              <td>24 Oct, 08:31 CEST</td>
+              <td>Official pass: 200/200 (100%). Four training runs, five inquiries and 58.697 AIU. Analytic IK and
+                computed-torque controller; the learned policy selects one posture per episode. First run on the
+                goal-focused OI-041 system prompt.</td>
+              <td><a href="robot-campaign-f83fca4d-20261024.html">Result, prompt change, analytic shortcut</a></td>
+            </tr>
             <tr>
               <td><code>faff0d94</code></td>
               <td>23 Oct, 14:20 CEST</td>

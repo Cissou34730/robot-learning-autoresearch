@@ -864,6 +864,7 @@ operations and must remain separate from campaign execution:
 | `docs/research-overview/robot-campaign-2d4fcc0e-20261021.html` | Passed `2d4fcc0e` campaign (200/200), its hybrid controller and the effect of the 20-21 October guidance changes. |
 | `docs/research-overview/robot-campaign-5d94bf8a-20261023.html` | Failed `5d94bf8a` campaign (193/200), the only clean OI-041 system-prompt run: what `3afe89f2` changed, the one-sided plateau and the RL-centric, defensive PI. |
 | `docs/research-overview/robot-campaign-faff0d94-20261023.html` | Passed `faff0d94` campaign (200/200) with a gated hybrid controller on `ba92677f`; information only because `0b64ea66` and `ec21e7bf` added behavioural directives. |
+| `docs/research-overview/robot-campaign-f83fca4d-20261024.html` | Passed `f83fca4d` campaign (200/200) on `a969f07b`, the first goal-focused OI-041 system-prompt run: episode-latched analytic IK and computed-torque controller with a learned posture choice, prompt assessment decision, and the maintainer concern about the analytic shortcut. |
 | `docs/harness-change-narrative.md` | Curated explanation of harness failures, attempted repairs, reversals and current conclusions. |
 | `archive/harness-experiment-log-legacy.md` | Full prior narrative log, retained for historical lookup only. |
 

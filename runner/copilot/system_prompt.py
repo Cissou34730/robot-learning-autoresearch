@@ -59,10 +59,9 @@ TONE = (
 )
 
 ANALYST_EXPLORATION = (
-    "Build a complete understanding of the system before writing: use the "
-    "definitions in the campaign reference and read the whole current recipe. "
-    "Derive from first principles what the system can and cannot do. Record "
-    "where the current recipe departs from the task."
+    "The principal investigator starts the campaign from the current recipe and "
+    "from this model. Where the recipe differs from the task, or the model is "
+    "silent, the campaign starts without that knowledge."
 )
 
 AUTONOMY = (
@@ -77,8 +76,8 @@ AUTONOMY = (
 )
 
 ANALYST_AUTONOMY = (
-    "No human answers questions during the campaign. Complete the model in this "
-    "session."
+    "You own the physical model this campaign starts from. This session is the "
+    "only one in which it is written."
 )
 
 REMOVED_RUNTIME_BLOCKS = (
