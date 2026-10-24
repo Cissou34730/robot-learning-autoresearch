@@ -13,6 +13,15 @@ continuously within it for 2 seconds. Duration is authoritative; under the
 current official control timing this corresponds to 100 consecutive control
 steps.
 
+A learned policy is a trained neural network that decides the motor command at
+every control step. The saved runtime may construct the network's observation
+freely, but it turns the network's output into the motor command at that step
+through a fixed transformation. That transformation may include fixed-gain
+feedback towards a target the network outputs, but no planner, trajectory
+generator, inverse kinematics or model of the robot. This defines the policy
+that the official assessment evaluates; measurements and diagnostics may use any
+controller, planner or model of the robot.
+
 ## Success criterion
 
 An episode succeeds only when the complete uninterrupted hold is achieved. The
