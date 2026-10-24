@@ -15,8 +15,10 @@ focus changes never touch campaign execution.
 
 from __future__ import annotations
 
+import re
 import textwrap
 from collections import deque
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import ClassVar
@@ -37,6 +39,143 @@ LIVENESS_SECONDS = 300.0
 PROGRESS_STALE_SECONDS = 300.0
 MAX_RENDERED_ENTRIES = 100_000
 EVENTS_DIR = Path("reports") / "tui_observations"
+
+
+# The log is display-only. These tokens are the single palette used by the
+# report; CSS picks its structural colours from the active Textual theme.
+@dataclass(frozen=True)
+class Palette:
+    """Semantic colour tokens for one terminal background."""
+
+    name: str
+    background: str
+    text: str
+    muted: str
+    heading: str
+    accent: str
+    success: str
+    warning: str
+    error: str
+    pi: str
+    tool: str
+    section: str
+    result: str
+
+
+PALETTES: dict[str, Palette] = {
+    "dark": Palette(
+        name="dark",
+        background="#1e1e1e",
+        text="#e6e6e6",
+        muted="#b0b0b0",
+        heading="#f0f0f0",
+        accent="#7cc7ff",
+        success="#6ee7a8",
+        warning="#ffd166",
+        error="#ff8a9b",
+        pi="#e0aaff",
+        tool="#b8c0cc",
+        section="#d7d7d7",
+        result="#6ee7a8",
+    ),
+    "light": Palette(
+        name="light",
+        background="#f5f5f5",
+        text="#1a1a1a",
+        muted="#4a4a4a",
+        heading="#111111",
+        accent="#0b5fa5",
+        success="#0f6b3d",
+        warning="#8a5a00",
+        error="#b3261e",
+        pi="#6b2d8f",
+        tool="#3f4a5a",
+        section="#2a2a2a",
+        result="#0f6b3d",
+    ),
+}
+
+# Card body headings already classified by the Runner console.
+SECTION_HEADINGS = frozenset(getattr(console, "_SECTION_HEADINGS", ()))
+
+_FLOAT_RE = re.compile(r"(?<![\w.])-?\d+\.\d{4,}(?![\w.])")
+_PATH_RE = re.compile(
+    r"(?<![\w:/])(?:[A-Za-z]:[\\/][^\s,;:)\]}\"']*|/[^\s,;:)\]}\"']*)"
+)
+
+
+def _relative_luminance(color: str) -> float:
+    value = color.lstrip("#")
+    channels = [int(value[index : index + 2], 16) / 255 for index in (0, 2, 4)]
+
+    def linear(channel: float) -> float:
+        if channel <= 0.04045:
+            return channel / 12.92
+        return ((channel + 0.055) / 1.055) ** 2.4
+
+    red, green, blue = (linear(channel) for channel in channels)
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+
+
+def contrast_ratio(foreground: str, background: str) -> float:
+    """WCAG contrast ratio between two #RRGGBB colours."""
+    first = _relative_luminance(foreground)
+    second = _relative_luminance(background)
+    lighter, darker = max(first, second), min(first, second)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def _status_style(status: str, palette: Palette) -> str:
+    """Pair the campaign status text with a semantic token."""
+    if status.startswith("RUNNING") and "unknown" not in status:
+        return f"bold {palette.success}"
+    if status.startswith("RUNNING"):
+        return f"bold {palette.warning}"
+    if status.startswith("ENDED") or status == "Loading":
+        return palette.muted
+    return palette.text
+
+
+def _scope_style(scope: str, palette: Palette) -> str:
+    """Map a feed scope to a semantic token, never to colour alone."""
+    scope = scope.casefold()
+    if scope == "error":
+        return f"bold {palette.error}"
+    if scope == "warning":
+        return f"bold {palette.warning}"
+    if scope in {"success", "assessment", "validation", "result"}:
+        return f"bold {palette.success}"
+    if scope in {"pi", "session"}:
+        return palette.pi
+    if scope == "tool":
+        return palette.tool
+    if scope in {"operation", "measurement", "training", "runner"}:
+        return palette.accent
+    if scope == "inquiry":
+        return palette.warning
+    if scope == "campaign":
+        return f"bold {palette.heading}"
+    return palette.text
+
+
+def _display_text(value: str) -> str:
+    """Round long floats and compact absolute paths for display only."""
+    text = _clean_text(value)
+
+    def rounded(match: re.Match) -> str:
+        return f"{float(match.group(0)):.3f}"
+
+    text = _FLOAT_RE.sub(rounded, text)
+
+    def compact(match: re.Match) -> str:
+        token = match.group(0)
+        suffix = ""
+        while token and token[-1] in ".,;:":
+            suffix = token[-1] + suffix
+            token = token[:-1]
+        return f"{console.compact_path(token)}{suffix}"
+
+    return _PATH_RE.sub(compact, text)
 
 
 def _now() -> datetime:
@@ -72,25 +211,12 @@ def _hang(prefix: str, text: str, width: int) -> list[str]:
             width=width,
             initial_indent=current_prefix,
             subsequent_indent=indent,
-            break_long_words=False,
+            break_long_words=True,
             break_on_hyphens=False,
         )
         lines.extend(wrapped or [current_prefix.rstrip()])
         current_prefix = indent
     return lines
-
-
-def _status_style(status: str) -> str:
-    """Pair the campaign status text with a semantic color."""
-    if status.startswith("RUNNING") and "unknown" not in status:
-        return "bold green"
-    if status.startswith("RUNNING"):
-        return "bold yellow"
-    if status.startswith("ENDED"):
-        return "bold yellow"
-    if status == "Loading":
-        return "dim"
-    return ""
 
 
 def _hang_styled(
@@ -115,7 +241,7 @@ def _hang_styled(
             width=width,
             initial_indent=current_prefix,
             subsequent_indent=indent,
-            break_long_words=False,
+            break_long_words=True,
             break_on_hyphens=False,
         )
         segments = wrapped or [current_prefix.rstrip()]
@@ -139,11 +265,11 @@ def _elapsed_text(seconds: float | None, label: str) -> str:
     return f"{label} {console.format_duration(float(seconds))}"
 
 
-def _metric_cell(value: str, missing: str = "unavailable") -> Text:
-    """Metric cell text; missing values render dim instead of invisible."""
+def _metric_cell(value: str, missing: str = "unavailable", muted: str = "dim") -> Text:
+    """Metric cell text; missing values render muted instead of invisible."""
     text = _clean_text(value)
     if value == missing or value.startswith(missing):
-        return Text(text, style="dim")
+        return Text(text, style=muted)
     return Text(text)
 
 
@@ -202,7 +328,15 @@ class OutputLog(RichLog):
         for item in items:
             if isinstance(item, str):
                 item = Text(_clean_text(item))
-            self.write(item, expand=False, shrink=False)
+            # Render each pre-wrapped line at its own length so RichLog does not
+            # pad short lines or clip long ones against the console's default
+            # width.
+            self.write(
+                item,
+                width=max(1, len(item.plain)),
+                expand=False,
+                shrink=False,
+            )
             wrote = True
         if not wrote:
             return
@@ -258,7 +392,7 @@ class CampaignReport(App):
     CSS = """
     Screen {
         background: $surface;
-        color: $foreground;
+        color: $text;
         padding: 0 1;
     }
     #context {
@@ -268,12 +402,35 @@ class CampaignReport(App):
     }
     #models-heading {
         height: 1;
-        color: $secondary;
+        color: $text;
     }
     #models {
         height: auto;
         max-height: 10;
+        background: $surface;
+        color: $text;
         scrollbar-size-horizontal: 1;
+    }
+    #models > .datatable--header {
+        background: $surface;
+        color: $text;
+        text-style: bold;
+    }
+    #models > .datatable--header-cursor,
+    #models > .datatable--cursor,
+    #models > .datatable--hover,
+    #models > .datatable--even-row,
+    #models > .datatable--odd-row,
+    #models > .datatable--fixed,
+    #models > .datatable--fixed-cursor {
+        background: $surface;
+        color: $text;
+    }
+    #models:focus {
+        background-tint: transparent;
+    }
+    #models:focus > .datatable--header {
+        text-style: bold underline;
     }
     #progress {
         display: none;
@@ -282,7 +439,7 @@ class CampaignReport(App):
     }
     #output-heading {
         height: 1;
-        color: $secondary;
+        color: $text;
     }
     #output {
         height: 1fr;
@@ -291,7 +448,7 @@ class CampaignReport(App):
     }
     #reading {
         height: 1;
-        color: $secondary;
+        color: $text-muted;
     }
     #too-small {
         display: none;
@@ -300,7 +457,7 @@ class CampaignReport(App):
         height: 100%;
         content-align: center middle;
         background: $surface;
-        color: $warning;
+        color: $text;
     }
     """
 
@@ -315,6 +472,7 @@ class CampaignReport(App):
         self._demo = demo
         self._sources = sources or (DemoSources() if demo else CampaignSources())
         self._events_path = Path(events_path) if events_path else None
+        self._palette = PALETTES["dark"]
         self._feed = None
         self.snapshot: projector.CampaignSnapshot | None = None
         self._attached = False
@@ -340,7 +498,12 @@ class CampaignReport(App):
     def compose(self) -> ComposeResult:
         yield Static("Loading campaign report...", id="context")
         yield Static("PI-assigned models", id="models-heading")
-        table = DataTable(id="models", cursor_type="row", zebra_stripes=True)
+        table = DataTable(
+            id="models",
+            cursor_type="none",
+            zebra_stripes=False,
+            show_row_labels=False,
+        )
         table.add_columns(
             "PI-assigned role",
             "Candidate",
@@ -357,6 +520,7 @@ class CampaignReport(App):
         yield Static("Terminal too small - need 48x16", id="too-small")
 
     def on_mount(self) -> None:
+        self._palette = self._resolve_palette()
         self.query_one("#output", OutputLog).on_follower(self._on_follow)
         self._make_feed()
         self.refresh_snapshot()
@@ -365,6 +529,19 @@ class CampaignReport(App):
         self.set_interval(TICK_SECONDS, self.tick_clock)
         self.set_interval(TICK_SECONDS, self.drain_feed)
         self._apply_layout()
+
+    def _resolve_palette(self) -> Palette:
+        try:
+            return PALETTES["light" if not self.current_theme.dark else "dark"]
+        except Exception:  # noqa: BLE001 - theme is not ready before mount
+            return PALETTES["dark"]
+
+    def watch_theme(self, old_theme: str, new_theme: str) -> None:
+        if not self.is_running:
+            return
+        self._palette = self._resolve_palette()
+        if self.snapshot is not None:
+            self.refresh_snapshot()
 
     def _on_snapshot_interval(self) -> None:
         self.refresh_snapshot()
@@ -438,7 +615,7 @@ class CampaignReport(App):
         self._append(
             _now(),
             f"Campaign source problem: {message}",
-            style="bold red",
+            style=f"bold {self._palette.error}",
             width_guard=False,
         )
         self._render_context()
@@ -447,7 +624,7 @@ class CampaignReport(App):
         if self._source_note_sent:
             return
         self._source_note_sent = True
-        self._append(_now(), message, style="dim")
+        self._append(_now(), message, style=self._palette.muted)
 
     # -- live progress objects -----------------------------------------
 
@@ -522,17 +699,18 @@ class CampaignReport(App):
         age = campaign_age(snapshot.started_at, _now())
         elapsed = stage_elapsed(snapshot.stage_started_at, _now())
 
+        palette = self._palette
         gap = 3
-        status_style = _status_style(snapshot.status)
-        left = Text("Autoresearch", style="bold")
-        left.append(" | ")
+        status_style = _status_style(snapshot.status, palette)
+        left = Text("Autoresearch", style=f"bold {palette.heading}")
+        left.append(" | ", style=palette.muted)
         left.append(snapshot.status, style=status_style)
-        left.append(" | ")
-        left.append("campaign ")
-        left.append(snapshot.campaign_id[:13], style="dim")
-        right = Text(f"Campaign age {age}", style="dim")
-        right.append(" | ", style="dim")
-        right.append(f"Stage elapsed {elapsed}", style="dim")
+        left.append(" | ", style=palette.muted)
+        left.append("campaign ", style=palette.muted)
+        left.append(snapshot.campaign_id[:13], style=palette.muted)
+        right = Text(f"Campaign age {age}", style=palette.muted)
+        right.append(" | ", style=palette.muted)
+        right.append(f"Stage elapsed {elapsed}", style=palette.muted)
         if len(left.plain) + gap + len(right.plain) <= width:
             first = Text()
             first.append_text(left)
@@ -545,16 +723,20 @@ class CampaignReport(App):
         ]
 
         stage = Text()
-        stage.append("Stage: ", style="dim")
+        stage.append("Stage: ", style=palette.muted)
         stage.append(
             snapshot.stage_text,
-            style="bold yellow" if snapshot.terminal else "bold cyan",
+            style=f"bold {palette.warning}"
+            if snapshot.terminal
+            else f"bold {palette.accent}",
         )
         activity = Text()
-        activity.append("Current activity: ", style="dim")
+        activity.append("Current activity: ", style=palette.muted)
         activity.append(
             snapshot.activity_text,
-            style="cyan" if "not observed" not in snapshot.activity_text else "dim",
+            style=palette.accent
+            if "not observed" not in snapshot.activity_text
+            else palette.muted,
         )
         if len(stage.plain) + gap + len(activity.plain) <= width:
             second = Text()
@@ -576,27 +758,37 @@ class CampaignReport(App):
             )
             take = 2 if width >= 120 and excerpt_rows >= 4 else 1
             leads.extend(
-                _hang_styled(prefix, question, width, "yellow", "italic")[:take]
+                _hang_styled(prefix, question, width, palette.warning, palette.text)[
+                    :take
+                ]
             )
         synthesis = _clean_text(snapshot.synthesis)
         if synthesis and excerpt_rows > len(leads):
             prefix = f"PI record {snapshot.synthesis_session or 'S?'}: "
             take = 2 if width >= 120 and excerpt_rows - len(leads) >= 3 else 1
-            leads.extend(_hang_styled(prefix, synthesis, width, "magenta")[:take])
+            leads.extend(
+                _hang_styled(prefix, synthesis, width, palette.pi, palette.text)[:take]
+            )
         lines.extend(leads)
 
         usage = _clean_text(projector.usage_text(snapshot.usage))[:width]
         usage_text_obj = Text()
-        usage_text_obj.append("Usage recorded", style="dim")
-        usage_text_obj.append(usage[len("Usage recorded") :])
+        usage_text_obj.append("Usage recorded", style=palette.muted)
+        usage_text_obj.append(usage[len("Usage recorded") :], style=palette.text)
         lines.append(usage_text_obj)
         if snapshot.official_text:
             lines.append(
-                Text(_clean_text(snapshot.official_text)[:width], style="bold yellow")
+                Text(
+                    _clean_text(snapshot.official_text)[:width],
+                    style=f"bold {palette.success}",
+                )
             )
         if self._last_error:
             lines.append(
-                Text(f"Attention: {self._last_error}"[:width], style="bold red")
+                Text(
+                    f"Attention: {self._last_error}"[:width],
+                    style=f"bold {palette.error}",
+                )
             )
         return lines[: self._context_budget() + 2]
 
@@ -604,12 +796,15 @@ class CampaignReport(App):
     # Models table
     # ------------------------------------------------------------------
 
-    _ROLE_STYLES: ClassVar[dict] = {
-        "Working": "bold cyan",
-        "Best-known": "bold magenta",
-    }
+    def _role_style(self, role: str) -> str:
+        if role == "Working":
+            return f"bold {self._palette.accent}"
+        if role == "Best-known":
+            return f"bold {self._palette.pi}"
+        return self._palette.muted
 
     def _render_models(self, rows: tuple) -> None:
+        palette = self._palette
         table = self.query_one("#models", DataTable)
         table.clear()
         for row in rows:
@@ -617,30 +812,32 @@ class CampaignReport(App):
                 role_cell = Text()
                 for index, role in enumerate(row.roles):
                     if index:
-                        role_cell.append(" + ", style="dim")
-                    role_cell.append(role, style=self._ROLE_STYLES.get(role, "dim"))
+                        role_cell.append(" + ", style=palette.muted)
+                    role_cell.append(role, style=self._role_style(role))
             else:
-                role_cell = Text("-", style="dim")
+                role_cell = Text("-", style=palette.muted)
             table.add_row(
                 role_cell,
-                Text(row.candidate_id, style="bold"),
-                _metric_cell(row.training_steps),
-                _metric_cell(row.reward_training),
-                _metric_cell(row.success_training),
-                _metric_cell(row.success_dev, "not measured"),
+                Text(row.candidate_id, style=f"bold {palette.text}"),
+                _metric_cell(row.training_steps, "unavailable", palette.muted),
+                _metric_cell(row.reward_training, "unavailable", palette.muted),
+                _metric_cell(row.success_training, "unavailable", palette.muted),
+                _metric_cell(row.success_dev, "not measured", palette.muted),
             )
         heading = Text()
         if not rows:
-            heading.append("PI-assigned models", style="bold")
-            heading.append(" - none assigned", style="dim")
+            heading.append("PI-assigned models", style=f"bold {palette.heading}")
+            heading.append(" - none assigned", style=palette.muted)
             self.query_one("#models-heading", Static).update(heading)
             return
-        heading.append("PI-assigned models", style="bold")
+        heading.append("PI-assigned models", style=f"bold {palette.heading}")
         if self._attached:
-            heading.append(f" ({len(rows)} assigned)", style="dim")
+            heading.append(f" ({len(rows)} assigned)", style=palette.muted)
         budget = self._models_budget_rows()
         if len(rows) > budget:
-            heading.append(" - scroll inside the table for every role", style="dim")
+            heading.append(
+                " - scroll inside the table for every role", style=palette.muted
+            )
         self.query_one("#models-heading", Static).update(heading)
 
     def _models_budget_rows(self) -> int:
@@ -689,43 +886,51 @@ class CampaignReport(App):
     def _progress_title(
         self, lead: str, lead_style: str, parts: list[str], stale: bool
     ) -> Text:
+        palette = self._palette
         title = Text(lead, style=lead_style)
         for part in parts:
-            title.append(" | ", style="dim")
-            title.append(part)
+            title.append(" | ", style=palette.muted)
+            title.append(part, style=palette.text)
         if stale:
-            title.append(" | ", style="dim")
-            title.append("counter observation stale", style="bold red")
+            title.append(" | ", style=palette.muted)
+            title.append("counter observation stale", style=f"bold {palette.error}")
         return title
 
     def _progress_bar_line(
         self, label: str, first: int, total: int | None, width: int
     ) -> Text:
-        line = Text(f"{label} {first:,}", style="bold cyan")
+        palette = self._palette
+        line = Text(f"{label} {first:,}", style=f"bold {palette.accent}")
         if not total:
-            line.append(" / target unavailable", style="dim")
+            line.append(" / target unavailable", style=palette.muted)
             return line
-        line.append(f" / {total:,}", style="dim")
-        line.append("  [")
+        line.append(f" / {total:,}", style=palette.muted)
+        line.append("  [", style=palette.muted)
         progress = max(0.0, min(1.0, first / max(total, 1)))
         bar_width = max(8, min(width - 22, 60))
         filled = max(0, min(bar_width, round(bar_width * progress)))
-        line.append("#" * filled, style="green")
-        line.append("-" * (bar_width - filled), style="dim")
-        line.append(f"] {round(progress * 100)}%")
+        line.append("#" * filled, style=palette.success)
+        line.append("-" * (bar_width - filled), style=palette.muted)
+        line.append(f"] {round(progress * 100)}%", style=palette.text)
         return line
 
     def _training_lines(
         self, training: projector.TrainingProgress, width: int
     ) -> list[Text]:
+        palette = self._palette
         parts = [f"Attempt {training.attempt}"]
         parts.append(_elapsed_text(training.elapsed_seconds, "Elapsed"))
         title = self._progress_title(
-            f"Training {training.operation_id}", "bold cyan", parts, training.stale
+            f"Training {training.operation_id}",
+            f"bold {palette.accent}",
+            parts,
+            training.stale,
         )
         lines = [title]
         if training.steps is None:
-            lines.append(Text("Steps: starting - no step count yet", style="dim"))
+            lines.append(
+                Text("Steps: starting - no step count yet", style=palette.muted)
+            )
             return lines
         lines.append(
             self._progress_bar_line("Steps", training.steps, training.target, width)
@@ -735,7 +940,12 @@ class CampaignReport(App):
     def _evaluation_lines(
         self, evaluation: projector.EvaluationProgress, width: int
     ) -> list[Text]:
-        lead_style = "bold green" if evaluation.official else "bold cyan"
+        palette = self._palette
+        lead_style = (
+            f"bold {palette.success}"
+            if evaluation.official
+            else f"bold {palette.accent}"
+        )
         lead = (
             "Official assessment"
             if evaluation.official
@@ -766,7 +976,7 @@ class CampaignReport(App):
         title = self._progress_title(lead, lead_style, parts, evaluation.stale)
         lines = [title]
         if evaluation.episodes is None and evaluation.episodes_total is None:
-            lines.append(Text("Running - progress unavailable", style="dim yellow"))
+            lines.append(Text("Running - progress unavailable", style=palette.warning))
             return lines
         lines.append(
             self._progress_bar_line(
@@ -815,8 +1025,12 @@ class CampaignReport(App):
     def _append_block(
         self, stamp: datetime | None, lines: list[str], style: str | None = None
     ) -> None:
-        """Append pre-rendered lines."""
-        self._write(stamp, lines, style)
+        """Append pre-rendered lines, wrapped to the log width."""
+        width = self._output_width()
+        wrapped: list[str] = []
+        for line in lines:
+            wrapped.extend(_hang("", _clean_text(line), width))
+        self._write(stamp, wrapped or [""], style)
         self._render_reading()
 
     def _hang_block(
@@ -843,30 +1057,41 @@ class CampaignReport(App):
     def _write(
         self, stamp: datetime | None, lines: list[str], style: str | None
     ) -> None:
-        if style is not None:
-            self._output().append_texts(
-                [Text(_clean_text(line), style=style) for line in lines]
-            )
-            return
-        prefix_len = (len(_ts(stamp)) + 1) if stamp is not None else 0
+        palette = self._palette
+        stamp_text = _ts(stamp) if stamp is not None else ""
+        prefix_len = len(stamp_text) + 1 if stamp_text else 0
         texts: list[Text] = []
         for line in lines:
-            if prefix_len and len(line) > prefix_len:
-                item = Text(_clean_text(line))
-                item.stylize("dim", 0, prefix_len)
-                texts.append(item)
-            else:
-                texts.append(Text(_clean_text(line), style=style))
+            text = _clean_text(line)
+            item = Text(text)
+            if prefix_len and text.startswith(f"{stamp_text} "):
+                item.stylize(palette.muted, 0, prefix_len)
+                if style:
+                    item.stylize(style, prefix_len, len(text))
+            elif style:
+                item.stylize(style, 0, len(text))
+            texts.append(item)
         self._output().append_texts(texts)
 
     def _output_width(self) -> int:
-        return max(20, self.size.width - 2)
+        # The log's real content region is narrower than the screen: the
+        # screen has horizontal padding and the vertical scrollbar takes
+        # columns. Derive the width from the log itself so pre-wrapped lines
+        # never exceed the viewport and get clipped.
+        try:
+            width = self.query_one("#output", OutputLog).scrollable_content_region.width
+        except Exception:  # noqa: BLE001 - layout not ready yet
+            width = 0
+        if not width:
+            width = self.size.width - 4
+        return max(20, width)
 
     def _attach_output(self) -> None:
         snapshot = self.snapshot
         if snapshot is None or self._attached:
             return
         self._attached = True
+        palette = self._palette
         now = _now()
         self._append(
             now,
@@ -877,7 +1102,7 @@ class CampaignReport(App):
             self._append(
                 now,
                 "Demonstration mode: every value here is synthetic.",
-                style="bold red",
+                style=f"bold {palette.error}",
             )
         feed_ready = isinstance(self._feed, JsonlFeed) and self._feed.path.exists()
         if not self._demo and not feed_ready:
@@ -886,7 +1111,7 @@ class CampaignReport(App):
                 "No structured observation feed is available: live PI messages and "
                 "live execution progress are unavailable. Recorded campaign state, "
                 "durable operational history and recorded usage follow.",
-                style="dim",
+                style=palette.muted,
             )
         question = _clean_text(snapshot.question) or _clean_text(snapshot.objective)
         if question:
@@ -895,29 +1120,32 @@ class CampaignReport(App):
                 if snapshot.question
                 else "Objective: "
             )
-            self._hang_block(prefix, question, prefix_style="bold yellow")
+            self._hang_block(prefix, question, prefix_style=f"bold {palette.warning}")
         if snapshot.synthesis:
             self._hang_block(
                 f"PI record {snapshot.synthesis_session or 'S?'}: ",
                 _clean_text(snapshot.synthesis),
-                prefix_style="bold magenta",
+                prefix_style=f"bold {palette.pi}",
             )
         assignments = projector.role_assignment_text(snapshot)
         if assignments:
-            self._append(now, "Model assignments at attachment:", style="dim")
-            self._append_block(now, assignments.splitlines(), style="dim")
+            self._append(now, "Model assignments at attachment:", style=palette.muted)
+            self._append_block(now, assignments.splitlines(), style=palette.muted)
         self._append_timeline()
 
     def _append_timeline(self) -> None:
         snapshot = self.snapshot
         if snapshot is None:
             return
+        palette = self._palette
         for entry in snapshot.timeline:
             style = None
             if entry.kind == "error":
-                style = "bold red"
+                style = f"bold {palette.error}"
             elif entry.kind == "pending":
-                style = "yellow"
+                style = palette.warning
+            elif entry.kind in {"assessment", "validation"}:
+                style = palette.success
             prefix = "pending" if entry.timestamp is None else _ts(entry.timestamp)
             self._append_block(None, [f"[{prefix}] {entry.text}"], style=style)
 
@@ -936,26 +1164,29 @@ class CampaignReport(App):
         if previous is None:
             return
         now = _now()
+        palette = self._palette
         if signature[0] != previous[0] and signature[0]:
             source = (
                 f"inquiry [{snapshot.question_source}]"
                 if snapshot.question
                 else "objective"
             )
-            self._append(now, f"Inquiry question updated ({source}):", style="dim")
+            self._append(
+                now, f"Inquiry question updated ({source}):", style=palette.muted
+            )
             self._hang_block("", signature[0])
         if (signature[1], signature[2]) != (previous[1], previous[2]) and signature[1]:
             self._append(
                 now,
                 f"PI synthesis updated ({snapshot.synthesis_session}):",
-                style="dim",
+                style=palette.muted,
             )
             self._hang_block("", signature[1])
         if signature[3] != previous[3] and signature[3]:
-            self._append(now, "Model assignments changed:", style="dim")
-            self._append_block(now, signature[3].splitlines(), style="dim")
+            self._append(now, "Model assignments changed:", style=palette.muted)
+            self._append_block(now, signature[3].splitlines(), style=palette.muted)
         if signature[4] != previous[4] and signature[4]:
-            self._append(now, signature[4], style="bold yellow")
+            self._append(now, signature[4], style=f"bold {palette.success}")
         if not snapshot.terminal and previous[5] == snapshot.status:
             return
 
@@ -976,7 +1207,11 @@ class CampaignReport(App):
         if self._last_error == message:
             return
         self._last_error = message
-        self._append(_now(), f"Observation feed: {message}", style="bold red")
+        self._append(
+            _now(),
+            f"Observation feed: {message}",
+            style=f"bold {self._palette.error}",
+        )
 
     def _process_events(self, events: list[Observation]) -> None:
         for event in events:
@@ -1003,7 +1238,7 @@ class CampaignReport(App):
         if not label or label == self._last_activity:
             return
         self._last_activity = label
-        self._append(event.ts, f"activity: {label}", style="cyan")
+        self._append(event.ts, f"activity: {label}", style=self._palette.accent)
 
     def _event_pi_message(self, event: Observation) -> None:
         raw = _clean_text(event.fields.get("text") or "")
@@ -1025,7 +1260,7 @@ class CampaignReport(App):
             prefix = (
                 f"{_ts(stamp)} PI ({session}): " if session else f"{_ts(stamp)} PI: "
             )
-            self._hang_block(prefix, text, prefix_style="bold magenta")
+            self._hang_block(prefix, text, prefix_style=f"bold {self._palette.pi}")
             return
         if final and fingerprint in self._pi_seen:
             return
@@ -1041,7 +1276,9 @@ class CampaignReport(App):
                 # Continue the message under the same gutter, no repeated stamp.
                 self._hang_block(" " * len(label), addition)
             else:
-                self._hang_block(label, addition, prefix_style="bold magenta")
+                self._hang_block(
+                    label, addition, prefix_style=f"bold {self._palette.pi}"
+                )
         self._pi_stream[turn] = text
         if final:
             self._pi_seen.append(fingerprint)
@@ -1049,23 +1286,65 @@ class CampaignReport(App):
 
     def _event_tool(self, event: Observation) -> None:
         name = _clean_text(event.fields.get("name") or "tool")
-        detail = _clean_text(event.fields.get("detail") or "")
+        detail = _display_text(_clean_text(event.fields.get("detail") or ""))
         line = f"tool {name}"
         if detail:
             line += f": {detail}"
-        self._append(event.ts, line, style="dim")
+        self._append(event.ts, line, style=self._palette.tool)
+
+    def _append_console(self, stamp: datetime | None, text: str, scope: str) -> None:
+        """Render one console card or line with per-line semantic styles."""
+        palette = self._palette
+        width = self._output_width()
+        stamp_text = _ts(stamp) if stamp is not None else ""
+        first_prefix = f"{stamp_text} " if stamp_text else ""
+        indent = " " * len(first_prefix)
+        base_style = _scope_style(scope, palette)
+        lines = _display_text(text).splitlines() or [""]
+        is_card = lines[0].strip().startswith("===") and lines[0].strip().endswith(
+            "==="
+        )
+        rendered: list[Text] = []
+        for index, raw in enumerate(lines):
+            stripped = raw.strip()
+            if stripped.startswith("===") and stripped.endswith("==="):
+                body_style = (
+                    base_style
+                    if scope.casefold() in {"error", "warning"}
+                    else f"bold {palette.accent}"
+                )
+            elif stripped in SECTION_HEADINGS:
+                body_style = f"bold {palette.section}"
+            elif raw.startswith(("Phase: ", "Campaign: ")):
+                body_style = palette.accent
+            elif is_card:
+                body_style = (
+                    base_style
+                    if scope.casefold() in {"error", "warning"}
+                    else palette.text
+                )
+            else:
+                body_style = base_style
+            prefix = first_prefix if index == 0 else indent
+            rendered.extend(
+                _hang_styled(
+                    prefix,
+                    raw,
+                    width,
+                    prefix_style=palette.muted,
+                    body_style=body_style,
+                )
+            )
+        if rendered:
+            self._output().append_texts(rendered)
+            self._render_reading()
 
     def _event_console_line(self, event: Observation) -> None:
         text = _clean_text(event.fields.get("text") or "")
         scope = _clean_text(event.fields.get("scope") or "")
         if not text:
             return
-        style = None
-        if scope == "error":
-            style = "bold red"
-        elif scope == "warning":
-            style = "bold yellow"
-        self._append(event.ts, text, style=style)
+        self._append_console(event.ts, text, scope)
 
     def _event_training_progress(self, event: Observation) -> None:
         attempt = event.fields.get("attempt")
@@ -1098,7 +1377,11 @@ class CampaignReport(App):
         operation = _clean_text(event.fields.get("operation_id") or "")
         status = _clean_text(event.fields.get("status") or "ended")
         text = _clean_text(event.fields.get("text") or "")
-        style = "bold green" if status == "completed" else "bold yellow"
+        style = (
+            f"bold {self._palette.success}"
+            if status == "completed"
+            else f"bold {self._palette.warning}"
+        )
         self._append(event.ts, text or f"{operation} execution {status}", style=style)
         if self._training and self._training.get("operation_id") == operation:
             self._training = None
@@ -1118,21 +1401,32 @@ class CampaignReport(App):
         out = self._output()
         if self.size.width < 80:
             text = (
-                "Following | Wheel / PgUp / PgDn | End to return"
+                "Following | Tab: models | End: live"
                 if out.following
-                else f"Reading history - {out.missed} newer | End to return"
+                else f"Reading history - {out.missed} newer | End: live"
+            )
+        elif self.size.width < 110:
+            text = (
+                "Following live | Wheel/PgUp/PgDn: history | Tab: models | End: live"
+                if out.following
+                else f"Reading history - {out.missed} newer | End: live | Ctrl+Q: close"
             )
         elif out.following:
             text = (
-                "Following live output | Mouse wheel / Page Up / Page Down to read "
-                "history | End to return to live output | Ctrl+Q closes the report"
+                "Following live output | Wheel / PgUp / PgDn: history | "
+                "Tab: model table | End: live | Ctrl+Q: close"
             )
         else:
             text = (
                 f"Reading history - {out.missed} newer entries | "
-                "End to return to live output"
+                "End: live | Ctrl+Q: close"
             )
-        widget.update(text[: max(20, self.size.width - 2)])
+        widget.update(
+            Text(
+                text[: max(20, self.size.width - 2)],
+                style=self._palette.muted,
+            )
+        )
 
     # ------------------------------------------------------------------
     # Layout
@@ -1141,8 +1435,15 @@ class CampaignReport(App):
     def _apply_layout(self) -> None:
         size = self.size
         too_small = size.width < MIN_COLUMNS or size.height < MIN_ROWS
-        self.query_one("#too-small", Static).display = too_small
+        overlay = self.query_one("#too-small", Static)
+        overlay.display = too_small
         if too_small:
+            overlay.update(
+                Text(
+                    f"Terminal too small - need {MIN_COLUMNS}x{MIN_ROWS}",
+                    style=f"bold {self._palette.warning}",
+                )
+            )
             return
         self._render_output_heading()
         table = self.query_one("#models", DataTable)
@@ -1156,8 +1457,8 @@ class CampaignReport(App):
 
     def _render_output_heading(self) -> None:
         width = max(12, self.size.width - 2)
-        heading = Text("Output", style="bold")
-        heading.append(" " + "-" * (width - 8), style="dim")
+        heading = Text("Output", style=f"bold {self._palette.heading}")
+        heading.append(" " + "-" * (width - 8), style=self._palette.muted)
         self.query_one("#output-heading", Static).update(heading[:width])
 
     def on_resize(self) -> None:

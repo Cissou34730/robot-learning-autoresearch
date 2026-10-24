@@ -323,3 +323,218 @@ async def _stale():
         await pilot.pause()
         rendered = str(app.query_one("#progress").render())
         assert "counter observation stale" in rendered
+
+
+# ---------------------------------------------------------------------------
+# Accessibility and palette
+# ---------------------------------------------------------------------------
+
+
+def _segment_colours(out) -> list[tuple[str, str, bool]]:
+    """(text, truecolour hex, bold) for every styled segment in the log."""
+    rows: list[tuple[str, str, bool]] = []
+    for strip in out.lines:
+        for segment in strip._segments:
+            if segment.style and segment.style.color:
+                rows.append(
+                    (
+                        segment.text,
+                        segment.style.color.get_truecolor().hex,
+                        bool(segment.style.bold),
+                    )
+                )
+    return rows
+
+
+def test_output_lines_fit_and_keep_long_words_at_several_widths():
+    _run(_fit_widths())
+
+
+async def _fit_widths():
+    for width, height in ((80, 24), (120, 40), (160, 45)):
+        app = _demo_app()
+        async with app.run_test(size=(width, height)) as pilot:
+            await pilot.pause()
+            out = app.query_one("#output")
+            app._append(datetime.now(tz=UTC), "x" * 200)
+            await pilot.pause()
+            content_width = out.scrollable_content_region.width
+            assert all(len(strip.text) <= content_width for strip in out.lines)
+            joined = "".join(strip.text for strip in out.lines)
+            assert "x" * 200 in joined.replace(" ", "")
+
+
+def test_palette_tokens_meet_contrast_floor():
+    from tui.report import PALETTES, contrast_ratio
+
+    tokens = (
+        "text",
+        "muted",
+        "heading",
+        "accent",
+        "success",
+        "warning",
+        "error",
+        "pi",
+        "tool",
+        "section",
+        "result",
+    )
+    for palette in PALETTES.values():
+        for token in tokens:
+            ratio = contrast_ratio(getattr(palette, token), palette.background)
+            assert ratio >= 4.5, f"{palette.name}.{token} contrast {ratio:.2f}"
+
+
+def test_report_has_no_background_bands_or_cursor():
+    _run(_no_bands())
+
+
+async def _no_bands():
+    from textual.color import Color
+
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        table = app.query_one("#models")
+        assert table.zebra_stripes is False
+        assert table.cursor_type == "none"
+        assert table.show_row_labels is False
+        background = Color.parse(app._palette.background)
+        for component in (
+            "datatable--header",
+            "datatable--even-row",
+            "datatable--odd-row",
+            "datatable--cursor",
+            "datatable--hover",
+        ):
+            style = table.get_component_styles(component)
+            assert style.background == background
+
+
+def test_scope_styles_are_distinct_at_160x45():
+    _run(_scope_styles())
+
+
+async def _scope_styles():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        now = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+        app._process_events(
+            [
+                Observation(
+                    "console_line",
+                    now,
+                    {"scope": "tool", "text": "> submit_operation train"},
+                ),
+                Observation(
+                    "console_line",
+                    now,
+                    {"scope": "error", "text": "x failed"},
+                ),
+                Observation(
+                    "console_line",
+                    now,
+                    {"scope": "pi", "text": "PI text"},
+                ),
+                Observation(
+                    "console_line",
+                    now,
+                    {"scope": "result", "text": "= result 0.94"},
+                ),
+                Observation(
+                    "console_line",
+                    now,
+                    {
+                        "scope": "operation",
+                        "text": "=== OPERATION | T5 ===\nWhy\nbody line",
+                    },
+                ),
+            ]
+        )
+        await pilot.pause()
+        palette = app._palette
+        segments = _segment_colours(app.query_one("#output"))
+        by_text = {
+            text: (colour, bold) for text, colour, bold in segments if text.strip()
+        }
+        assert by_text["> submit_operation train"] == (palette.tool, False)
+        assert by_text["x failed"] == (palette.error, True)
+        assert by_text["PI text"] == (palette.pi, False)
+        assert by_text["= result 0.94"] == (palette.success, True)
+        assert by_text["=== OPERATION | T5 ==="] == (palette.accent, True)
+        assert by_text["Why"] == (palette.section, True)
+        assert by_text["body line"] == (palette.text, False)
+
+
+def test_no_color_pinned_frame_keeps_text_meaning(monkeypatch):
+    monkeypatch.setenv("NO_COLOR", "1")
+    _run(_no_color_frame())
+
+
+async def _no_color_frame():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        assert app.no_color is True
+        now = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+        app._process_events(
+            [
+                Observation(
+                    "console_line",
+                    now,
+                    {"scope": "tool", "text": "> submit_operation train"},
+                ),
+                Observation(
+                    "console_line",
+                    now,
+                    {"scope": "error", "text": "x failed"},
+                ),
+                Observation(
+                    "console_line",
+                    now,
+                    {"scope": "pi", "text": "PI text"},
+                ),
+            ]
+        )
+        await pilot.pause()
+        out = app.query_one("#output")
+        rendered = "\n".join(strip.text for strip in out.lines)
+        assert "> submit_operation train" in rendered
+        assert "x failed" in rendered
+        assert "PI text" in rendered
+        from textual.filter import Monochrome, NoColor
+
+        assert any(
+            isinstance(line_filter, (NoColor, Monochrome))
+            for line_filter in app.get_line_filters()
+        )
+        context = str(app.query_one("#context").render())
+        assert "RUNNING (observed)" in context
+        assert str(app.query_one("#reading").render()).startswith("Following")
+
+
+def test_light_theme_selects_light_palette():
+    _run(_light_palette())
+
+
+async def _light_palette():
+    app = _demo_app()
+    app.theme = "textual-light"
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        assert app._palette.name == "light"
+        assert "Autoresearch" in str(app.query_one("#context").render())
+
+
+def test_display_text_rounds_floats_and_compacts_paths(monkeypatch, tmp_path):
+    from runner import console
+    from tui.report import _display_text
+
+    monkeypatch.setattr(console, "_ROOT", tmp_path)
+    path = tmp_path / "models" / "candidates" / "run.zip"
+    text = _display_text(f"reward -6.122319559999999 at {path}")
+    assert "reward -6.122" in text
+    assert "models/candidates/run.zip" in text
+    assert str(path) not in text
