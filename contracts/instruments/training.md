@@ -103,7 +103,11 @@ The `label` field is required only for retention.
 The label must be non-empty and unique.
 It must differ from the fixed role names.
 
-The `retain` action archives the candidate under the requested label.
+Every action copies the candidate's complete artifact to
+`campaigns/checkpoints/retained/`, in a folder named by its origin operation and
+fingerprint. The candidate's recorded artifact path then points to that copy;
+the fingerprint stays its identity. The `retain` action also records the
+candidate under the requested label.
 Each action updates only the requested role.
 
 ## Recipe restoration

@@ -149,8 +149,8 @@ TRUSTED_RUNTIME_PATHS = {
     "robot_learning/__init__.py",
     "contracts/policy_runtime.py",
     "contracts/robots/__init__.py",
-    "contracts/robots/two_joint_arm.py",
-    "contracts/robots/two_joint_arm.xml",
+    "contracts/robots/robot.py",
+    "contracts/robots/robot.xml",
     "robot_learning/scenario/__init__.py",
 }
 TASK_REFERENCE_ADAPTER_PATH = "benchmark/adapters/task_reference.py"

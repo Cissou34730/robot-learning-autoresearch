@@ -27,7 +27,7 @@ import numpy as np
 
 from benchmark import final_contract, reference_contract
 from contracts.policy_runtime import load_runtime
-from contracts.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
+from contracts.robots.robot import ROBOT_XML_PATH
 
 TASK_REFERENCE_EVALUATION_KIND = "task_reference"
 
@@ -56,7 +56,7 @@ class TaskReferenceEnv(gym.Env[np.ndarray, np.ndarray]):
             self._reach_observation = policy_runtime.io.observe
             self.observation_space = policy_runtime.observation_space
         self._policy_runtime = policy_runtime
-        self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
+        self.model = mujoco.MjModel.from_xml_path(str(ROBOT_XML_PATH))
         self.data = mujoco.MjData(self.model)
         self.success_threshold = final_contract.SUCCESS_THRESHOLD
         self.target_radius_range = final_contract.TARGET_RADIUS_RANGE
