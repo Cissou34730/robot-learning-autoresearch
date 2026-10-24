@@ -100,6 +100,64 @@ async def _pi_once():
         assert app.snapshot is not None
 
 
+def test_pi_partials_render_incrementally_without_duplicate():
+    _run(_pi_partials())
+
+
+async def _pi_partials():
+    from datetime import UTC, datetime
+
+    from tui.observations import Observation
+
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        now = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+
+        def drain(text: str, *, final: bool) -> str:
+            app._process_events(
+                [
+                    Observation(
+                        kind="pi_message",
+                        ts=now,
+                        fields={"text": text, "final": final, "turn": 7},
+                    )
+                ]
+            )
+            out = app.query_one("#output")
+            return "\n".join(strip.text for strip in out.lines)
+
+        rendered = drain("Zebra delta one ", final=False)
+        assert "Zebra delta one" in rendered
+        rendered = drain("two. ", final=False)
+        await pilot.pause()
+        rendered = drain("Zebra delta one two. Quokka final.", final=True)
+        await pilot.pause()
+        rendered = "\n".join(strip.text for strip in app.query_one("#output").lines)
+        assert rendered.count("Zebra delta one") == 1
+        assert rendered.count("two.") == 1
+        assert rendered.count("Quokka final") == 1
+
+
+def test_report_follows_only_its_campaign_feed(monkeypatch, tmp_path):
+    from runner import paths
+    from tui.report import CampaignReport
+
+    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    app = CampaignReport()
+    app._ensure_feed("campaign-abc")
+    expected = tmp_path / "reports" / "tui_observations" / "campaign-abc.jsonl"
+    assert app._feed.path == expected
+    current = app._feed
+    app._ensure_feed("campaign-abc")
+    assert app._feed is current
+    app._ensure_feed("campaign-other")
+    assert (
+        app._feed.path
+        == tmp_path / "reports" / "tui_observations" / "campaign-other.jsonl"
+    )
+
+
 def test_training_progress_appears_and_disappears_on_end():
     _run(_progress())
 

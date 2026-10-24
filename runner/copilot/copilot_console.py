@@ -7,9 +7,11 @@ import ntpath
 import re
 import shutil
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
 
+from runner import observation_feed
 from runner.copilot.path_policy import ROOT
 from runner.copilot.usage import SessionUsage
 
@@ -23,6 +25,10 @@ WINDOWS_PATH_PATTERN = re.compile(r"[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+
 
 
 MAX_CONSOLE_POINTER_LENGTH = 96
+
+
+# How often a growing PI message is published to the observation feed.
+PI_PARTIAL_SECONDS = 2.0
 
 
 CONTEXT_BAND_TOKENS = 50_000
@@ -162,6 +168,26 @@ def _colored_tool_remainder(remainder: str) -> str:
         status_color = _STATUS_COLORS.get(status, RED)
         rest = rest.replace(status, f"{status_color}{status}{_RESET}", 1)
     return f"{color}{name}{_RESET}{separator}{rest}"
+
+
+def _observation_scope(text: str, color: str | None = None) -> str:
+    """Classify one PI-console line for the observation feed."""
+    if color == GREEN:
+        return "success"
+    if color == YELLOW:
+        return "warning"
+    if color == RED:
+        return "error"
+    marker = text.lstrip().split(" ", 1)[0]
+    if marker == ">":
+        return "tool"
+    if marker == "=":
+        return "result"
+    if marker == "x":
+        return "error"
+    if marker == "!":
+        return "warning"
+    return "info"
 
 
 def format_console_line(text: str, color: str | None = None) -> str:
@@ -480,6 +506,10 @@ class Console:
         self._message_width = max((columns or _console_width()) - 4, 20)
         self._compact_buffer = ""
         self._message_buffer = ""
+        self._message_text = ""
+        self._message_emitted = 0
+        self._message_emitted_at = 0.0
+        self._pi_turn = 0
         self._message_spacing = ""
         self._message_column = 0
         self._message_continues_word = False
@@ -493,12 +523,31 @@ class Console:
 
     def line(self, text: str, color: str | None = None) -> None:
         self._close_message()
+        observation_feed.emit(
+            {
+                "kind": "console_line",
+                "scope": _observation_scope(text, color),
+                "text": text.strip(),
+            }
+        )
         print(format_console_line(text, color), flush=True)
 
     def _close_message(self) -> None:
         """End the model's block, so the next fact starts at column zero."""
         if not self._mid_stream:
             return
+        message = self._message_text
+        if message.strip():
+            observation_feed.emit(
+                {
+                    "kind": "pi_message",
+                    "text": message,
+                    "final": True,
+                    "turn": self._pi_turn,
+                }
+            )
+        self._message_text = ""
+        self._message_emitted = 0
         self._buffer_console_text("", final=True)
         self._flush_message(final=True)
         if sys.stdout.isatty():
@@ -580,11 +629,39 @@ class Console:
             return
         if not self._mid_stream:
             self._mid_stream = True
+            self._message_text = ""
+            self._message_emitted = 0
+            self._message_emitted_at = 0.0
+            self._pi_turn += 1
             self._at_line_start = True
             if sys.stdout.isatty():
                 sys.stdout.write(_MESSAGE)
+        self._message_text += text
+        self._maybe_emit_message_partial(force="\n\n" in text)
         self._buffer_console_text(text, final=False)
         self._flush_message(final=False)
+
+    def _maybe_emit_message_partial(self, *, force: bool) -> None:
+        """Publish the text grown so far; whole words only, throttled."""
+        now = time.monotonic()
+        if not force and now - self._message_emitted_at < PI_PARTIAL_SECONDS:
+            return
+        snapshot = self._message_text
+        cut = max(snapshot.rfind(" "), snapshot.rfind("\n"))
+        if cut + 1 <= self._message_emitted:
+            return
+        snapshot = snapshot[: cut + 1]
+        addition = snapshot[self._message_emitted :]
+        self._message_emitted = len(snapshot)
+        self._message_emitted_at = now
+        observation_feed.emit(
+            {
+                "kind": "pi_message",
+                "text": addition,
+                "final": False,
+                "turn": self._pi_turn,
+            }
+        )
 
     def message(self, text: str) -> None:
         if self._mid_stream:

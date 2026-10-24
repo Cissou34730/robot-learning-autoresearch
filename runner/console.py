@@ -13,7 +13,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from runner import paths
+from runner import observation_feed, paths
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
@@ -227,11 +227,25 @@ def progress(message: str, *, archive: bool = False) -> None:
     _progress.line(message, archive=archive)
 
 
+def _observation_scope(text: str) -> tuple[str, str]:
+    """Split a console marker from its body for the observation feed."""
+    if text.startswith("[") and "]" in text:
+        marker = text[1 : text.index("]")].casefold()
+        body = text[text.index("]") + 1 :].strip()
+        scope = marker if marker in _SEMANTIC_COLORS else "info"
+        return scope, body
+    return "info", text
+
+
 def announce(message: str) -> None:
     _progress.clear()
     _progress.archived()
     leading_break = "\n" if message.startswith("\n") else ""
     text = compact_text(message.lstrip("\n"))
+    scope, observation_text = _observation_scope(text)
+    observation_feed.emit(
+        {"kind": "console_line", "scope": scope, "text": observation_text}
+    )
     timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
     prefix = f"{timestamp} "
     if not sys.stdout.isatty():
@@ -261,6 +275,12 @@ def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> Non
     timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
     title = compact_text(title)
     body = [compact_text(line) for line in lines]
+    observation_text = f"=== {title} ==="
+    if body:
+        observation_text += "\n" + "\n".join(body)
+    observation_feed.emit(
+        {"kind": "console_line", "scope": scope, "text": observation_text}
+    )
     print(flush=True)
     if not sys.stdout.isatty():
         print(f"{timestamp} === {title} ===", flush=True)

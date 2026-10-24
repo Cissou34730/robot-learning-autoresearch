@@ -3,6 +3,86 @@
 # that deliverable's validity. Nothing here reads what the Researcher printed,
 # so it stays true whatever command invokes the Researcher.
 
+# ---------------------------------------------------------------------------
+# One-way observation feed (read by the read-only terminal report).
+# Failures are swallowed: presenting never alters launcher behavior.
+# ---------------------------------------------------------------------------
+
+function Get-TuiCampaignRoot {
+    if ($script:TuiCampaignRoot) { return $script:TuiCampaignRoot }
+    if ($CampaignRoot) { $script:TuiCampaignRoot = $CampaignRoot; return $CampaignRoot }
+    if ($env:ROBOT_LEARNING_CAMPAIGN_ROOT) {
+        $script:TuiCampaignRoot = $env:ROBOT_LEARNING_CAMPAIGN_ROOT
+        return $env:ROBOT_LEARNING_CAMPAIGN_ROOT
+    }
+    $script:TuiCampaignRoot = (Get-Location).Path
+    return $script:TuiCampaignRoot
+}
+
+function Get-TuiCampaignId {
+    if ($script:TuiCampaignId) { return $script:TuiCampaignId }
+    try {
+        $statePath = Join-Path (Get-TuiCampaignRoot) "runner\state\research_state.json"
+        $state = Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
+        $value = [string]$state.campaign.id
+        if ($value) { $script:TuiCampaignId = $value }
+        return $value
+    }
+    catch {
+        return ""
+    }
+}
+
+function Write-TuiObservation {
+    param(
+        [Parameter(Mandatory)][string]$Kind,
+        [string]$Scope = "",
+        [string]$Text = "",
+        [hashtable]$Fields = @{}
+    )
+    try {
+        $override = $env:TUI_OBSERVATIONS
+        if ($null -ne $override -and $override.Trim().ToLowerInvariant() -in @("", "0", "off", "none", "false")) {
+            return
+        }
+        $campaignId = Get-TuiCampaignId
+        if (-not $campaignId) { return }
+        if ($override) {
+            $path = $override
+            $directory = Split-Path -Parent $path
+        }
+        else {
+            $directory = Join-Path (Get-TuiCampaignRoot) "reports\tui_observations"
+            $path = Join-Path $directory "$campaignId.jsonl"
+        }
+        if ($directory -and -not (Test-Path -LiteralPath $directory)) {
+            New-Item -ItemType Directory -Path $directory -Force | Out-Null
+        }
+        $record = [ordered]@{
+            campaign_id = $campaignId
+            ts = (Get-Date).ToUniversalTime().ToString("o")
+            kind = $Kind
+        }
+        if ($Scope) { $record.scope = $Scope }
+        if ($Text) { $record.text = $Text }
+        foreach ($key in $Fields.Keys) { $record[$key] = $Fields[$key] }
+        $json = $record | ConvertTo-Json -Compress -Depth 5
+        $bytes = [Text.Encoding]::UTF8.GetBytes($json + "`n")
+        # Python appends to the same file; neither writer may lock the other out.
+        $stream = [IO.File]::Open(
+            $path, [IO.FileMode]::Append, [IO.FileAccess]::Write, [IO.FileShare]::ReadWrite
+        )
+        try {
+            $stream.Write($bytes, 0, $bytes.Length)
+        }
+        finally {
+            $stream.Dispose()
+        }
+    }
+    catch {
+    }
+}
+
 function Write-Status {
     param(
         [Parameter(Mandatory)][string]$Message,
@@ -17,6 +97,14 @@ function Write-Status {
         }
     }
     $text = $Message -replace '^===\s*|\s*===$', ''
+    $scope = switch ($Label) {
+        "session" { "session" }
+        "done" { "success" }
+        "wait" { "warning" }
+        "error" { "error" }
+        default { "info" }
+    }
+    Write-TuiObservation -Kind console_line -Scope $scope -Text $text
     $timestamp = "[$(Get-Date -Format 'HH:mm:ss')]"
     $marker = "[$Label]"
     $redirected = try {
@@ -87,6 +175,16 @@ function Write-ConsoleCard {
         Write-Host "  $line" -ForegroundColor $BodyColor
     }
     Write-Host ""
+    $scope = switch ($Color) {
+        Magenta { "pi" }
+        Yellow { "warning" }
+        Red { "error" }
+        Green { "success" }
+        default { "info" }
+    }
+    $text = "=== $Title ==="
+    if ($Lines.Count -gt 0) { $text += "`n" + ($Lines -join "`n") }
+    Write-TuiObservation -Kind console_line -Scope $scope -Text $text
 }
 
 function New-ResearcherSessionStatus {

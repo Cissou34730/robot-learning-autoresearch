@@ -66,7 +66,9 @@ def test_harness_rooted_campaign_view_resolves_to_campaign(split_roots, monkeypa
     target = harness / "robot_learning/scenario/environment.py"
     result = hook({"toolName": "view", "toolArgs": {"path": str(target)}}, None)
     assert result == {
-        "modifiedArgs": {"path": str(campaign / "robot_learning/scenario/environment.py")}
+        "modifiedArgs": {
+            "path": str(campaign / "robot_learning/scenario/environment.py")
+        }
     }
 
 
@@ -298,3 +300,12 @@ def test_trusted_runtime_uses_each_repositories_own_head(split_roots, monkeypatc
         ("harness-head", "contracts/task_spec.py"),
         ("campaign-head", "robot_learning/__init__.py"),
     ]
+
+
+def test_pi_cannot_read_the_observation_feed(split_roots, monkeypatch):
+    from runner.copilot import path_policy
+
+    _harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    feed = campaign / "reports" / "tui_observations" / "campaign-1.jsonl"
+    assert path_policy.file_read_denial(str(feed))

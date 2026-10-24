@@ -24,6 +24,13 @@ if (-not $CampaignRoot) {
     if (Test-Path $sibling) { $CampaignRoot = $sibling }
 }
 
+if (-not $CampaignRoot) {
+    throw "No campaign root found. Pass -CampaignRoot or create the sibling robot-learning-campaigns folder."
+}
+if (-not (Test-Path -LiteralPath $CampaignRoot)) {
+    throw "Campaign root does not exist: $CampaignRoot"
+}
+
 Write-Host "Campaign root: $CampaignRoot"
 
 $arguments = @()
