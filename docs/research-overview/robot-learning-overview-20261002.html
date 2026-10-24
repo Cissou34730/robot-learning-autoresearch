@@ -744,7 +744,7 @@
         <h3>Launch or reset from the harness folder</h3>
         <p><code>.\run_research.ps1</code> launches or resumes the selected campaign. It does not reset it.</p>
         <p>
-          <code>.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3 -Force ; .\run_research.ps1</code>
+          <code>.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force ; .\run_research.ps1</code>
         </p>
         <p>The second command deliberately resets before launch. Stop the campaign first. <code>-Clean</code> discards
           eligible uncommitted changes. The semicolon is not success-only: inspect any reset failure before authorizing
@@ -917,8 +917,8 @@
             <text x="40" y="312" class="label" font-weight="700">PI sessions</text>
             <text x="145" y="312" class="caption">one at a time; each ends with a checkpoint (scientific session
               record)</text>
-            <rect x="40" y="480" width="700" height="514" rx="12" fill="var(--cp-accent-soft)"
-              stroke="var(--cp-accent)" stroke-width="1.5" stroke-dasharray="8 5" />
+            <rect x="40" y="480" width="700" height="514" rx="12" fill="var(--cp-accent-soft)" stroke="var(--cp-accent)"
+              stroke-width="1.5" stroke-dasharray="8 5" />
             <text x="60" y="506" class="label" font-weight="700">Inquiry</text>
             <text x="132" y="506" class="caption">one bounded question; may span several sessions</text>
             <text x="60" y="528" class="caption">Startup can use the same tools. Goal review: coding, measurement,
@@ -2028,9 +2028,10 @@
                   <td>The robot contract files carry a scenario-specific name (<code>two_joint_arm.py</code> and
                     <code>.xml</code>).
                   </td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Rename them to a generic name and update every reference. Open question: one neutral name
-                    (<code>robot.*</code>) or a name per scenario.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Renamed on 24 October to <code>contracts/robots/robot.py</code> and <code>robot.xml</code>; the
+                    constant is <code>ROBOT_XML_PATH</code>. The campaign recipe baseline is the local tag
+                    <code>baseline-distinct-episodes-v3-robot</code>.</td>
                 </tr>
                 <tr>
                   <td>OI-049</td>

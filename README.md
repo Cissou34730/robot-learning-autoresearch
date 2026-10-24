@@ -67,10 +67,14 @@ repository has no remotes. Keep its local baseline tag for future resets.
 
 ### Reset to v3 or launch
 
+The campaign repository's `baseline-distinct-episodes-v3-robot` tag is the v3
+recipe importing the renamed robot contract (`contracts/robots/robot.py`); the
+older `baseline-distinct-episodes-v3` tag no longer matches the task contract.
+
 Stop any active campaign before resetting:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3 -Force
+.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3-robot -Force
 .\run_research.ps1 -Provider github-copilot
 ```
 
@@ -78,7 +82,7 @@ The reset script also restores the folder before the next command, so this
 sequence works from the harness folder:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3 -Force ; .\run_research.ps1
+.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force ; .\run_research.ps1
 ```
 
 Use `-Clean` only when you intend to discard eligible uncommitted campaign

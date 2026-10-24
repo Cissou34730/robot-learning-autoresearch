@@ -56,8 +56,8 @@ TASK_COMPATIBILITY_PATHS = (
     "benchmark/final_contract.py",
     "benchmark/reference_contract.py",
     "contracts/task_spec.py",
-    "contracts/robots/two_joint_arm.py",
-    "contracts/robots/two_joint_arm.xml",
+    "contracts/robots/robot.py",
+    "contracts/robots/robot.xml",
 )
 BASELINE_ARTIFACT_ROOTS = (
     "campaigns/checkpoints/candidates",

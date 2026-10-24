@@ -11,11 +11,11 @@ from benchmark.metrics import (
     maximum_consecutive_hold_steps,
     summarize_hold_progress,
 )
-from contracts.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
+from contracts.robots.robot import ROBOT_XML_PATH
 
 
 def test_robot_physics_asset_is_frozen():
-    digest = hashlib.sha256(TWO_JOINT_ARM_XML_PATH.read_bytes()).hexdigest()
+    digest = hashlib.sha256(ROBOT_XML_PATH.read_bytes()).hexdigest()
     assert digest == "6ccb918656b92a931927e2bfd90378d915da009b741155c7cafc5913b9f87f62"
 
 

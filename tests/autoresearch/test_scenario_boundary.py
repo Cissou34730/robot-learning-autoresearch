@@ -94,7 +94,7 @@ FORBIDDEN_MODULES = frozenset(
         "robot_learning.environments.reach_env",
         "robot_learning.rewards.reach_reward",
         "robot_learning.training.observations",
-        "contracts.robots.two_joint_arm",
+        "contracts.robots.robot",
         "benchmark",
         "benchmark.final_benchmark",
         "benchmark.final_contract",

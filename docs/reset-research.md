@@ -12,7 +12,7 @@ The reset script restores the calling terminal's original folder on success
 or failure, so it can be followed by a relative launcher command:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3 -Force ; .\run_research.ps1
+.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force ; .\run_research.ps1
 ```
 
 `-Clean` discards eligible uncommitted campaign changes before reset; it does
@@ -42,7 +42,7 @@ or from historical scientific code.
 To restore the baseline v3 scientific recipe as well:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3 -Force
+.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3-robot -Force
 ```
 
 This tag is a recipe, not a prepared trained model, so use Fresh rather than
