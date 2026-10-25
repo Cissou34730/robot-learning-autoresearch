@@ -1629,6 +1629,14 @@
                 training; the plateau and assessment decision repeat <code>6882b9ec</code>.
               </td>
             </tr>
+            <tr>
+              <td>OI-051</td>
+              <td>An operation longer than 30 minutes ends the PI session (SDK tool-call limit of 1,800 seconds).</td>
+              <td><span class="tag">Open</span></td>
+              <td>Seen 25 October when the minimal-recipe campaign requested 3 × 2,400 episodes. Normal panels and
+                360k-step runs stay well below the limit. Options: return early and deliver the result later, or refuse
+                requests estimated to exceed it.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -2054,7 +2062,9 @@
                     capacity, LLM context exhaustion, no physical robot or vision model, coding efficiency and
                     safety. <code>efd58acc</code>: 32 sessions, 14 inquiries, about 126 AIU on an easy task.
                     Candidate experiment: a minimal recipe skeleton that keeps the Runner and benchmark interfaces
-                    but none of the scientific choices, built on branch <code>experiment/minimal-recipe</code>.</td>
+                    but none of the scientific choices, built on branch <code>experiment/minimal-recipe</code>.
+                    Outcome on 25 October: it did not work. Campaign <code>05229297</code> reached at best 2.8% after
+                    about 6 h 45 min and 150 AIU; the PI needs more support, not less.</td>
                 </tr>
               </tbody>
             </table>
