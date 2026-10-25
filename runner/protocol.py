@@ -504,6 +504,7 @@ def validate_measurement_inputs(entry: dict) -> None:
 def planned_measurements(request: dict, state: dict) -> list[dict]:
     validate_measurement_request(request)
     planned: list[dict] = []
+    panels: dict[tuple, int] = {}
     for index, entry in enumerate(requested_measurements(request), start=1):
         if entry["instrument"] == "python_module":
             artifact = repository.canonical_repo_path(entry["artifact"])
@@ -544,6 +545,24 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
             continue
         candidate_name = str(entry["candidate"]).strip()
         candidate = resolve_candidate(state, candidate_name)
+        panel = (
+            entry["instrument"],
+            candidate["id"],
+            entry.get("seed"),
+            entry.get("episodes"),
+        )
+        if panel in panels:
+            raise ValueError(
+                f"measurement {index} repeats measurement {panels[panel]}: "
+                f"{entry['instrument']} of {candidate['id']}"
+                + (
+                    f" with seed {entry['seed']} and {entry['episodes']} episodes"
+                    if entry["instrument"] == "research_evaluation"
+                    else ""
+                )
+                + "; each panel may appear once per request"
+            )
+        panels[panel] = index
         planned.append(
             {
                 **entry,
