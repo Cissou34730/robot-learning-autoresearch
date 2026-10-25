@@ -41,6 +41,18 @@ def _demo_app():
     return CampaignReport(demo=True, sources=DemoSources())
 
 
+def _timeline_items(app):
+    roots, _ = app._timeline.view()
+
+    def walk(item):
+        yield item
+        for child in item.children:
+            yield from walk(child)
+
+    for root in roots:
+        yield from walk(root)
+
+
 def test_initial_single_screen_composition():
     _run(_initial())
 
@@ -82,7 +94,7 @@ async def _initial():
         snapshot = app.snapshot
         assert snapshot and len(snapshot.model_rows) == 3
         reading = str(app.query_one("#reading").render())
-        assert reading.startswith("Following live output")
+        assert reading.startswith("Following live events")
 
 
 def test_pi_message_streamed_duplicate_renders_once():
@@ -95,14 +107,13 @@ async def _pi_once():
         await pilot.pause()
         app.drain_feed()
         await pilot.pause()
-        out = app.query_one("#output")
         app._feed.advance(1.0)
         app.drain_feed()
         await pilot.pause()
-        rendered = "\n".join(strip.text for strip in out.lines)
-        pi_lines = [line for line in rendered.splitlines() if "PI (S7):" in line]
+        messages = [item for item in _timeline_items(app) if item.kind == "pi"]
         # The demo's replayed event must not add a second copy.
-        assert len(pi_lines) == 1
+        assert len(messages) == 1
+        assert "working candidate" in messages[0].summary
         assert app.snapshot is not None
 
 
@@ -120,7 +131,7 @@ async def _pi_partials():
         await pilot.pause()
         now = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
 
-        def drain(text: str, *, final: bool) -> str:
+        def drain(text: str, *, final: bool) -> None:
             app._process_events(
                 [
                     Observation(
@@ -130,19 +141,19 @@ async def _pi_partials():
                     )
                 ]
             )
-            out = app.query_one("#output")
-            return "\n".join(strip.text for strip in out.lines)
 
-        rendered = drain("Zebra delta one ", final=False)
-        assert "Zebra delta one" in rendered
-        rendered = drain("two. ", final=False)
+        drain("Zebra delta one ", final=False)
+        messages = [item for item in _timeline_items(app) if item.kind == "pi"]
+        assert len(messages) == 1
+        assert "Zebra delta one" in messages[0].summary
+        drain("two. ", final=False)
         await pilot.pause()
-        rendered = drain("Zebra delta one two. Quokka final.", final=True)
+        drain("Zebra delta one two. Quokka final.", final=True)
         await pilot.pause()
-        rendered = "\n".join(strip.text for strip in app.query_one("#output").lines)
-        assert rendered.count("Zebra delta one") == 1
-        assert rendered.count("two.") == 1
-        assert rendered.count("Quokka final") == 1
+        messages = [item for item in _timeline_items(app) if item.kind == "pi"]
+        assert len(messages) == 1
+        assert messages[0].summary == "Zebra delta one two. Quokka final."
+        assert messages[0].detail == ("Zebra delta one two. Quokka final.",)
 
 
 def test_report_follows_only_its_campaign_feed(monkeypatch, tmp_path):
@@ -296,12 +307,10 @@ async def _context_change():
         await pilot.pause()
         app.drain_feed()
         await pilot.pause()
-        out = app.query_one("#output")
-        before = len(out.lines)
         sources.synthesis_switch = "Synthesis replaced with a newer PI record text."
         app.refresh_snapshot()
         await pilot.pause()
-        rendered = "\n".join(strip.text for strip in out.lines[before - 3 :])
+        rendered = "\n".join(app.query_one("#output").text_lines())
         assert "PI synthesis updated (S6)" in rendered
         assert "newer PI record text" in rendered
 
@@ -336,22 +345,6 @@ async def _stale():
 # ---------------------------------------------------------------------------
 
 
-def _segment_colours(out) -> list[tuple[str, str, bool]]:
-    """(text, truecolour hex, bold) for every styled segment in the log."""
-    rows: list[tuple[str, str, bool]] = []
-    for strip in out.lines:
-        for segment in strip._segments:
-            if segment.style and segment.style.color:
-                rows.append(
-                    (
-                        segment.text,
-                        segment.style.color.get_truecolor().hex,
-                        bool(segment.style.bold),
-                    )
-                )
-    return rows
-
-
 def test_output_lines_fit_and_keep_long_words_at_several_widths():
     _run(_fit_widths())
 
@@ -365,9 +358,9 @@ async def _fit_widths():
             app._append(datetime.now(tz=UTC), "x" * 200)
             await pilot.pause()
             content_width = out.scrollable_content_region.width
-            assert all(len(strip.text) <= content_width for strip in out.lines)
-            joined = "".join(strip.text for strip in out.lines)
-            assert "x" * 200 in joined.replace(" ", "")
+            rendered = out.render_lines(out.region)
+            assert all(len(strip.text) <= content_width for strip in rendered)
+            assert any("x" * 200 in line for line in out.text_lines())
 
 
 def test_palette_tokens_meet_contrast_floor():
@@ -460,18 +453,19 @@ async def _scope_styles():
             ]
         )
         await pilot.pause()
-        palette = app._palette
-        segments = _segment_colours(app.query_one("#output"))
-        by_text = {
-            text: (colour, bold) for text, colour, bold in segments if text.strip()
-        }
-        assert by_text["> submit_operation train"] == (palette.tool, False)
-        assert by_text["x failed"] == (palette.error, True)
-        assert by_text["PI text"] == (palette.pi, False)
-        assert by_text["= result 0.94"] == (palette.success, True)
-        assert by_text["=== OPERATION | T5 ==="] == (palette.accent, True)
-        assert by_text["Why"] == (palette.section, True)
-        assert by_text["body line"] == (palette.text, False)
+        items = list(_timeline_items(app))
+        tool = next(item for item in items if item.title == "> submit_operation train")
+        assert tool.kind == "tool"
+        error = next(item for item in items if item.title == "x failed")
+        assert error.kind == "error"
+        assert error.severity == "error"
+        pi = next(item for item in items if item.title == "PI text")
+        assert pi.kind == "pi"
+        result = next(item for item in items if item.title == "= result 0.94")
+        assert result.kind == "result"
+        card = next(item for item in items if item.title == "OPERATION | T5")
+        assert card.kind == "operation"
+        assert card.detail == ("Why", "body line")
 
 
 def test_no_color_pinned_frame_keeps_text_meaning(monkeypatch):
@@ -557,6 +551,89 @@ async def _campaign_switch():
         assert "OLD CAMPAIGN OUTPUT" not in rendered
         assert "new-campaign-id" in rendered
         assert app._campaign_id == "new-campaign-id"
+
+
+def test_event_log_collapses_and_expands_active_chain():
+    _run(_collapse_expand())
+
+
+async def _collapse_expand():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        node = out._node_by_id["session:S7"]
+        out.move_cursor(node, animate=False)
+        assert node.is_expanded is True
+        await pilot.press("space")
+        await pilot.pause()
+        assert node.is_expanded is False
+        await pilot.press("space")
+        await pilot.pause()
+        assert node.is_expanded is True
+        await pilot.press("enter")
+        await pilot.pause()
+        assert node.is_expanded is False
+        await pilot.press("enter")
+        await pilot.pause()
+        assert node.is_expanded is True
+
+
+def test_search_input_filters_the_timeline():
+    _run(_search_log())
+
+
+async def _search_log():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        await pilot.press("/")
+        await pilot.pause()
+        search = app.query_one("#log-search")
+        assert search.display is True
+        search.value = "measurement"
+        await pilot.press("enter")
+        await pilot.pause()
+        heading = str(app.query_one("#output-heading").render())
+        assert "search: measurement" in heading
+
+
+def test_filter_modal_opens():
+    _run(_filter_modal())
+
+
+async def _filter_modal():
+    from tui.event_log import FilterScreen
+
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        await pilot.press("f")
+        await pilot.pause()
+        assert isinstance(app.screen, FilterScreen)
+        await pilot.press("escape")
+        await pilot.pause()
+        assert not isinstance(app.screen, FilterScreen)
+
+
+def test_raw_event_opens_a_modal():
+    _run(_raw_modal())
+
+
+async def _raw_modal():
+    from tui.event_log import RawEventScreen
+
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        out.move_cursor(out._node_by_id["session:S7"], animate=False)
+        app.action_raw_event()
+        await pilot.pause()
+        assert isinstance(app.screen, RawEventScreen)
+        await pilot.press("escape")
+        await pilot.pause()
+        assert not isinstance(app.screen, RawEventScreen)
 
 
 def test_training_status_shows_last_training_proxy():

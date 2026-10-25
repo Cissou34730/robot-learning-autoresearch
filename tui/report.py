@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import re
 import textwrap
-from collections import deque
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -25,11 +24,19 @@ from typing import ClassVar
 
 from rich.text import Text
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, RichLog, Static
+from textual.widgets import DataTable, Input, Static
 
 from runner import console, paths
 from tui import projector
+from tui.event_log import EventLog, FilterScreen, RawEventScreen
+from tui.events import (
+    CampaignEventFeed,
+    legacy_path_for,
+    synthesize_history,
+    typed_path_for,
+)
 from tui.observations import JsonlFeed, Observation
+from tui.timeline import TimelineReducer
 
 MIN_COLUMNS = 48
 MIN_ROWS = 16
@@ -40,8 +47,6 @@ COMPACT_WIDTH = 100
 COMPACT_HEIGHT = 30
 LIVENESS_SECONDS = 300.0
 PROGRESS_STALE_SECONDS = 300.0
-MAX_RENDERED_ENTRIES = 100_000
-EVENTS_DIR = Path("reports") / "tui_observations"
 
 
 # The log is display-only. These tokens are the single palette used by the
@@ -98,9 +103,6 @@ PALETTES: dict[str, Palette] = {
     ),
 }
 
-# Card body headings already classified by the Runner console.
-SECTION_HEADINGS = frozenset(getattr(console, "_SECTION_HEADINGS", ()))
-
 _FLOAT_RE = re.compile(r"(?<![\w.])-?\d+\.\d{4,}(?![\w.])")
 _PATH_RE = re.compile(
     r"(?<![\w:/])(?:[A-Za-z]:[\\/][^\s,;:)\]}\"']*|/[^\s,;:)\]}\"']*)"
@@ -139,28 +141,6 @@ def _status_style(status: str, palette: Palette) -> str:
     return palette.text
 
 
-def _scope_style(scope: str, palette: Palette) -> str:
-    """Map a feed scope to a semantic token, never to colour alone."""
-    scope = scope.casefold()
-    if scope == "error":
-        return f"bold {palette.error}"
-    if scope == "warning":
-        return f"bold {palette.warning}"
-    if scope in {"success", "assessment", "validation", "result"}:
-        return f"bold {palette.success}"
-    if scope in {"pi", "session"}:
-        return palette.pi
-    if scope == "tool":
-        return palette.tool
-    if scope in {"operation", "measurement", "training", "runner"}:
-        return palette.accent
-    if scope == "inquiry":
-        return palette.warning
-    if scope == "campaign":
-        return f"bold {palette.heading}"
-    return palette.text
-
-
 def _display_text(value: str) -> str:
     """Round long floats and compact absolute paths for display only."""
     text = _clean_text(value)
@@ -196,30 +176,6 @@ def _ts(stamp: datetime | None) -> str:
     if stamp is None:
         return "--:--"
     return f"{stamp.astimezone():%H:%M}"
-
-
-def _hang(prefix: str, text: str, width: int) -> list[str]:
-    """Wrap text under a fixed prefix, preserving blank paragraphs."""
-    width = max(width, 20)
-    lines: list[str] = []
-    indent = " " * len(prefix)
-    current_prefix = prefix
-    paragraphs = text.split("\n") or [""]
-    for paragraph in paragraphs:
-        if not paragraph.strip():
-            lines.append("")
-            continue
-        wrapped = textwrap.wrap(
-            paragraph,
-            width=width,
-            initial_indent=current_prefix,
-            subsequent_indent=indent,
-            break_long_words=True,
-            break_on_hyphens=False,
-        )
-        lines.extend(wrapped or [current_prefix.rstrip()])
-        current_prefix = indent
-    return lines
 
 
 def _hang_styled(
@@ -284,87 +240,6 @@ def _metric_cell(value: str, missing: str = "unavailable", muted: str = "dim") -
     return Text(text)
 
 
-class OutputLog(RichLog):
-    """Scrollable output that follows only while the reader is at the bottom."""
-
-    can_focus = True
-
-    def __init__(self, **kwargs) -> None:
-        super().__init__(
-            wrap=True,
-            highlight=False,
-            markup=False,
-            auto_scroll=False,
-            max_lines=MAX_RENDERED_ENTRIES,
-            **kwargs,
-        )
-        self._following = True
-        self._missed = 0
-        self._follow_listeners: list = []
-
-    @property
-    def following(self) -> bool:
-        return self._following
-
-    @property
-    def missed(self) -> int:
-        return self._missed
-
-    def on_follower(self, listener) -> None:
-        self._follow_listeners.append(listener)
-
-    def _at_bottom(self) -> bool:
-        try:
-            return self.scroll_offset.y >= self.max_scroll_y - 0.5
-        except Exception:  # noqa: BLE001 - layout not ready yet
-            return True
-
-    def watch_scroll_y(self, old_value: float, new_value: float) -> None:
-        try:
-            super().watch_scroll_y(old_value, new_value)
-        except AttributeError:  # pragma: no cover - base class variants
-            pass
-        bottom = self._at_bottom()
-        if bottom != self._following:
-            self._following = bottom
-            if bottom:
-                self._missed = 0
-            for listener in self._follow_listeners:
-                listener(bottom, self._missed)
-
-    def reset_campaign(self) -> None:
-        """Drop the previous campaign's rendered history."""
-        self.clear()
-        self._following = True
-        self._missed = 0
-
-    def append_texts(self, items: list) -> None:
-        """Append pre-built Text display lines, honoring the follow state."""
-        was_bottom = self._at_bottom()
-        wrote = False
-        for item in items:
-            if isinstance(item, str):
-                item = Text(_clean_text(item))
-            # Render each pre-wrapped line at its own length so RichLog does not
-            # pad short lines or clip long ones against the console's default
-            # width.
-            self.write(
-                item,
-                width=max(1, len(item.plain)),
-                expand=False,
-                shrink=False,
-            )
-            wrote = True
-        if not wrote:
-            return
-        if was_bottom:
-            self.scroll_end(animate=False)
-        else:
-            self._missed += 1
-            for listener in self._follow_listeners:
-                listener(self._following, self._missed)
-
-
 class CampaignSources:
     """Reads the durable campaign files selected by the campaign root."""
 
@@ -404,6 +279,11 @@ class CampaignReport(App):
     BINDINGS: ClassVar[list] = [
         ("ctrl+c", "quit", "Close report"),
         ("ctrl+q", "quit", "Close report"),
+        ("/", "search_log", "Search events"),
+        ("f", "filter_log", "Filter events"),
+        ("r", "raw_event", "Raw event"),
+        ("escape", "clear_log_filter", "Clear filter"),
+        ("end", "follow_log", "Follow live"),
     ]
 
     CSS = """
@@ -463,10 +343,38 @@ class CampaignReport(App):
         height: 1;
         color: $text;
     }
+    #now {
+        height: 1;
+        color: $text;
+    }
+    #log-search {
+        display: none;
+        height: 1;
+        margin-bottom: 1;
+        background: $surface;
+        color: $text;
+        border: none;
+    }
     #output {
         height: 1fr;
         padding: 0;
         background: $surface;
+        color: $text;
+        scrollbar-size-vertical: 1;
+    }
+    EventLog > .tree--label {
+        color: $text;
+    }
+    EventLog > .tree--guides,
+    EventLog > .tree--guides-hover,
+    EventLog > .tree--guides-selected {
+        color: $text-muted;
+    }
+    EventLog > .tree--cursor,
+    EventLog > .tree--highlight-line {
+        background: $surface;
+        color: $text;
+        text-style: bold underline;
     }
     #reading {
         height: 1;
@@ -512,10 +420,15 @@ class CampaignReport(App):
         self._observed_signature: tuple | None = None
         self._last_error: str = ""
         self._source_note_sent: bool = False
-        self._pi_seen: deque = deque(maxlen=256)
-        self._pi_stream: dict = {}
         self._feed_campaign: str | None = None
         self._campaign_id: str | None = None
+        self._timeline = TimelineReducer()
+        self._history_events: list[Observation] = []
+        self._feed_mode = ""
+        self._log_query = ""
+        self._log_categories: set[str] = set()
+        self._search_visible = False
+        self._now_rows = 0
 
     # ------------------------------------------------------------------
     # Composition
@@ -542,13 +455,17 @@ class CampaignReport(App):
         yield Static("", id="progress")
         yield Static("", id="training")
         yield Static("", id="output-heading")
-        yield OutputLog(id="output")
+        yield Static("", id="now")
+        yield Input(placeholder="Search events...", id="log-search")
+        yield EventLog(self._log_styles(), id="output")
         yield Static("", id="reading")
         yield Static("Terminal too small - need 48x16", id="too-small")
 
     def on_mount(self) -> None:
         self._palette = self._resolve_palette()
-        self.query_one("#output", OutputLog).on_follower(self._on_follow)
+        event_log = self.query_one("#output", EventLog)
+        event_log._styles = self._log_styles()
+        event_log.on_follower(self._on_follow)
         self._make_feed()
         self.refresh_snapshot()
         self.drain_feed()
@@ -586,6 +503,21 @@ class CampaignReport(App):
         # The per-campaign file is known only once the campaign identity is read.
         self._feed = None
 
+    def _log_styles(self) -> dict[str, str]:
+        palette = self._palette
+        return {
+            "text": palette.text,
+            "muted": palette.muted,
+            "heading": palette.heading,
+            "accent": palette.accent,
+            "success": palette.success,
+            "warning": palette.warning,
+            "error": palette.error,
+            "pi": palette.pi,
+            "tool": palette.tool,
+            "section": palette.section,
+        }
+
     def _switch_campaign(self, campaign_id: str | None) -> None:
         """Clear campaign-scoped display state when a new campaign appears."""
         campaign = str(campaign_id) if campaign_id else ""
@@ -597,7 +529,15 @@ class CampaignReport(App):
         self._campaign_id = campaign
 
     def _reset_campaign_view(self) -> None:
-        self.query_one("#output", OutputLog).reset_campaign()
+        self.query_one("#output", EventLog).reset_campaign()
+        self._timeline.clear()
+        self._history_events = []
+        self._feed_mode = ""
+        self._log_query = ""
+        self._log_categories = set()
+        self._search_visible = False
+        self._now_rows = 0
+        self.query_one("#now", Static).update("")
         self.snapshot = None
         self._attached = False
         self._context_rows = 0
@@ -612,8 +552,6 @@ class CampaignReport(App):
         self._observed_signature = None
         self._last_error = ""
         self._source_note_sent = False
-        self._pi_seen.clear()
-        self._pi_stream.clear()
         if not self._demo and self._events_path is None:
             self._feed = None
             self._feed_campaign = None
@@ -623,11 +561,18 @@ class CampaignReport(App):
         if self._demo or self._events_path is not None or not campaign_id:
             return
         campaign = str(campaign_id)
-        if isinstance(self._feed, JsonlFeed) and self._feed_campaign == campaign:
+        if (
+            isinstance(self._feed, CampaignEventFeed)
+            and self._feed_campaign == campaign
+        ):
             return
-        source = paths.ROOT / EVENTS_DIR / f"{campaign}.jsonl"
-        self._feed = JsonlFeed(source, campaign_id=campaign)
+        self._feed = CampaignEventFeed(
+            typed_path_for(campaign),
+            legacy_path_for(campaign),
+            campaign_id=campaign,
+        )
         self._feed_campaign = campaign
+        self._feed_mode = ""
 
     # ------------------------------------------------------------------
     # Snapshot refresh
@@ -644,6 +589,13 @@ class CampaignReport(App):
         self._ensure_feed(campaign_id)
         if isinstance(self._feed, JsonlFeed) and campaign_id:
             self._feed.campaign_id = str(campaign_id)
+        if isinstance(self._feed, CampaignEventFeed) and campaign_id:
+            self._feed.campaign_id = str(campaign_id)
+            self._feed.typed.campaign_id = str(campaign_id)
+            self._feed.legacy.campaign_id = str(campaign_id)
+        self._history_events = synthesize_history(state, records, usage_rows)
+        for event in self._history_events:
+            self._timeline.ingest(event)
 
         snapshot = projector.build_snapshot(
             state,
@@ -660,6 +612,7 @@ class CampaignReport(App):
         self._render_models(snapshot.model_rows)
         self._render_progress()
         self._render_training_status()
+        self._render_log()
         self._apply_layout()
         self._detect_context_changes(snapshot)
 
@@ -983,7 +936,7 @@ class CampaignReport(App):
         height = self.size.height
         reserved = self._context_rows + 1
         if not self._output_hidden:
-            reserved += 2
+            reserved += 2 + self._now_rows + (1 if self._search_visible else 0)
         reserved += self._progress_rows + self._training_rows
         output_min = 0 if self._output_hidden else self._output_min_rows()
         return max(1, min(20, height - reserved - output_min))
@@ -1165,6 +1118,33 @@ class CampaignReport(App):
         widget.display = True
         widget.update(_fit_text(line, max(20, self.size.width - 2)))
 
+    def _render_log(self) -> None:
+        event_log = self.query_one("#output", EventLog)
+        event_log._styles = self._log_styles()
+        roots, matches = self._timeline.view(
+            query=self._log_query,
+            categories=self._log_categories,
+        )
+        event_log.set_view(roots, active_ids=self._timeline.active_ids())
+        now = Text(self._timeline.now_text, style=self._palette.accent)
+        self.query_one("#now", Static).update(
+            _fit_text(now, max(20, self.size.width - 2))
+        )
+        self._now_rows = 1
+        heading = Text("Events", style=f"bold {self._palette.heading}")
+        if matches:
+            heading.append(f" ({matches})", style=self._palette.muted)
+        if self._log_query:
+            heading.append(f" | search: {self._log_query}", style=self._palette.warning)
+        if self._log_categories:
+            heading.append(
+                " | filter: " + ", ".join(sorted(self._log_categories)),
+                style=self._palette.warning,
+            )
+        self.query_one("#output-heading", Static).update(
+            _fit_text(heading, max(12, self.size.width - 2))
+        )
+
     # ------------------------------------------------------------------
     # Clock-driven animations (elapsed counters and stale labels only)
     # ------------------------------------------------------------------
@@ -1175,13 +1155,14 @@ class CampaignReport(App):
             self._render_progress()
         if self.snapshot is not None:
             self._render_context()
+            self._render_log()
 
     # ------------------------------------------------------------------
     # Output appends
     # ------------------------------------------------------------------
 
-    def _output(self) -> OutputLog:
-        return self.query_one("#output", OutputLog)
+    def _output(self) -> EventLog:
+        return self.query_one("#output", EventLog)
 
     def _append(
         self,
@@ -1193,25 +1174,29 @@ class CampaignReport(App):
     ) -> None:
         if stamp is None:
             stamp = _now()
-        prefix = f"{_ts(stamp)} "
-        width = self._output_width()
-        if width_guard and len(prefix) + len(text) > width:
-            lines = _hang(prefix, _clean_text(text), width)
-        else:
-            lines = [f"{prefix}{_clean_text(text)}"]
-        self._write(stamp, lines, style)
+        severity = "info"
+        scope = "info"
+        if style:
+            if "error" in style:
+                severity = scope = "error"
+            elif "warning" in style:
+                severity = scope = "warning"
+        event = Observation(
+            kind="console_line",
+            ts=stamp,
+            fields={"text": _display_text(_clean_text(text)), "scope": scope},
+            event_id=f"internal:{stamp.isoformat()}:{hash(text)}",
+            scope=scope,
+            severity=severity,
+        )
+        self._timeline.ingest(event)
+        self._render_log()
         self._render_reading()
 
     def _append_block(
         self, stamp: datetime | None, lines: list[str], style: str | None = None
     ) -> None:
-        """Append pre-rendered lines, wrapped to the log width."""
-        width = self._output_width()
-        wrapped: list[str] = []
-        for line in lines:
-            wrapped.extend(_hang("", _clean_text(line), width))
-        self._write(stamp, wrapped or [""], style)
-        self._render_reading()
+        self._append(stamp, "\n".join(lines), style=style)
 
     def _hang_block(
         self,
@@ -1220,38 +1205,12 @@ class CampaignReport(App):
         style: str | None = None,
         prefix_style: str | None = None,
     ) -> None:
-        lines = _hang(prefix, _clean_text(text), self._output_width())
-        if style is None and prefix_style:
-            texts: list[Text] = []
-            for index, line in enumerate(lines):
-                item = Text(_clean_text(line))
-                if index == 0 and len(line) >= len(prefix):
-                    item.stylize(prefix_style, 0, len(prefix))
-                texts.append(item)
-            self._output().append_texts(texts)
-            self._render_reading()
-            return
-        self._write(None, lines, style)
-        self._render_reading()
+        self._append(None, f"{prefix}{_clean_text(text)}", style=style)
 
     def _write(
         self, stamp: datetime | None, lines: list[str], style: str | None
     ) -> None:
-        palette = self._palette
-        stamp_text = _ts(stamp) if stamp is not None else ""
-        prefix_len = len(stamp_text) + 1 if stamp_text else 0
-        texts: list[Text] = []
-        for line in lines:
-            text = _clean_text(line)
-            item = Text(text)
-            if prefix_len and text.startswith(f"{stamp_text} "):
-                item.stylize(palette.muted, 0, prefix_len)
-                if style:
-                    item.stylize(style, prefix_len, len(text))
-            elif style:
-                item.stylize(style, 0, len(text))
-            texts.append(item)
-        self._output().append_texts(texts)
+        self._append(stamp, "\n".join(lines), style=style)
 
     def _output_width(self) -> int:
         # The log's real content region is narrower than the screen: the
@@ -1259,7 +1218,7 @@ class CampaignReport(App):
         # columns. Derive the width from the log itself so pre-wrapped lines
         # never exceed the viewport and get clipped.
         try:
-            width = self.query_one("#output", OutputLog).scrollable_content_region.width
+            width = self.query_one("#output", EventLog).scrollable_content_region.width
         except Exception:  # noqa: BLE001 - layout not ready yet
             width = 0
         if not width:
@@ -1284,7 +1243,13 @@ class CampaignReport(App):
                 "Demonstration mode: every value here is synthetic.",
                 style=f"bold {palette.error}",
             )
-        feed_ready = isinstance(self._feed, JsonlFeed) and self._feed.path.exists()
+        feed_ready = False
+        if isinstance(self._feed, CampaignEventFeed):
+            feed_ready = (
+                self._feed.typed_path.exists() or self._feed.legacy_path.exists()
+            )
+        elif isinstance(self._feed, JsonlFeed):
+            feed_ready = self._feed.path.exists()
         if not self._demo and not feed_ready:
             self._append(
                 now,
@@ -1293,25 +1258,6 @@ class CampaignReport(App):
                 "durable operational history and recorded usage follow.",
                 style=palette.muted,
             )
-        question = _clean_text(snapshot.question) or _clean_text(snapshot.objective)
-        if question:
-            prefix = (
-                f"Inquiry [{snapshot.question_source}]: "
-                if snapshot.question
-                else "Objective: "
-            )
-            self._hang_block(prefix, question, prefix_style=f"bold {palette.warning}")
-        if snapshot.synthesis:
-            self._hang_block(
-                f"PI record {snapshot.synthesis_session or 'S?'}: ",
-                _clean_text(snapshot.synthesis),
-                prefix_style=f"bold {palette.pi}",
-            )
-        assignments = projector.role_assignment_text(snapshot)
-        if assignments:
-            self._append(now, "Model assignments at attachment:", style=palette.muted)
-            self._append_block(now, assignments.splitlines(), style=palette.muted)
-        self._append_timeline()
 
     def _append_timeline(self) -> None:
         snapshot = self.snapshot
@@ -1379,8 +1325,16 @@ class CampaignReport(App):
         if feed is None:
             return
         events = feed.poll()
-        if isinstance(feed, JsonlFeed) and feed.rejected:
-            self._note_feed_error(feed.rejected)
+        mode = getattr(feed, "mode", "")
+        if mode and self._feed_mode and mode != self._feed_mode:
+            self._timeline.clear()
+            for event in self._history_events:
+                self._timeline.ingest(event)
+        if mode:
+            self._feed_mode = mode
+        rejected = getattr(feed, "rejected", None)
+        if rejected:
+            self._note_feed_error(rejected)
         self._process_events(events)
 
     def _note_feed_error(self, message: str) -> None:
@@ -1395,10 +1349,12 @@ class CampaignReport(App):
 
     def _process_events(self, events: list[Observation]) -> None:
         for event in events:
+            self._timeline.ingest(event)
             handler = getattr(self, f"_event_{event.kind}", None)
             if handler is None:
                 continue
             handler(event)
+        self._render_log()
         self._apply_layout()
 
     def _event_liveness(self, event: Observation) -> None:
@@ -1418,113 +1374,6 @@ class CampaignReport(App):
         if not label or label == self._last_activity:
             return
         self._last_activity = label
-        self._append(event.ts, f"activity: {label}", style=self._palette.accent)
-
-    def _event_pi_message(self, event: Observation) -> None:
-        raw = _clean_text(event.fields.get("text") or "")
-        if not raw:
-            return
-        session = _clean_text(event.fields.get("session_id") or "")
-        turn = event.fields.get("turn")
-        final = bool(event.fields.get("final", True))
-        shown = self._pi_stream.get(turn, "") if turn is not None else ""
-        # A partial carries only the text added since the previous partial.
-        text = raw if final or turn is None else shown + raw
-        fingerprint = (session, text)
-        if turn is None:
-            # Whole-message events (demo fixtures and replayed finals).
-            if fingerprint in self._pi_seen:
-                return
-            self._pi_seen.append(fingerprint)
-            stamp = event.ts or _now()
-            prefix = (
-                f"{_ts(stamp)} PI ({session}): " if session else f"{_ts(stamp)} PI: "
-            )
-            self._hang_block(prefix, text, prefix_style=f"bold {self._palette.pi}")
-            return
-        if final and fingerprint in self._pi_seen:
-            return
-        stamp = event.ts or _now()
-        label = f"{_ts(stamp)} PI ({session}): " if session else f"{_ts(stamp)} PI: "
-        if not text.startswith(shown):
-            shown = ""
-        addition = text[len(shown) :]
-        if shown:
-            addition = addition.lstrip()
-        if addition.strip():
-            if shown:
-                # Continue the message under the same gutter, no repeated stamp.
-                self._hang_block(" " * len(label), addition)
-            else:
-                self._hang_block(
-                    label, addition, prefix_style=f"bold {self._palette.pi}"
-                )
-        self._pi_stream[turn] = text
-        if final:
-            self._pi_seen.append(fingerprint)
-            self._pi_stream.pop(turn, None)
-
-    def _event_tool(self, event: Observation) -> None:
-        name = _clean_text(event.fields.get("name") or "tool")
-        detail = _display_text(_clean_text(event.fields.get("detail") or ""))
-        line = f"tool {name}"
-        if detail:
-            line += f": {detail}"
-        self._append(event.ts, line, style=self._palette.tool)
-
-    def _append_console(self, stamp: datetime | None, text: str, scope: str) -> None:
-        """Render one console card or line with per-line semantic styles."""
-        palette = self._palette
-        width = self._output_width()
-        stamp_text = _ts(stamp) if stamp is not None else ""
-        first_prefix = f"{stamp_text} " if stamp_text else ""
-        indent = " " * len(first_prefix)
-        base_style = _scope_style(scope, palette)
-        lines = _display_text(text).splitlines() or [""]
-        is_card = lines[0].strip().startswith("===") and lines[0].strip().endswith(
-            "==="
-        )
-        rendered: list[Text] = []
-        for index, raw in enumerate(lines):
-            stripped = raw.strip()
-            if stripped.startswith("===") and stripped.endswith("==="):
-                body_style = (
-                    base_style
-                    if scope.casefold() in {"error", "warning"}
-                    else f"bold {palette.accent}"
-                )
-            elif stripped in SECTION_HEADINGS:
-                body_style = f"bold {palette.section}"
-            elif raw.startswith(("Phase: ", "Campaign: ")):
-                body_style = palette.accent
-            elif is_card:
-                body_style = (
-                    base_style
-                    if scope.casefold() in {"error", "warning"}
-                    else palette.text
-                )
-            else:
-                body_style = base_style
-            prefix = first_prefix if index == 0 else indent
-            rendered.extend(
-                _hang_styled(
-                    prefix,
-                    raw,
-                    width,
-                    prefix_style=palette.muted,
-                    body_style=body_style,
-                )
-            )
-        if rendered:
-            self._output().append_texts(rendered)
-            self._render_reading()
-
-    def _event_console_line(self, event: Observation) -> None:
-        text = _clean_text(event.fields.get("text") or "")
-        scope = _clean_text(event.fields.get("scope") or "")
-        if not text:
-            return
-        self._append_console(event.ts, text, scope)
 
     def _event_training_progress(self, event: Observation) -> None:
         attempt = event.fields.get("attempt")
@@ -1559,14 +1408,6 @@ class CampaignReport(App):
 
     def _event_execution_end(self, event: Observation) -> None:
         operation = _clean_text(event.fields.get("operation_id") or "")
-        status = _clean_text(event.fields.get("status") or "ended")
-        text = _clean_text(event.fields.get("text") or "")
-        style = (
-            f"bold {self._palette.success}"
-            if status == "completed"
-            else f"bold {self._palette.warning}"
-        )
-        self._append(event.ts, text or f"{operation} execution {status}", style=style)
         if self._training and self._training.get("operation_id") == operation:
             self._training = None
         if self._evaluation and self._evaluation.get("operation_id") == operation:
@@ -1582,6 +1423,80 @@ class CampaignReport(App):
     def _on_follow(self, following: bool, missed: int) -> None:
         self._render_reading()
 
+    # ------------------------------------------------------------------
+    # Log actions
+    # ------------------------------------------------------------------
+
+    def action_search_log(self) -> None:
+        if self._output_hidden:
+            return
+        self._search_visible = True
+        search = self.query_one("#log-search", Input)
+        search.display = True
+        search.value = self._log_query
+        search.focus()
+
+    def action_filter_log(self) -> None:
+        self.push_screen(
+            FilterScreen(self._log_categories),
+            callback=self._apply_filter,
+        )
+
+    def _apply_filter(self, result: set[str] | None) -> None:
+        if result is None:
+            return
+        self._log_categories = set(result)
+        self._render_log()
+        self._apply_layout()
+
+    def action_raw_event(self) -> None:
+        item = self._output().selected_item()
+        if item is not None:
+            self.push_screen(RawEventScreen(item))
+
+    def action_follow_log(self) -> None:
+        self._output().action_follow()
+        self._render_reading()
+
+    def action_clear_log_filter(self) -> None:
+        if self._search_visible:
+            self._search_visible = False
+            search = self.query_one("#log-search", Input)
+            search.value = ""
+            search.display = False
+            self._log_query = ""
+            self._render_log()
+            self._apply_layout()
+            self._output().focus()
+            return
+        if self._log_query or self._log_categories:
+            self._log_query = ""
+            self._log_categories = set()
+            self._render_log()
+            self._apply_layout()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        if event.input.id != "log-search":
+            return
+        self._log_query = event.value.strip()
+        self._search_visible = False
+        event.input.display = False
+        self._render_log()
+        self._apply_layout()
+        self._output().focus()
+
+    def on_key(self, event) -> None:
+        if event.key == "escape" and self._search_visible:
+            self._search_visible = False
+            search = self.query_one("#log-search", Input)
+            search.value = ""
+            search.display = False
+            self._log_query = ""
+            self._render_log()
+            self._apply_layout()
+            self._output().focus()
+            event.stop()
+
     def _render_reading(self) -> None:
         if self._output_hidden:
             return
@@ -1589,25 +1504,25 @@ class CampaignReport(App):
         out = self._output()
         if self.size.width < 80:
             text = (
-                "Following | Tab: models | End: live"
+                "Following | Enter: open | End: live"
                 if out.following
-                else f"Reading history - {out.missed} newer | End: live"
+                else f"History - {out.missed} newer | End: live"
             )
         elif self.size.width < 110:
             text = (
-                "Following live | Wheel/PgUp/PgDn: history | Tab: models | End: live"
+                "Following live | Space: open | / search | f filter | End: live"
                 if out.following
-                else f"Reading history - {out.missed} newer | End: live | Ctrl+Q: close"
+                else f"History - {out.missed} newer | End: live | Ctrl+Q: close"
             )
         elif out.following:
             text = (
-                "Following live output | Wheel / PgUp / PgDn: history | "
-                "Tab: model table | End: live | Ctrl+Q: close"
+                "Following live events | Enter/Space: open | / search | f filter | "
+                "r raw | End: live | Ctrl+Q: close"
             )
         else:
             text = (
                 f"Reading history - {out.missed} newer entries | "
-                "End: live | Ctrl+Q: close"
+                "End: live | / search | f filter | Ctrl+Q: close"
             )
         widget.update(
             Text(
@@ -1635,13 +1550,17 @@ class CampaignReport(App):
             return
         compact = size.width < COMPACT_WIDTH or size.height < COMPACT_HEIGHT
         self._output_hidden = compact
-        output = self.query_one("#output", OutputLog)
+        output = self.query_one("#output", EventLog)
         output.display = not compact
         self.query_one("#output-heading", Static).display = not compact
+        self.query_one("#now", Static).display = not compact
+        self.query_one("#log-search", Input).display = (
+            not compact and self._search_visible
+        )
         self.query_one("#reading", Static).display = not compact
+        self._now_rows = 0 if compact else 1
         if compact and self.focused is output:
             self.query_one("#models", DataTable).focus()
-        self._render_output_heading()
         table = self.query_one("#models", DataTable)
         rows = len(table.rows)
         budget = self._models_budget_rows()

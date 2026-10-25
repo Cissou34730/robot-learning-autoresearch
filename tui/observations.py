@@ -1,8 +1,8 @@
 """One-way observation feed for the report.
 
-Producer-side instrumentation is intentionally out of this pass: the report
-consumes a structured JSONL event file when one exists and stays fully
-readable from durable state when it does not.
+The report prefers the typed event feed (``<campaign>.events.jsonl``) and
+falls back to this legacy ``<campaign>.jsonl`` feed. It stays fully readable
+from durable state when neither file exists.
 
 Expected record shape (one JSON object per line):
 
@@ -43,6 +43,13 @@ class Observation:
     kind: str
     ts: datetime | None
     fields: dict = field(default_factory=dict)
+    event_id: str = ""
+    scope: str = ""
+    severity: str = ""
+    operation_id: str = ""
+    session_id: str = ""
+    inquiry_id: str = ""
+    campaign_id: str = ""
 
 
 TRAINING_KIND = "training_progress"

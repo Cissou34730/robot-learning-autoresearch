@@ -23,6 +23,7 @@ from runner import (
     paths,
     protocol,
     repository,
+    typed_events,
 )
 from runner.stop_control import interrupt_on_stop_request
 
@@ -500,6 +501,15 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
     state.update(copy.deepcopy(working))
     accepted = state["pending_operation"]
     _write_accepted_request_handoff(accepted)
+    typed_events.set_campaign((state.get("campaign") or {}).get("id"))
+    typed_events.emit(
+        "operation_requested",
+        accepted,
+        scope=str(accepted.get("kind") or "operation"),
+        operation_id=str(accepted.get("id") or ""),
+        session_id=str(accepted.get("session_id") or ""),
+        inquiry_id=str(accepted.get("inquiry_id") or ""),
+    )
     return accepted
 
 
@@ -2134,6 +2144,14 @@ def _announce_completed_operation(presentation: dict) -> None:
             "text": f"{pending.get('id') or kind}: operation complete",
         }
     )
+    typed_events.emit(
+        "operation_completed",
+        pending,
+        scope=str(kind or "operation"),
+        operation_id=str(pending.get("id") or ""),
+        session_id=str(pending.get("session_id") or ""),
+        inquiry_id=str(pending.get("inquiry_id") or ""),
+    )
     # Inquiry, checkpoint and conclusion cards already carry the operation and its context.
     if kind not in {"inquiry", "checkpoint", "campaign_conclusion"}:
         detail = _operation_completion_detail(pending)
@@ -2163,6 +2181,7 @@ def _campaign_resource_summary(state: dict) -> str:
 def execute_pending_operation() -> int:
     state = repository.load_state(allow_missing_artifact=True)
     observation_feed.set_campaign(repository.current_campaign_id(state))
+    typed_events.set_campaign(repository.current_campaign_id(state))
     pending = state["pending_operation"]
     if not isinstance(pending, dict):
         raise TypeError("there is no pending Runner operation")
@@ -2181,6 +2200,15 @@ def execute_pending_operation() -> int:
     }:
         _training_allocation(request["training"], state)
     _write_accepted_request_handoff(pending)
+    typed_events.emit(
+        "operation_started",
+        pending,
+        scope=str(pending.get("kind") or "operation"),
+        operation_id=str(pending.get("id") or ""),
+        session_id=str(pending.get("session_id") or ""),
+        inquiry_id=str(pending.get("inquiry_id") or ""),
+    )
+    typed_events.emit("run_state", {"state": "executing"}, scope="campaign")
     subject = _operation_subject(pending)
     detail = _operation_request_detail(pending)
     presentation = _completion_presentation(state, pending)
@@ -2227,12 +2255,28 @@ def execute_pending_operation() -> int:
                 "text": str(error),
             }
         )
+        typed_events.emit(
+            "operation_failed",
+            {
+                "id": pending.get("id"),
+                "kind": kind,
+                "error": str(error),
+                "request": pending.get("request"),
+                "result": pending.get("result"),
+            },
+            scope=str(kind or "operation"),
+            severity="error",
+            operation_id=str(pending.get("id") or ""),
+            session_id=str(pending.get("session_id") or ""),
+            inquiry_id=str(pending.get("inquiry_id") or ""),
+        )
         console.boundary(
             "error",
             "PUBLICATION FAILED" if publication_failure else "OPERATION FAILED",
             subject,
             str(error),
         )
+        typed_events.emit("run_state", {"state": "failed"}, scope="campaign")
         # The card already shows the error; the entry point skips the duplicate traceback.
         error.operation_reported = True
         raise
@@ -2244,9 +2288,26 @@ def execute_pending_operation() -> int:
                 "status": "interrupted",
             }
         )
+        typed_events.emit(
+            "operation_completed",
+            {
+                "id": pending.get("id"),
+                "kind": kind,
+                "status": "interrupted",
+                "request": pending.get("request"),
+                "result": pending.get("result"),
+            },
+            scope=str(kind or "operation"),
+            severity="warning",
+            operation_id=str(pending.get("id") or ""),
+            session_id=str(pending.get("session_id") or ""),
+            inquiry_id=str(pending.get("inquiry_id") or ""),
+        )
+        typed_events.emit("run_state", {"state": "paused"}, scope="campaign")
         console.boundary("warning", "OPERATION PAUSED", subject)
         return exit_code
     _announce_completed_operation(presentation)
+    typed_events.emit("run_state", {"state": "idle"}, scope="campaign")
     return exit_code
 
 
@@ -2335,6 +2396,19 @@ def official_assessment_progress(completed: int, total: int) -> None:
             "elapsed_seconds": None,
         }
     )
+    typed_events.emit(
+        "eval_progress",
+        {
+            "operation_id": "official",
+            "instrument": "official assessment",
+            "official": True,
+            "episodes": completed,
+            "episodes_total": total,
+            "elapsed_seconds": None,
+        },
+        scope="measurement",
+        operation_id="official",
+    )
     console.progress(f"ASSESS | {completed}/{total} | {percent}%")
 
 
@@ -2422,6 +2496,19 @@ def run_official_assessment() -> int:
                 "text": str(existing["summary"]),
             }
         )
+        typed_events.emit(
+            "operation_completed",
+            {
+                "id": "official",
+                "kind": "measurement",
+                "status": existing["status"],
+                "model": existing.get("model"),
+                "summary": existing.get("summary"),
+            },
+            scope="measurement",
+            severity="info" if existing["status"] == "passed" else "error",
+            operation_id="official",
+        )
         console.boundary(
             "assessment",
             "COMPLETE",
@@ -2471,6 +2558,19 @@ def run_official_assessment() -> int:
             "status": "completed" if passed else "failed",
             "text": summary,
         }
+    )
+    typed_events.emit(
+        "operation_completed",
+        {
+            "id": "official",
+            "kind": "measurement",
+            "status": "passed" if passed else "failed",
+            "model": candidate.get("id"),
+            "summary": summary,
+        },
+        scope="measurement",
+        severity="info" if passed else "error",
+        operation_id="official",
     )
     console.boundary(
         "assessment",

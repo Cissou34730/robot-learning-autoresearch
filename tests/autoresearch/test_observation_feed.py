@@ -8,7 +8,7 @@ import json
 
 import pytest
 
-from runner import console, observation_feed
+from runner import console, observation_feed, typed_events
 from runner.copilot.copilot_console import Console
 from tui.observations import JsonlFeed
 
@@ -16,9 +16,12 @@ from tui.observations import JsonlFeed
 @pytest.fixture(autouse=True)
 def _isolate(monkeypatch, tmp_path):
     observation_feed.reset()
+    typed_events.reset()
     monkeypatch.setenv("TUI_OBSERVATIONS", str(tmp_path / "events.jsonl"))
+    monkeypatch.setenv("TUI_TYPED_EVENTS", str(tmp_path / "typed.events.jsonl"))
     yield
     observation_feed.reset()
+    typed_events.reset()
 
 
 def _events(path):
@@ -61,6 +64,62 @@ def test_training_progress_event_carries_reward_and_success():
     assert event["target"] == 120000
     assert event["ep_rew_mean"] == 86.3
     assert event["training_success"] == 0.97
+
+
+def test_typed_emit_writes_schema_and_full_payload(tmp_path):
+    path = tmp_path / "typed.events.jsonl"
+    typed_events.reset()
+    typed_events.set_campaign("campaign-1")
+    typed_events.emit(
+        "console_card",
+        {"title": "OPERATION | T4", "body": ["full detail", "second line"]},
+        scope="operation",
+        operation_id="T4",
+    )
+    (event,) = _events(path)
+    assert event["schema_version"] == 1
+    assert event["event_id"]
+    assert event["campaign_id"] == "campaign-1"
+    assert event["kind"] == "console_card"
+    assert event["operation_id"] == "T4"
+    assert event["payload"]["body"] == ["full detail", "second line"]
+
+
+def test_console_announce_keeps_full_text_in_typed_feed(tmp_path, capsys):
+    path = tmp_path / "typed.events.jsonl"
+    typed_events.reset()
+    typed_events.set_campaign("campaign-1")
+    message = "[pi] The full PI text is not shortened here. " * 4
+    console.announce(message)
+    capsys.readouterr()
+    (event,) = _events(path)
+    assert event["kind"] == "console_line"
+    assert event["payload"]["text"] == message
+    assert event["scope"] == "pi"
+
+
+def test_typed_emitter_does_not_change_console_stdout(monkeypatch, tmp_path, capsys):
+    import re
+
+    message = "[pi] identical console text"
+    monkeypatch.setenv("TUI_TYPED_EVENTS", str(tmp_path / "on.events.jsonl"))
+    typed_events.reset()
+    console.announce(message)
+    with_typed = capsys.readouterr().out
+    monkeypatch.setenv("TUI_TYPED_EVENTS", "off")
+    typed_events.reset()
+    console.announce(message)
+    without_typed = capsys.readouterr().out
+    pattern = re.compile(r"^\[[^\]]+\] ", re.MULTILINE)
+    assert pattern.sub("", with_typed) == pattern.sub("", without_typed)
+
+
+def test_typed_disabled_feed_writes_nothing(monkeypatch, tmp_path):
+    path = tmp_path / "typed.events.jsonl"
+    monkeypatch.setenv("TUI_TYPED_EVENTS", "off")
+    typed_events.reset()
+    typed_events.emit("run_state", {"state": "idle"})
+    assert not path.exists()
 
 
 def test_disabled_feed_writes_nothing(monkeypatch, tmp_path):

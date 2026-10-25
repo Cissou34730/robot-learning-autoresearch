@@ -58,9 +58,10 @@ function Write-TuiObservation {
         if ($directory -and -not (Test-Path -LiteralPath $directory)) {
             New-Item -ItemType Directory -Path $directory -Force | Out-Null
         }
+        $timestamp = (Get-Date).ToUniversalTime().ToString("o")
         $record = [ordered]@{
             campaign_id = $campaignId
-            ts = (Get-Date).ToUniversalTime().ToString("o")
+            ts = $timestamp
             kind = $Kind
         }
         if ($Scope) { $record.scope = $Scope }
@@ -77,6 +78,50 @@ function Write-TuiObservation {
         }
         finally {
             $stream.Dispose()
+        }
+
+        $typedOverride = $env:TUI_TYPED_EVENTS
+        if ($null -ne $typedOverride -and $typedOverride.Trim().ToLowerInvariant() -in @("", "0", "off", "none", "false")) {
+            return
+        }
+        if ($typedOverride) {
+            $typedPath = $typedOverride
+            $typedDirectory = Split-Path -Parent $typedPath
+            if ($typedDirectory -and -not (Test-Path -LiteralPath $typedDirectory)) {
+                New-Item -ItemType Directory -Path $typedDirectory -Force | Out-Null
+            }
+        }
+        else {
+            $typedPath = Join-Path $directory "$campaignId.events.jsonl"
+        }
+        $payload = [ordered]@{}
+        if ($Text) { $payload.text = $Text }
+        if ($Scope) { $payload.scope = $Scope }
+        foreach ($key in $Fields.Keys) { $payload[$key] = $Fields[$key] }
+        $severity = if ($Scope -eq "error") { "error" } elseif ($Scope -eq "warning") { "warning" } else { "info" }
+        $typed = [ordered]@{
+            schema_version = 1
+            event_id = [guid]::NewGuid().ToString()
+            campaign_id = $campaignId
+            ts = $timestamp
+            kind = $Kind
+            scope = $Scope
+            severity = $severity
+            operation_id = if ($Fields.ContainsKey("operation_id")) { $Fields["operation_id"] } else { "" }
+            session_id = if ($Fields.ContainsKey("session_id")) { $Fields["session_id"] } else { "" }
+            inquiry_id = if ($Fields.ContainsKey("inquiry_id")) { $Fields["inquiry_id"] } else { "" }
+            payload = $payload
+        }
+        $typedJson = $typed | ConvertTo-Json -Compress -Depth 5
+        $typedBytes = [Text.Encoding]::UTF8.GetBytes($typedJson + "`n")
+        $typedStream = [IO.File]::Open(
+            $typedPath, [IO.FileMode]::Append, [IO.FileAccess]::Write, [IO.FileShare]::ReadWrite
+        )
+        try {
+            $typedStream.Write($typedBytes, 0, $typedBytes.Length)
+        }
+        finally {
+            $typedStream.Dispose()
         }
     }
     catch {

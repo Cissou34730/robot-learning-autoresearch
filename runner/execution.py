@@ -18,7 +18,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from runner import console, observation_feed, paths, repository
+from runner import console, observation_feed, paths, repository, typed_events
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
@@ -335,6 +335,19 @@ def training_progress_event(
     }
 
 
+def _emit_progress(event: dict) -> None:
+    """Publish structured progress to both the legacy and typed feeds."""
+    observation_feed.emit(event)
+    kind = str(event.get("kind") or "progress")
+    payload = {key: value for key, value in event.items() if key != "kind"}
+    typed_events.emit(
+        kind,
+        payload,
+        scope="training" if kind == "training_progress" else "measurement",
+        operation_id=str(payload.get("operation_id") or ""),
+    )
+
+
 def train_candidate(
     output_dir: Path,
     timesteps: int,
@@ -398,7 +411,7 @@ def train_candidate(
                 steps = latest_step_count(log_text)
                 observation_feed.emit({"kind": "liveness"})
                 if steps is None:
-                    observation_feed.emit(
+                    _emit_progress(
                         training_progress_event(
                             operation_id, None, None, elapsed, record
                         )
@@ -440,7 +453,7 @@ def train_candidate(
                             record,
                         )
                     )
-                    observation_feed.emit(
+                    _emit_progress(
                         training_progress_event(
                             operation_id, steps, progress_target, elapsed, record
                         )
@@ -720,7 +733,7 @@ def evaluate_artifact(
                         f"{100 * completed_episodes // episodes}% | "
                         f"{console.format_duration(time.monotonic() - started)}"
                     )
-                    observation_feed.emit(
+                    _emit_progress(
                         {
                             "kind": "eval_progress",
                             "operation_id": operation_id,

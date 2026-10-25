@@ -13,7 +13,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from runner import observation_feed, paths
+from runner import observation_feed, paths, typed_events
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
@@ -241,7 +241,19 @@ def announce(message: str) -> None:
     _progress.clear()
     _progress.archived()
     leading_break = "\n" if message.startswith("\n") else ""
-    text = compact_text(message.lstrip("\n"))
+    full_text = message.lstrip("\n")
+    scope, _ = _observation_scope(compact_text(full_text))
+    typed_events.emit(
+        "console_line",
+        {"text": full_text, "scope": scope},
+        scope=scope,
+        severity="error"
+        if scope == "error"
+        else "warning"
+        if scope == "warning"
+        else "info",
+    )
+    text = compact_text(full_text)
     scope, observation_text = _observation_scope(text)
     observation_feed.emit(
         {"kind": "console_line", "scope": scope, "text": observation_text}
@@ -281,6 +293,16 @@ def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> Non
     color = _SEMANTIC_COLORS.get(scope, _CYAN)
     body_color = color if scope in {"error", "warning"} else _WHITE
     timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
+    typed_events.emit(
+        "console_card",
+        {"title": title, "body": list(lines), "scope": scope},
+        scope=scope,
+        severity="error"
+        if scope == "error"
+        else "warning"
+        if scope == "warning"
+        else "info",
+    )
     title = compact_text(title)
     body = [compact_text(line) for line in lines]
     observation_text = f"=== {title} ==="

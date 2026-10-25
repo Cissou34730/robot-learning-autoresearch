@@ -44,8 +44,10 @@ At 80x24 the report keeps the header, the PI role table and the last-training
 line, and hides the output log first. `NO_COLOR` and the terminal's color
 capability are respected; `--light` selects the light theme.
 
-Reading keys: mouse wheel, Page Up/Down, Home/End inside the output;
-Tab/Shift+Tab move between the output and the model table; Ctrl+Q or Ctrl+C
+Reading keys: Up/Down or `j`/`k` move, `Enter`/`Space` expand or collapse,
+`Left`/`Right` collapse or expand, `/` searches, `f` filters by kind, `r`
+opens the raw event payload, `End` returns to live follow, mouse wheel scrolls,
+Tab/Shift+Tab move between the event log and the model table; Ctrl+Q or Ctrl+C
 closes the report (presentation only, never the campaign).
 
 The durable snapshot and the elapsed clock refresh every 15 seconds. The
@@ -75,6 +77,28 @@ recorded counters and the pending operation. The last-training line shows the
 checkpoint with the highest recorded training success (falling back to reward
 and then to the last checkpoint by steps). The development-success interval is
 deferred and is not shown.
+
+## Structured operator log
+
+The output region is a virtualized `Tree` of collapsible timeline items:
+
+- campaign → session → inquiry → operation → leaf event;
+- the active chain is expanded by default, older groups are collapsed;
+- warnings and errors are expanded by default;
+- every leaf shows `HH:MM:SS`; group headers show start–end and duration;
+- training progress rows show the interval since the previous row, steps
+  delta and steps per second when derivable;
+- the sticky `Now` line names the active or pending operation and its summary.
+
+`Enter`/`Space` toggles the selected row, `Left`/`Right` collapse or expand,
+`/` searches the full event text (including collapsed detail), `f` filters by
+kind/category while keeping ancestors, and `r` opens the selected event's full
+payload in a modal. `Esc` clears search or filter.
+
+The log renders typed events when `reports/tui_observations/<campaign-id>.events.jsonl`
+exists. Otherwise it renders the legacy `console_line` feed and the durable
+history synthesized from `research_state.json` and `results.jsonl`. The
+reducer (`tui/timeline.py`) is terminal-free and tested with synthetic events.
 
 ## Observation feed (producer and consumer)
 
@@ -134,18 +158,51 @@ reconstructed operation timeline and recorded usage; the output states the
 live-observation limitation on attachment. Foreign-campaign events are
 rejected; replayed events are deduplicated.
 
+### Typed event feed
+
+`runner/typed_events.py` writes the maintainer-only typed stream to
+`reports/tui_observations/<campaign-id>.events.jsonl`:
+
+```json
+{"schema_version": 1, "event_id": "...", "campaign_id": "...",
+ "ts": "2026-10-24T12:41:04+00:00", "kind": "training_progress",
+ "scope": "training", "severity": "info", "operation_id": "T4",
+ "session_id": "S7", "inquiry_id": "I3",
+ "payload": {"steps": 72000, "target": 120000, "ep_rew_mean": 86.3,
+             "training_success": 0.97}}
+```
+
+The writer is best-effort and never raises into the Runner. `TUI_TYPED_EVENTS`
+moves the file or disables it with `off`. Current emitters:
+
+- the launcher (`researcher_session.ps1`) writes the same status lines to both
+  the legacy and typed feeds;
+- `runner/console.py` `announce()` and `card()`: full text and card body before
+  console compaction;
+- `runner/copilot/copilot_console.py`: PI messages and tool/console lines;
+- `runner/execution.py`: `training_progress` and `eval_progress` with full
+  structured payloads;
+- `runner/run_experiment.py`: operation requested/started/completed/failed,
+  interrupted operations, and official-assessment progress/completion.
+
+The TUI prefers the typed file and falls back to the legacy feed. Durable
+history is folded into the same reducer, so a late attach still rebuilds the
+campaign timeline.
+
 ## Validation
 
 ```powershell
-uv run pytest tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py
+uv run pytest tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py
 ```
 
-The tests cover the feed writer and its console emit points, the projector
-contracts and the headless rendering behavior:
+The tests cover the legacy and typed feed writers, console stdout identity
+with the typed emitter on/off, the projector contracts, the timeline reducer
+and the headless rendering behavior:
 single-screen composition, stage IDs, goal gap, counters, pending chip,
 last-training proxy, live training reward/success, streamed/final PI
-deduplication, the progress lifecycle (training and evaluation, official
-assessment label, module measurement with unavailable counters,
+deduplication, timeline grouping, default collapse, search/filter, timestamps
+and training intervals, the progress lifecycle (training and evaluation,
+official assessment label, module measurement with unavailable counters,
 end-of-execution removal), reading position while new output arrives, the
 80x24 compact floor, the too-small fallback and stale counter labeling. Real
 campaign state is exercised read-only by starting the report against the

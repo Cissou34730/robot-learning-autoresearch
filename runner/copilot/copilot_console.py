@@ -11,7 +11,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
 
-from runner import observation_feed
+from runner import observation_feed, typed_events
 from runner.copilot.path_policy import ROOT
 from runner.copilot.usage import SessionUsage
 
@@ -523,10 +523,21 @@ class Console:
 
     def line(self, text: str, color: str | None = None) -> None:
         self._close_message()
+        scope = _observation_scope(text, color)
+        typed_events.emit(
+            "tool_call" if scope == "tool" else "console_line",
+            {"text": text.strip(), "color": color, "scope": scope},
+            scope=scope,
+            severity="error"
+            if scope == "error"
+            else "warning"
+            if scope == "warning"
+            else "info",
+        )
         observation_feed.emit(
             {
                 "kind": "console_line",
-                "scope": _observation_scope(text, color),
+                "scope": scope,
                 "text": text.strip(),
             }
         )
@@ -538,6 +549,15 @@ class Console:
             return
         message = self._message_text
         if message.strip():
+            typed_events.emit(
+                "pi_message",
+                {
+                    "text": message,
+                    "final": True,
+                    "turn": self._pi_turn,
+                },
+                scope="pi",
+            )
             observation_feed.emit(
                 {
                     "kind": "pi_message",
@@ -654,6 +674,15 @@ class Console:
         addition = snapshot[self._message_emitted :]
         self._message_emitted = len(snapshot)
         self._message_emitted_at = now
+        typed_events.emit(
+            "pi_message",
+            {
+                "text": addition,
+                "final": False,
+                "turn": self._pi_turn,
+            },
+            scope="pi",
+        )
         observation_feed.emit(
             {
                 "kind": "pi_message",
