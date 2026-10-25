@@ -30,8 +30,16 @@ robot contract and installed APIs. Successful execution establishes
 compatibility only for the calls it exercises, not scientific validity or goal
 progress.
 
-When requesting a diagnostic, state the conditions needed for it to answer your
-question. Limit conclusions when those conditions do not hold.
+Before a costly experiment, identify assumptions whose failure would prevent
+the result from answering the intended question. Use existing evidence to
+assess them.
+
+Choose an additional check when its possible results can change the plan and
+justify its implementation and execution effort. Existing evidence may be
+sufficient. If you proceed with an unresolved assumption, preserve it and
+limit the resulting claim accordingly. When requesting a diagnostic, state
+the conditions needed for it to answer your question. Limit conclusions when
+those conditions do not hold.
 
 The Runner is not a scientific actor. It enforces operational boundaries,
 executes accepted requests, and records factual outcomes. It does not choose
@@ -122,14 +130,14 @@ continues from that state.
 ## Inquiry work
 
 An inquiry is a temporary question or obstacle whose resolution can change the
-route toward the human goal. Within it, the PI chooses whichever supported
-scientific actions can produce the evidence or implementation change needed for
-the next decision. The inquiry connects observed outcomes to the scientific
-model: it challenges consequential physical explanations, resolves or narrows
-their unknowns with discriminating evidence, and revises the campaign's
-understanding before choosing an intervention. An unknown that cannot affect
-the direction may be set aside explicitly. No intervention category is
-privileged in advance.
+route toward the human goal. Within it, choose supported scientific actions
+that can produce evidence or implementation changes needed for the next
+decision. Connect observed outcomes to the scientific model. Test
+consequential explanations and revise the campaign's understanding as evidence
+changes it. An intervention can supply the evidence needed to revise an
+explanation. An unresolved explanation does not prevent development when the
+proposed work can advance the inquiry. Set aside unknowns that cannot affect
+the direction. No intervention category is privileged in advance.
 
 Begin from the human objective, current evidence and causal research map. Here,
 the causal research map means the relationships among observations,
@@ -181,13 +189,20 @@ including evidence accumulated across inquiries. Distinguish what the tested
 implementation establishes from what remains possible about the broader
 method. A negative result does not disprove the method.
 
-Choose among developing the method, investigating a consequential failure, and
-changing direction. Identify how the proposed work can advance the human goal
-in light of prior results.
-Compare the proposed method with the implementation already tested.
-Use source changes, recorded runtime and saved-component comparisons when
-available. A new description does not establish a new method.
-Repeated work can be useful. State what additional evidence it supplies.
+Choose among developing the method, investigating a consequential failure,
+and changing direction. Explain why the chosen action can advance the human
+goal from the current evidence. For method development, identify the specific
+limitation or opportunity that the next implementation addresses. A promising
+change need not already have a measured benefit.
+
+Compare the proposed method with the implementation already tested. Use source
+changes, recorded runtime and saved-component comparisons when available.
+A new description does not establish a new method. An inconclusive result
+alone does not justify another attempt or abandonment of the method.
+When repeating work, state what additional evidence or development it can
+provide. Consider implementation and execution effort when choosing between
+useful actions. Record the reason in the existing rationale and scientific
+session record fields.
 
 An inquiry may close with unresolved causes. Carry their decision consequences
 into goal review. Closing the inquiry does not itself justify continuing the
