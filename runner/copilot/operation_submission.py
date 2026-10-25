@@ -14,6 +14,13 @@ from runner.copilot.copilot_console import (
 )
 from runner.stop_control import stop_request_path
 
+# Below the SDK's 1,800-second limit on one external tool call.
+WAIT_SLICE_SECONDS = 1500.0
+RUNNING_NOTICE = (
+    "The accepted operation is still executing. Call submit_operation with "
+    "request=null to keep waiting for its result."
+)
+
 
 class ControllerChannel:
     def __init__(self, reader, writer) -> None:
@@ -54,10 +61,16 @@ class OperationSubmission:
         self.rejections = 0
         self.active_tasks: set[asyncio.Task] = set()
         self.closing = False
+        self.running: asyncio.Future | None = None
+        self.running_call_id: str | None = None
 
     @property
     def locked(self) -> bool:
-        return self.busy or self.closed
+        return self.busy or self.closed or self.running is not None
+
+    @property
+    def awaiting_result(self) -> bool:
+        return self.running is not None and not self.busy and not self.closed
 
     def tool(self):
         from copilot import define_tool
@@ -80,7 +93,9 @@ class OperationSubmission:
                 "and path=/pending to read its exact request and resolved measurements. "
                 "Correct request arguments with a replacement envelope; use scientific_coding "
                 "when the failure needs a source change. request=null reaccepts the SAME request "
-                "after source repair and cannot correct its arguments. Inquiry "
+                "after source repair and cannot correct its arguments. status=running "
+                "means the accepted operation is still executing; then request=null "
+                "waits for its result. Inquiry "
                 "open/reframe/close requires checkpoint next. Use actual completed_operations "
                 "metadata, not invented IDs; preserve your scientific content. Checkpoint "
                 "or terminal commitment ends this bounded context. Do not submit again after "
@@ -111,7 +126,12 @@ class OperationSubmission:
         call_id = invocation.tool_call_id
         if call_id in self.responses:
             return self.responses[call_id]
-        if self.busy or self.closed or (self.coding is not None and self.coding.busy):
+        resuming = self.awaiting_result
+        if resuming and params.request is not None:
+            return json.dumps({"status": "running", "error": RUNNING_NOTICE})
+        if not resuming and (
+            self.locked or (self.coding is not None and self.coding.busy)
+        ):
             return json.dumps(
                 {
                     "status": "rejected",
@@ -123,22 +143,30 @@ class OperationSubmission:
         self.active_tasks.add(task)
         self.wait_started = time.monotonic()
         try:
-            await self.channel.send(
-                {
-                    "type": "operation",
-                    "invocation_id": self.binding["invocation_id"],
-                    "session_id": self.binding["session_id"],
-                    "campaign_id": self.binding["campaign_id"],
-                    "event_count": self.state["operation_event_count"],
-                    "call_id": call_id,
-                    "request": params.request,
-                }
-            )
-            response = await self.channel.receive()
+            if not resuming:
+                await self.channel.send(
+                    {
+                        "type": "operation",
+                        "invocation_id": self.binding["invocation_id"],
+                        "session_id": self.binding["session_id"],
+                        "campaign_id": self.binding["campaign_id"],
+                        "event_count": self.state["operation_event_count"],
+                        "call_id": call_id,
+                        "request": params.request,
+                    }
+                )
+                self.running_call_id = call_id
+                self.running = asyncio.ensure_future(self.channel.receive())
+            done, _ = await asyncio.wait({self.running}, timeout=WAIT_SLICE_SECONDS)
+            if not done:
+                self.console.line("  > submit_operation: running")
+                return json.dumps({"status": "running", "error": RUNNING_NOTICE})
+            receive, self.running = self.running, None
+            response = receive.result()
             if (
                 response.get("type") != "operation_result"
                 or response.get("invocation_id") != self.binding["invocation_id"]
-                or response.get("call_id") != call_id
+                or response.get("call_id") != self.running_call_id
             ):
                 raise ValueError(
                     "Operation response binding does not match this submission."
@@ -199,6 +227,8 @@ class OperationSubmission:
         self.closing = True
         self.closed = True
         tasks = list(self.active_tasks)
+        if self.running is not None:
+            tasks.append(self.running)
         if tasks:
             self.request_stop()
             # Runner owns the cooperative-stop deadline and durable transaction.

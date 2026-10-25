@@ -153,9 +153,16 @@ def scoped_tool_hook(
     def on_pre_tool_use(request, invocation):
         if coding is not None:
             return coding.pre_tool_use(request, invocation)
-        if operations is not None and operations.locked:
-            return deny(RUNNER_LOCKED_DENIAL)
         name = request.get("toolName")
+        if (
+            operations is not None
+            and operations.locked
+            and not (
+                name == "submit_operation"
+                and getattr(operations, "awaiting_result", False)
+            )
+        ):
+            return deny(RUNNER_LOCKED_DENIAL)
         if read_alias and name == "read":
             name = "view"
         arguments = request.get("toolArgs")
