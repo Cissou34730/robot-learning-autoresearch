@@ -145,9 +145,11 @@ without implying a required successor action.
 
 Match the comparison to the claim that matters for the next decision.
 A candidate comparison asks which complete artifact performs better.
-A mechanism test asks whether an explanation accounts for an observed
-difference. If that explanation would change the next direction, choose a
-comparison or diagnostic that distinguishes it from consequential alternatives.
+A mechanism test asks whether an explanation accounts for where behavior fails
+and where comparable conditions succeed; an explanation that applies equally to
+both does not account for the difference. The scientific model states what the
+robot's definitions make equal or different, and behavior that departs from it
+is evidence about the policy or its implementation.
 Choose a diagnostic when its possible outcomes would lead to different next
 actions. When completed evidence already locates a defect, repairing it is a
 valid next action.
