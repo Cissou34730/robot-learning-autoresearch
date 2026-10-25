@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Simple-English review of campaign 6b13d5f4: 199/200 official successes, 52 minutes, 14.97 AIU. What improved, what the evidence shows, and what could still be luck.">
+    <title>Campaign 6b13d5f4: a faster learned-policy pass, but how much was luck?</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+        body {
+            margin: 0;
+            background: var(--cp-bg);
+            color: var(--cp-text);
+            font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        main { max-width: 1120px; margin: auto; padding: 32px 24px 64px; }
+        h1, h2, h3, p { margin: 0; }
+        h1 { max-width: 960px; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; letter-spacing: -.025em; }
+        h2 { margin-bottom: 16px; font-size: 1.55rem; line-height: 1.3; }
+        h3 { margin-bottom: 8px; font-size: 1.1rem; }
+        p + p { margin-top: 12px; }
+        a { color: var(--cp-link); text-underline-offset: 3px; }
+        code { font: .88em Consolas, "Courier New", Courier, monospace; overflow-wrap: anywhere; }
+        button {
+            padding: 8px 12px;
+            background: var(--cp-surface);
+            color: var(--cp-text);
+            border: 1px solid var(--cp-border);
+            border-radius: .625rem;
+            font: inherit;
+            cursor: pointer;
+        }
+        button:hover { border-color: var(--cp-accent); }
+        :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+        .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .eyebrow { margin-bottom: 12px; color: var(--cp-accent); font-size: .85rem; font-weight: 700; }
+        .intro { max-width: 940px; margin-top: 16px; font-size: 1.15rem; }
+        .small { color: var(--cp-text-muted); font-size: .9rem; }
+        .spaced { margin-top: 16px; }
+        .grid { display: grid; gap: 16px; }
+        .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .card {
+            padding: 24px;
+            border: 1px solid var(--cp-border);
+            border-radius: 16px;
+            background: var(--cp-surface);
+        }
+        .metric { display: block; margin-bottom: 4px; font-size: 2rem; font-weight: 700; line-height: 1.2; }
+        .note {
+            margin-top: 16px;
+            padding: 20px 24px;
+            border: 1px solid var(--cp-border);
+            border-left: 4px solid var(--cp-accent);
+            border-radius: .625rem;
+            background: var(--cp-surface);
+        }
+        .result { border-left-color: var(--cp-success); }
+        .caution { border-left-color: var(--cp-warning); }
+        nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 24px 0 32px; }
+        section { margin-top: 40px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        caption { margin-bottom: 12px; color: var(--cp-text-muted); text-align: left; font-size: .9rem; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--cp-border); vertical-align: top; }
+        thead th { background: var(--cp-surface-soft); font-size: .9rem; }
+        tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+        .wide table { min-width: 700px; }
+        .bar-label { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+        .bar-track { height: 16px; margin-bottom: 20px; background: var(--cp-surface-soft); border-radius: .625rem; }
+        .bar-fill { height: 100%; background: var(--cp-accent); border-radius: .625rem; }
+        .bar-fill.previous { background: var(--cp-border-strong); }
+        ol, ul { margin: 0; padding-left: 24px; }
+        li + li { margin-top: 12px; }
+        details { margin-top: 16px; }
+        summary { cursor: pointer; font-weight: 600; }
+        details[open] summary { margin-bottom: 16px; }
+        footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--cp-border); }
+        @media (max-width: 760px) { .four, .two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 480px) {
+            main { padding: 20px 16px 40px; }
+            .four, .two { grid-template-columns: minmax(0, 1fr); }
+            .top { align-items: flex-start; }
+            .card { padding: 20px; }
+        }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+        @media print {
+            main { max-width: none; padding: 0; }
+            button, nav { display: none; }
+            .table-wrap { overflow: visible; }
+            .wide table { min-width: 0; }
+            h2, h3 { break-after: avoid; }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>
+            <div class="top">
+                <a href="robot-learning-overview-20261002.html#reports">Back to campaign reports</a>
+                <button type="button" id="theme-toggle">Change theme</button>
+            </div>
+            <p class="eyebrow">CAMPAIGN REVIEW / 24-25 OCTOBER 2026 / SIMPLE ENGLISH</p>
+            <h1>A faster pass with a learned policy. Was it just luck?</h1>
+            <p class="intro">Campaign <code>6b13d5f4</code> passed with <strong>199 successes in 200 official
+                    episodes</strong>. It found a short, useful research path: improve the hold reward, locate a
+                one-sided weakness, then use the robot's mirror symmetry.</p>
+            <p class="small spaced">Main campaign repository. Final model: <code>T3:checkpoint-35840</code>.
+                This report uses completed records; it does not include the separate minimal-recipe experiment.</p>
+            <div class="grid four spaced" aria-label="Campaign headline results">
+                <div class="card"><span class="metric">199/200</span>Official successes<br><span class="small">99.5%; goal: at least 98%</span></div>
+                <div class="card"><span class="metric">52 min</span>Elapsed time<br><span class="small">52 minutes, 16 seconds</span></div>
+                <div class="card"><span class="metric">14.97</span>Total AI usage units<br><span class="small">All roles, not only the PI</span></div>
+                <div class="card"><span class="metric">3 runs</span>Training operations<br><span class="small">Two inquiries; six measurements</span></div>
+            </div>
+            <div class="note result">
+                <p><strong>Main finding:</strong> the final candidate's gain is supported by fresh matched tests
+                    and a separate official result. It is not explained simply by an easier test panel.</p>
+                <p><strong>Main limit:</strong> one successful campaign does not show that the harness will
+                    reliably find this route. Training randomness and variation in the PI's decisions remain.</p>
+            </div>
+        </header>
+
+        <nav aria-label="Report sections">
+            <a href="#task">The task</a>
+            <a href="#path">The research path</a>
+            <a href="#evidence">The evidence</a>
+            <a href="#luck">Was it luck?</a>
+            <a href="#harness">Harness changes</a>
+            <a href="#resources">Time and AI usage</a>
+            <a href="#sources">Sources</a>
+        </nav>
+
+        <section id="task" aria-labelledby="task-title">
+            <h2 id="task-title">1. What the robot had to do</h2>
+            <div class="card">
+                <p>A simulated two-joint arm had to reach targets 6 to 20 cm from its base, in any direction.
+                    Its hand then had to stay within 1 cm of the target for two uninterrupted seconds:
+                    100 control steps. Each official episode allowed at most 500 steps.</p>
+                <p>The goal was at least <strong>196 successes in the fixed official panel of 200 episodes</strong>.
+                    A panel is a set of test episodes. Development panels help select a candidate; they are not
+                    added to the official score.</p>
+                <p>The <strong>PI</strong> is the AI principal investigator. An analyst writes the initial
+                    physical model. Coder and reviewer agents help with implementation. Runner executes accepted
+                    operations and records results; the PI makes the scientific decisions.</p>
+            </div>
+        </section>
+
+        <section id="path" aria-labelledby="path-title">
+            <h2 id="path-title">2. Three small changes, rather than a long plateau</h2>
+            <div class="card">
+                <ol>
+                    <li><strong>T1: train across the whole target range.</strong> The PI widened training from
+                        14-20 cm to the task's full 6-20 cm range. The learning algorithm, observations, reward
+                        and direct motor-action mapping stayed unchanged. T1 scored <strong>192/200</strong>
+                        on the protected task-reference panel. Earlier checkpoints were worse.</li>
+                    <li><strong>Find out why the hold fails.</strong> M3 replayed those same 200 situations in
+                        the research evaluator. It reproduced the same eight failed episodes. Two never reached
+                        tolerance; six entered it but repeatedly broke the hold. The protected panel and research
+                        replay are two views of the same situations, not 400 independent tests.</li>
+                    <li><strong>T2: remove credit for a broken hold.</strong> One reward term changed: when
+                        the arm left tolerance before completing a hold, it lost the credit earned by that
+                        incomplete hold. The PI continued training from T1. The first fresh comparison improved,
+                        but the next panel showed a much smaller advantage.</li>
+                    <li><strong>Inspect the remaining failures before choosing another change.</strong>
+                        On M5, all 11 T2 failures lay between about -150 and -122 degrees. Nine never reached
+                        tolerance. The remaining weakness was strongly directional, not spread evenly around
+                        the robot.</li>
+                    <li><strong>T3: use mirror symmetry.</strong> The PI changed the policy's coordinate
+                        mapping and continued training from T2. On a fresh matched panel, T3 scored
+                        <strong>400/400</strong> against T2's <strong>392/400</strong>. It then passed the
+                        separate official assessment at <strong>199/200</strong>.</li>
+                </ol>
+            </div>
+            <div class="grid two spaced">
+                <article class="card">
+                    <h3>What the mirror mapping does</h3>
+                    <p>For a target below the x-axis, show the network the corresponding mirrored arm state
+                        and target above it. Map the network's two motor commands back by reversing their signs.
+                        The observation's two inverse-kinematics branch-offset pairs are also exchanged and
+                        reflected.</p>
+                    <p>The actual target and task do not change. The network sees a more consistent
+                        representation of physically equivalent situations.</p>
+                </article>
+                <article class="card">
+                    <h3>The network still decides each command</h3>
+                    <p>The final action mapping only keeps or reverses the network outputs. It does not use
+                        an analytic planner or trajectory controller to produce the motor commands.</p>
+                    <p>This differs from the previous campaign's failed actor-output projection, which
+                        combined commands from an existing policy. The new method uses one canonical input
+                        representation and then trains with that mapping.</p>
+                </article>
+            </div>
+            <p class="small spaced">Each run requested 120,000 steps and completed 120,832 because training ended
+                at a rollout boundary. The campaign used 362,496 steps in total. The selected checkpoint is
+                35,840 steps into T3, not the total training used by the campaign.</p>
+        </section>
+
+        <section id="evidence" aria-labelledby="evidence-title">
+            <h2 id="evidence-title">3. What the comparisons actually show</h2>
+            <div class="card table-wrap wide">
+                <table>
+                    <caption>Paired means both candidates faced the same episode seeds and target positions.
+                        M4, M5 and M6 used separate seed ranges.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Test</th>
+                            <th scope="col">Candidate</th>
+                            <th scope="col">Reference</th>
+                            <th scope="col">Gains / losses</th>
+                            <th scope="col">Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">M4: 400 development episodes</th>
+                            <td>T2: 390/400</td>
+                            <td>T1: 375/400</td>
+                            <td>15 / 0</td>
+                            <td>A strong gain on this panel. The panel also helped select the T2 checkpoint.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M5: 400 fresh episodes</th>
+                            <td>The same T2: 389/400</td>
+                            <td>The same T1: 386/400</td>
+                            <td>6 / 3</td>
+                            <td>T2's absolute rate held near 97%, but its advantage over T1 was much weaker.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">M6: 400 fresh episodes</th>
+                            <td>T3: 400/400</td>
+                            <td>The same T2: 392/400</td>
+                            <td>8 / 0</td>
+                            <td>A clear gain for the selected candidate, in the predicted weak sector.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Official: 200 separate episodes</th>
+                            <td>T3: 199/200</td>
+                            <td>No reference candidate</td>
+                            <td>Not a paired comparison</td>
+                            <td>The official goal was reached. This is the campaign's final score.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                <p><strong>The location of the gain matters.</strong> All eight T2 failures on M6 lay in the
+                    same broad negative-angle sector found on M5. In the fixed sector from -180 to -90 degrees,
+                    T2 scored <strong>90/98</strong> and T3 scored <strong>98/98</strong>. Both succeeded on
+                    all 302 episodes outside it.</p>
+                <p>This matches the proposed explanation better than a gain scattered across unrelated situations.
+                    The sector was chosen after looking at M5, but M6 used fresh episodes.</p>
+            </div>
+            <details class="card">
+                <summary>Statistical detail, without changing the main conclusion</summary>
+                <p>The exact two-sided paired sign-test p values are <strong>0.000061</strong> for M4's
+                    selected T2 versus T1, <strong>0.508</strong> for M5, and <strong>0.0078</strong> for M6.
+                    These tests compare which candidate wins when their outcomes differ. A small p value is
+                    evidence of a difference in that comparison; it is not the probability that a method is
+                    correct, and it does not identify the cause.</p>
+                <p>T3's checkpoint was selected from training records before M6, rather than by comparing
+                    many T3 checkpoints on that panel. Its 400/400 result gave a 95% Wilson interval of
+                    about 99.05-100% and a modeled 99.6% chance of reaching at least 196/200 on a new panel.
+                    That calculation assumed independent representative episodes and a uniform prior.
+                    The official assessment then supplied a separate result.</p>
+            </details>
+        </section>
+
+        <section id="luck" aria-labelledby="luck-title">
+            <h2 id="luck-title">4. Was it just luck?</h2>
+            <div class="grid two">
+                <article class="card">
+                    <h3>An easier final test panel? Not enough to explain it.</h3>
+                    <p>T2 and T3 faced exactly the same fresh M6 targets. T3 recovered eight failures without
+                        losing a T2 success. The separate official panel also showed strong performance.
+                        This is more convincing than a single unpaired high score.</p>
+                </article>
+                <article class="card">
+                    <h3>A different starting seed? No.</h3>
+                    <p>Both this campaign and the previous one started from the same baseline recipe and
+                        trained T1 with seed 0. Their target-range definitions were equivalent. A newly
+                        chosen starting seed does not explain the turnaround.</p>
+                    <p class="small">This does not establish identical model weights. The saved candidate
+                        fingerprints differ, and the initial evaluation panels were different.</p>
+                </article>
+                <article class="card">
+                    <h3>A favorable fine-tuning run? Still possible.</h3>
+                    <p>T3 changed the mirror mapping, received more training and used training seed 2.
+                        There was no comparison with the same amount of continued training under unchanged
+                        policy I/O. The method was not repeated across training seeds.</p>
+                    <p>The result supports the <strong>mapping-plus-training package</strong>, not a
+                        separately measured effect of the mapping alone. The T2 reward change has the
+                        same training-versus-method limitation.</p>
+                </article>
+                <article class="card">
+                    <h3>A better sequence of PI decisions? Quite plausible.</h3>
+                    <p>The initial physical model in this run explicitly named reflection symmetry.
+                        The previous model did not. The PI then used that fact with the measured failure
+                        pattern and chose a useful intervention early.</p>
+                    <p>That is better scientific behavior. It does not establish how often the same
+                        harness and instructions will produce it.</p>
+                </article>
+            </div>
+            <div class="note caution">
+                <p><strong>Verdict:</strong> the evaluated candidate's improvement is credible. The much
+                    cheaper campaign is promising, but its repeatability is unknown. Neither the policy
+                    method nor the complete campaign was replicated under a fixed setup.</p>
+            </div>
+        </section>
+
+        <section id="harness" aria-labelledby="harness-title">
+            <h2 id="harness-title">5. Which harness changes were actually used?</h2>
+            <div class="card table-wrap">
+                <table>
+                    <thead>
+                        <tr><th scope="col">Change after the previous campaign</th><th scope="col">Observed use</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">A fixed 400-episode development panel</th>
+                            <td>Used in M4. M5 and M6 then used fresh 400-episode panels. These supplied enough
+                                failure records to examine the directional weakness.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Longer inquiry training runs available</th>
+                            <td>Not used. All three runs requested the standard 120,000 steps.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Reuse of stored references in paired comparisons</th>
+                            <td>Not used for the research comparisons. M4, M5 and M6 measured their references
+                                on the current panel. This capability cannot directly explain the savings.</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Clear permission to use controllers, planners and robot models as research tools</th>
+                            <td>The clarification was in the delivered system prompt. The PI did not use a
+                                controller-based teacher or reference in this campaign, so there is no direct
+                                measured benefit from that capability here.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="spaced"><strong>The main saving was a shorter research path, not a proven prompt-cost
+                    optimization.</strong> Model and reasoning settings were unchanged: GPT-6 Luna, high reasoning
+                for the PI and coding roles, and max reasoning for the analyst. The campaign avoided a long
+                sequence of unsuccessful alternatives and repeated confirmation.</p>
+            <p>No context compaction occurred. This run therefore does not test whether the PI's changing
+                scientific understanding survives compaction. It also cannot isolate the effect of system-prompt
+                wording from the different research decisions.</p>
+        </section>
+
+        <section id="resources" aria-labelledby="resources-title">
+            <h2 id="resources-title">6. Much less time and AI usage</h2>
+            <div class="card table-wrap">
+                <table>
+                    <caption>The comparison is with the immediately preceding main campaign. Its figures use
+                        the final saved state and usage records, not earlier interim counts.</caption>
+                    <thead>
+                        <tr><th scope="col">Measure</th><th scope="col">Previous: efd58acc</th><th scope="col">Latest: 6b13d5f4</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><th scope="row">Outcome</th><td>Stopped; no official assessment</td><td>Official pass: 199/200</td></tr>
+                        <tr><th scope="row">Elapsed recorded work</th><td>354.6 minutes</td><td>52.3 minutes</td></tr>
+                        <tr><th scope="row">Scientific sessions, including startup</th><td>34</td><td>6</td></tr>
+                        <tr><th scope="row">Inquiries</th><td>15</td><td>2</td></tr>
+                        <tr><th scope="row">Training operations</th><td>10</td><td>3</td></tr>
+                        <tr><th scope="row">Measurement operations</th><td>32</td><td>6</td></tr>
+                        <tr><th scope="row">Failed operations</th><td>0</td><td>0</td></tr>
+                        <tr><th scope="row">PI AI usage</th><td>98.27 AIU</td><td>11.10 AIU</td></tr>
+                        <tr><th scope="row">Initial analyst AI usage</th><td>3.85 AIU</td><td>2.51 AIU</td></tr>
+                        <tr><th scope="row">Coder and reviewer AI usage</th><td>38.45 AIU</td><td>1.36 AIU</td></tr>
+                        <tr><th scope="row">Total AI usage</th><td>140.57 AIU</td><td>14.97 AIU</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card spaced">
+                <h3>89% less total AI usage</h3>
+                <div class="bar-label"><span>Previous campaign</span><strong>140.57 AIU</strong></div>
+                <div class="bar-track" aria-hidden="true"><div class="bar-fill previous" style="width: 100%"></div></div>
+                <div class="bar-label"><span>This campaign</span><strong>14.97 AIU</strong></div>
+                <div class="bar-track" aria-hidden="true"><div class="bar-fill" style="width: 10.65%"></div></div>
+                <p class="small">AIU means AI usage units, not training steps or money. Totals include the analyst,
+                    PI, coders and reviewers. Rounded role values may not sum exactly to the rounded total.</p>
+            </div>
+            <p class="spaced">The previous campaign's best-known candidate remained near 97.25% over its
+                recorded development panels. The maintainer stopped it; it did not fail an official assessment.
+                These are separate campaigns, not a controlled experiment on harness versions.</p>
+        </section>
+
+        <section id="judgment" aria-labelledby="judgment-title">
+            <h2 id="judgment-title">7. What to retain, and what remains open</h2>
+            <div class="grid two">
+                <article class="card">
+                    <h3>Good behavior worth retaining</h3>
+                    <ul>
+                        <li>Inspect actual failure records before choosing the next intervention.</li>
+                        <li>Weaken an interpretation when a fresh panel gives weaker evidence.</li>
+                        <li>Use physical structure to make the learning problem more consistent.</li>
+                        <li>Test candidate and reference on the same fresh situations.</li>
+                        <li>Request the official assessment when the evidence is strong enough, rather
+                            than requiring complete understanding first.</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>Questions this run does not settle</h3>
+                    <ul>
+                        <li>How often does this training method succeed across seeds?</li>
+                        <li>How much of T3's gain came from the mapping, rather than continued training?</li>
+                        <li>How often will the same harness find a short and productive research path?</li>
+                        <li>Will the PI recover the right scientific context after compaction?</li>
+                    </ul>
+                </article>
+            </div>
+            <div class="note">
+                <p><strong>The most useful missing evidence:</strong> repeated training of the same method,
+                    and a continued-training comparison with unchanged policy I/O. Another large panel for
+                    this one checkpoint would mainly refine its rate; it would not resolve training
+                    repeatability or explain the cause of the gain.</p>
+                <p>These are possible follow-up comparisons, not new campaign requirements. This report
+                    uses existing evidence only; no new training or evaluation was run.</p>
+            </div>
+        </section>
+
+        <section id="sources" aria-labelledby="sources-title">
+            <h2 id="sources-title">8. Evidence and scope</h2>
+            <p>This is a maintainer report. Campaign evidence remains in the separate local campaign repository;
+                the HTML contains compact results, not copies of raw measurements.</p>
+            <details class="card">
+                <summary>Source records and exact identities</summary>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th scope="col">Source</th><th scope="col">Used for</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row"><code>runner/state/research_state.json</code></th>
+                                <td>Campaign <code>6b13d5f4-9e76-44f1-ab07-d4ce9b83ed78</code>; official pass;
+                                    candidate <code>T3:checkpoint-35840</code>; fingerprint prefix
+                                    <code>c3fa9d234126</code>; final counters and PI checkpoint.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><code>campaigns/results.jsonl</code></th>
+                                <td>T1-T3, M1-M6 and E1-E13; requests, completed outcomes, scientific changes
+                                    and decision reasons.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Raw evaluation JSON under <code>campaigns/evaluations/6b13d5f4-9e76-44f1-ab07-d4ce9b83ed78/</code></th>
+                                <td>M4 seeds 100000-100399; M5 seeds 200000-200399; M6 seeds 300000-300399.
+                                    Episode counts, paired outcomes and target geometry were checked directly.
+                                    Research semantics: <code>b782b1eeb698</code>.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><code>reports/session_usage/</code></th>
+                                <td>The JSONL files for <code>6b13d5f4-9e76-44f1-ab07-d4ce9b83ed78</code>
+                                    and <code>efd58acc-430a-4159-963c-22de96ccd14e</code>: usage by role
+                                    and model settings.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Previous state at campaign Git commit <code>6f02da08</code></th>
+                                <td>Final saved checkpoint of <code>efd58acc</code>; 34 scientific sessions,
+                                    15 inquiries, 10 training operations, 32 measurement operations and no
+                                    official verdict.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Scientific source and initial models</th>
+                                <td>T1 source <code>99b6bb21</code>, T2 <code>dbdc2c7a</code>, T3
+                                    <code>a6335097</code>; current and previous
+                                    <code>pi_workspace/scientific_model.md</code>.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Native campaign session events</th>
+                                <td>Delivered system messages and public tool requests: controller-scope
+                                    clarification, no stored-reference requests, and no compaction events.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </section>
+
+        <footer class="small">
+            <p>Report prepared on 25 October 2026. The campaign ran from 24 October 21:19:28 UTC to
+                22:11:45 UTC, crossing local midnight in UTC+2. The elapsed time includes the initial analyst.
+                Previous-campaign elapsed work ends at its last saved completed operation.</p>
+            <p><a href="robot-learning-overview-20261002.html#reports">Return to the research overview</a></p>
+        </footer>
+    </main>
+    <script>
+        document.getElementById("theme-toggle").addEventListener("click", () => {
+            const root = document.documentElement;
+            root.setAttribute("data-theme", root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+        });
+    </script>
+</body>
+
+</html>
