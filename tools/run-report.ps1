@@ -1,7 +1,7 @@
 # Starts the autoresearch operator console (or the read-only article report).
 #
 # Default: the multi-campaign console (issue #68). It shows one tab per
-# installed campaign folder plus a Commands tab; campaigns only run when a
+# installed campaign folder with command controls alongside; campaigns only run when a
 # command is submitted, and Ctrl+Q stops the console-owned campaigns.
 #
 # Legacy single-campaign report options (-CampaignRoot/-EventsPath/-Demo)

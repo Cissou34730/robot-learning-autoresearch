@@ -81,8 +81,10 @@ No separate installation or manually started shell is needed. Windows PowerShell
 5.1 cannot run the existing launcher. Missing PowerShell 7 fails preflight before
 initialization/reset; opening the interface still starts nothing.
 
-`uv run python -m tui` opens the multi-campaign console: a Commands tab plus
-one report tab per installed campaign folder. Campaigns only run when a
+`uv run python -m tui` opens the first installed campaign report (normally
+campaign-1), with a visible **Command / Execute / Settings** row below it.
+There is no separate Commands tab. Other installed campaigns have their own
+report tabs. Campaigns only run when a
 command is submitted (`run 3`, `reset campaign-1 campaign-2`,
 `start campaign-2`, `stop all`); each batch sends the exact same shared
 launcher options to every selected campaign, defaulting to the launcher's
@@ -94,6 +96,12 @@ console). Only one console may run against a harness directory, and the
 launcher's dirty-worktree refusal applies. See
 [console details](docs/tui-report.md#operator-console-multi-campaign-control)
 and the [stop contract](docs/external-campaign-stop.md).
+
+Press **F2** or click **Settings** for labelled shared launch/reset settings;
+**F1** opens help and **F3** shows recent commands and their step outcomes.
+Type `start` and press Enter or click Execute to resume the active campaign
+without resetting it. Untargeted commands follow the active campaign tab;
+an explicit count or folder list still selects a batch.
 
 Reset controls retain Fresh/Baseline, Clean and recipe/baseline references.
 The default is Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force;

@@ -1,7 +1,7 @@
 """Entry point: `uv run python -m tui`.
 
 Without arguments this opens the multi-campaign operator console
-(issue #68): one Commands tab plus one tab per installed campaign folder.
+(issue #68): campaign report tabs with a persistent command composer.
 Console commands launch and stop campaign launchers; nothing runs on its
 own. The legacy flags below open the unchanged single-campaign report.
 """

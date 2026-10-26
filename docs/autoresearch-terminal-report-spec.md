@@ -35,8 +35,10 @@ Small layouts are compatibility fallbacks, not the primary design or visual styl
 
 ### Explicit exclusions
 
-- Report facts remain on one campaign panel; the application shell may add the
-  Commands tab, campaign tabs and error/diagnostic dialogs defined by issue #68.
+- Report facts remain on one campaign panel. The maintainer's updated issue #68
+  direction puts command entry alongside the first campaign report, not on a
+  separate Commands tab. Campaign tabs, shared-settings and error/diagnostic
+  dialogs belong to the application shell.
 - Campaign commands and shared launch/reset settings belong to that controller,
   never to scrolling, copying, searching or selecting scientific report content.
 - No agent-operation approval gates, manual operation submissions or custom

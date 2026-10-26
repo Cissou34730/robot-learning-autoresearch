@@ -1138,8 +1138,11 @@
             </tr>
             <tr>
               <td>Campaign console, report tabs and observation feed</td>
-              <td>The maintainer console opens Commands and one report tab per installed campaign (up to five),
-                without starting work. Explicit <code>run N</code>, <code>reset N</code>, <code>start N</code> and
+              <td>The maintainer console opens the first installed campaign report, with command entry alongside
+                rather than in a separate Commands tab. Shared settings are available through Settings/F2;
+                help through F1 and recent command outcomes through F3. There is one report tab per installed
+                campaign (up to five), and opening the interface starts nothing.
+                Explicit <code>run N</code>, <code>reset N</code>, <code>start N</code> and
                 <code>stop N</code>/<code>stop all</code> reuse the existing scripts with shared launch settings.
                 Default reset is Fresh + Clean + <code>baseline-distinct-episodes-v3-robot</code> + Force;
                 measurements/logs may be deleted without a backup. All batch resets precede launch, and reset failure

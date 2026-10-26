@@ -1634,9 +1634,13 @@ class CampaignPanel(Widget):
         overlay = self.query_one("#too-small", Static)
         overlay.display = too_small
         if too_small:
+            # The console reserves rows for tabs and commands. Name the actual
+            # window size needed, not just this embedded report area's minimum.
+            columns = MIN_COLUMNS + max(0, self.app.size.width - size.width)
+            rows = MIN_ROWS + max(0, self.app.size.height - size.height)
             overlay.update(
                 Text(
-                    f"Terminal too small - need {MIN_COLUMNS}x{MIN_ROWS}",
+                    f"Terminal too small - need {columns}x{rows}",
                     style=f"bold {self._palette.warning}",
                 )
             )

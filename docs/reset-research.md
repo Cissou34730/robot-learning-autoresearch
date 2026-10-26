@@ -23,7 +23,8 @@ fails, inspect that failure before authorizing launch.
 The maintainer TUI provides the success-dependent batch form: `run N` completes
 all selected resets before launching any selected campaign. Its default is
 `-Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force`.
-Fresh/Baseline, Clean and the relevant reference are configurable on Commands.
+Fresh/Baseline, Clean and the relevant reference are configurable in the shared
+Settings dialog (F2), alongside the campaign report.
 An initialization/reset failure stops further preparation and starts none of
 the batch; earlier successful resets are not rolled back. `reset N` never
 launches, and `start N` never resets. Resetting a busy owned campaign is refused.

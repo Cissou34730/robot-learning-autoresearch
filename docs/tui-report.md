@@ -53,10 +53,12 @@ Directly: `uv run python -m tui --help` (options: `--report`, `--read-only`, `--
 
 Issue #68 implementation. `uv run python -m tui` (or
 `.\tools\run-report.ps1` with no arguments) opens one Textual console with
-a Commands tab and one tab per installed campaign folder
-(`robot-learning-campaigns\campaign-1` to `campaign-5`, `Ctrl+Tab` cycles
-tabs). Launching the console starts nothing; campaigns run only when a
-command is submitted.
+one report tab per installed campaign folder, initially showing the first
+installed campaign (normally campaign-1). Command entry is alongside the report,
+not on a separate Commands tab, following the maintainer's updated UX direction
+on 26 October. The standard folders are `robot-learning-campaigns\campaign-1`
+through `campaign-5`; `Ctrl+Tab` cycles their tabs. Launching the console starts
+nothing; campaigns run only when a command is submitted.
 
 Controlled execution uses the existing PowerShell 7 on PATH, including
 Store/MSIX installations. The launcher sets the inherited Windows desktop-app
@@ -65,21 +67,30 @@ manual shell instance is required. Windows PowerShell 5.1 lacks the launcher's
 required .NET APIs. Missing PowerShell 7 fails preflight before initialization,
 reset or launch, without preventing the interface from opening.
 
-- Commands tab: a command line (`run 3`, `reset campaign-2`,
-  `start campaign-2`, `stop all`) plus shared launch-parameter fields
-  (Model, Provider, Reasoning, Timesteps, MaxTimesteps, MaxInquiries,
-  StopTimeoutSeconds). A field left empty uses the launcher's own default
-  exactly as the launcher would. Every campaign in one batch receives the
-  same parameters.
-- The command bar stays accessible in campaign tabs (`Ctrl+L` focuses it).
-  An untargeted campaign action there selects that folder only; Commands
-  requires an explicit count or folder list. `models` lists available models
+- The bottom command composer has a permanent label, an editable field,
+  **Execute** and **Settings**, plus a one-line target/status preview. Press
+  Enter or click Execute to submit. `start` resumes the active campaign without
+  resetting; `run` resets and starts it. The destructive preview leads with a
+  warning and the no-backup consequence. No action runs just from typing.
+- **F2 / Settings** opens one labelled, scrollable dialog for Model, Provider,
+  Reasoning, Timesteps, MaxTimesteps, MaxInquiries and StopTimeoutSeconds, plus
+  reset options. Apply affects future commands only; Cancel/Esc discards edits.
+  Empty launch fields preserve launcher defaults and argument omission.
+  Every campaign in one batch receives the same settings snapshot.
+- The command bar stays accessible in every campaign tab (`Ctrl+L` focuses it).
+  Untargeted campaign actions select that folder only; explicit counts/folder
+  lists select batches. Without any installed campaign, an empty state requires
+  explicit targets and shows no fake campaign tab. `models` lists available models
   through the existing launcher. `diagnostics campaign-1` shows the last 64 KiB
   of each run-private console log, separately from scientific observations.
+  **F1** opens command help; **F3** opens recent commands and persistent step
+  details from this TUI session. The main report does not repeat help as activity.
 - Reset controls select Fresh/Baseline, Clean and RecipeRef/BaselineRef. The
   default remains Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force.
   Targets and options are logged before execution. Measurements/logs may be
   deleted; ignored measurements have no reset backup.
+  Only the reference field for the selected reset mode is visible. `-Clean`
+  is labelled as cleaning eligible changes, not merely cleaning logs.
 - `run` initializes a missing standard folder from the recipe (same as
   `tools\run_parallel.ps1`), resets it (`-Mode Fresh -Clean -RecipeRef
   baseline-distinct-episodes-v3-robot -Force`) and launches it. `start`
@@ -115,6 +126,12 @@ orchestration); both are terminal-free and tested with fake executors in
 
 ### Controller validation status (26 October 2026)
 
+- The report-first UX revision passes 102 focused controller, headless console
+  and report-app checks. Synthetic rendered frames cover 160x45, 178x33,
+  80x24, 60x24 and 48x16: actual report space, command/editor/button bounds,
+  non-overlapping feedback/footer, contextual submission, settings Apply/Cancel,
+  reset-mode fields and narrow-screen scrolling. This revision did not launch,
+  reset or mutate a real campaign.
 - 152 targeted controller, headless console, report/projection/timeline and
   stop-control tests pass. Windows boundary checks use the installed packaged
   PowerShell 7.6.8 and native Windows PowerShell 5.1 dummy scripts. They verify
@@ -147,7 +164,14 @@ orchestration); both are terminal-free and tested with fake executors in
   those physical-terminal behaviors.
 
 Reference size is 160x45; the layout adapts down to an 80x24 and 60-column
-fallback and below 48x16 shows a `Terminal too small - need 48x16` message.
+fallback. The console keeps seven rows for tabs and controls (38 report rows
+at 160x45), with no nested report frames or repeated state badges. At 80x24
+and 60x24 the report retains context/models/last-training and hides its output
+first, while commands and settings remain accessible. The settings dialog
+stacks fields on narrow screens and scrolls without losing Apply/Cancel.
+Controls remain available at 48x16, but the embedded report then truthfully
+names 48x23 as its minimum window size. Below 48x16 the console shows the
+terminal-too-small state without changing campaign execution.
 At 80x24 the report keeps the header, the PI role table and the last-training
 line, and hides the output log first. `NO_COLOR` and the terminal's color
 capability are respected; `--light` selects the light theme.
