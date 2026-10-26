@@ -428,7 +428,7 @@ function Invoke-PISession {
     else {
         ($Phase -replace '_', ' ')
     }
-    Write-ConsoleCard `
+    Write-Card `
         -Title "PI | $displaySession" `
         -Color Magenta
     Write-TuiObservation -Kind session_start -Fields @{
@@ -950,7 +950,7 @@ function Test-OperationRequest {
         $validationReason = (
             $script:OperationValidationFeedback -replace '^OPERATION_INVALID:\s*', ''
         )
-        Write-ConsoleCard -Title "OPERATION INVALID" `
+        Write-Card -Title "OPERATION INVALID" `
             -Lines @($validationReason) -Color Red -BodyColor Red
         return $false
     }
@@ -1263,9 +1263,12 @@ try {
     }
 }
 catch {
+    Write-TuiObservation -Kind error -Scope error -Text ([string]$_) -Fields @{
+        code = if ($script:StopDeadlineExceeded) { "stop_deadline_exceeded" } else { "launcher_failed" }
+    }
     if ($script:StopDeadlineExceeded) {
         $script:CampaignExitCode = 124
-        Write-Error $_
+        if ($script:ConsoleRenderingEnabled) { Write-Error $_ }
     }
     else {
         throw

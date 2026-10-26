@@ -8,8 +8,9 @@ import json
 
 import pytest
 
-from runner import console, observation_feed, typed_events
-from runner.copilot.copilot_console import Console
+from runner import observation_feed, typed_events
+from runner import reporting as console
+from runner.copilot.reporting import SessionReporter as Console
 from tui.observations import JsonlFeed
 
 
@@ -50,7 +51,8 @@ def test_emit_writes_identity_and_payload(tmp_path):
 
 
 def test_training_progress_event_carries_reward_and_scenario_metric(monkeypatch):
-    from runner import console, execution
+    from runner import execution
+    from runner import reporting as console
 
     monkeypatch.setattr(
         console, "scenario_progress_metric", lambda record: "success 97%"
@@ -206,6 +208,97 @@ def test_console_domain_events_carry_session_identity(tmp_path, capsys):
     )
     assert completed["payload"]["tool_call_id"] == "call-1"
     assert completed["payload"]["result"]["value"] == 3
+
+
+@pytest.mark.parametrize(
+    ("name", "result", "number"),
+    [
+        (
+            "success_rate_pass_probability",
+            {
+                "status": "computed",
+                "evidence": [
+                    {
+                        "label": "M6",
+                        "successes": 9,
+                        "trials": 10,
+                        "pass_probability": 0.9,
+                    }
+                ],
+            },
+            "9/10 -> pass 90.0%",
+        ),
+        (
+            "episode_outcome_breakdown",
+            {
+                "status": "computed",
+                "measurements": [
+                    {
+                        "operation_id": "M6",
+                        "candidate": "T4",
+                        "successes": 9,
+                        "trials": 10,
+                    }
+                ],
+                "paired": {
+                    "first_only_success": 2,
+                    "second_only_success": 0,
+                    "sign_test_p_value": 0.5,
+                },
+            },
+            "sign test p 0.5",
+        ),
+        (
+            "training_series_statistics",
+            {
+                "status": "computed",
+                "metric": "reward",
+                "window": {
+                    "rows": 3,
+                    "min": {"value": 1},
+                    "max": {"value": 3},
+                    "last": {"value": 2},
+                },
+                "checks": [
+                    {
+                        "statistic": "mean",
+                        "comparison": ">=",
+                        "threshold": 2,
+                        "holds": True,
+                        "value": 2,
+                    }
+                ],
+            },
+            "3 rows | min 1 | max 3 | last 2",
+        ),
+    ],
+)
+def test_tui_and_console_share_factual_tool_result_lines(
+    tmp_path, capsys, name, result, number
+):
+    from tui.events import TypedJsonlFeed
+    from tui.timeline import TimelineReducer
+
+    typed_events.set_campaign("campaign-1")
+    session = Console(columns=300, session_id="backend-1")
+    session.tool(name, {}, "result-call")
+    capsys.readouterr()
+    session.tool_result(name, json.dumps(result), tool_call_id="result-call")
+    output = capsys.readouterr().out
+    assert number in output
+    reducer = TimelineReducer()
+    for event in TypedJsonlFeed(
+        tmp_path / "typed.events.jsonl", campaign_id="campaign-1"
+    ).poll():
+        reducer.ingest(event)
+    tool = next(
+        child
+        for root in reducer.view()[0]
+        for child in root.children
+        if child.kind == "tool"
+    )
+    assert tool.detail == tuple(line.strip() for line in output.splitlines())
+    assert tool.payload["result"] == result
 
 
 def test_domain_event_closes_the_pi_message_first(tmp_path, capsys):

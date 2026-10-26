@@ -174,15 +174,17 @@ class EventLog(Tree[TimelineItem]):
 
     def __init__(self, styles: dict[str, str], **kwargs) -> None:
         super().__init__("Campaign", **kwargs)
-        self.show_root = False
-        self.guide_depth = 0
         self._styles = styles
+        self.show_root = False
+        self.show_guides = False
+        self.guide_depth = 0
         self._expanded: set[str] = set()
+        self._collapsed: set[str] = set()
         self._following = True
         self._missed = 0
         self._node_by_id: dict[str, TreeNode[TimelineItem]] = {}
         self._items_by_id: dict[str, TimelineItem] = {}
-        self._last_signature: tuple[str, ...] = ()
+        self._last_signature: tuple[tuple, ...] = ()
         self._last_active_ids: frozenset[str] = frozenset()
         self._follow_listeners: list = []
 
@@ -203,9 +205,9 @@ class EventLog(Tree[TimelineItem]):
 
     def selected_item(self) -> TimelineItem | None:
         node = self.cursor_node
-        if node is None or node.data is None:
-            return None
-        return node.data
+        while node is not None and node.data is None:
+            node = node.parent
+        return node.data if node is not None else None
 
     @property
     def lines(self) -> list:
@@ -238,6 +240,7 @@ class EventLog(Tree[TimelineItem]):
     def reset_campaign(self) -> None:
         self.clear()
         self._expanded.clear()
+        self._collapsed.clear()
         self._node_by_id.clear()
         self._items_by_id.clear()
         self._following = True
@@ -301,19 +304,17 @@ class EventLog(Tree[TimelineItem]):
                 self.move_cursor(line.node, animate=False)
                 return
 
-    def _flatten_ids(self, roots: list[TimelineItem]) -> Iterable[str]:
+    def _flatten_ids(self, roots: list[TimelineItem]) -> Iterable[tuple]:
         for item in roots:
-            yield "|".join(
-                (
-                    item.item_id,
-                    item.title,
-                    item.summary,
-                    str(item.ts),
-                    str(item.end_ts),
-                    item.status,
-                    item.severity,
-                    str(len(item.detail)),
-                )
+            yield (
+                item.item_id,
+                item.title,
+                item.summary,
+                item.ts,
+                item.end_ts,
+                item.status,
+                item.severity,
+                item.detail,
             )
             yield from self._flatten_ids(item.children)
 
@@ -324,13 +325,13 @@ class EventLog(Tree[TimelineItem]):
         active_ids: set[str],
     ) -> None:
         self._items_by_id[item.item_id] = item
-        expanded = (
+        expanded = item.item_id not in self._collapsed and (
             item.item_id in self._expanded
             or item.default_expanded
             or item.item_id in active_ids
         )
         label = self._label(item)
-        expandable = item.is_group or bool(item.detail)
+        expandable = item.is_group or bool(item.detail) or self._is_flow(item)
         node = parent.add(
             label,
             data=item,
@@ -342,19 +343,92 @@ class EventLog(Tree[TimelineItem]):
             for child in item.children:
                 self._add_item(node, child, active_ids)
         elif expanded:
-            for line in item.detail:
-                node.add_leaf(
-                    Text(line, style=self._styles.get("muted", "")), data=None
+            self._populate_details(node, item)
+
+    def _populate_details(
+        self, node: TreeNode[TimelineItem], item: TimelineItem
+    ) -> None:
+        """Materialize full, wrapped detail rows only when their event is open."""
+        node.remove_children()
+        if self._is_flow(item):
+            lines = self._flow_lines(node, item)
+            node.allow_expand = len(lines) > 1
+            for line in lines[1:]:
+                node.add_leaf(line, data=None)
+            return
+        width = max(1, self._label_width(node) - self.guide_depth)
+        for block in item.detail:
+            for line in block.splitlines() or [""]:
+                style = (
+                    self._kind_style(item)
+                    if item.kind == "pi"
+                    else self._styles.get("text", "")
                 )
+                text = Text(line, style=style)
+                for wrapped in text.wrap(self.app.console, width, overflow="fold"):
+                    node.add_leaf(wrapped, data=None)
+
+    @staticmethod
+    def _is_flow(item: TimelineItem) -> bool:
+        return item.kind == "tool" or (item.kind == "pi" and item.title == "PI")
+
+    def _flow_lines(
+        self, node: TreeNode[TimelineItem], item: TimelineItem
+    ) -> list[Text]:
+        text = Text(item.title, style=self._kind_style(item))
+        if item.kind == "tool":
+            if item.summary:
+                text.append(": " + item.summary, style=self._styles.get("text", ""))
+            for line in item.detail:
+                text.append("\n" + line, style=self._styles.get("text", ""))
+        else:
+            text.append("  " + "\n".join(item.detail), style=self._styles.get("pi", ""))
+        return list(
+            text.wrap(
+                self.app.console, max(1, self._label_width(node) - 2), overflow="fold"
+            )
+        )
+
+    def _label_width(self, node: TreeNode[TimelineItem]) -> int:
+        depth = -1
+        parent = node
+        while parent is not self.root:
+            depth += 1
+            parent = parent.parent
+        column_width = sum(segment.cell_length for segment in self._column(None, False))
+        return max(1, (self.size.width or 80) - column_width - depth * self.guide_depth)
+
+    def render_label(
+        self, node: TreeNode[TimelineItem], base_style: Style, style: Style
+    ) -> Text:
+        item = node.data
+        if item is not None and self._is_flow(item):
+            lines = self._flow_lines(node, item)
+            marker = (
+                (self.ICON_NODE_EXPANDED if node.is_expanded else self.ICON_NODE)
+                if len(lines) > 1
+                else "  "
+            )
+            label = Text(marker, style=base_style + Style(meta={"toggle": True}))
+            label.append_text(lines[0])
+            label.stylize(style)
+            return label
+        label = super().render_label(node, base_style, style)
+        if node is self.root:
+            return label
+        label.truncate(self._label_width(node), overflow="ellipsis")
+        return label
 
     def _label(self, item: TimelineItem) -> Text:
         styles = self._styles
         kind_style = self._kind_style(item)
         label = Text()
-        label.append(item.glyph, style=kind_style)
-        label.append(" ")
+        message = item.kind == "pi" and item.title == "PI"
+        if item.kind != "tool" and not message:
+            label.append(item.glyph, style=kind_style)
+            label.append(" ")
         label.append(item.title, style=kind_style)
-        if item.summary:
+        if item.summary and not message:
             label.append("  ")
             label.append(item.summary, style=styles.get("text", ""))
         if item.is_group:
@@ -524,8 +598,18 @@ class EventLog(Tree[TimelineItem]):
         item = event.node.data
         if item is not None:
             self._expanded.add(item.item_id)
+            self._collapsed.discard(item.item_id)
+            if not item.is_group and not event.node.children:
+                self._populate_details(event.node, item)
 
     def on_tree_node_collapsed(self, event: Tree.NodeCollapsed) -> None:
         item = event.node.data
         if item is not None:
             self._expanded.discard(item.item_id)
+            self._collapsed.add(item.item_id)
+
+    def on_resize(self) -> None:
+        for node in self._node_by_id.values():
+            item = node.data
+            if item is not None and not item.is_group and node.is_expanded:
+                self._populate_details(node, item)

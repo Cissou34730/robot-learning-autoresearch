@@ -26,7 +26,8 @@ from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.widgets import DataTable, Input, Static
 
-from runner import console, paths
+from runner import paths
+from runner import reporting as console
 from tui import projector
 from tui.event_log import EventLog, FilterScreen, RawEventScreen
 from tui.events import (

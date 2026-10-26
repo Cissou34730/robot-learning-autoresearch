@@ -19,7 +19,8 @@ from collections import deque
 from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
 
-from runner import console, paths, typed_events
+from runner import paths, typed_events
+from runner import reporting as console
 
 
 class PublicationError(RuntimeError):

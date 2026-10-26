@@ -213,7 +213,7 @@ def test_generic_core_may_only_use_the_scenario_package():
         "robot_learning/train.py",
         "robot_learning/evaluate.py",
         "robot_learning/play.py",
-        "runner/console.py",
+        "runner/reporting.py",
     }
     for relative_path in users:
         assert all(

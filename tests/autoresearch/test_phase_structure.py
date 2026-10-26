@@ -78,7 +78,7 @@ $ast = [System.Management.Automation.Language.Parser]::ParseFile(
 $definition = $ast.FindAll({{
     param($node)
     $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -eq 'Write-Status'
+        $node.Name -eq 'Write-ConsoleStatus'
 }}, $true) | Select-Object -First 1
 . ([scriptblock]::Create($definition.Extent.Text))
 $script:writes = @()
@@ -93,7 +93,7 @@ function global:Write-Host {{
         no_newline = [bool]$NoNewline
     }}
 }}
-Write-Status -Message (('boundary prose ' * 60).Trim()) `
+Write-ConsoleStatus -Message (('boundary prose ' * 60).Trim()) `
     -Color Magenta -Label session
 $script:writes | ConvertTo-Json -Compress
 """,

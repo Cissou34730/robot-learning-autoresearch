@@ -569,8 +569,8 @@ def test_event_log_uses_a_fixed_time_column():
         ts=stamp,
     )
     untimed = TimelineItem(item_id="untimed", kind="tool", title="read_file")
-    assert log._label(leaf).plain == "[>] read_file"
-    assert log._label(untimed).plain == "[>] read_file"
+    assert "read_file" in log._label(leaf).plain
+    assert "read_file" in log._label(untimed).plain
     assert log._column(leaf, False)[1].text == f"{local:%H:%M:%S}"
     assert log._column(untimed, False)[1].text == "        "
 
@@ -746,6 +746,184 @@ async def _copy_output_selection(theme):
 
 def test_event_log_collapses_and_expands_active_chain():
     _run(_collapse_expand())
+
+
+def test_tool_actions_show_console_detail_and_keep_metadata_in_raw_view():
+    _run(_tool_arguments_expand())
+
+
+async def _tool_arguments_expand():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        stamp = datetime(2026, 10, 26, 9, 8, 13, tzinfo=UTC)
+        app._process_events(
+            [
+                Observation(
+                    "tool_call_started",
+                    stamp,
+                    {
+                        "name": "glob",
+                        "tool_call_id": "detail-call",
+                        "detail": "pattern **/*.py | paths robot_learning",
+                        "arguments": {"pattern": "**/*.py", "paths": "robot_learning"},
+                    },
+                ),
+                Observation(
+                    "tool_call_completed",
+                    stamp + timedelta(seconds=1),
+                    {
+                        "name": "glob",
+                        "tool_call_id": "detail-call",
+                        "status": "completed",
+                    },
+                ),
+            ]
+        )
+        await pilot.pause()
+        out = app.query_one("#output")
+        node = out._node_by_id["tool:detail-call"]
+        out.move_cursor(node, animate=False)
+        await pilot.pause()
+        assert node.is_expanded
+        painted = "\n".join(strip.text for strip in out.render_lines(out.size.region))
+        assert "**/*.py" in painted
+        assert "robot_learning" in painted
+        assert '"pattern"' not in painted
+        assert not node.children
+        await pilot.press("r")
+        await pilot.pause()
+        assert app.screen.item.payload["arguments"] == {
+            "pattern": "**/*.py",
+            "paths": "robot_learning",
+        }
+
+
+def test_pi_text_is_shown_once_and_patch_payload_stays_in_raw_view():
+    _run(_readable_messages_and_patches())
+
+
+async def _readable_messages_and_patches():
+    app = _demo_app()
+    async with app.run_test(size=(160, 60)) as pilot:
+        await pilot.pause()
+        stamp = datetime(2026, 10, 26, 9, 13, tzinfo=UTC)
+        message = "The physical definitions imply UNIQUE_OBSERVATION."
+        patch = "*** Begin Patch\n*** Add File: pi_workspace/model.md\n+First line\n+Second line\n*** End Patch"
+        app._process_events(
+            [
+                Observation(
+                    "pi_message",
+                    stamp,
+                    {"text": message, "turn": "readable", "final": True},
+                    session_id="opaque-backend-uuid",
+                ),
+                Observation(
+                    "tool_call_started",
+                    stamp,
+                    {
+                        "name": "apply_patch",
+                        "tool_call_id": "readable-patch",
+                        "detail": "pi_workspace/model.md",
+                        "arguments": patch,
+                    },
+                ),
+                Observation(
+                    "tool_call_completed",
+                    stamp,
+                    {
+                        "name": "apply_patch",
+                        "tool_call_id": "readable-patch",
+                        "status": "completed",
+                    },
+                ),
+            ]
+        )
+        await pilot.pause()
+        out = app.query_one("#output")
+        message_item = next(
+            item
+            for item in _timeline_items(app)
+            if item.kind == "pi" and item.payload.get("turn") == "readable"
+        )
+        message_node = out._node_by_id[message_item.item_id]
+        assert message_node.is_expanded
+        painted = "\n".join(strip.text for strip in out.render_lines(out.size.region))
+        assert painted.count("UNIQUE_OBSERVATION") == 1
+        assert "opaque-backend-uuid" not in painted
+        assert "completed | 0s" not in painted
+        out.move_cursor(message_node, animate=False)
+        await pilot.press("left")
+        await pilot.pause()
+        app._render_log()
+        await pilot.pause()
+        assert out._node_by_id[message_item.item_id].is_collapsed
+        patch_node = out._node_by_id["tool:readable-patch"]
+        out.move_cursor(patch_node, animate=False)
+        await pilot.press("right")
+        await pilot.pause()
+        painted = "\n".join(strip.text for strip in out.render_lines(out.size.region))
+        assert "pi_workspace/model.md" in painted
+        assert "+First line" not in painted and "+Second line" not in painted
+        assert "\\n" not in painted
+        assert not any(mark in painted for mark in ("├", "└", "[>]"))
+        await pilot.press("r")
+        await pilot.pause()
+        assert app.screen.item.payload["arguments"] == patch
+
+
+def test_expanded_text_wraps_and_updates_after_a_long_streamed_prefix():
+    _run(_expanded_text_updates())
+
+
+async def _expanded_text_updates():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        stamp = datetime(2026, 10, 26, 9, 8, 13, tzinfo=UTC)
+        prefix = "A long scientific observation that must remain readable. " * 5
+
+        def append(text):
+            app._process_events(
+                [
+                    Observation(
+                        "pi_message",
+                        stamp,
+                        {"turn": "detail-turn", "text": text, "final": False},
+                        session_id="detail-session",
+                    )
+                ]
+            )
+
+        append(prefix)
+        await pilot.pause()
+        out = app.query_one("#output")
+        item = next(
+            item
+            for item in _timeline_items(app)
+            if item.kind == "pi" and item.payload.get("turn") == "detail-turn"
+        )
+        node = out._node_by_id[item.item_id]
+        out.move_cursor(node, animate=False)
+        await pilot.press("right")
+        await pilot.pause()
+        append("UNIQUE_FINAL_OBSERVATION")
+        await pilot.pause()
+        node = out._node_by_id[item.item_id]
+        assert node.is_expanded
+        assert "UNIQUE_FINAL_OBSERVATION" in "".join(
+            child.label.plain for child in node.children
+        )
+        await pilot.resize_terminal(100, 45)
+        await pilot.pause()
+        node = out._node_by_id[item.item_id]
+        assert "UNIQUE_FINAL_OBSERVATION" in "".join(
+            child.label.plain for child in node.children
+        )
+        for y, line in enumerate(out._tree_lines):
+            if line.node.parent is node:
+                strip = out.render_line(y - int(out.scroll_offset.y))
+                assert strip.text.rstrip().endswith(line.node.label.plain.rstrip())
 
 
 def test_terminal_drag_release_does_not_collapse_the_selected_block():
@@ -953,7 +1131,7 @@ async def _compact_floor():
 
 
 def test_display_text_rounds_floats_and_compacts_paths(monkeypatch, tmp_path):
-    from runner import console
+    from runner import reporting as console
     from tui.report import _display_text
 
     monkeypatch.setattr(console, "_ROOT", tmp_path)

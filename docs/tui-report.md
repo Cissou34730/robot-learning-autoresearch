@@ -102,8 +102,14 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   and `r` shows the full recorded timestamp;
 - training progress rows show the interval since the previous row, steps
   delta and steps per second when derivable;
-- a tool call is one row: start detail, then completion status, duration,
-  result summary or error, paired by `tool_call_id`;
+- tool actions use the console's summaries and factual result lines, paired by
+  `tool_call_id`; paths, search patterns and API targets wrap naturally instead
+  of opening argument dumps; routine completed/zero-duration labels are omitted;
+- PI messages appear once, in full, without Copilot session UUIDs; long actions
+  and messages are open by default, can be collapsed, update as events arrive
+  and reflow when the terminal is resized;
+- raw arguments, patch payloads and session metadata are available through `r`,
+  not mixed into the normal reading view;
 - coding handoffs show phase, agent, status and their structured detail;
 - file changes show the repository-relative path, operation marker (`+`, `~`,
   `-`) and whether the PI operation request changed;
@@ -140,17 +146,17 @@ disables the feed. The report follows the current campaign's file
 automatically, by byte offset: only appended complete lines are read, and a
 shrunken or replaced file restarts from the beginning.
 
-Emit points are the existing console funnels and structured counters, never
-message-text matching:
+Observations are produced by neutral reporting facades and execution handlers,
+before optional terminal rendering:
 
 - Launcher (`researcher_session.ps1`, `run_research.ps1`) - the status lines
   and cards the launcher displays, including session start and resume
   identity; `session_start` supplies the live stage timer.
-- `runner/console.py` `announce()` and `card()` - every visible Runner line
+- `runner/reporting.py` `announce()` and `card()` - every Runner message
   and lifecycle card, with its existing scope classification (`pi`,
   `operation`, `warning`, `error`, ...) as the color channel.
-- `runner/copilot/copilot_console.py` `Console.line()` - tool calls, results,
-  failures and coder/reviewer lines; `Console.delta()`/`_close_message()` -
+- `runner/copilot/reporting.py` `SessionReporter` - tool calls, results,
+  failures and coder/reviewer facts; `delta()`/`_close_message()` -
   PI text published while it is still being written (whole-word snapshots at
   most every 2 s, immediately on a paragraph break) and a final snapshot at
   turn end.
@@ -199,9 +205,11 @@ rejected; replayed events are deduplicated.
 
 The writer is best-effort and never raises into the Runner. `TUI_TYPED_EVENTS`
 moves the file or disables it with `off`. A domain handler owns the typed fact
-and the console funnel prints it with `typed=False`; the console-shaped
-`console_line`/`console_card` record remains a fallback only for call sites
-with no structured owner.
+and calls the reporting facade with `typed=False` to avoid a duplicate typed
+copy. Generic `console_line`/`console_card` records are produced by the reporting
+facade, not by a console renderer, and remain available without console output.
+The launcher writes typed and legacy transports independently: disabling or
+failing the legacy sink does not stop typed observations.
 
 Domain emitters:
 
@@ -218,7 +226,7 @@ Domain emitters:
   training/evaluation progress, `liveness` and structured warnings for stalls,
   timeouts and stops;
 - `runner/repository.py`: `publication_retry` and `publication_recovered`;
-- `runner/copilot/copilot_console.py` and `session_events.py`:
+- `runner/copilot/reporting.py` and `session_events.py`:
   `pi_message`, `pi_context`, `tool_call_started`, `tool_call_completed`,
   `tool_call_failed`, `tool_denied`, `file_changed`, `coding`,
   `operation_submitted`, `warning` and `error`;
@@ -241,10 +249,15 @@ campaign timeline.
 
 ### Parity with the console
 
-The console stays canonical during this pass. Every pushed console funnel
-accepts `typed=False`; the flag suppresses only the typed record and never
-changes stdout, the legacy observation feed, campaign state or timing. The
-tests assert that:
+The console stays fully functional and remains the presentation reference.
+`runner/console.py` and `runner/copilot/copilot_console.py` are optional terminal
+renderers only. They do not produce observations. The TUI imports shared
+descriptions from the neutral reporting modules, never from either renderer.
+
+Observation production can run with `reporting.rendering(None)` and
+`SessionReporter(renderer=None)`. These are internal composition interfaces,
+not a new launcher mode or a cutover. Default execution still uses the console.
+The tests assert that:
 
 - `announce()`, `card()` and `boundary()` print identical text with the typed
   emitter on and off;
@@ -252,15 +265,18 @@ tests assert that:
   `console_card`;
 - tool, coding, file and usage domain events carry the same numbers the console
   prints, before compaction;
-- the reducer renders those facts as one paired row with duration and status.
+- typed and legacy observations and accounting remain identical when both
+  console renderer modules are unavailable;
+- the TUI starts with imports of both console renderer modules blocked;
+- launcher facts survive absent renderers and a disabled or broken legacy sink.
 
-Removing the console funnels and the remaining `console_line` fallback is the
-separate cutover, not part of this pass.
+Historical feed compatibility remains. Transport redesign, controls and the
+eventual console cutover are separate work, not part of this pass.
 
 ## Validation
 
 ```powershell
-uv run pytest tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py
+uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py
 ```
 
 The tests cover the legacy and typed feed writers, console stdout identity

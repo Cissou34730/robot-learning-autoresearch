@@ -11,9 +11,10 @@ from runner.copilot import opencode_provider as provider
 from runner.copilot import operation_submission as submission_module
 from runner.copilot.coding_contracts import CODING_TOOLS, REVIEW_TOOLS
 from runner.copilot.coding_session import ScientificCoding
-from runner.copilot.copilot_console import Console, tool_detail
 from runner.copilot.operation_submission import OperationSubmission
 from runner.copilot.pi_tools import scoped_search
+from runner.copilot.reporting import SessionReporter as Console
+from runner.copilot.reporting import tool_detail
 from runner.copilot.system_prompt import (
     REFERENCE_READ_DENIAL,
     reference_paths,

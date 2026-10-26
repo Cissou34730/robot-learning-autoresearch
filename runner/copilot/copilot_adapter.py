@@ -12,7 +12,6 @@ import argparse
 import asyncio
 import json
 import subprocess
-import sys
 import time
 
 from runner.copilot.coding_contracts import (
@@ -34,7 +33,6 @@ from runner.copilot.constants import (
     LARGE_OUTPUT_MAX_BYTES,
     SHUTDOWN_TIMEOUT_SECONDS,
 )
-from runner.copilot.copilot_console import Console
 from runner.copilot.opencode_provider import (
     DEFAULT_MODEL,
     PROVIDERS,
@@ -57,6 +55,7 @@ from runner.copilot.pi_tools import (
     reader_guard,
     scoped_search,
 )
+from runner.copilot.reporting import SessionReporter
 from runner.copilot.session_events import (
     ModelCallRetry,
     event_handler,
@@ -123,7 +122,7 @@ def changed_since(before: dict[str, str]) -> list[str]:
 
 def session_options(
     args,
-    console: Console,
+    console: SessionReporter,
     finished: asyncio.Event,
     coding=None,
     operations=None,
@@ -346,7 +345,9 @@ async def assign_provider_identity(client, args) -> None:
     )
 
 
-async def shutdown_runtime(client, session, console: Console, *, abort: bool) -> None:
+async def shutdown_runtime(
+    client, session, console: SessionReporter, *, abort: bool
+) -> None:
     interruption = None
 
     async def graceful_shutdown() -> None:
@@ -402,7 +403,7 @@ async def active_timeout(limit: float, started: float, operations) -> None:
         await asyncio.sleep(0.25)
 
 
-async def converse(session, args, console: Console, finished, operations):
+async def converse(session, args, console: SessionReporter, finished, operations):
     """Drive one bounded conversation; return (exit code, abort the session)."""
     before = worktree_status()
     started = time.monotonic()
@@ -471,7 +472,7 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
     if args.preliminary and provider_of(args.model) == "github-copilot":
         args.reasoning = "max"
     await prepare_provider(args)
-    console = getattr(args, "usage_console", None) or Console()
+    console = getattr(args, "usage_console", None) or SessionReporter()
     if getattr(args, "session_id", ""):
         console.session_id = args.session_id
     finished = asyncio.Event()
@@ -498,7 +499,9 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
             failure = await copilot_access_failure(client, required_copilot_model(args))
             if failure is not None:
                 exit_code, message = failure
-                print(message, file=sys.stderr)
+                console.diagnostic(
+                    message, code="copilot_access_failed", severity="error"
+                )
                 return exit_code
         await assign_provider_identity(client, args)
         session = await open_session(
@@ -608,7 +611,7 @@ async def serve_session(args, client, channel, command: dict) -> int:
         or invocation_args.reasoning != args.reasoning
     ):
         raise ValueError("Controller invocation binding/configuration mismatch.")
-    invocation_args.usage_console = Console()
+    invocation_args.usage_console = SessionReporter()
     if getattr(args, "provider_model", None) is not None:
         invocation_args.provider_model = args.provider_model
         invocation_args.provider_project = args.provider_project
@@ -631,7 +634,10 @@ async def serve_session(args, client, channel, command: dict) -> int:
             )
             announce_usage(invocation_args)
         except (OSError, ValueError) as exc:
-            print(f"Session usage could not be recorded: {exc}", file=sys.stderr)
+            invocation_args.usage_console.diagnostic(
+                f"Session usage could not be recorded: {exc}",
+                code="usage_recording_failed",
+            )
     status, message = session_outcome(exit_code, invocation_args, error)
     await channel.send(
         {
@@ -672,7 +678,7 @@ async def serve(args) -> int:
         return EXIT_OK
     finally:
         try:
-            await shutdown_runtime(client, None, Console(), abort=False)
+            await shutdown_runtime(client, None, SessionReporter(), abort=False)
         finally:
             writer.close()
             await writer.wait_closed()
@@ -682,7 +688,7 @@ def announce_usage(args) -> None:
     """Report this session's recorded usage, including its coding children."""
     if not args.campaign_id or not args.session_id:
         return
-    from runner import console as runner_console
+    from runner import reporting as runner_console
     from runner import typed_events
 
     totals = runner_console.usage_totals(args.campaign_id, args.session_id)
@@ -710,7 +716,7 @@ def announce_usage(args) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    args.usage_console = Console()
+    args.usage_console = SessionReporter()
     started = time.monotonic()
     exit_code = EXIT_RUNTIME_FAILURE
     try:
@@ -721,7 +727,11 @@ def main(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         exit_code = EXIT_INTERRUPTED
     except Exception as error:  # noqa: BLE001 - the launcher needs a code, not a traceback
-        print(f"Copilot runtime failure: {error}", file=sys.stderr)
+        args.usage_console.diagnostic(
+            f"Copilot runtime failure: {error}",
+            code="copilot_runtime_failed",
+            severity="error",
+        )
     finally:
         try:
             record_usage(
@@ -730,7 +740,10 @@ def main(argv: list[str] | None = None) -> int:
             announce_usage(args)
         except (OSError, ValueError) as error:
             # Accounting failure must not invalidate a scientific deliverable.
-            print(f"Session usage could not be recorded: {error}", file=sys.stderr)
+            args.usage_console.diagnostic(
+                f"Session usage could not be recorded: {error}",
+                code="usage_recording_failed",
+            )
     return exit_code
 
 

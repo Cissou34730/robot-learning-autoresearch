@@ -21,6 +21,24 @@ The preliminary analyst keeps its publication tools and a restricted shell.
 mutating Git, dependency changes, direct test runs and reserved scripts.
 Coding delegation is not exposed in that phase.
 
+## Observations and terminal rendering
+
+`runner/reporting.py` and `runner/copilot/reporting.py` own observations and
+shared display descriptions. SDK callbacks and coding/operation handlers use
+`SessionReporter` and `CodingReporter`; the reporters retain accounting and
+message assembly even when their renderer is absent. The TUI imports these
+neutral modules, not the terminal implementations.
+
+`runner/console.py` and `runner/copilot/copilot_console.py` only render output.
+Default launches still use them. Internally, `reporting.rendering(None)` and
+`SessionReporter(renderer=None)` leave typed and legacy observations active
+without loading either console renderer. Launcher reporting follows the same
+boundary: status/card/session producers call optional `Write-Console*`
+functions, and typed output does not depend on the legacy sink succeeding.
+
+This separation does not add campaign controls, change transport or change
+agent authority. See [the report documentation](tui-report.md) for validation.
+
 ## Coding handoff
 
 `scientific_coding` dispatches a native coding subagent. Its readable and

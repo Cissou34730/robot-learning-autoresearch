@@ -35,7 +35,6 @@ from runner.copilot.constants import (
     LARGE_OUTPUT_MAX_BYTES,
     SHUTDOWN_TIMEOUT_SECONDS,
 )
-from runner.copilot.copilot_console import CodingConsole, Console
 from runner.copilot.opencode_provider import DEFAULT_MODEL, provider_of
 from runner.copilot.path_policy import (
     CODING_PERMISSION_DENIAL,
@@ -43,6 +42,7 @@ from runner.copilot.path_policy import (
     ROOT,
     coding_file_scope,
 )
+from runner.copilot.reporting import CodingReporter, SessionReporter
 from runner.copilot.session_events import event_handler
 from runner.copilot.source_changes import coding_changes, coding_snapshot
 from runner.copilot.tool_policy import deny, scoped_tool_hook
@@ -63,7 +63,7 @@ CHILD_USAGE_FIELDS = (
 
 
 class ScientificCoding:
-    def __init__(self, client, args, console: Console) -> None:
+    def __init__(self, client, args, console: SessionReporter) -> None:
         self.args = args
         self.console = console
         self.active_tasks: set[asyncio.Task] = set()
@@ -86,7 +86,7 @@ class ScientificCoding:
         self.active_agent = agent
         self.active_handle = handle
         self.binding = binding
-        self.child_console = CodingConsole(
+        self.child_console = CodingReporter(
             self.console, "reviewer" if agent == REVIEWER else "coder"
         )
         self.child_events = None

@@ -9,9 +9,7 @@ import time
 from runner.copilot.coding_contracts import (
     OperationSubmissionParams,
 )
-from runner.copilot.copilot_console import (
-    Console,
-)
+from runner.copilot.reporting import SessionReporter
 from runner.stop_control import stop_request_path
 
 # Below the SDK's 1,800-second limit on one external tool call.
@@ -46,7 +44,9 @@ class ControllerChannel:
 
 
 class OperationSubmission:
-    def __init__(self, channel, binding: dict, console: Console, coding) -> None:
+    def __init__(
+        self, channel, binding: dict, console: SessionReporter, coding
+    ) -> None:
         self.channel = channel
         self.binding = binding
         self.console = console

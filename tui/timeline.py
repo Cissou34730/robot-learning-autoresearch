@@ -11,7 +11,9 @@ import json
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-from runner import console
+from runner import paths
+from runner import reporting as console
+from runner.copilot.reporting import tool_detail, tool_result_lines
 from tui.observations import Observation
 
 KIND_GLYPHS = {
@@ -116,6 +118,44 @@ def _json_text(value: object) -> str:
         return json.dumps(value, ensure_ascii=False, indent=2, default=str)
     except (TypeError, ValueError):
         return str(value)
+
+
+def _tool_context(fields: dict) -> str:
+    text = str(
+        fields.get("detail")
+        or tool_detail(str(fields.get("name") or "tool"), fields.get("arguments"))
+    )
+    for root in {str(paths.ROOT), paths.ROOT.as_posix()}:
+        text = text.replace(root + "\\", "").replace(root + "/", "")
+    return " ".join(text.split())
+
+
+def _tool_summary(fields: dict, status: str, seconds: float | None = None) -> str:
+    state = "running" if status == "started" else status
+    return " | ".join(
+        part
+        for part in (
+            state if state not in {"ok", "completed", ""} else "",
+            _tool_context(fields),
+            console.format_duration(seconds)
+            if seconds is not None and seconds >= 1
+            else "",
+        )
+        if part
+    )
+
+
+def _tool_details(fields: dict) -> tuple[str, ...]:
+    details = [
+        text.strip()
+        for text, _ in tool_result_lines(
+            str(fields.get("name") or "tool"), fields.get("result")
+        )
+    ]
+    error = fields.get("error") or fields.get("reason")
+    if error:
+        details.append(f"Error: {error}")
+    return tuple(details)
 
 
 def _number(value: object) -> str:
@@ -341,8 +381,17 @@ class TimelineReducer:
             return None
         item = self._sessions.get(session_id)
         if item is None:
-            kind = str(fields.get("kind") or "session").replace("_", " ")
-            title = f"{session_id} {kind}".strip()
+            kind = str(fields.get("kind") or fields.get("stage") or "session").replace(
+                "_", " "
+            )
+            scientific_id = session_id.startswith("S") and session_id[1:].isdigit()
+            title = (
+                f"{session_id} {kind}".strip()
+                if scientific_id
+                else "PI session"
+                if kind == "session"
+                else kind.capitalize()
+            )
             item = self._add_root(
                 TimelineItem(
                     item_id=f"session:{session_id}",
@@ -351,7 +400,7 @@ class TimelineReducer:
                     ts=ts,
                     is_group=True,
                     default_expanded=False,
-                    payload=dict(fields),
+                    payload={"session_id": session_id, **fields},
                 )
             )
             self._sessions[session_id] = item
@@ -669,9 +718,6 @@ class TimelineReducer:
                     f"Objective: {_first_line(fields.get('objective'))}"
                     if fields.get("objective")
                     else "",
-                    f"Backend session: {fields.get('backend_session_id')}"
-                    if fields.get("backend_session_id")
-                    else "",
                 )
                 if line
             )
@@ -722,17 +768,15 @@ class TimelineReducer:
         item = self._tools.get(key)
         status = str(fields.get("status") or "")
         if kind == "tool_call_started":
-            detail = fields.get("detail")
-            if detail in (None, ""):
-                detail = fields.get("arguments")
             item = TimelineItem(
                 item_id=f"tool:{key}",
                 kind="tool",
-                title=f"> {name}",
-                summary=_first_line(detail or ""),
+                title=name,
+                summary=_tool_summary(fields, "started"),
                 ts=ts,
                 status="started",
-                detail=(_json_text(detail),) if detail not in (None, "") else (),
+                default_expanded=True,
+                detail=_tool_details(fields),
                 payload=dict(fields),
             )
             self._tools[key] = item
@@ -742,9 +786,10 @@ class TimelineReducer:
                 item = TimelineItem(
                     item_id=f"tool:{key}",
                     kind="tool",
-                    title=f"> {name}",
+                    title=name,
                     ts=ts,
                     payload=dict(fields),
+                    default_expanded=True,
                 )
                 self._tools[key] = item
                 self._attach(item, operation_id, inquiry_id, session_id)
@@ -752,25 +797,15 @@ class TimelineReducer:
                 status = "denied"
             item.status = status or item.status
             item.end_ts = ts
-            duration = ""
+            seconds = None
             if ts is not None and item.ts is not None:
-                duration = console.format_duration((ts - item.ts).total_seconds())
-            item.summary = " | ".join(part for part in (item.status, duration) if part)
-            extra: list[str] = []
+                seconds = max(0.0, (ts - item.ts).total_seconds())
+            item.payload = {**item.payload, **fields}
+            item.summary = _tool_summary(item.payload, item.status, seconds)
             error = fields.get("error") or fields.get("reason")
             if error:
-                extra.append(f"Error: {_first_line(error, 400)}")
                 item.severity = "error" if kind == "tool_call_failed" else "warning"
-            result = fields.get("result")
-            if result not in (None, ""):
-                extra.append(_short(_json_text(result), 600))
-            elif fields.get("content"):
-                extra.append(_short(str(fields["content"]), 600))
-            elif fields.get("content_length"):
-                extra.append(f"Content: {_number(fields['content_length'])} characters")
-            if extra:
-                item.detail = (*item.detail, *extra)
-            item.payload = {**item.payload, **fields}
+            item.detail = _tool_details(item.payload)
         if ts is not None:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
 
@@ -1052,20 +1087,20 @@ class TimelineReducer:
         if turn is not None and not final:
             text = self._pi_text.get(key, "") + text
         self._pi_text[key] = text
-        detail = tuple(line for line in text.splitlines() if line.strip())
+        detail = tuple(text.splitlines())
         if existing is not None:
             existing.summary = _first_line(text)
             existing.detail = detail
             existing.payload = dict(fields)
             return
-        title = f"PI ({session_id}):" if session_id else "PI:"
         leaf = TimelineItem(
             item_id=f"leaf:pi:{session_id}:{ts}:{len(self._seen)}",
             kind="pi",
-            title=title,
+            title="PI",
             summary=_first_line(text),
             ts=ts,
             detail=detail,
+            default_expanded=True,
             payload=dict(fields),
         )
         self._pi_items[key] = leaf
@@ -1095,19 +1130,22 @@ class TimelineReducer:
         )
         status = str(fields.get("status") or "ok")
         duration = fields.get("duration_seconds")
-        duration_text = (
-            console.format_duration(float(duration))
+        seconds = (
+            float(duration)
             if isinstance(duration, (int, float)) and not isinstance(duration, bool)
-            else ""
+            else None
         )
-        summary = " | ".join(part for part in (status, duration_text) if part)
+        summary = _tool_summary(
+            {**fields, "name": name, "detail": detail}, status, seconds
+        )
         leaf = TimelineItem(
             item_id=f"leaf:tool:{name}:{ts}:{len(self._seen)}",
             kind="tool",
-            title=f"> {name}",
+            title=name,
             summary=summary,
             ts=ts,
-            detail=(_json_text(detail),) if detail not in (None, "") else (),
+            detail=_tool_details({**fields, "detail": detail}),
+            default_expanded=True,
             payload=dict(fields),
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)

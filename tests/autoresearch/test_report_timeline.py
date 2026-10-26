@@ -271,6 +271,7 @@ def test_tool_lifecycle_pairs_by_call_id_and_reports_duration():
                 "name": "artifact_evidence_query",
                 "tool_call_id": "call-1",
                 "detail": "M6 artifact 0",
+                "arguments": {"operation_id": "M6", "artifact_index": 0},
             },
         )
     )
@@ -282,7 +283,11 @@ def test_tool_lifecycle_pairs_by_call_id_and_reports_duration():
                 "name": "artifact_evidence_query",
                 "tool_call_id": "call-1",
                 "status": "completed",
-                "result": {"status": "computed", "value": 3},
+                "result": {
+                    "status": "computed",
+                    "value": 3,
+                    "trace": "x" * 1000 + "END_TOOL_RESULT",
+                },
             },
         )
     )
@@ -290,8 +295,52 @@ def test_tool_lifecycle_pairs_by_call_id_and_reports_duration():
     tools = [item for item in _walk(roots) if item.kind == "tool"]
     assert len(tools) == 1
     assert tools[0].status == "completed"
+    assert "M6 artifact 0" in tools[0].summary
     assert "3s" in tools[0].summary
-    assert any("value" in line for line in tools[0].detail)
+    assert tools[0].payload["arguments"]["operation_id"] == "M6"
+    assert tools[0].payload["result"]["value"] == 3
+    assert tools[0].payload["result"]["trace"].endswith("END_TOOL_RESULT")
+    assert not any("END_TOOL_RESULT" in line for line in tools[0].detail)
+
+
+def test_tool_rows_shorten_campaign_paths_but_keep_full_arguments(
+    monkeypatch, tmp_path
+):
+    from runner import paths
+
+    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    reducer = TimelineReducer()
+    stamp = datetime(2026, 10, 26, 9, 8, 24, tzinfo=UTC)
+    for name in ("environment.py", "observations.py"):
+        path = str(tmp_path / "robot_learning" / "scenario" / name)
+        reducer.ingest(
+            _event(
+                "tool_call_started",
+                stamp,
+                {
+                    "name": "view",
+                    "tool_call_id": name,
+                    "detail": path,
+                    "arguments": {"path": path},
+                },
+            )
+        )
+        reducer.ingest(
+            _event(
+                "tool_call_completed",
+                stamp,
+                {"name": "view", "tool_call_id": name, "status": "completed"},
+            )
+        )
+    tools = [item for item in _walk(reducer.view()[0]) if item.kind == "tool"]
+    assert len(tools) == 2
+    for item, name in zip(tools, ("environment.py", "observations.py"), strict=True):
+        assert name in item.summary
+        assert "robot_learning" in item.summary
+        assert str(tmp_path) not in item.summary
+        assert item.payload["arguments"]["path"] == str(
+            tmp_path / "robot_learning" / "scenario" / name
+        )
 
 
 def test_session_inquiry_and_checkpoint_domain_events_build_groups():

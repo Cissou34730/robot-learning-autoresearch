@@ -17,7 +17,6 @@ from typing import Any
 
 from runner import (
     assessment,
-    console,
     execution,
     observation_feed,
     paths,
@@ -25,6 +24,7 @@ from runner import (
     repository,
     typed_events,
 )
+from runner import reporting as console
 from runner.stop_control import interrupt_on_stop_request
 
 PROPOSAL_ERRORS = (
@@ -2930,10 +2930,10 @@ def main() -> int:
         return run_official_assessment()
     if args.start_session:
         if not args.session_objective:
-            print("ERROR: --start-session requires --session-objective")
+            console.diagnostic("ERROR: --start-session requires --session-objective")
             return 1
         if not args.backend_session_id:
-            print("ERROR: --start-session requires --backend-session-id")
+            console.diagnostic("ERROR: --start-session requires --backend-session-id")
             return 1
         if not all(
             (
@@ -2942,7 +2942,7 @@ def main() -> int:
                 args.backend_reasoning,
             )
         ):
-            print(
+            console.diagnostic(
                 "ERROR: --start-session requires --backend-adapter, "
                 "--backend-model, and --backend-reasoning"
             )
@@ -3021,7 +3021,7 @@ def main() -> int:
     if isinstance(state["pending_operation"], dict):
         if state["pending_operation"]["failure"] is not None:
             if not paths.OPERATION_REQUEST_PATH.is_file():
-                print(
+                console.diagnostic(
                     f"ERROR: pending operation {state['pending_operation']['id']} "
                     "failed; repair it with --reaccept-pending or write a valid "
                     "replacement operation request"
@@ -3032,7 +3032,7 @@ def main() -> int:
                     paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")
                 )
                 if _accepted_request_id(request) == state["pending_operation"]["id"]:
-                    print(
+                    console.diagnostic(
                         f"ERROR: pending operation "
                         f"{state['pending_operation']['id']} failed; run "
                         "--reaccept-pending after implementation repair or replace "
@@ -3044,14 +3044,14 @@ def main() -> int:
             except repository.PublicationError:
                 raise
             except PROPOSAL_ERRORS as error:
-                print(f"ERROR: invalid replacement operation: {error}")
+                console.diagnostic(f"ERROR: invalid replacement operation: {error}")
                 return 1
         return execute_pending_operation()
     if args.execute_pending:
-        print("ERROR: there is no pending Runner operation")
+        console.diagnostic("ERROR: there is no pending Runner operation")
         return 1
     if not paths.OPERATION_REQUEST_PATH.is_file():
-        print("ERROR: pi_workspace/operation_request.json not found")
+        console.diagnostic("ERROR: pi_workspace/operation_request.json not found")
         return 1
     try:
         request = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
@@ -3060,7 +3060,7 @@ def main() -> int:
     except repository.PublicationError:
         raise
     except PROPOSAL_ERRORS as error:
-        print(f"ERROR: invalid operation: {error}")
+        console.diagnostic(f"ERROR: invalid operation: {error}")
         return 1
 
 
@@ -3069,7 +3069,11 @@ def run_with_stop_control() -> int:
         with interrupt_on_stop_request():
             return main()
     except repository.PublicationError as error:
-        print(f"ERROR: publication failed: {error}", file=sys.stderr)
+        console.diagnostic(
+            f"ERROR: publication failed: {error}",
+            stderr=True,
+            code="publication_failed",
+        )
         return PUBLICATION_FAILURE_EXIT_CODE
     except Exception as error:
         if getattr(error, "operation_reported", False):

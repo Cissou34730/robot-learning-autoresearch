@@ -21,7 +21,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-from runner import console
+from runner import reporting as console
 
 
 def _as_dict(value: object) -> dict:

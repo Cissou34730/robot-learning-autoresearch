@@ -33,6 +33,8 @@ function Get-TuiCampaignId {
     }
 }
 
+$script:ConsoleRenderingEnabled = $true
+
 function Write-TuiObservation {
     param(
         [Parameter(Mandatory)][string]$Kind,
@@ -41,23 +43,9 @@ function Write-TuiObservation {
         [hashtable]$Fields = @{}
     )
     try {
-        $override = $env:TUI_OBSERVATIONS
-        if ($null -ne $override -and $override.Trim().ToLowerInvariant() -in @("", "0", "off", "none", "false")) {
-            return
-        }
         $campaignId = Get-TuiCampaignId
         if (-not $campaignId) { return }
-        if ($override) {
-            $path = $override
-            $directory = Split-Path -Parent $path
-        }
-        else {
-            $directory = Join-Path (Get-TuiCampaignRoot) "reports\tui_observations"
-            $path = Join-Path $directory "$campaignId.jsonl"
-        }
-        if ($directory -and -not (Test-Path -LiteralPath $directory)) {
-            New-Item -ItemType Directory -Path $directory -Force | Out-Null
-        }
+        $directory = Join-Path (Get-TuiCampaignRoot) "reports\tui_observations"
         $timestamp = (Get-Date).ToUniversalTime().ToString("o")
         $record = [ordered]@{
             campaign_id = $campaignId
@@ -67,33 +55,6 @@ function Write-TuiObservation {
         if ($Scope) { $record.scope = $Scope }
         if ($Text) { $record.text = $Text }
         foreach ($key in $Fields.Keys) { $record[$key] = $Fields[$key] }
-        $json = $record | ConvertTo-Json -Compress -Depth 5
-        $bytes = [Text.Encoding]::UTF8.GetBytes($json + "`n")
-        # Python appends to the same file; neither writer may lock the other out.
-        $stream = [IO.File]::Open(
-            $path, [IO.FileMode]::Append, [IO.FileAccess]::Write, [IO.FileShare]::ReadWrite
-        )
-        try {
-            $stream.Write($bytes, 0, $bytes.Length)
-        }
-        finally {
-            $stream.Dispose()
-        }
-
-        $typedOverride = $env:TUI_TYPED_EVENTS
-        if ($null -ne $typedOverride -and $typedOverride.Trim().ToLowerInvariant() -in @("", "0", "off", "none", "false")) {
-            return
-        }
-        if ($typedOverride) {
-            $typedPath = $typedOverride
-            $typedDirectory = Split-Path -Parent $typedPath
-            if ($typedDirectory -and -not (Test-Path -LiteralPath $typedDirectory)) {
-                New-Item -ItemType Directory -Path $typedDirectory -Force | Out-Null
-            }
-        }
-        else {
-            $typedPath = Join-Path $directory "$campaignId.events.jsonl"
-        }
         $payload = [ordered]@{}
         if ($Text) { $payload.text = $Text }
         if ($Scope) { $payload.scope = $Scope }
@@ -112,16 +73,30 @@ function Write-TuiObservation {
             inquiry_id = if ($Fields.ContainsKey("inquiry_id")) { $Fields["inquiry_id"] } else { "" }
             payload = $payload
         }
-        $typedJson = $typed | ConvertTo-Json -Compress -Depth 5
-        $typedBytes = [Text.Encoding]::UTF8.GetBytes($typedJson + "`n")
-        $typedStream = [IO.File]::Open(
-            $typedPath, [IO.FileMode]::Append, [IO.FileAccess]::Write, [IO.FileShare]::ReadWrite
-        )
-        try {
-            $typedStream.Write($typedBytes, 0, $typedBytes.Length)
-        }
-        finally {
-            $typedStream.Dispose()
+        foreach ($sink in @(
+            @{ Override = $env:TUI_OBSERVATIONS; Path = (Join-Path $directory "$campaignId.jsonl"); Record = $record },
+            @{ Override = $env:TUI_TYPED_EVENTS; Path = (Join-Path $directory "$campaignId.events.jsonl"); Record = $typed }
+        )) {
+            # Failure or disabling of either transport must not disable the other.
+            try {
+                $override = $sink.Override
+                if ($null -ne $override -and $override.Trim().ToLowerInvariant() -in @("", "0", "off", "none", "false")) {
+                    continue
+                }
+                $path = if ($override) { $override } else { $sink.Path }
+                $parent = Split-Path -Parent $path
+                if ($parent -and -not (Test-Path -LiteralPath $parent)) {
+                    New-Item -ItemType Directory -Path $parent -Force | Out-Null
+                }
+                $json = $sink.Record | ConvertTo-Json -Compress -Depth 10
+                $bytes = [Text.Encoding]::UTF8.GetBytes($json + "`n")
+                $stream = [IO.File]::Open(
+                    $path, [IO.FileMode]::Append, [IO.FileAccess]::Write, [IO.FileShare]::ReadWrite
+                )
+                try { $stream.Write($bytes, 0, $bytes.Length) }
+                finally { $stream.Dispose() }
+            }
+            catch { }
         }
     }
     catch {
@@ -135,6 +110,25 @@ function Write-Status {
         [string]$Label = ""
     )
     if (-not $Label) {
+        $Label = switch ($Color) { Green { "done" }; Yellow { "wait" }; default { "run" } }
+    }
+    $scope = switch ($Label) {
+        "session" { "session" }; "done" { "success" }; "wait" { "warning" }; "error" { "error" }; default { "info" }
+    }
+    $text = $Message -replace '^===\s*|\s*===$', ''
+    Write-TuiObservation -Kind console_line -Scope $scope -Text $text
+    if ($script:ConsoleRenderingEnabled) {
+        Write-ConsoleStatus -Message $Message -Color $Color -Label $Label
+    }
+}
+
+function Write-ConsoleStatus {
+    param(
+        [Parameter(Mandatory)][string]$Message,
+        [ConsoleColor]$Color = [ConsoleColor]::Cyan,
+        [string]$Label = ""
+    )
+    if (-not $Label) {
         $Label = switch ($Color) {
             Green { "done" }
             Yellow { "wait" }
@@ -142,14 +136,6 @@ function Write-Status {
         }
     }
     $text = $Message -replace '^===\s*|\s*===$', ''
-    $scope = switch ($Label) {
-        "session" { "session" }
-        "done" { "success" }
-        "wait" { "warning" }
-        "error" { "error" }
-        default { "info" }
-    }
-    Write-TuiObservation -Kind console_line -Scope $scope -Text $text
     $timestamp = "[$(Get-Date -Format 'HH:mm:ss')]"
     $marker = "[$Label]"
     $redirected = try {
@@ -205,6 +191,24 @@ function Write-Status {
     }
 }
 
+function Write-Card {
+    param(
+        [Parameter(Mandatory)][string]$Title,
+        [string[]]$Lines = @(),
+        [ConsoleColor]$Color = [ConsoleColor]::Cyan,
+        [ConsoleColor]$BodyColor = [ConsoleColor]::White
+    )
+    $scope = switch ($Color) {
+        Magenta { "pi" }; Yellow { "warning" }; Red { "error" }; Green { "success" }; default { "info" }
+    }
+    $text = "=== $Title ==="
+    if ($Lines.Count -gt 0) { $text += "`n" + ($Lines -join "`n") }
+    Write-TuiObservation -Kind console_line -Scope $scope -Text $text
+    if ($script:ConsoleRenderingEnabled) {
+        Write-ConsoleCard -Title $Title -Lines $Lines -Color $Color -BodyColor $BodyColor
+    }
+}
+
 function Write-ConsoleCard {
     param(
         [Parameter(Mandatory)][string]$Title,
@@ -220,16 +224,6 @@ function Write-ConsoleCard {
         Write-Host "  $line" -ForegroundColor $BodyColor
     }
     Write-Host ""
-    $scope = switch ($Color) {
-        Magenta { "pi" }
-        Yellow { "warning" }
-        Red { "error" }
-        Green { "success" }
-        default { "info" }
-    }
-    $text = "=== $Title ==="
-    if ($Lines.Count -gt 0) { $text += "`n" + ($Lines -join "`n") }
-    Write-TuiObservation -Kind console_line -Scope $scope -Text $text
 }
 
 function New-ResearcherSessionStatus {
@@ -267,6 +261,28 @@ function New-ResearcherSessionStatus {
 
 function Write-ResearcherSessionStatus {
     param([Parameter(Mandatory)][psobject]$Status)
+    $exitText = if ($null -eq $Status.ExitCode) { "unavailable" } else { [string]$Status.ExitCode }
+    if ($Status.Complete -and $exitText -eq "0") {
+        $text = "Researcher phase closed: $($Status.Phase), attempt $($Status.Attempt), process=$exitText, $($Status.Deliverable)=$($Status.Validity)"
+        $scope = "success"
+    }
+    else {
+        $presence = if ($Status.Present) { "present" } else { "missing" }
+        $text = "Researcher session - $($Status.Phase) - attempt $($Status.Attempt)`nProcess exit : $exitText`nDeliverable  : $($Status.Deliverable) ($presence)`nValidation   : $($Status.Validity)"
+        if ($Status.Reason) { $text += "`nReason       : $($Status.Reason)" }
+        $scope = "warning"
+    }
+    Write-TuiObservation -Kind console_line -Scope $scope -Text $text -Fields @{
+        phase = $Status.Phase; attempt = $Status.Attempt; exit_code = $Status.ExitCode
+        deliverable = $Status.Deliverable; present = $Status.Present; validity = $Status.Validity; reason = $Status.Reason
+    }
+    if ($script:ConsoleRenderingEnabled) {
+        Write-ConsoleResearcherSessionStatus -Status $Status
+    }
+}
+
+function Write-ConsoleResearcherSessionStatus {
+    param([Parameter(Mandatory)][psobject]$Status)
     $exitText = if ($null -eq $Status.ExitCode) {
         "unavailable"
     }
@@ -276,14 +292,14 @@ function Write-ResearcherSessionStatus {
     if ($Status.Complete -and $exitText -eq "0") {
         # A completed phase still reports as one line, but the line says which
         # phase it closes so it is not read as a stray status message.
-        Write-Status (
+        Write-ConsoleStatus (
             "Researcher phase closed: $($Status.Phase), attempt $($Status.Attempt), " +
             "process=$exitText, $($Status.Deliverable)=$($Status.Validity)"
         ) Green
         return
     }
     $presence = if ($Status.Present) { "present" } else { "missing" }
-    Write-Status "=== Researcher session - $($Status.Phase) - attempt $($Status.Attempt) ===" Yellow
+    Write-ConsoleStatus "=== Researcher session - $($Status.Phase) - attempt $($Status.Attempt) ===" Yellow
     Write-Host "Process exit : $exitText"
     Write-Host "Deliverable  : $($Status.Deliverable) ($presence)"
     Write-Host "Validation   : $($Status.Validity)"

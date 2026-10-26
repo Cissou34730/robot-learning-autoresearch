@@ -10,7 +10,6 @@ from runner.copilot.constants import (
     MODEL_CALL_RETRY_DELAY_SECONDS,
     MODEL_CALL_RETRY_LIMIT,
 )
-from runner.copilot.copilot_console import RESULT_ISSUE_TOOLS, Console, result_issue
 from runner.copilot.path_policy import (
     CODING_PERMISSION_DENIAL,
     CODING_SCOPE_DENIAL,
@@ -18,12 +17,13 @@ from runner.copilot.path_policy import (
     file_read_denial,
     scoped_edit_denial,
 )
+from runner.copilot.reporting import RESULT_ISSUE_TOOLS, SessionReporter, result_issue
 from runner.copilot.tool_policy import RUNNER_LOCKED_DENIAL, SHELL_DENIAL
 from runner.stop_control import stop_requested
 
 
 def event_handler(
-    console: Console,
+    console: SessionReporter,
     finished: asyncio.Event,
     *,
     coding=None,
@@ -128,7 +128,7 @@ def _write_denial(request, scope, coding_paths, preliminary):
 
 
 def permission_handler(
-    console: Console,
+    console: SessionReporter,
     *,
     preliminary: bool = False,
     coding_paths: frozenset[str] | None = None,
@@ -195,7 +195,9 @@ def _is_retryable_websocket_error(request) -> bool:
 class ModelCallRetry:
     """Retry the Copilot transient websocket failure a bounded number of times."""
 
-    def __init__(self, session_id: str, console: Console, coding, operations) -> None:
+    def __init__(
+        self, session_id: str, console: SessionReporter, coding, operations
+    ) -> None:
         self.session_id = session_id
         self.console = console
         self.coding = coding

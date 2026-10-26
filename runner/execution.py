@@ -18,7 +18,8 @@ import tempfile
 import time
 from pathlib import Path
 
-from runner import console, observation_feed, paths, repository, typed_events
+from runner import observation_feed, paths, repository, typed_events
+from runner import reporting as console
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
