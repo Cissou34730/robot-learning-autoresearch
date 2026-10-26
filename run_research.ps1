@@ -1,7 +1,7 @@
 # Goal-centered robot-learning research launcher.
 
 param(
-    [string]$CampaignRoot = (Join-Path (Split-Path -Parent $PSScriptRoot) "robot-learning-campaigns"),
+    [string]$CampaignRoot = (Join-Path (Split-Path -Parent $PSScriptRoot) "robot-learning-campaigns\campaign-1"),
 
     [ValidateNotNullOrEmpty()]
     [string]$Model,

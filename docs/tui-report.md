@@ -30,7 +30,7 @@ root only.
 ## Running the report
 
 ```powershell
-.\tools\run-report.ps1                 # default sibling robot-learning-campaigns
+.\tools\run-report.ps1                 # default robot-learning-campaigns\campaign-1
 .\tools\run-report.ps1 -CampaignRoot <path>
 .\tools\run-report.ps1 -Demo           # synthetic material, reads nothing
 ```

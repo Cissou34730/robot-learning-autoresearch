@@ -594,7 +594,8 @@
         the whole process.</p>
       <p class="snapshot">Last reviewed <time datetime="2026-10-26">26 October 2026</time>. This is a static
         architecture and status overview, not a live campaign monitor. The filename is retained for existing links. The
-        <a href="../harness-experiment-log.md">harness tracker</a> is the source for status and issues; this page mirrors
+        <a href="../harness-experiment-log.md">harness tracker</a> is the source for status and issues; this page
+        mirrors
         its register. Local campaign records establish measured results.
       </p>
       <nav class="page-nav" aria-label="Page navigation">
@@ -622,7 +623,8 @@
           Round 3, with the analyst's invariance item and the program changes, passed 2 of 3:
           <code>17e9764f</code> at 200/200 in 50 minutes for 16.5 AIU, the fastest pass so far, and
           <code>de7af8af</code> at 200/200 in 3 h 21. Rounds 1 and 2 passed 1 of 6. See <a href="#reports">Campaigns</a>
-          and <a href="#findings">What decides success</a>.</p>
+          and <a href="#findings">What decides success</a>.
+        </p>
         <p><strong>What decides success:</strong> every campaign that used the arm's reflection symmetry on a
           direct-torque policy passed quickly; every campaign that did not use it stalled at about 97.5%. The scientific
           model stated the symmetry in 1 of 28 models before 26 October and in 3 of 3 since. Three campaigns cannot
@@ -649,9 +651,9 @@
               project.</li>
             <li><code>harness</code> is the GitHub default branch. Its history starts with a clean snapshot, followed by
               engineering commits.</li>
-            <li><code>robot-learning-campaigns</code> holds scientific source, state and artifacts in its own Git
-              repository with no remotes. <code>robot-learning-campaigns-run2</code> and <code>-run3</code> are two more
-              campaign repositories for parallel runs.</li>
+            <li><code>robot-learning-campaigns</code> is a plain folder holding one campaign repository per slot,
+              <code>campaign-1</code> to <code>campaign-5</code>. Each holds scientific source, state and artifacts in
+              its own Git repository with no remotes.</li>
             <li>The old inquiry-centered-lifecycle worktree remains a forensic safeguard.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">The harness is no longer a linked worktree. Updating it does
@@ -663,11 +665,13 @@
           <ul>
             <li><code>tests/autoresearch</code> and <code>tests/benchmark</code>: 592 pass and 1 fails
               (<code>test_runner_reads_the_live_training_metric_only_through_the_boundary</code>, since TUI commit
-              <code>ef3e0c44</code>).</li>
+              <code>ef3e0c44</code>).
+            </li>
             <li>Passing tests check implementation behavior, not scientific effectiveness.</li>
             <li>The migration checks of the 19 October split are in <a href="#archive">Old decisions</a>.</li>
           </ul>
-          <p class="small"><a href="../harness-campaign-split.md">Read the split implementation and correction record</a></p>
+          <p class="small"><a href="../harness-campaign-split.md">Read the split implementation and correction
+              record</a></p>
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
@@ -675,7 +679,8 @@
           <ul>
             <li>All 56 issue IDs remain visible. Four are open (OI-024, OI-025, OI-039, OI-040).</li>
             <li>Six changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
-              (invariances in the scientific model), OI-054 (time and AI usage shown to the PI), OI-055 (first-experiment
+              (invariances in the scientific model), OI-054 (time and AI usage shown to the PI), OI-055
+              (first-experiment
               reference) and OI-056 (contrast in mechanism tests).</li>
             <li>On 26 October OI-041 (system prompt), OI-049 (analyst prompt) and OI-052 (duplicate panels) closed.</li>
             <li>OI-033 and OI-037 were closed by maintainer decision, not verified recovery. OI-021, OI-026, OI-038
@@ -731,37 +736,38 @@
           </p>
         </article>
         <article class="card">
-          <h3>Campaign: science and evidence stay local</h3>
-          <p><code>C:\Users\cyril.beurier\code\robot-learning-campaigns</code></p>
-          <p>Contains <code>robot_learning/</code>, <code>campaigns/</code>, <code>pi_workspace/</code>,
+          <h3>Campaigns: science and evidence stay local</h3>
+          <p><code>C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-&lt;n&gt;</code>, n = 1 to 5</p>
+          <p>Each slot contains <code>robot_learning/</code>, <code>campaigns/</code>, <code>pi_workspace/</code>,
             <code>runner/state/</code>, models, reports and session data.
           </p>
-          <p>It has independent Git storage and no remotes. Runner never pushes in split mode, even if a remote is
+          <p>Each has independent Git storage and no remotes. Runner never pushes in split mode, even if a remote is
             added.</p>
         </article>
       </div>
       <div class="card" style="margin-top: 16px">
-        <h3>Launch or reset from the harness folder</h3>
-        <p><code>.\run_research.ps1</code> launches or resumes the selected campaign. It does not reset it.</p>
+        <h3>Run campaigns from the harness folder</h3>
+        <p><strong>Standard: 1 to 5 campaigns at once.</strong> <code>.\tools\run_parallel.ps1 -Count 3</code> uses
+          <code>campaign-1</code> to <code>campaign-3</code>, initializes missing slots from an existing one, resets each
+          to the recipe, launches each campaign in its own window and starts a monitor that stops a campaign
+          cooperatively at 6 h of active time or 120 AIU (defaults; the PI never sees these caps). Transcripts and one
+          report per campaign go to <code>%TEMP%\robot-learning\parallel-&lt;time&gt;</code>.</p>
+        <p><strong>One campaign by hand.</strong> <code>.\run_research.ps1</code> launches or resumes the selected
+          campaign. It does not reset it.</p>
         <p>
           <code>.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force ; .\run_research.ps1</code>
         </p>
         <p>The second command deliberately resets before launch. Stop the campaign first. <code>-Clean</code> discards
           eligible uncommitted changes. The semicolon is not success-only: inspect any reset failure before authorizing
           launch.</p>
-        <p>Both scripts accept <code>-CampaignRoot &lt;path&gt;</code>, default to the sibling campaign folder, and
+        <p>Both scripts accept <code>-CampaignRoot &lt;path&gt;</code>, default to <code>campaign-1</code>, and
           restore the caller's folder on exit. During execution, the working directory is the campaign folder.</p>
         <p><strong>Baseline v3 is a recipe, not a trained model.</strong> Its Fresh reset keeps the current harness,
           restores scientific files and starts empty history with scientific-model preparation pending. It does not
           restore an old harness commit.</p>
         <p>The task fingerprints must match. A new campaign repository needs one-time initialization from a source
-          repository containing the recipe tag; it is not created by an ordinary reset.</p>
-        <p><strong>Several campaigns at once.</strong>
-          <code>.\tools\run_parallel.ps1 -CampaignRoots &lt;folder&gt;,&lt;folder&gt;,&lt;folder&gt;</code> resets each
-          folder to the recipe, launches each campaign in its own window and starts a monitor that stops a campaign
-          cooperatively at 6 h of active time or 120 AIU (defaults; the PI never sees these caps). Transcripts and one
-          report per campaign go to <code>%TEMP%\robot-learning\parallel-&lt;time&gt;</code>. The folders
-          <code>robot-learning-campaigns-run2</code> and <code>-run3</code> exist for this.</p>
+          repository containing the recipe tag; <code>run_parallel.ps1</code> does this for missing slots, an ordinary
+          reset does not.</p>
         <p><a href="../../README.md">Setup and provider commands</a> &middot; <a href="../reset-research.md">Reset
             guide</a> &middot; <a href="../harness-campaign-split.md">Split design</a> &middot; <a
             href="../external-campaign-stop.md">External stop contract</a></p>
@@ -1451,7 +1457,8 @@
         comparison of harness changes. Since 24 October the scenario defines the assessed learned policy; the hybrid
         controllers of <code>2d4fcc0e</code>, <code>faff0d94</code> and <code>f83fca4d</code> would not count as passes
         under it. Reports of the parallel rounds are kept outside the repository; the
-        <a href="../harness-experiment-log.md#parallel-rounds-25-26-october">tracker</a> records where.</p>
+        <a href="../harness-experiment-log.md#parallel-rounds-25-26-october">tracker</a> records where.
+      </p>
       <div class="card table-wrap wide">
         <table>
           <thead>
@@ -1468,22 +1475,23 @@
               <td>26 Oct, 01:25 CEST</td>
               <td>Official pass: 200/200. Parallel round 3. Five inquiries of tuning near 97.5%, then the reflection
                 tested on frozen weights before training with it. 3 h 21, 72.1 AIU.</td>
-              <td><a href="../harness-experiment-log.md#parallel-rounds-25-26-october">Parallel rounds</a></td>
+              <td><a href="robot-campaign-de7af8af-20261026.html">Campaign report</a></td>
             </tr>
             <tr>
               <td><code>17e9764f</code></td>
               <td>26 Oct, 01:25 CEST</td>
               <td>Official pass: 200/200. Parallel round 3. The scientific model stated the symmetry; the PI used it in
                 its first inquiry (400/400 on three checkpoints). 50 minutes, 16.5 AIU, the fastest pass so far.</td>
-              <td><a href="../harness-experiment-log.md#parallel-rounds-25-26-october">Parallel rounds</a></td>
+              <td><a href="robot-campaign-17e9764f-20261026.html">Campaign report</a></td>
             </tr>
             <tr>
               <td><code>38ad68c6</code></td>
               <td>26 Oct, 01:25 CEST</td>
-              <td>Stopped at the 120 AIU cap; best about 85%. Parallel round 3. First experiment combined the radius change
+              <td>Stopped at the 120 AIU cap; best about 85%. Parallel round 3. First experiment combined the radius
+                change
                 with fixed-gain joint targets (60%); reflection applied on that base; direct torque never tested; 13
                 diagnostic modules; coder and reviewer used 44% of 123 AIU.</td>
-              <td><a href="../harness-experiment-log.md#parallel-rounds-25-26-october">Parallel rounds</a></td>
+              <td><a href="robot-campaign-38ad68c6-20261026.html">Campaign report</a></td>
             </tr>
             <tr>
               <td><code>fecc7566</code></td>
@@ -1512,14 +1520,14 @@
               <td>25 Oct, 09:50 CEST</td>
               <td>Official fail: 195/200. Parallel round 1. Assessed at an estimated 40% pass chance. 2 h 38,
                 51.3 AIU.</td>
-              <td><a href="../harness-experiment-log.md#parallel-rounds-25-26-october">Parallel rounds</a></td>
+              <td><a href="robot-campaign-1d0fb8a9-20261025.html">Campaign report</a></td>
             </tr>
             <tr>
               <td><code>7b4769e9</code></td>
               <td>25 Oct, 09:50 CEST</td>
               <td>Stopped at the 120 AIU cap after 15 inquiries; best about 98%; no assessment requested. Parallel
                 round 1. 5 h 30.</td>
-              <td><a href="../harness-experiment-log.md#parallel-rounds-25-26-october">Parallel rounds</a></td>
+              <td><a href="robot-campaign-7b4769e9-20261025.html">Campaign report</a></td>
             </tr>
             <tr>
               <td><code>cf5d9dd9</code></td>
@@ -1547,7 +1555,8 @@
             <tr>
               <td><code>efd58acc</code></td>
               <td>24 Oct, 15:25 CEST</td>
-              <td>Stopped at I15 after about 6 h and 140.6 AIU; plateau near 97.5% for about 4 h. First campaign under the
+              <td>Stopped at I15 after about 6 h and 140.6 AIU; plateau near 97.5% for about 4 h. First campaign under
+                the
                 learned-policy definition. Led to the 24 October package: longer inquiry runs, stored references,
                 development panel, controllers as PI tools.</td>
               <td><a href="../harness-experiment-log.md#change-ledger">Change ledger, 24 October</a></td>
@@ -1598,7 +1607,8 @@
             <tr>
               <td><code>6882b9ec</code></td>
               <td>22 Oct, 13:06 CEST</td>
-              <td>Official fail: 193/200. Assessed at an estimated 64% pass chance from one panel; a maintainer replay on
+              <td>Official fail: 193/200. Assessed at an estimated 64% pass chance from one panel; a maintainer replay
+                on
                 2,000 episodes gives 96.35%. 68.6 AIU.</td>
               <td><a href="../harness-experiment-log.md#change-ledger">Change ledger, 22 October</a></td>
             </tr>
@@ -1806,7 +1816,8 @@
       <h2 id="findings-heading">What decides success</h2>
       <p>Findings from the campaigns of 22 to 26 October, especially the three parallel rounds, where several campaigns
         started from the same recipe on the same harness. They are observations, not controlled experiments; the
-        <a href="../harness-experiment-log.md#parallel-rounds-25-26-october">tracker</a> holds the details.</p>
+        <a href="../harness-experiment-log.md#parallel-rounds-25-26-october">tracker</a> holds the details.
+      </p>
       <div class="grid two">
         <article class="card hot">
           <span class="tag">Decisive</span>
@@ -1817,10 +1828,12 @@
             <li>Every campaign that used the symmetry (reflected inputs and mirrored motor commands) on a direct-torque
               policy passed quickly: <code>cfa88359</code>, <code>6b13d5f4</code>, <code>fecc7566</code>,
               <code>17e9764f</code>, <code>de7af8af</code>. <code>38ad68c6</code> applied it on a weaker fixed-gain base
-              and did not pass. Every campaign that did not use it stalled at about 97.5%.</li>
+              and did not pass. Every campaign that did not use it stalled at about 97.5%.
+            </li>
             <li>Before 26 October the analyst's scientific model stated the symmetry in 1 of 28 models; that campaign,
               <code>6b13d5f4</code>, passed in 52 minutes. Since the analyst models invariances (OI-053), 3 of 3 models
-              state it.</li>
+              state it.
+            </li>
           </ul>
         </article>
         <article class="card">
@@ -1833,7 +1846,8 @@
               episodes, and saw at once that the negative-side command was not the mirror of the positive one.</li>
             <li>The losing PIs explained failures by the shoulder limit or the arm configuration, which apply equally
               to the mirrored side that succeeds, and repeated the same mechanism question (five times in
-              <code>7b4769e9</code>). This led to OI-056.</li>
+              <code>7b4769e9</code>). This led to OI-056.
+            </li>
           </ul>
         </article>
         <article class="card">
@@ -1841,7 +1855,8 @@
           <h3 style="margin-top: 12px">Tuning at about 97.5% cannot be measured</h3>
           <ul>
             <li>Without a structural change, PIs tuned reward, sampling and inputs and compared them on 400-episode
-              panels, whose noise (about ±1.4 points) hides the 0.5-1 point gains being tested. Most comparisons tied.</li>
+              panels, whose noise (about ±1.4 points) hides the 0.5-1 point gains being tested. Most comparisons tied.
+            </li>
             <li>All 30 training runs of round 1 used exactly 120k steps, although inquiry runs may use up to 360k.</li>
             <li>The training seed alone moved the same recipe from 35% to 94%; with seed 0 all three round-1
               campaigns produced the same first candidate (375/400).</li>
@@ -2020,27 +2035,43 @@
           <tbody>
             <tr>
               <td>OI-024</td>
-              <td>The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern.</td>
+              <td>The PI repeats measurements because the first request omits required diagnostic fields. The prompt
+                guidance did not prevent this pattern.</td>
               <td><span class="tag">Open</span></td>
-              <td>Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse of prior results. Preserve PI judgment. No automatic duplicate gate is approved.</td>
+              <td>Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse
+                of prior results. Preserve PI judgment. No automatic duplicate gate is approved.</td>
             </tr>
             <tr>
               <td>OI-025</td>
-              <td>The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors.</td>
+              <td>The PI can confuse measurement fields or state conclusions that the data do not support. Later
+                accurate summaries do not explain the earlier errors.</td>
               <td><span class="tag">Open</span></td>
-              <td>T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool <code>training_series_statistics</code> (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence.</td>
+              <td>T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated,
+                12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds
+                after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool
+                defect found. Optional tool <code>training_series_statistics</code> (window summary with PI-chosen
+                checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured.
+                Preserve the historical evidence.</td>
             </tr>
             <tr>
               <td>OI-039</td>
-              <td>The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval.</td>
+              <td>The paired success difference between candidate and reference has an exact sign-test p-value but no
+                confidence interval.</td>
               <td><span class="tag">Open</span></td>
-              <td>Optional tool <code>episode_outcome_breakdown</code> (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": in <code>e7dbbece</code> the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts unchanged, and the PI-owned <code>comparison.py</code> stays available. Track use. Use: 8 calls in <code>cfa88359</code>, 45 in <code>5d94bf8a</code>.</td>
+              <td>Optional tool <code>episode_outcome_breakdown</code> (2026-10-22) reads recorded measurements and
+                gives the exact sign test and a Wilson interval for the first measurement's share of discordant
+                episodes, per stratum when asked. The maintainer reversed "no harness tool": in <code>e7dbbece</code>
+                the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts
+                unchanged, and the PI-owned <code>comparison.py</code> stays available. Track use. Use: 8 calls in
+                <code>cfa88359</code>, 45 in <code>5d94bf8a</code>.</td>
             </tr>
             <tr>
               <td>OI-040</td>
-              <td>The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session.</td>
+              <td>The console shows no progress while a PI model request runs. The PI also lacks clear guidance about
+                when to checkpoint a session.</td>
               <td><span class="tag">Open</span></td>
-              <td>Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request.</td>
+              <td>Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign
+                shows a defect. Faster responses do not show recovery from a stalled request.</td>
             </tr>
           </tbody>
         </table>
@@ -2062,37 +2093,77 @@
               <td>OI-008</td>
               <td>Repeated context can increase cost and obscure current evidence.</td>
               <td><span class="tag">Observed</span></td>
-              <td>Size reductions since 21 October: per-operation instrument files instead of one contract; first-message context files for PI sessions (effective from <code>e7dbbece</code>) and for the opening scientific-model session (2026-10-22); <code>campaigns/results.jsonl</code> read through <code>artifact_evidence_query</code>; context bands in the console. PI AIU per session: <code>49e58c12</code> 5.10, <code>e7dbbece</code> 2.88, <code>6882b9ec</code> 2.80, <code>cfa88359</code> 3.29. After startup the PI re-reads almost no contract files. The opening session's <code>contracts/scenario.md</code> re-reads fell from 21 to 0 in <code>cfa88359</code>; it still re-read <code>authority.md</code> (11) and <code>policy_runtime.py</code> (6), which are now included. Remaining check: context growth and cost across a campaign longer than about 15 sessions. Keep the complete history accessible. Do not infer a context repair from faster model responses.</td>
+              <td>Size reductions since 21 October: per-operation instrument files instead of one contract;
+                first-message context files for PI sessions (effective from <code>e7dbbece</code>) and for the opening
+                scientific-model session (2026-10-22); <code>campaigns/results.jsonl</code> read through
+                <code>artifact_evidence_query</code>; context bands in the console. PI AIU per session:
+                <code>49e58c12</code> 5.10, <code>e7dbbece</code> 2.88, <code>6882b9ec</code> 2.80,
+                <code>cfa88359</code> 3.29. After startup the PI re-reads almost no contract files. The opening
+                session's <code>contracts/scenario.md</code> re-reads fell from 21 to 0 in <code>cfa88359</code>; it
+                still re-read <code>authority.md</code> (11) and <code>policy_runtime.py</code> (6), which are now
+                included. Remaining check: context growth and cost across a campaign longer than about 15 sessions. Keep
+                the complete history accessible. Do not infer a context repair from faster model responses.</td>
             </tr>
             <tr>
               <td>OI-051</td>
-              <td>An operation that runs longer than 30 minutes ends the PI session. The SDK allows an external tool call at most 1,800 seconds, and <code>submit_operation</code> waited for the whole operation.</td>
+              <td>An operation that runs longer than 30 minutes ends the PI session. The SDK allows an external tool
+                call at most 1,800 seconds, and <code>submit_operation</code> waited for the whole operation.</td>
               <td><span class="tag">Implemented</span></td>
-              <td><code>3135b37b</code> (26 October): <code>submit_operation</code> waits at most 25 minutes, then returns <code>running</code>; the operation continues, and <code>request=null</code> waits for its result. All other tools stay blocked meanwhile. The PI session activity limit is now 6 h; coder and reviewer time counts toward it, Runner waits do not. Observed 25 October in the minimal-recipe campaign <code>05229297</code> (M42, 3 × 2,400 episodes, about 35 minutes). No campaign has yet run an operation longer than 25 minutes, so the slice has not been exercised.</td>
+              <td><code>3135b37b</code> (26 October): <code>submit_operation</code> waits at most 25 minutes, then
+                returns <code>running</code>; the operation continues, and <code>request=null</code> waits for its
+                result. All other tools stay blocked meanwhile. The PI session activity limit is now 6 h; coder and
+                reviewer time counts toward it, Runner waits do not. Observed 25 October in the minimal-recipe campaign
+                <code>05229297</code> (M42, 3 × 2,400 episodes, about 35 minutes). No campaign has yet run an operation
+                longer than 25 minutes, so the slice has not been exercised.</td>
             </tr>
             <tr>
               <td>OI-053</td>
-              <td>Campaign outcomes depend on whether the scientific model states the arm's reflection symmetry. The analyst wrote it in 1 of 28 models before 26 October.</td>
+              <td>Campaign outcomes depend on whether the scientific model states the arm's reflection symmetry. The
+                analyst wrote it in 1 of 28 models before 26 October.</td>
               <td><span class="tag">Observed</span></td>
-              <td><code>2f22d98d</code> (26 October) adds to the analyst's model scope: the invariances of the definitions, such as symmetries and conserved quantities, and what each makes equal or different. Round 3 (26 October): all 3 models state the symmetry; 2 of 3 campaigns passed (<code>17e9764f</code> in 50 min, <code>de7af8af</code> in 3 h 21). Before: the only campaign whose model stated it (<code>6b13d5f4</code>) passed in 52 min; <code>fecc7566</code> found it by a mirror-pair experiment; the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See <a href="../harness-experiment-log.md#parallel-rounds-25-26-october">parallel rounds</a>.</td>
+              <td><code>2f22d98d</code> (26 October) adds to the analyst's model scope: the invariances of the
+                definitions, such as symmetries and conserved quantities, and what each makes equal or different. Round
+                3 (26 October): all 3 models state the symmetry; 2 of 3 campaigns passed (<code>17e9764f</code> in 50
+                min, <code>de7af8af</code> in 3 h 21). Before: the only campaign whose model stated it
+                (<code>6b13d5f4</code>) passed in 52 min; <code>fecc7566</code> found it by a mirror-pair experiment;
+                the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See <a
+                  href="../harness-experiment-log.md#parallel-rounds-25-26-october">parallel rounds</a>.</td>
             </tr>
             <tr>
               <td>OI-054</td>
-              <td>The PI is told the campaign is judged on time and AI usage, but sees neither number. In <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.</td>
+              <td>The PI is told the campaign is judged on time and AI usage, but sees neither number. In
+                <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.</td>
               <td><span class="tag">Implemented</span></td>
-              <td><code>4ce2fdb1</code> (26 October): the campaign resource line shows elapsed time and AI usage of completed sessions by role (PI; coding and review). Caps stay hidden. Watch for earlier official-assessment requests: on 20 October cost guidance was removed from PI decisions for that reason. No campaign has run with it.</td>
+              <td><code>4ce2fdb1</code> (26 October): the campaign resource line shows elapsed time and AI usage of
+                completed sessions by role (PI; coding and review). Caps stay hidden. Watch for earlier
+                official-assessment requests: on 20 October cost guidance was removed from PI decisions for that reason.
+                No campaign has run with it.</td>
             </tr>
             <tr>
               <td>OI-055</td>
-              <td>The PI's first experiment can change several parts of the recipe at once and anchor the campaign on an untested base. In <code>38ad68c6</code>, T1 widened the radius range and switched to fixed-gain joint targets together (60%); the campaign never tested direct torque (about 94% elsewhere) and ended at about 85%.</td>
+              <td>The PI's first experiment can change several parts of the recipe at once and anchor the campaign on an
+                untested base. In <code>38ad68c6</code>, T1 widened the radius range and switched to fixed-gain joint
+                targets together (60%); the campaign never tested direct torque (about 94% elsewhere) and ended at about
+                85%.</td>
               <td><span class="tag">Implemented</span></td>
-              <td><code>4ce2fdb1</code> (26 October), <code>contracts/program.md</code>: the inherited recipe is the first reference, and a first experiment that changes several parts at once cannot attribute its result; the assumptions checked before a costly experiment include the choice of method, not only the correctness of its implementation. No campaign has run with it.</td>
+              <td><code>4ce2fdb1</code> (26 October), <code>contracts/program.md</code>: the inherited recipe is the
+                first reference, and a first experiment that changes several parts at once cannot attribute its result;
+                the assumptions checked before a costly experiment include the choice of method, not only the
+                correctness of its implementation. No campaign has run with it.</td>
             </tr>
             <tr>
               <td>OI-056</td>
-              <td>At a plateau the PI explains failures without the contrast with comparable successes, repeats the same mechanism question, and abandons or repeats methods after one inconclusive result.</td>
+              <td>At a plateau the PI explains failures without the contrast with comparable successes, repeats the same
+                mechanism question, and abandons or repeats methods after one inconclusive result.</td>
               <td><span class="tag">Implemented</span></td>
-              <td><code>a93baf4b</code> and <code>2f22d98d</code> (25-26 October), <code>contracts/program.md</code>: a mechanism test accounts for where behavior fails and where comparable conditions succeed, and the scientific model states what the definitions make equal; an intervention can supply the evidence for an explanation; check the assumptions of a costly experiment; name the limitation the next implementation addresses; an inconclusive result alone does not justify another attempt or abandonment. Changes 1-3 come from <a href="../proposals/program-revision-proposal-preserve-lifecycle-20261026.md">the preserve-lifecycle proposal</a>. Round 3 ran with all of them; their effect cannot be separated from OI-053.</td>
+              <td><code>a93baf4b</code> and <code>2f22d98d</code> (25-26 October), <code>contracts/program.md</code>: a
+                mechanism test accounts for where behavior fails and where comparable conditions succeed, and the
+                scientific model states what the definitions make equal; an intervention can supply the evidence for an
+                explanation; check the assumptions of a costly experiment; name the limitation the next implementation
+                addresses; an inconclusive result alone does not justify another attempt or abandonment. Changes 1-3
+                come from <a href="../proposals/program-revision-proposal-preserve-lifecycle-20261026.md">the
+                  preserve-lifecycle proposal</a>. Round 3 ran with all of them; their effect cannot be separated from
+                OI-053.</td>
             </tr>
           </tbody>
         </table>
@@ -2120,7 +2191,8 @@
                   <td>OI-001</td>
                   <td>The first PI action can ignore the initial scientific model.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Startup connects the physical model to the chosen scientific action. A training run is not a mandatory first action.</td>
+                  <td>Startup connects the physical model to the chosen scientific action. A training run is not a
+                    mandatory first action.</td>
                 </tr>
                 <tr>
                   <td>OI-002</td>
@@ -2132,199 +2204,275 @@
                   <td>OI-003</td>
                   <td>The PI can treat unread evidence as absent evidence.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Scientific conclusions identify their evidence. The PI distinguishes unread evidence from absent evidence. Separate interpretation errors remain under OI-025.</td>
+                  <td>Scientific conclusions identify their evidence. The PI distinguishes unread evidence from absent
+                    evidence. Separate interpretation errors remain under OI-025.</td>
                 </tr>
                 <tr>
                   <td>OI-004</td>
-                  <td>The PI can prefer the last training checkpoint without a comparison with relevant alternatives.</td>
+                  <td>The PI can prefer the last training checkpoint without a comparison with relevant alternatives.
+                  </td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The PI selects candidates from training context and measured results. The PI does not need to evaluate every checkpoint.</td>
+                  <td>The PI selects candidates from training context and measured results. The PI does not need to
+                    evaluate every checkpoint.</td>
                 </tr>
                 <tr>
                   <td>OI-005</td>
                   <td>The PI can continue research without a balanced comparison with official assessment.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Goal review compares official prospects with further work and considers selection bias. In <code>2d4fcc0e</code>, the PI continued at 97.2% on pooled fresh panels and requested assessment at 400/400. No automatic assessment rule or readiness condition was added. Closure does not guarantee future assessment success.</td>
+                  <td>Goal review compares official prospects with further work and considers selection bias. In
+                    <code>2d4fcc0e</code>, the PI continued at 97.2% on pooled fresh panels and requested assessment at
+                    400/400. No automatic assessment rule or readiness condition was added. Closure does not guarantee
+                    future assessment success.</td>
                 </tr>
                 <tr>
                   <td>OI-009</td>
                   <td>A request to save a session can list the wrong completed operations.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The interface supplies the session identity and exact operation list. Rejections show submitted and expected values. This repair does not recover a fatal conversation.</td>
+                  <td>The interface supplies the session identity and exact operation list. Rejections show submitted
+                    and expected values. This repair does not recover a fatal conversation.</td>
                 </tr>
                 <tr>
                   <td>OI-011</td>
                   <td>Unclear console paths and file access rules can hide errors or expose protected files.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The console identifies evidence paths and query options. Phase-specific access rules protect maintainer files.</td>
+                  <td>The console identifies evidence paths and query options. Phase-specific access rules protect
+                    maintainer files.</td>
                 </tr>
                 <tr>
                   <td>OI-014</td>
                   <td>The PI can claim a new method or a cause that the tested code does not establish.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>In <code>2d4fcc0e</code>, the PI closed T3's inquiry after confirmation did not support its proposed gain. T4's claimed method exists in the tested code and saved runtime. Execution traces support its realization, not isolated component causality.</td>
+                  <td>In <code>2d4fcc0e</code>, the PI closed T3's inquiry after confirmation did not support its
+                    proposed gain. T4's claimed method exists in the tested code and saved runtime. Execution traces
+                    support its realization, not isolated component causality.</td>
                 </tr>
                 <tr>
                   <td>OI-015</td>
-                  <td>A recipe restore can replace unrelated sources and remove scientific tools. The saved record can obscure the actual experiment.</td>
+                  <td>A recipe restore can replace unrelated sources and remove scientific tools. The saved record can
+                    obscure the actual experiment.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>A restore names exact source files and preserves unselected files and laboratory tools. Source records and parameters show the actual experiment. Scientific intent remains PI work.</td>
+                  <td>A restore names exact source files and preserves unselected files and laboratory tools. Source
+                    records and parameters show the actual experiment. Scientific intent remains PI work.</td>
                 </tr>
                 <tr>
                   <td>OI-016</td>
                   <td>A new inquiry can repeat resolved work or inherit an outdated next question.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The PI preserves inquiry boundaries. Goal review can revise the next question from current evidence.</td>
+                  <td>The PI preserves inquiry boundaries. Goal review can revise the next question from current
+                    evidence.</td>
                 </tr>
                 <tr>
                   <td>OI-017</td>
                   <td>The PI cannot inspect required values inside a saved artifact.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The evidence tool reads selected values from the recorded file. It checks the fingerprint before access.</td>
+                  <td>The evidence tool reads selected values from the recorded file. It checks the fingerprint before
+                    access.</td>
                 </tr>
                 <tr>
                   <td>OI-018</td>
                   <td>Unclear query arguments can cause repeated errors or return too much evidence.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The query interface defines limits and filters. It rejects invalid fields and supports complete retrieval through explicit pages. Large-file issues have separate records.</td>
+                  <td>The query interface defines limits and filters. It rejects invalid fields and supports complete
+                    retrieval through explicit pages. Large-file issues have separate records.</td>
                 </tr>
                 <tr>
                   <td>OI-019</td>
                   <td>The current goal gap can contradict the final official result.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The brief uses the official result for the current gap. It labels the earlier PI record as historical. Closure does not imply campaign success.</td>
+                  <td>The brief uses the official result for the current gap. It labels the earlier PI record as
+                    historical. Closure does not imply campaign success.</td>
                 </tr>
                 <tr>
                   <td>OI-021</td>
-                  <td>The initial prompt supplies task-specific ideas before the PI analyzes the robot. Those ideas can bias later scientific choices.</td>
+                  <td>The initial prompt supplies task-specific ideas before the PI analyzes the robot. Those ideas can
+                    bias later scientific choices.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Closed by maintainer decision on 22 October. The preliminary session builds the physical model from the human-owned definitions of the robot, simulator and task, labels recipe code as a design choice and selects no intervention; the PI selects interventions. The planned impact analysis was not completed.</td>
+                  <td>Closed by maintainer decision on 22 October. The preliminary session builds the physical model
+                    from the human-owned definitions of the robot, simulator and task, labels recipe code as a design
+                    choice and selects no intervention; the PI selects interventions. The planned impact analysis was
+                    not completed.</td>
                 </tr>
                 <tr>
                   <td>OI-022</td>
                   <td>Extra process output can corrupt the exit code and cause a false rejection.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The process helper returns one exit code. It keeps unrelated output separate from that value. Retry limits and operation checks are unchanged.</td>
+                  <td>The process helper returns one exit code. It keeps unrelated output separate from that value.
+                    Retry limits and operation checks are unchanged.</td>
                 </tr>
                 <tr>
                   <td>OI-023</td>
                   <td>A search through a permitted folder can expose protected files below that folder.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Search tools exclude protected files before they inspect content or return paths. This repair does not create an operating-system sandbox.</td>
+                  <td>Search tools exclude protected files before they inspect content or return paths. This repair does
+                    not create an operating-system sandbox.</td>
                 </tr>
                 <tr>
                   <td>OI-026</td>
-                  <td>Source changes and review can consume resources when a requirement remains unclear. A coder cannot supply a missing PI decision.</td>
+                  <td>Source changes and review can consume resources when a requirement remains unclear. A coder cannot
+                    supply a missing PI decision.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Closed by maintainer decision on 22 October. Coders receive contract excerpts and the recorded structure of selected evidence (<code>evidence_inputs</code>); missing scientific decisions return to the PI; independent review remains. Coding and review cost 7.1 of 30.1 AIU in <code>cfa88359</code>. No separate clarification-cost measurement was completed.</td>
+                  <td>Closed by maintainer decision on 22 October. Coders receive contract excerpts and the recorded
+                    structure of selected evidence (<code>evidence_inputs</code>); missing scientific decisions return
+                    to the PI; independent review remains. Coding and review cost 7.1 of 30.1 AIU in
+                    <code>cfa88359</code>. No separate clarification-cost measurement was completed.</td>
                 </tr>
                 <tr>
                   <td>OI-027</td>
                   <td>A failed session can report an old success state or omit the actual error.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The response retains errors and reports timeout or interruption explicitly. This repair reports the outcome. It does not recover the session.</td>
+                  <td>The response retains errors and reports timeout or interruption explicitly. This repair reports
+                    the outcome. It does not recover the session.</td>
                 </tr>
                 <tr>
                   <td>OI-028</td>
-                  <td>Publication can fail after Runner accepts a replacement request, without an explicit publication error.</td>
+                  <td>Publication can fail after Runner accepts a replacement request, without an explicit publication
+                    error.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Runner preserves the publication error across the process boundary. The controller reports a fatal publication failure without a repeat of the operation.</td>
+                  <td>Runner preserves the publication error across the process boundary. The controller reports a fatal
+                    publication failure without a repeat of the operation.</td>
                 </tr>
                 <tr>
                   <td>OI-029</td>
                   <td>A malformed operation request can reach the submission channel.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The shared schema checks the operation wrapper before dispatch. Invalid structures receive a specific error. Scientific decisions are unchanged.</td>
+                  <td>The shared schema checks the operation wrapper before dispatch. Invalid structures receive a
+                    specific error. Scientific decisions are unchanged.</td>
                 </tr>
                 <tr>
                   <td>OI-030</td>
                   <td>A correction request can lose or change the coder's original file scope.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The coding tool reuses the stored file scope for the same coder. It rejects changed scope and invalid task identifiers. Clarification cost remains under OI-026.</td>
+                  <td>The coding tool reuses the stored file scope for the same coder. It rejects changed scope and
+                    invalid task identifiers. Clarification cost remains under OI-026.</td>
                 </tr>
                 <tr>
                   <td>OI-031</td>
-                  <td>The PI can select an incorrect file when it copies an artifact filename. Full records can obscure the required metadata.</td>
+                  <td>The PI can select an incorrect file when it copies an artifact filename. Full records can obscure
+                    the required metadata.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Compact lookups identify recorded operations and artifacts. The interface checks artifact fingerprints before execution. Complete artifacts remain accessible. Runner does not select scientific evidence.</td>
+                  <td>Compact lookups identify recorded operations and artifacts. The interface checks artifact
+                    fingerprints before execution. Complete artifacts remain accessible. Runner does not select
+                    scientific evidence.</td>
                 </tr>
                 <tr>
                   <td>OI-032</td>
                   <td>A limit on complete JSON files can block access to a small required value.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The reader selects values from large files without a full load into memory. It preserves complete syntax checks, fingerprints, and explicit limits.</td>
+                  <td>The reader selects values from large files without a full load into memory. It preserves complete
+                    syntax checks, fingerprints, and explicit limits.</td>
                 </tr>
                 <tr>
                   <td>OI-033</td>
-                  <td>A recoverable error from the language-model service can stop a conversation after the coder completes its work.</td>
+                  <td>A recoverable error from the language-model service can stop a conversation after the coder
+                    completes its work.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Closed by maintainer decision on 21 October. The retry mechanism exists, but recovery from the original service error was not verified. No further recovery work is requested.</td>
+                  <td>Closed by maintainer decision on 21 October. The retry mechanism exists, but recovery from the
+                    original service error was not verified. No further recovery work is requested.</td>
                 </tr>
                 <tr>
                   <td>OI-034</td>
                   <td>Repeated scans of a large JSON file can delay each query.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The reader reuses validation and scan locations. It limits cached records and still checks file fingerprints. Cold reads and explicit query limits remain intentional.</td>
+                  <td>The reader reuses validation and scan locations. It limits cached records and still checks file
+                    fingerprints. Cold reads and explicit query limits remain intentional.</td>
                 </tr>
                 <tr>
                   <td>OI-035</td>
                   <td>A temporary remote Git error can stop publication of completed work.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The helper retries specified server errors with the same commit and branch. The retry count is limited. Campaign repositories never push.</td>
+                  <td>The helper retries specified server errors with the same commit and branch. The retry count is
+                    limited. Campaign repositories never push.</td>
                 </tr>
                 <tr>
                   <td>OI-036</td>
-                  <td>A controller can work in research evaluation but omit required behavior in protected evaluation.</td>
+                  <td>A controller can work in research evaluation but omit required behavior in protected evaluation.
+                  </td>
                   <td><span class="tag">Closed</span></td>
-                  <td>T4's saved runtime contains the required controller and episode state. The same artifact scored 400/400 locally, 200/200 in protected development and 200/200 officially. Closure combines source inspection with measured use. It does not claim identical trajectories across different panels.</td>
+                  <td>T4's saved runtime contains the required controller and episode state. The same artifact scored
+                    400/400 locally, 200/200 in protected development and 200/200 officially. Closure combines source
+                    inspection with measured use. It does not claim identical trajectories across different panels.</td>
                 </tr>
                 <tr>
                   <td>OI-037</td>
-                  <td>A fatal conversation can reject new requests while Runner still records an active session. A restart resumes the unusable conversation.</td>
+                  <td>A fatal conversation can reject new requests while Runner still records an active session. A
+                    restart resumes the unusable conversation.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Closed by maintainer decision on 21 October, together with GitHub #61. No recovery repair or successful recovery verification is claimed. Completed operations and evidence are unchanged.</td>
+                  <td>Closed by maintainer decision on 21 October, together with GitHub #61. No recovery repair or
+                    successful recovery verification is claimed. Completed operations and evidence are unchanged.</td>
                 </tr>
                 <tr>
                   <td>OI-038</td>
-                  <td>Reported success rates are point values. They do not state the uncertainty that comes from the number of episodes behind each value.</td>
+                  <td>Reported success rates are point values. They do not state the uncertainty that comes from the
+                    number of episodes behind each value.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Closed by maintainer decision on 22 October. <code>success_rate_pass_probability</code> gives Wilson intervals, the pass probability and the pass probability at the interval bounds from measured counts. Training-log success rates average the last 100 training episodes in the PI-owned checkpoint callback; consecutive values share episodes and use the training distribution, so they are trend indicators, not samples. The contracts already state that training facts do not establish development performance.</td>
+                  <td>Closed by maintainer decision on 22 October. <code>success_rate_pass_probability</code> gives
+                    Wilson intervals, the pass probability and the pass probability at the interval bounds from measured
+                    counts. Training-log success rates average the last 100 training episodes in the PI-owned checkpoint
+                    callback; consecutive values share episodes and use the training distribution, so they are trend
+                    indicators, not samples. The contracts already state that training facts do not establish
+                    development performance.</td>
                 </tr>
                 <tr>
                   <td>OI-046</td>
                   <td>A runtime change tested on frozen weights has no route to protected evaluation.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Closed by maintainer decision on 22 October (rule B in <code>contracts/instruments/coding.md</code>): runtime changes reach a candidate only through training; frozen-weight runtime tests are diagnostics; measurement artifacts never become candidates. The repackaging operation is not built. In <code>cfa88359</code> the PI trained T2 fresh with a reflection in its policy I/O and passed at 199/200.</td>
+                  <td>Closed by maintainer decision on 22 October (rule B in
+                    <code>contracts/instruments/coding.md</code>): runtime changes reach a candidate only through
+                    training; frozen-weight runtime tests are diagnostics; measurement artifacts never become
+                    candidates. The repackaging operation is not built. In <code>cfa88359</code> the PI trained T2 fresh
+                    with a reflection in its policy I/O and passed at 199/200.</td>
                 </tr>
                 <tr>
                   <td>OI-045</td>
                   <td>Inquiry training requests must use the full 120,000-step allocation.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Closed on 24 October by the harness change after <code>efd58acc</code>: an inquiry run now lies between the allocation (120k) and the maintainer maximum (<code>-MaxTimesteps</code>, default 360k). Startup stays at most the allocation.</td>
+                  <td>Closed on 24 October by the harness change after <code>efd58acc</code>: an inquiry run now lies
+                    between the allocation (120k) and the maintainer maximum (<code>-MaxTimesteps</code>, default 360k).
+                    Startup stays at most the allocation.</td>
                 </tr>
                 <tr>
                   <td>OI-048</td>
-                  <td>The robot contract files carry a scenario-specific name (<code>contracts/robots/two_joint_arm.py</code> and <code>.xml</code>).</td>
+                  <td>The robot contract files carry a scenario-specific name
+                    (<code>contracts/robots/two_joint_arm.py</code> and <code>.xml</code>).</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Renamed on 24 October to <code>contracts/robots/robot.py</code> and <code>robot.xml</code>; the constant <code>TWO_JOINT_ARM_XML_PATH</code> is now <code>ROBOT_XML_PATH</code>. The XML content and its fingerprint are unchanged. Benchmark imports, protected-path lists and tests follow. The campaign repository's local tag <code>baseline-distinct-episodes-v3-robot</code> (commit <code>8bee2b4</code> on top of <code>baseline-distinct-episodes-v3</code>) updates the two recipe imports and <code>campaigns/task_contract.json</code>; Fresh resets use it. <code>tools/initialize_campaign.py</code> still defaults to the old tag.</td>
+                  <td>Renamed on 24 October to <code>contracts/robots/robot.py</code> and <code>robot.xml</code>; the
+                    constant <code>TWO_JOINT_ARM_XML_PATH</code> is now <code>ROBOT_XML_PATH</code>. The XML content and
+                    its fingerprint are unchanged. Benchmark imports, protected-path lists and tests follow. The
+                    campaign repository's local tag <code>baseline-distinct-episodes-v3-robot</code> (commit
+                    <code>8bee2b4</code> on top of <code>baseline-distinct-episodes-v3</code>) updates the two recipe
+                    imports and <code>campaigns/task_contract.json</code>; Fresh resets use it.
+                    <code>tools/initialize_campaign.py</code> still defaults to the old tag.</td>
                 </tr>
                 <tr>
                   <td>OI-041</td>
                   <td>The PI role arrived in the first user message; the SDK system message stayed at its default.</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>Merged into <code>harness</code> on 24 October (tag <code>pre-system-prompt</code> marks the previous tip). The PI and the analyst receive a customized system message (<code>runner/copilot/system_prompt.py</code>): own identity, autonomy and tone, contract references; the scientific model arrives in the first message so that it survives compaction. Campaigns since <code>f83fca4d</code> run on it. Plan and adaptations: <a href="../harness-experiment-log.md#oi-041-system-prompt-plan-22-october">OI-041 system-prompt plan</a>.</td>
+                  <td>Merged into <code>harness</code> on 24 October (tag <code>pre-system-prompt</code> marks the
+                    previous tip). The PI and the analyst receive a customized system message
+                    (<code>runner/copilot/system_prompt.py</code>): own identity, autonomy and tone, contract
+                    references; the scientific model arrives in the first message so that it survives compaction.
+                    Campaigns since <code>f83fca4d</code> run on it. Plan and adaptations: <a
+                      href="../harness-experiment-log.md#oi-041-system-prompt-plan-22-october">OI-041 system-prompt
+                      plan</a>.</td>
                 </tr>
                 <tr>
                   <td>OI-049</td>
-                  <td>The opening analyst shared the PI's system-prompt construction and omitted parts of the physical model (in <code>5d94bf8a</code> it read 6 files instead of 38 and omitted the 14-20 cm training range).</td>
+                  <td>The opening analyst shared the PI's system-prompt construction and omitted parts of the physical
+                    model (in <code>5d94bf8a</code> it read 6 files instead of 38 and omitted the 14-20 cm training
+                    range).</td>
                   <td><span class="tag">Closed</span></td>
-                  <td>The analyst has its own identity, exploration and autonomy sections since the OI-041 merge, and its scope includes invariances since <code>2f22d98d</code> (see OI-053). No separate analyst prompt file was built.</td>
+                  <td>The analyst has its own identity, exploration and autonomy sections since the OI-041 merge, and
+                    its scope includes invariances since <code>2f22d98d</code> (see OI-053). No separate analyst prompt
+                    file was built.</td>
                 </tr>
                 <tr>
                   <td>OI-052</td>
-                  <td>A measurement request that listed the same panel twice was accepted and measured, then publication failed on duplicate source artifacts and the launcher exited (<code>cf5d9dd9</code>, M14).</td>
+                  <td>A measurement request that listed the same panel twice was accepted and measured, then publication
+                    failed on duplicate source artifacts and the launcher exited (<code>cf5d9dd9</code>, M14).</td>
                   <td><span class="tag">Closed</span></td>
-                  <td><code>de98a7b1</code> (25 October): acceptance refuses a request that repeats a panel (same instrument, candidate, seed and episode count, after alias resolution) with an error naming both measurements. Covered by a targeted test.</td>
+                  <td><code>de98a7b1</code> (25 October): acceptance refuses a request that repeats a panel (same
+                    instrument, candidate, seed and episode count, after alias resolution) with an error naming both
+                    measurements. Covered by a targeted test.</td>
                 </tr>
               </tbody>
             </table>
@@ -2349,69 +2497,122 @@
               <tbody>
                 <tr>
                   <td>OI-006</td>
-                  <td>The effect of the 120,000-step training allocation on cost and scientific progress remains unknown. This allocation is not the PI session deadline.</td>
+                  <td>The effect of the 120,000-step training allocation on cost and scientific progress remains
+                    unknown. This allocation is not the PI session deadline.</td>
                   <td><span class="tag">Retired</span></td>
-                  <td>The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending. Continue maintainer cost monitoring without asking the PI to optimize economic cost. Retirement does not establish an optimal allocation. Superseded in part on 24 October: the standard allocation stays 120k, but an inquiry run may extend to the maintainer maximum (<code>-MaxTimesteps</code>, default 360k); see the ledger entry "Harness change after <code>efd58acc</code>".</td>
+                  <td>The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending.
+                    Continue maintainer cost monitoring without asking the PI to optimize economic cost. Retirement does
+                    not establish an optimal allocation. Superseded in part on 24 October: the standard allocation stays
+                    120k, but an inquiry run may extend to the maintainer maximum (<code>-MaxTimesteps</code>, default
+                    360k); see the ledger entry "Harness change after <code>efd58acc</code>".</td>
                 </tr>
                 <tr>
                   <td>OI-007</td>
                   <td>The prompt order determines when the PI sees its role and the human goal.</td>
                   <td><span class="tag">Paused</span></td>
-                  <td>Scientific context already precedes operation choices. The maintainer did not approve a goal-first prompt for ordinary sessions.</td>
+                  <td>Scientific context already precedes operation choices. The maintainer did not approve a goal-first
+                    prompt for ordinary sessions.</td>
                 </tr>
                 <tr>
                   <td>OI-010</td>
                   <td>The old protocol log raised a separate access concern.</td>
                   <td><span class="tag">Retired</span></td>
-                  <td>No current defect supports a separate repair. General file-access concerns belong to OI-011 and OI-023. This status does not claim a new repair.</td>
+                  <td>No current defect supports a separate repair. General file-access concerns belong to OI-011 and
+                    OI-023. This status does not claim a new repair.</td>
                 </tr>
                 <tr>
                   <td>OI-012</td>
                   <td>The proposal permits separate publication of a frozen policy.</td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>The maintainer did not approve or implement the proposal. This proposal does not authorize campaign recovery.</td>
+                  <td>The maintainer did not approve or implement the proposal. This proposal does not authorize
+                    campaign recovery.</td>
                 </tr>
                 <tr>
                   <td>OI-013</td>
                   <td>The proposal removes the fifteen-inquiry limit.</td>
                   <td><span class="tag">Withdrawn</span></td>
-                  <td>The maintainer retained the limit. The campaign pauses after a saved checkpoint when it reaches that limit. The resume mechanism is unchanged.</td>
+                  <td>The maintainer retained the limit. The campaign pauses after a saved checkpoint when it reaches
+                    that limit. The resume mechanism is unchanged.</td>
                 </tr>
                 <tr>
                   <td>OI-020</td>
                   <td>One proposed issue combined unrelated assessment concerns and task-specific terms.</td>
                   <td><span class="tag">Withdrawn</span></td>
-                  <td>The generic issue was invalid. Assessment decisions remain under OI-005. Task-specific observations remain in their campaign analysis. This entry does not authorize a generic repair.</td>
+                  <td>The generic issue was invalid. Assessment decisions remain under OI-005. Task-specific
+                    observations remain in their campaign analysis. This entry does not authorize a generic repair.</td>
                 </tr>
                 <tr>
                   <td>OI-042</td>
                   <td>Each new session receives whole context files. Only named sections could reduce cost further.</td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>Distant future. One PI-selected named-sections context tool, as in the <a href="../archive/copilot-sdk-consolidation-plan.md">SDK consolidation plan</a>. Reconsider after OI-008 shows the remaining context cost.</td>
+                  <td>Distant future. One PI-selected named-sections context tool, as in the <a
+                      href="../archive/copilot-sdk-consolidation-plan.md">SDK consolidation plan</a>. Reconsider after
+                    OI-008 shows the remaining context cost.</td>
                 </tr>
                 <tr>
                   <td>OI-043</td>
                   <td>Instruction changes are tested only in full campaigns.</td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>Replay one recorded PI decision point with the same fixed evidence under the old and the new instructions, with no operations, and compare the chosen action. Precedent: two fixed-evidence replays of the pre-I13 goal-review boundary of <code>79395c88</code> under OI-016; both chose differently from the campaign. A replay is not campaign evidence. No framework or test infrastructure is approved.</td>
+                  <td>Replay one recorded PI decision point with the same fixed evidence under the old and the new
+                    instructions, with no operations, and compare the chosen action. Precedent: two fixed-evidence
+                    replays of the pre-I13 goal-review boundary of <code>79395c88</code> under OI-016; both chose
+                    differently from the campaign. A replay is not campaign evidence. No framework or test
+                    infrastructure is approved.</td>
                 </tr>
                 <tr>
                   <td>OI-044</td>
                   <td>The PI can attribute a recorded measurement to the wrong candidate.</td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>Implement an on-demand <code>artifact_evidence_query</code> action that returns one candidate's recorded measurements if a campaign shows this error again. Precedent: E11 in <code>49e58c12</code> attributed T1's 192/200 to T2. Recorded references in <code>success_rate_pass_probability</code> already cover the counts behind pass estimates.</td>
+                  <td>Implement an on-demand <code>artifact_evidence_query</code> action that returns one candidate's
+                    recorded measurements if a campaign shows this error again. Precedent: E11 in <code>49e58c12</code>
+                    attributed T1's 192/200 to T2. Recorded references in <code>success_rate_pass_probability</code>
+                    already cover the counts behind pass estimates.</td>
                 </tr>
                 <tr>
                   <td>OI-047</td>
-                  <td>Code paths used only for external inference providers remain when the PI runs on GitHub Copilot.</td>
+                  <td>Code paths used only for external inference providers remain when the PI runs on GitHub Copilot.
+                  </td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>Low priority. Remove the <code>read</code> tool, <code>read_alias</code> and <code>json_editors</code> if external providers are no longer used.</td>
+                  <td>Low priority. Remove the <code>read</code> tool, <code>read_alias</code> and
+                    <code>json_editors</code> if external providers are no longer used.</td>
                 </tr>
                 <tr>
                   <td>OI-050</td>
-                  <td>The harness lifecycle is much heavier than the workflow of a human robot-learning lab, and it slows the PI on easy tasks.</td>
+                  <td>The harness lifecycle is much heavier than the workflow of a human robot-learning lab, and it
+                    slows the PI on easy tasks.</td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>Discuss later; no change is authorized. A human lab runs many cheap experiments in parallel (sweeps, several seeds, early stopping), keeps an informal notebook, compares candidates on a fixed validation set and tests once at the end, watches plots and videos of the robot, keeps continuity in the same people, edits code directly and gets feedback from colleagues. The harness runs one formal operation at a time, wraps each question in an inquiry with a closure condition, checkpoint record and goal review, applies paired statistics from the start, gives numeric evidence only, rebuilds each session from records, routes code through coder and reviewer agents, and gives no feedback during a campaign. Many rules were added to fix past failures, and many decisions follow technical constraints: one machine's compute capacity (sequential training and evaluation), LLM context exhaustion (bounded sessions, records, brief), no physical robot and no vision model (numeric evidence only), and coding efficiency and safety (coder/reviewer split, protected boundaries). Evidence: <code>efd58acc</code> used 32 sessions, 14 inquiries and about 126 AIU over about 6 h on an easy task, and most sessions served the process rather than the robot. Next step: a written comparison of each lifecycle element with the constraint it serves, whether that constraint still holds, and its cost in recent campaigns. Candidate experiment (24 October): replace the starting recipe with a minimal skeleton that keeps only the interfaces the Runner and the protected benchmark call (training and evaluation entry points, checkpoint, log and artifact formats, policy-runtime factory, observation contract) and none of the scientific choices (reward, observations, action mapping, algorithm settings, training distribution). Every campaign so far began by repairing the recipe (T1 always widened the training range); one campaign on the skeleton shows whether the PI does better when it owns every design choice. Built on branch <code>experiment/minimal-recipe</code> in a dedicated worktree. <strong>Outcome (25 October): the experiment did not work; the PI needs more support, not less.</strong> Campaign <code>05229297</code> (folder <code>robot-learning-campaigns-minimal</code>, recipe tag <code>minimal-recipe-v1</code>: zero reward, raw-state observations, task target distribution, library-default PPO, no observation normalization) ran about 6 h 45 min, 15 inquiries, 14 training runs, 110 measurement records and about 150 AIU, and reached at best 2.8% on one unfinished panel. Two PPO runs with its own reward scored 0%; the PI then abandoned RL for imitation of an IK teacher it wrote (11 runs, 0–2.8%) and never revisited normalization, reward scale or PPO settings, never used longer runs or repeated seeds, and spent most effort on large confirmation panels. The main recipe reaches 64–94% in one 120k run. The worktree was removed; the branch, the minimal recipe repository and the minimal campaign folder remain for reference.</td>
+                  <td>Discuss later; no change is authorized. A human lab runs many cheap experiments in parallel
+                    (sweeps, several seeds, early stopping), keeps an informal notebook, compares candidates on a fixed
+                    validation set and tests once at the end, watches plots and videos of the robot, keeps continuity in
+                    the same people, edits code directly and gets feedback from colleagues. The harness runs one formal
+                    operation at a time, wraps each question in an inquiry with a closure condition, checkpoint record
+                    and goal review, applies paired statistics from the start, gives numeric evidence only, rebuilds
+                    each session from records, routes code through coder and reviewer agents, and gives no feedback
+                    during a campaign. Many rules were added to fix past failures, and many decisions follow technical
+                    constraints: one machine's compute capacity (sequential training and evaluation), LLM context
+                    exhaustion (bounded sessions, records, brief), no physical robot and no vision model (numeric
+                    evidence only), and coding efficiency and safety (coder/reviewer split, protected boundaries).
+                    Evidence: <code>efd58acc</code> used 32 sessions, 14 inquiries and about 126 AIU over about 6 h on
+                    an easy task, and most sessions served the process rather than the robot. Next step: a written
+                    comparison of each lifecycle element with the constraint it serves, whether that constraint still
+                    holds, and its cost in recent campaigns. Candidate experiment (24 October): replace the starting
+                    recipe with a minimal skeleton that keeps only the interfaces the Runner and the protected benchmark
+                    call (training and evaluation entry points, checkpoint, log and artifact formats, policy-runtime
+                    factory, observation contract) and none of the scientific choices (reward, observations, action
+                    mapping, algorithm settings, training distribution). Every campaign so far began by repairing the
+                    recipe (T1 always widened the training range); one campaign on the skeleton shows whether the PI
+                    does better when it owns every design choice. Built on branch <code>experiment/minimal-recipe</code>
+                    in a dedicated worktree. <strong>Outcome (25 October): the experiment did not work; the PI needs
+                      more support, not less.</strong> Campaign <code>05229297</code> (folder
+                    <code>robot-learning-campaigns-minimal</code>, recipe tag <code>minimal-recipe-v1</code>: zero
+                    reward, raw-state observations, task target distribution, library-default PPO, no observation
+                    normalization) ran about 6 h 45 min, 15 inquiries, 14 training runs, 110 measurement records and
+                    about 150 AIU, and reached at best 2.8% on one unfinished panel. Two PPO runs with its own reward
+                    scored 0%; the PI then abandoned RL for imitation of an IK teacher it wrote (11 runs, 0–2.8%) and
+                    never revisited normalization, reward scale or PPO settings, never used longer runs or repeated
+                    seeds, and spent most effort on large confirmation panels. The main recipe reaches 64–94% in one
+                    120k run. The worktree was removed; the branch, the minimal recipe repository and the minimal
+                    campaign folder remain for reference.</td>
                 </tr>
               </tbody>
             </table>
@@ -2793,10 +2994,12 @@
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: documentation housekeeping</h3>
-        <p>Historical plans, root-cause analyses and reviews moved to <code>docs/archive/</code>, the program proposals to
+        <p>Historical plans, root-cause analyses and reviews moved to <code>docs/archive/</code>, the program proposals
+          to
           <code>docs/proposals/</code>. The tracker was reordered into current state, campaigns, register, ledger and
           history, with no text lost. This page was reordered the same way; its register tables are now generated from
-          the tracker.</p>
+          the tracker.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: the PI sees time and AI usage; the recipe is the first reference</h3>
@@ -2807,41 +3010,51 @@
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: parallel round 3 passes 2 of 3</h3>
-        <p>All three scientific models stated the symmetry. <code>17e9764f</code> used it in its first inquiry and passed
-          at 200/200 in 50 minutes for 16.5 AIU. <code>de7af8af</code> used it after five inquiries and passed at 200/200.
+        <p>All three scientific models stated the symmetry. <code>17e9764f</code> used it in its first inquiry and
+          passed
+          at 200/200 in 50 minutes for 16.5 AIU. <code>de7af8af</code> used it after five inquiries and passed at
+          200/200.
           <code>38ad68c6</code> started from fixed-gain joint targets, never tested direct torque and reached the AIU
-          cap at about 85%.</p>
+          cap at about 85%.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: program changes and analyst invariances</h3>
-        <p>Three passages of <code>contracts/program.md</code> changed within the existing lifecycle: an intervention can
+        <p>Three passages of <code>contracts/program.md</code> changed within the existing lifecycle: an intervention
+          can
           supply the evidence for an explanation; check the assumptions of a costly experiment; name the limitation the
           next implementation addresses. The analyst's scope now includes the invariances of the definitions. Commit
-          <code>2f22d98d</code> (OI-053, OI-056). The proposal that removes lifecycle phases was not adopted.</p>
+          <code>2f22d98d</code> (OI-053, OI-056). The proposal that removes lifecycle phases was not adopted.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: parallel campaigns in the harness</h3>
         <p><code>submit_operation</code> now waits in 25-minute slices so that no tool call reaches the SDK's 30-minute
           limit (OI-051), and the PI session activity limit is 6 h. <code>tools/run_parallel.ps1</code> resets several
           campaign folders, launches them detached and stops each at an active-time or AIU cap. Commits
-          <code>3135b37b</code> and <code>84d4ae65</code>.</p>
+          <code>3135b37b</code> and <code>84d4ae65</code>.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">25 October: mechanism tests account for the contrast</h3>
         <p>The program now says that an explanation must account for where behavior fails and where comparable
           conditions succeed, and that the scientific model states what the robot's definitions make equal. Commit
-          <code>a93baf4b</code>.</p>
+          <code>a93baf4b</code>.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">25 October: parallel round 2; the symmetry decides</h3>
-        <p><code>fecc7566</code> passed at 200/200 after a mirror-pair experiment; <code>8ea728f4</code> failed at 195/200;
+        <p><code>fecc7566</code> passed at 200/200 after a mirror-pair experiment; <code>8ea728f4</code> failed at
+          195/200;
           <code>edbbc150</code> was stopped at the 6 h cap. Comparing all campaigns showed that every pass used the
-          arm's reflection symmetry, and that the scientific model had stated it only once in 28 runs.</p>
+          arm's reflection symmetry, and that the scientific model had stated it only once in 28 runs.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">25 October: duplicate panels refused</h3>
         <p>A measurement request that listed the same panel twice was measured, then failed at publication and stopped
-          <code>cf5d9dd9</code>. Such a request is now refused at acceptance (OI-052, commit <code>de98a7b1</code>).</p>
+          <code>cf5d9dd9</code>. Such a request is now refused at acceptance (OI-052, commit <code>de98a7b1</code>).
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">25 October: parallel round 1, no pass</h3>
@@ -2877,14 +3090,16 @@
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">24 October: system prompt merged</h3>
-        <p>After <code>f83fca4d</code> passed at 200/200 with an analytic controller, the system-prompt branch was merged
+        <p>After <code>f83fca4d</code> passed at 200/200 with an analytic controller, the system-prompt branch was
+          merged
           into <code>harness</code> (OI-041). The PI and the analyst receive a customized system message.</p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">23 October: system-prompt adaptations and information runs</h3>
         <p><code>5d94bf8a</code>, the first system-prompt campaign, failed at 193/200 after 151 AIU on a one-sided
           plateau. Two adaptations followed; <code>c06b15e4</code> and the information run <code>5e7172ca</code> were
-          stopped early, and <code>faff0d94</code> passed at 200/200 with a hybrid controller on a confounded prompt.</p>
+          stopped early, and <code>faff0d94</code> passed at 200/200 with a hybrid controller on a confounded prompt.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">22 October: campaign cfa88359 passes at 199/200 for 30 AIU</h3>

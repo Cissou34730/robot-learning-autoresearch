@@ -14,7 +14,7 @@ Reset the current campaign, optionally restoring a scientific recipe first.
 #>
 [CmdletBinding()]
 param(
-    [string]$CampaignRoot = (Join-Path (Split-Path -Parent $PSScriptRoot) "robot-learning-campaigns"),
+    [string]$CampaignRoot = (Join-Path (Split-Path -Parent $PSScriptRoot) "robot-learning-campaigns\campaign-1"),
     [Parameter(Mandatory)]
     [ValidateSet("Fresh", "Baseline")][string]$Mode,
     [string]$RecipeRef,

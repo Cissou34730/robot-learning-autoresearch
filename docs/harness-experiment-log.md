@@ -69,18 +69,22 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 commits, local and ahead of `origin/harness`.
 
 - **Repositories.** The harness is published on GitHub branch `harness`. Campaigns
-  live in local repositories: `robot-learning-campaigns`, and
-  `robot-learning-campaigns-run2` and `-run3` for parallel runs. All three were
-  initialized from the local tag `baseline-distinct-episodes-v3-robot`; run2
-  and run3 need global Git `safe.directory` entries. Campaign Git never pushes.
-- **Launch.** One campaign: `run_research.ps1 -CampaignRoot <folder>`. Several:
-  `tools/run_parallel.ps1 -CampaignRoots <folders>` resets each folder, launches
-  each launcher detached with the caller's PATH and starts a detached monitor.
-  The monitor stops a campaign cooperatively at 6 h of active time or 120 AIU
-  (defaults), excludes sleep gaps, keeps the PC awake (closing the lid can still
-  force sleep) and writes one report per campaign. Control files, transcripts
-  and reports go to `%TEMP%\robot-learning\parallel-<UTC time>`. Launchers refuse
-  a harness worktree with uncommitted or untracked files.
+  live in local repositories under one plain folder beside the harness,
+  `robot-learning-campaigns\campaign-1` to `campaign-5` (created on demand).
+  Slots were initialized from the local tag `baseline-distinct-episodes-v3-robot`;
+  each new slot gets a global Git `safe.directory` entry. Campaign Git never
+  pushes.
+- **Launch.** Standard: `tools/run_parallel.ps1 -Count N` (1 to 5) uses
+  `campaign-1` to `campaign-N`, initializes missing slots from an existing one,
+  resets each folder, launches each launcher detached with the caller's PATH and
+  starts a detached monitor. `-CampaignRoots <folders>` selects folders
+  explicitly. The monitor stops a campaign cooperatively at 6 h of active time or
+  120 AIU (defaults), excludes sleep gaps, keeps the PC awake (closing the lid
+  can still force sleep) and writes one report per campaign. Control files,
+  transcripts and reports go to `%TEMP%\robot-learning\parallel-<UTC time>`.
+  `run_research.ps1` and `reset_research.ps1` act on one campaign and default to
+  `campaign-1`. Launchers refuse a harness worktree with uncommitted or untracked
+  files.
 - **Agents.** PI and analyst run gpt-6-luna on GitHub Copilot with a customized
   system message (OI-041); PI reasoning high, analyst max. The analyst's model
   scope includes the invariances of the definitions (OI-053).
@@ -184,10 +188,13 @@ reflection on that base (75-85%), never tested direct torque, ran 13
 diagnostic modules and reached the AIU cap; its coder and reviewer used 44% of
 its AIU. This led to OI-054 and OI-055.
 
-Reports: `%TEMP%\robot-learning\parallel\reports-round1` (round 1, except
-`cf5d9dd9`, whose interrupted publication prevents a report) and
-`%TEMP%\robot-learning\parallel-20261025T232540\reports` (round 3). Round 2 has
-no saved reports.
+Reports: [`7b4769e9`](research-overview/robot-campaign-7b4769e9-20261025.html),
+[`1d0fb8a9`](research-overview/robot-campaign-1d0fb8a9-20261025.html),
+[`de7af8af`](research-overview/robot-campaign-de7af8af-20261026.html),
+[`17e9764f`](research-overview/robot-campaign-17e9764f-20261026.html) and
+[`38ad68c6`](research-overview/robot-campaign-38ad68c6-20261026.html). `cf5d9dd9`
+has none because its interrupted publication prevents one; round 2 was not
+reported before its campaigns were reset.
 
 ### Failed campaign `5d94bf8a` (23 October)
 
@@ -609,6 +616,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-26 | Campaigns root and parallel runs as the standard launch | Campaign repositories move under one plain folder, `robot-learning-campaigns\campaign-1` to `campaign-5`: the former `robot-learning-campaigns` becomes `campaign-1`, `-run2` and `-run3` become `campaign-2` and `campaign-3`. `tools/run_parallel.ps1 -Count N` (1 to 5) selects the slots and initializes missing ones from an existing slot; `run_research.ps1`, `reset_research.ps1` and `tools/run-report.ps1` default to `campaign-1`. README, AGENTS, reset, stop, policy-runtime and TUI docs updated. The round 1 and round 3 reports were copied from `%TEMP%` into `docs/research-overview/`. |
 | 2026-10-26 | Documentation housekeeping | Historical plans, RCAs and reviews moved to `docs/archive/`, the two program proposals to `docs/proposals/`, links updated (`a985fa57`). This log reordered into rules, current state, campaigns, register, ledger and history, with ledger rows sorted newest first into one table; word counts confirm no text was lost apart from the obsolete "Follow-up outside the numbered register" stub. Register updated (OI-041, OI-049 and OI-052 closed; OI-051 implemented; OI-053 to OI-056 added; status **Implemented** added). |
 | 2026-10-26 | Cost visibility and first-experiment reference (OI-054, OI-055) | `4ce2fdb1`. The campaign resource line shows elapsed time and AI usage of completed sessions by role, read from the usage records; caps stay hidden; a launcher test covers it. `contracts/program.md`: the inherited recipe is the first reference; assumptions checked before a costly experiment include the choice of method. From the `38ad68c6` deep dive. Full suite: 592 pass, 1 known failure. No campaign launched. |
 | 2026-10-26 | Parallel round 3 | `de7af8af` passed 200/200 (3 h 21, 72.1 AIU), `17e9764f` passed 200/200 (50 min, 16.5 AIU), `38ad68c6` stopped at the AIU cap (123.0 AIU, about 85%). All three scientific models stated the symmetry. A variable named `$monitor` collided with the `-Monitor` switch, so the launch started a monitor and then failed; a second monitor was started by hand and both ran (harmless; fixed in `84d4ae65`). See [Parallel rounds](#parallel-rounds-25-26-october). |

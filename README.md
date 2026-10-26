@@ -22,8 +22,8 @@ Current operating guidance, reviewed 26 October 2026:
   lifecycle and operation contracts.
 - [Change tracker](docs/harness-experiment-log.md): current state, campaign results,
   issue register and change ledger.
-- `tools\run_parallel.ps1`: runs several campaign folders at once with
-  maintainer-only time and AIU caps (see the tracker's current state).
+- `tools\run_parallel.ps1 -Count N`: the standard way to run 1 to 5 campaigns at
+  once, with maintainer-only time and AIU caps (see [Run campaigns](#run-campaigns-standard)).
 
 Dated RCAs, plans and reviews are in [docs/archive](docs/archive/), program
 proposals in [docs/proposals](docs/proposals/), campaign HTML reports in
@@ -40,28 +40,48 @@ The two repositories have different contents:
 | Repository | Contents | Publication |
 |---|---|---|
 | `robot-learning-harness` | Runner, contracts, benchmark, tools, tests, documentation and launch scripts | Standalone repository; `harness` is the GitHub default branch |
-| `robot-learning-campaigns` | PI-owned `robot_learning/`, campaign state, models, logs and measurements | Independent local Git repository; campaign commits never push |
+| `robot-learning-campaigns\campaign-<n>` | PI-owned `robot_learning/`, campaign state, models, logs and measurements | One independent local Git repository per campaign slot (1 to 5) under one plain folder; campaign commits never push |
 
-Run commands from the harness folder. The launch and reset scripts default to
-the sibling `robot-learning-campaigns` folder. Use `-CampaignRoot <path>` to
-select another initialized campaign repository. No harness merge or copy is
-needed when the harness evolves: subsequent operations use the current harness
-with the selected campaign's scientific code.
+Run commands from the harness folder. Campaign repositories live under the
+sibling folder `robot-learning-campaigns`, one per slot: `campaign-1` to
+`campaign-5`. The launch and reset scripts default to `campaign-1`; use
+`-CampaignRoot <path>` to select another initialized campaign repository. No
+harness merge or copy is needed when the harness evolves: subsequent operations
+use the current harness with the selected campaign's scientific code.
 The launch and reset scripts work inside the campaign folder while running and
 restore the calling terminal's original folder on exit, including on failure.
 The harness has its own Git storage and no longer depends on the old reference
 repository or its worktrees. Existing historical branches remain on GitHub.
 
+### Run campaigns (standard)
+
+Run 1 to 5 campaigns at once from the harness folder:
+
+```powershell
+.\tools\run_parallel.ps1 -Count 3
+```
+
+The script uses `robot-learning-campaigns\campaign-1` to `campaign-<Count>`,
+initializes missing slots from an existing one (adding a global Git
+`safe.directory` entry for the new folder), resets each to the recipe
+(`-RecipeRef`, default `baseline-distinct-episodes-v3-robot`; `-NoReset` skips
+this), launches each campaign in its own window and starts a minimized monitor.
+The monitor stops a campaign cooperatively at `-MaxHours` of active time
+(default 6) or `-MaxAiu` (default 120); campaign agents never see these caps.
+Transcripts, the monitor log and one report per campaign go to
+`%TEMP%\robot-learning\parallel-<UTC time>`. Watch one campaign with
+`.\tools\run-report.ps1 -CampaignRoot <campaign folder>`.
+
 ### Initialize a campaign repository once
 
-The existing local campaign repository is already initialized from baseline v3.
-To create another one, choose a destination that does not exist:
+`tools\run_parallel.ps1` creates missing slots itself. To create one by hand,
+choose a destination that does not exist:
 
 ```powershell
 uv run python -m tools.initialize_campaign `
-  --campaign-root C:\Users\cyril.beurier\code\another-campaign `
-  --source-repository C:\Users\cyril.beurier\code\robot-learning `
-  --recipe-ref baseline-distinct-episodes-v3
+  --campaign-root C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-4 `
+  --source-repository C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1 `
+  --recipe-ref baseline-distinct-episodes-v3-robot
 ```
 
 The source repository must contain the selected recipe reference. Initialization
@@ -70,13 +90,14 @@ new local repository, records the current task fingerprints and performs a
 Fresh recipe reset. It does not start training or an agent session. The new
 repository has no remotes. Keep its local baseline tag for future resets.
 
-### Reset to v3 or launch
+### Reset to v3 or launch one campaign
 
 The campaign repository's `baseline-distinct-episodes-v3-robot` tag is the v3
 recipe importing the renamed robot contract (`contracts/robots/robot.py`); the
 older `baseline-distinct-episodes-v3` tag no longer matches the task contract.
 
-Stop any active campaign before resetting:
+Stop any active campaign before resetting. These commands act on `campaign-1`
+unless `-CampaignRoot` selects another slot:
 
 ```powershell
 .\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3-robot -Force
@@ -140,7 +161,7 @@ campaign; it does not resume the old one.
 Select the campaign's scientific code when running tests from the harness:
 
 ```powershell
-$env:ROBOT_LEARNING_CAMPAIGN_ROOT = 'C:\Users\cyril.beurier\code\robot-learning-campaigns'
+$env:ROBOT_LEARNING_CAMPAIGN_ROOT = 'C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1'
 $env:PYTHONPATH = "$env:ROBOT_LEARNING_CAMPAIGN_ROOT;$PWD"
 uv run pytest tests\autoresearch\test_campaign_paths.py -q
 ```

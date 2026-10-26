@@ -20,12 +20,12 @@ param(
 $productRoot = Split-Path -Parent $PSScriptRoot
 
 if (-not $CampaignRoot) {
-    $sibling = Join-Path (Split-Path -Parent $productRoot) "robot-learning-campaigns"
+    $sibling = Join-Path (Split-Path -Parent $productRoot) "robot-learning-campaigns\campaign-1"
     if (Test-Path $sibling) { $CampaignRoot = $sibling }
 }
 
 if (-not $CampaignRoot) {
-    throw "No campaign root found. Pass -CampaignRoot or create the sibling robot-learning-campaigns folder."
+    throw "No campaign root found. Pass -CampaignRoot or create robot-learning-campaigns\campaign-1 beside the harness."
 }
 if (-not (Test-Path -LiteralPath $CampaignRoot)) {
     throw "Campaign root does not exist: $CampaignRoot"

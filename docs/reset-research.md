@@ -5,8 +5,8 @@ explicit `-Mode` and `-Force`; there is no default mode. It never creates a
 branch or worktree, starts training, or changes the research loop.
 
 Run the script from the harness repository. `-CampaignRoot <path>` selects an
-independent campaign repository; the default is the sibling
-`robot-learning-campaigns` folder. Resets change and commit files only in that
+independent campaign repository; the default is
+`robot-learning-campaigns\campaign-1` beside the harness. Resets change and commit files only in that
 campaign repository. They do not reset or copy the harness.
 The reset script restores the calling terminal's original folder on success
 or failure, so it can be followed by a relative launcher command:

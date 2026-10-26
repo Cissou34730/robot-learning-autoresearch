@@ -1,16 +1,23 @@
-# Maintainer utility: run several campaign folders in parallel on the current
-# harness. Resets each folder to the recipe, launches each launcher detached in
-# its own window, then starts a detached monitor that stops a campaign
-# cooperatively at an active-time or AIU cap and writes one report per campaign
-# when all have ended. Caps act only through each launcher's -StopRequestPath;
-# campaign agents never see them.
+# Maintainer utility and the standard way to run campaigns: run 1 to 5 campaign
+# repositories in parallel on the current harness. Campaign repositories live
+# under one root (default: sibling robot-learning-campaigns\campaign-1 .. -5);
+# missing ones are initialized from an existing one. Resets each folder to the
+# recipe, launches each launcher detached in its own window, then starts a
+# detached monitor that stops a campaign cooperatively at an active-time or AIU
+# cap and writes one report per campaign when all have ended. Caps act only
+# through each launcher's -StopRequestPath; campaign agents never see them.
 #
 # Usage:
-#   .\tools\run_parallel.ps1 -CampaignRoots C:\a,C:\b,C:\c
-#   .\tools\run_parallel.ps1 -CampaignRoots C:\a,C:\b -MaxHours 4 -MaxAiu 80 -NoReset
-[CmdletBinding()]
+#   .\tools\run_parallel.ps1 -Count 3
+#   .\tools\run_parallel.ps1 -Count 1 -MaxHours 4 -MaxAiu 80
+#   .\tools\run_parallel.ps1 -CampaignRoots C:\a,C:\b -NoReset
+[CmdletBinding(DefaultParameterSetName = "Count")]
 param(
-    [Parameter(Mandatory)][string[]]$CampaignRoots,
+    [Parameter(Mandatory, ParameterSetName = "Count")][ValidateRange(1, 5)][int]$Count,
+    [Parameter(ParameterSetName = "Count")]
+    [string]$CampaignsRoot = (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "robot-learning-campaigns"),
+    [Parameter(Mandatory, ParameterSetName = "Roots")]
+    [Parameter(Mandatory, ParameterSetName = "Monitor")][string[]]$CampaignRoots,
     [string]$RecipeRef = "baseline-distinct-episodes-v3-robot",
     [double]$MaxHours = 6,
     [double]$MaxAiu = 120,
@@ -18,7 +25,7 @@ param(
     [int]$PollSeconds = 60,
     [switch]$NoReset,
     [string]$ControlDirectory,
-    [switch]$Monitor
+    [Parameter(Mandatory, ParameterSetName = "Monitor")][switch]$Monitor
 )
 
 $ErrorActionPreference = "Stop"
@@ -136,6 +143,33 @@ public static extern uint SetThreadExecutionState(uint flags);
     return
 }
 
+if ($PSCmdlet.ParameterSetName -eq "Count") {
+    $existing = @(1..5 | ForEach-Object { Join-Path $CampaignsRoot "campaign-$_" } |
+        Where-Object { Test-Path (Join-Path $_ ".git") })
+    if (-not $existing) {
+        throw "No campaign repository under $CampaignsRoot. Initialize campaign-1 with tools.initialize_campaign first."
+    }
+    $CampaignRoots = foreach ($index in 1..$Count) {
+        $root = Join-Path $CampaignsRoot "campaign-$index"
+        if (-not (Test-Path $root)) {
+            # Git refuses folders it considers owned by another account unless listed here.
+            $safe = $root.Replace("\", "/")
+            if (-not (@(git config --global --get-all safe.directory) -contains $safe)) {
+                git config --global --add safe.directory $safe
+            }
+            Push-Location $harness
+            try {
+                & uv run python -m tools.initialize_campaign --campaign-root $root `
+                    --source-repository $existing[0] --recipe-ref $RecipeRef
+                if ($LASTEXITCODE) { throw "Initialization failed for $root." }
+            }
+            finally {
+                Pop-Location
+            }
+        }
+        $root
+    }
+}
 $roots = @($CampaignRoots | ForEach-Object { (Resolve-Path $_).ProviderPath })
 if (@(git -C $harness status --porcelain --untracked-files=all).Count) {
     throw "The harness worktree has uncommitted changes; the launchers would refuse to start."
