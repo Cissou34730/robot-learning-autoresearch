@@ -480,6 +480,11 @@ def tool_detail(name: str, arguments: object) -> str:
     return " ".join(detail.split())
 
 
+def tool_color_role(name: str) -> str:
+    """Share tool-name emphasis without exposing terminal escape sequences."""
+    return "special_tool" if name in _TOOL_COLORS else "tool"
+
+
 def tool_result_lines(name: str, result: object) -> list[tuple[str, str | None]]:
     """The same factual result lines for the console and structured report."""
     if not isinstance(result, dict) or result.get("status") != "computed":
@@ -550,6 +555,12 @@ def tool_result_lines(name: str, result: object) -> list[tuple[str, str | None]]
                 )
             )
     return lines
+
+
+def tool_result_parts(name: str, result: object) -> list[tuple[str, str]]:
+    """Return the existing result lines with renderer-neutral colour roles."""
+    roles = {GREEN: "success", YELLOW: "warning", RED: "error", None: "result"}
+    return [(text, roles[color]) for text, color in tool_result_lines(name, result)]
 
 
 _DEFAULT_RENDERER = object()

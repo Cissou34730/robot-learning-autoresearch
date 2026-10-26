@@ -59,9 +59,14 @@ report (presentation only, never the campaign).
 
 The durable snapshot and the elapsed clock refresh every 15 seconds. Campaign
 age and stage elapsed freeze at the campaign's recorded stop time. The
-observation feed is drained every second so PI messages and console lines stay
-live; training progress events arrive every 15 seconds, matching the console
-heartbeat.
+header shows the recorded campaign and stage start times alongside those
+durations, in local time. Earlier-day starts include the date; missing start
+times are marked unavailable. On narrower screens the timing facts move to
+their own rows rather than disappearing.
+
+The observation feed is drained every second so PI messages and console lines
+stay live; training progress events arrive every 15 seconds, matching the
+console heartbeat.
 
 ## Data the report reads now
 
@@ -110,6 +115,10 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   and reflow when the terminal is resized;
 - raw arguments, patch payloads and session metadata are available through `r`,
   not mixed into the normal reading view;
+- semantic colours follow the console: cyan PI/execution activity, magenta
+  session context and ordinary result lines, emphasized scientific tool names,
+  green success/created files, yellow warnings and red failures/deleted files;
+  result assessments retain their individual success/warning/error colours;
 - coding handoffs show phase, agent, status and their structured detail;
 - file changes show the repository-relative path, operation marker (`+`, `~`,
   `-`) and whether the PI operation request changed;

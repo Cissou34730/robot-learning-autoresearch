@@ -18,6 +18,7 @@ from textual.strip import Strip
 from textual.widgets import SelectionList, Static, Tree
 from textual.widgets._tree import TreeNode
 
+from runner.copilot.reporting import tool_color_role, tool_result_parts
 from tui.timeline import TimelineItem
 
 
@@ -186,6 +187,7 @@ class EventLog(Tree[TimelineItem]):
         self._items_by_id: dict[str, TimelineItem] = {}
         self._last_signature: tuple[tuple, ...] = ()
         self._last_active_ids: frozenset[str] = frozenset()
+        self._last_styles: dict[str, str] = {}
         self._follow_listeners: list = []
 
     # ------------------------------------------------------------------
@@ -261,7 +263,11 @@ class EventLog(Tree[TimelineItem]):
         active_ids = active_ids or set()
         signature = tuple(self._flatten_ids(roots))
         active_key = frozenset(active_ids)
-        if signature == self._last_signature and active_key == self._last_active_ids:
+        if (
+            signature == self._last_signature
+            and active_key == self._last_active_ids
+            and self._styles == self._last_styles
+        ):
             return
         new_items = bool(self._last_signature) and signature != self._last_signature
         was_following = self._following
@@ -274,6 +280,7 @@ class EventLog(Tree[TimelineItem]):
             self._add_item(self.root, item, active_ids)
         self._last_signature = signature
         self._last_active_ids = active_key
+        self._last_styles = dict(self._styles)
         if selected is not None:
             node = self._node_by_id.get(selected.item_id)
             if node is not None:
@@ -378,9 +385,17 @@ class EventLog(Tree[TimelineItem]):
         text = Text(item.title, style=self._kind_style(item))
         if item.kind == "tool":
             if item.summary:
-                text.append(": " + item.summary, style=self._styles.get("text", ""))
+                text.append(": ", style=self._styles.get("muted", ""))
+                text.append_text(self._summary_text(item))
+            results = tool_result_parts(
+                str(item.payload.get("name") or item.title), item.payload.get("result")
+            )
+            result_roles = {line.strip(): role for line, role in results}
             for line in item.detail:
-                text.append("\n" + line, style=self._styles.get("text", ""))
+                role = result_roles.get(
+                    line, "error" if item.severity == "error" else "text"
+                )
+                text.append("\n" + line, style=self._styles.get(role, ""))
         else:
             text.append("  " + "\n".join(item.detail), style=self._styles.get("pi", ""))
         return list(
@@ -411,9 +426,10 @@ class EventLog(Tree[TimelineItem]):
             )
             label = Text(marker, style=base_style + Style(meta={"toggle": True}))
             label.append_text(lines[0])
-            label.stylize(style)
             return label
-        label = super().render_label(node, base_style, style)
+        # Cursor/hover feedback lives in the fixed gutter. Tree's default
+        # label foreground must not overwrite the semantic text spans.
+        label = super().render_label(node, base_style, Style())
         if node is self.root:
             return label
         label.truncate(self._label_width(node), overflow="ellipsis")
@@ -430,13 +446,31 @@ class EventLog(Tree[TimelineItem]):
         label.append(item.title, style=kind_style)
         if item.summary and not message:
             label.append("  ")
-            label.append(item.summary, style=styles.get("text", ""))
+            label.append_text(self._summary_text(item))
         if item.is_group:
             duration = item.duration_text()
             if duration:
                 label.append("  ")
                 label.append(f"[{duration}]", style=styles.get("muted", ""))
         return label
+
+    def _summary_text(self, item: TimelineItem) -> Text:
+        if item.severity in {"error", "warning"}:
+            return Text(item.summary, style=self._styles.get(item.severity, ""))
+        summary = Text(item.summary, style=self._styles.get("text", ""))
+        status = str(item.payload.get("status") or item.status or "")
+        role = (
+            "success"
+            if status in {"completed", "checkpointed", "passed", "accepted"}
+            else "warning"
+            if status in {"needs_pi", "timeout", "cancelled", "interrupted"}
+            else "accent"
+            if status in {"running", "started"}
+            else ""
+        )
+        if role and item.summary.startswith(status):
+            summary.stylize(self._styles.get(role, ""), 0, len(status))
+        return summary
 
     def _column(self, item: TimelineItem | None, selected: bool) -> list[Segment]:
         """Fixed left column: selection marker, clock, and separator."""
@@ -527,9 +561,44 @@ class EventLog(Tree[TimelineItem]):
             return f"bold {styles.get('error', '')}".strip()
         if item.severity == "warning":
             return f"bold {styles.get('warning', '')}".strip()
+        if item.kind == "tool":
+            return styles.get(
+                tool_color_role(str(item.payload.get("name") or item.title)), ""
+            )
+        if item.kind == "file":
+            role = {"created": "success", "deleted": "error"}.get(
+                str(item.payload.get("operation")), "accent"
+            )
+            return styles.get(role, "")
+        if item.kind == "result":
+            return styles.get(
+                "result" if item.payload.get("scope") == "result" else "success", ""
+            )
+        if item.kind == "coding":
+            status = str(item.payload.get("status") or "")
+            role = (
+                "error"
+                if status in {"failed", "error", "rejected"}
+                else "warning"
+                if status in {"needs_pi", "cancelled", "blocked"}
+                else "success"
+                if status in {"passed", "completed"}
+                else "accent"
+            )
+            return styles.get(role, "")
+        scope_role = {
+            "session": "session",
+            "campaign": "heading",
+            "inquiry": "warning",
+            "validation": "success",
+            "assessment": "success",
+            "success": "success",
+        }.get(str(item.payload.get("scope") or ""))
+        if scope_role:
+            return styles.get(scope_role, "")
         mapping = {
             "campaign": f"bold {styles.get('heading', '')}".strip(),
-            "session": f"bold {styles.get('accent', '')}".strip(),
+            "session": f"bold {styles.get('session', '')}".strip(),
             "inquiry": f"bold {styles.get('warning', '')}".strip(),
             "training": f"bold {styles.get('accent', '')}".strip(),
             "measurement": f"bold {styles.get('accent', '')}".strip(),

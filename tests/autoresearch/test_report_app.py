@@ -377,6 +377,7 @@ def test_palette_tokens_meet_contrast_floor():
         "warning",
         "error",
         "pi",
+        "pi_text",
         "tool",
         "section",
         "result",
@@ -528,6 +529,219 @@ async def _light_palette():
         await pilot.pause()
         assert app._palette.name == "light"
         assert "Autoresearch" in str(app.query_one("#context").render())
+
+
+@pytest.mark.parametrize("width,height", [(160, 45), (120, 40), (80, 24)])
+def test_recorded_start_times_remain_visible_with_frozen_elapsed(
+    monkeypatch, width, height
+):
+    _run(_recorded_start_times(monkeypatch, width, height))
+
+
+async def _recorded_start_times(monkeypatch, width, height):
+    from dataclasses import replace
+
+    from tui import report
+
+    started = datetime(2026, 10, 26, 12, 5, 6, tzinfo=UTC)
+    stage_started = started + timedelta(hours=1)
+    ended = started + timedelta(hours=2)
+    monkeypatch.setattr(report, "_now", lambda: ended + timedelta(days=2))
+    app = _demo_app()
+    async with app.run_test(size=(width, height)) as pilot:
+        await pilot.pause()
+        app.snapshot = replace(
+            app.snapshot,
+            started_at=started,
+            stage_started_at=stage_started,
+            ended_at=ended,
+        )
+        app._render_context()
+        await pilot.pause()
+        rendered = str(app.query_one("#context").render())
+        assert started.astimezone().strftime("%d %b %H:%M:%S") in rendered
+        assert stage_started.astimezone().strftime("%d %b %H:%M:%S") in rendered
+        assert "2h00m" in rendered and "1h00m" in rendered
+
+
+@pytest.mark.parametrize("theme", ["textual-dark", "textual-light"])
+def test_semantic_colors_survive_cursor_hover_wrapping_and_theme_changes(theme):
+    _run(_painted_semantic_colors(theme))
+
+
+async def _painted_semantic_colors(theme):
+    from rich.color import Color
+
+    app = _demo_app()
+    app.theme = theme
+    async with app.run_test(size=(160, 65)) as pilot:
+        await pilot.pause()
+        stamp = datetime(2026, 10, 26, 14, 0, tzinfo=UTC)
+        app._process_events(
+            [
+                Observation(
+                    "pi_message",
+                    stamp,
+                    {"text": "COLORED_PI_TEXT", "turn": "color", "final": True},
+                ),
+                Observation(
+                    "tool_call_started",
+                    stamp,
+                    {
+                        "name": "view",
+                        "tool_call_id": "color-view",
+                        "detail": "robot_learning/scenario/environment.py",
+                    },
+                ),
+                Observation(
+                    "tool_call_completed",
+                    stamp,
+                    {
+                        "name": "view",
+                        "tool_call_id": "color-view",
+                        "status": "completed",
+                    },
+                ),
+                Observation(
+                    "tool_call_started",
+                    stamp,
+                    {
+                        "name": "scientific_api_reference",
+                        "tool_call_id": "color-api",
+                        "detail": "mujoco | mj_step",
+                    },
+                ),
+                Observation(
+                    "tool_call_completed",
+                    stamp,
+                    {
+                        "name": "scientific_api_reference",
+                        "tool_call_id": "color-api",
+                        "status": "completed",
+                    },
+                ),
+                Observation(
+                    "file_changed",
+                    stamp,
+                    {
+                        "operation": "created",
+                        "path": "robot_learning/scenario/created.py",
+                    },
+                ),
+                Observation(
+                    "warning",
+                    stamp,
+                    {"code": "color_warning", "message": "A useful warning"},
+                ),
+                Observation(
+                    "error", stamp, {"code": "color_error", "message": "A useful error"}
+                ),
+                Observation("operation_submitted", stamp, {"status": "completed"}),
+                Observation(
+                    "tool_call_started",
+                    stamp,
+                    {
+                        "name": "success_rate_pass_probability",
+                        "tool_call_id": "color-result",
+                        "detail": "M1",
+                    },
+                ),
+                Observation(
+                    "tool_call_completed",
+                    stamp,
+                    {
+                        "name": "success_rate_pass_probability",
+                        "tool_call_id": "color-result",
+                        "status": "completed",
+                        "result": {
+                            "status": "computed",
+                            "evidence": [
+                                {
+                                    "label": "good_result",
+                                    "successes": 9,
+                                    "trials": 10,
+                                    "pass_probability": 0.9,
+                                },
+                                {
+                                    "label": "bad_result",
+                                    "successes": 1,
+                                    "trials": 10,
+                                    "pass_probability": 0.1,
+                                },
+                            ],
+                        },
+                    },
+                ),
+            ]
+        )
+        await pilot.pause()
+        out = app.query_one("#output")
+
+        async def color_at(node, text):
+            if node.data is not None:
+                out.move_cursor(node, animate=False)
+            y = next(
+                index for index, line in enumerate(out._tree_lines) if line.node is node
+            )
+            out.scroll_to(y=max(0, y - 1), animate=False, immediate=True)
+            await pilot.pause()
+            view_y = y - int(out.scroll_offset.y)
+            strip = out.render_line(view_y)
+            x = strip.text.index(text)
+            await pilot.hover(out, offset=(x, view_y))
+            await pilot.pause()
+            return app.screen.get_style_at(
+                out.content_region.x + x, out.content_region.y + view_y
+            ).color
+
+        def node_for(predicate):
+            return next(
+                node for node in out._node_by_id.values() if predicate(node.data)
+            )
+
+        palette = app._palette
+        assert await color_at(
+            node_for(lambda item: item.payload.get("text") == "COLORED_PI_TEXT"),
+            "COLORED_PI_TEXT",
+        ) == Color.parse(palette.pi_text)
+        assert await color_at(
+            out._node_by_id["tool:color-view"], "view"
+        ) == Color.parse(palette.tool)
+        assert await color_at(
+            out._node_by_id["tool:color-api"], "scientific_api_reference"
+        ) == Color.parse(palette.accent)
+        assert await color_at(
+            node_for(lambda item: item.kind == "file"), "created.py"
+        ) == Color.parse(palette.success)
+        assert await color_at(
+            node_for(lambda item: item.payload.get("code") == "color_warning"),
+            "color_warning",
+        ) == Color.parse(palette.warning)
+        assert await color_at(
+            node_for(lambda item: item.payload.get("code") == "color_error"),
+            "color_error",
+        ) == Color.parse(palette.error)
+        assert await color_at(
+            node_for(
+                lambda item: item.title == "submitted" and item.summary == "completed"
+            ),
+            "completed",
+        ) == Color.parse(palette.success)
+        result_node = out._node_by_id["tool:color-result"]
+        for token, role in (
+            ("good_result", palette.success),
+            ("bad_result", palette.error),
+        ):
+            child = next(
+                child for child in result_node.children if token in child.label.plain
+            )
+            assert await color_at(child, token) == Color.parse(role)
+
+        app.theme = "textual-light" if theme == "textual-dark" else "textual-dark"
+        await pilot.pause()
+        assert await color_at(
+            out._node_by_id["tool:color-view"], "view"
+        ) == Color.parse(app._palette.tool)
 
 
 def test_new_campaign_clears_previous_output():

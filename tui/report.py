@@ -66,6 +66,7 @@ class Palette:
     warning: str
     error: str
     pi: str
+    pi_text: str
     tool: str
     section: str
     result: str
@@ -83,6 +84,7 @@ PALETTES: dict[str, Palette] = {
         warning="#ffd166",
         error="#ff8a9b",
         pi="#e0aaff",
+        pi_text="#7de3e8",
         tool="#b8c0cc",
         section="#d7d7d7",
         result="#6ee7a8",
@@ -98,6 +100,7 @@ PALETTES: dict[str, Palette] = {
         warning="#8a5a00",
         error="#b3261e",
         pi="#6b2d8f",
+        pi_text="#00656b",
         tool="#3f4a5a",
         section="#2a2a2a",
         result="#0f6b3d",
@@ -177,6 +180,18 @@ def _ts(stamp: datetime | None) -> str:
     if stamp is None:
         return "--:--"
     return f"{stamp.astimezone():%H:%M}"
+
+
+def _start_time(stamp: datetime | None, now: datetime) -> str:
+    if stamp is None:
+        return "unavailable"
+    local = stamp.astimezone()
+    today = now.astimezone()
+    if local.year != today.year:
+        return local.strftime("%Y-%m-%d %H:%M:%S")
+    return local.strftime(
+        "%H:%M:%S" if local.date() == today.date() else "%d %b %H:%M:%S"
+    )
 
 
 def _hang_styled(
@@ -518,8 +533,11 @@ class CampaignReport(App):
             "success": palette.success,
             "warning": palette.warning,
             "error": palette.error,
-            "pi": palette.pi,
+            "pi": palette.pi_text,
+            "session": palette.pi,
             "tool": palette.tool,
+            "special_tool": palette.accent,
+            "result": palette.pi,
             "section": palette.section,
         }
 
@@ -717,8 +735,9 @@ class CampaignReport(App):
     ) -> list[Text]:
         from tui.projector import campaign_age, stage_elapsed
 
-        age = campaign_age(snapshot.started_at, _now(), snapshot.ended_at)
-        elapsed = stage_elapsed(snapshot.stage_started_at, _now(), snapshot.ended_at)
+        now = _now()
+        age = campaign_age(snapshot.started_at, now, snapshot.ended_at)
+        elapsed = stage_elapsed(snapshot.stage_started_at, now, snapshot.ended_at)
 
         palette = self._palette
         gap = 3
@@ -729,9 +748,18 @@ class CampaignReport(App):
         left.append(" | ", style=palette.muted)
         left.append("campaign ", style=palette.muted)
         left.append(snapshot.campaign_id[:13], style=palette.muted)
-        right = Text(f"Campaign age {age}", style=palette.muted)
+        campaign_time = Text(f"Campaign age {age} (started ", style=palette.muted)
+        campaign_time.append(_start_time(snapshot.started_at, now), style=palette.text)
+        campaign_time.append(")", style=palette.muted)
+        stage_time = Text(f"Stage elapsed {elapsed} (started ", style=palette.muted)
+        stage_time.append(
+            _start_time(snapshot.stage_started_at, now), style=palette.text
+        )
+        stage_time.append(")", style=palette.muted)
+        right = campaign_time.copy()
         right.append(" | ", style=palette.muted)
-        right.append(f"Stage elapsed {elapsed}", style=palette.muted)
+        right.append_text(stage_time)
+        timing_rows: list[Text] = []
         if len(left.plain) + gap + len(right.plain) <= width:
             first = Text()
             first.append_text(left)
@@ -739,9 +767,13 @@ class CampaignReport(App):
             first.append_text(right)
         else:
             first = left
+            timing_rows = (
+                [right] if len(right.plain) <= width else [campaign_time, stage_time]
+            )
         lines: list[Text] = [
             first if len(first.plain) <= width else Text(first.plain[:width])
         ]
+        lines.extend(_fit_text(row, width) for row in timing_rows)
 
         stage = Text()
         stage.append("Stage: ", style=palette.muted)
@@ -807,10 +839,10 @@ class CampaignReport(App):
         if counters_line.plain:
             lines.append(_fit_text(counters_line, width))
 
-        excerpt_rows = self._context_budget() - 4
+        excerpt_rows = max(0, self._context_budget() - 4 - len(timing_rows))
         leads: list[Text] = []
         question = _clean_text(snapshot.question) or _clean_text(snapshot.objective)
-        if question:
+        if question and excerpt_rows:
             prefix = (
                 f"Inquiry [{snapshot.question_source}]: "
                 if snapshot.question
