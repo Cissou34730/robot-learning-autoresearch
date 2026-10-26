@@ -77,7 +77,11 @@ reset or launch, without preventing the interface from opening.
   reset options. Apply affects future commands only; Cancel/Esc discards edits.
   Empty launch fields preserve launcher defaults and argument omission.
   Every campaign in one batch receives the same settings snapshot.
-- The command bar stays accessible in every campaign tab (`Ctrl+L` focuses it).
+- **Ctrl+L** toggles the bottom command area in every campaign tab. It starts
+  open; opening focuses the input, and closing returns focus and four rows to
+  the active report. The command draft and shared settings survive the toggle.
+  The footer remains visible. Tab changes and applying/cancelling settings do
+  not reopen a collapsed command area; toggling is inactive inside a dialog.
   Untargeted campaign actions select that folder only; explicit counts/folder
   lists select batches. Without any installed campaign, an empty state requires
   explicit targets and shows no fake campaign tab. `models` lists available models
@@ -164,8 +168,9 @@ orchestration); both are terminal-free and tested with fake executors in
   those physical-terminal behaviors.
 
 Reference size is 160x45; the layout adapts down to an 80x24 and 60-column
-fallback. The console keeps seven rows for tabs and controls (38 report rows
-at 160x45), with no nested report frames or repeated state badges. At 80x24
+fallback. The console keeps seven rows for tabs and open controls (38 report
+rows at 160x45), or three with commands collapsed (42 report rows). It adds no
+nested report frames or repeated state badges. At 80x24
 and 60x24 the report retains context/models/last-training and hides its output
 first, while commands and settings remain accessible. The settings dialog
 stacks fields on narrow screens and scrolls without losing Apply/Cancel.

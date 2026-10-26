@@ -343,6 +343,66 @@ def test_empty_console_has_no_fake_campaign_or_commands_tab(tmp_path):
             assert app.query_one("#empty-campaigns").display
             assert app.query_one("#commands-input", Input).content_region.height >= 1
             assert not app._command_running
+            await pilot.press("ctrl+l", "ctrl+l")
+            await pilot.pause()
+            assert app.focused is app.query_one("#commands-input", Input)
+            assert not app._command_running
+
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize("size", [(160, 45), (60, 24)])
+def test_ctrl_l_toggles_commands_preserves_draft_and_reclaims_report_space(
+    tmp_path, size
+):
+    from textual.widgets import Footer, Input, TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            command = app.query_one("#commands-input", Input)
+            command.value = "start campaign-2"
+            panel = app.query_one("#panel-campaign-1", CampaignPanel)
+            expanded_height = panel.region.height
+            await pilot.press("ctrl+l")
+            await pilot.pause()
+            assert app.query_one("#console-controls").has_class("collapsed")
+            assert app.query_one("#command-row").region.height == 0
+            assert app.query_one(Footer).region.height == 1
+            assert panel.region.height == expanded_height + 4
+            assert app.focused is not command
+            assert app.focused in list(panel.query("*"))
+
+            # A tab change or settings dialog must not reopen a hidden composer.
+            await pilot.press("ctrl+tab")
+            await pilot.pause()
+            assert app.query_one(TabbedContent).active == "campaign-2"
+            await pilot.press("f2")
+            await pilot.pause()
+            app.screen.query_one("#cmd-model", Input).value = "future-model"
+            await pilot.click("#settings-apply")
+            await pilot.pause()
+            assert app.query_one("#console-controls").has_class("collapsed")
+            assert app._settings_reader.settings().model == "future-model"
+            await pilot.press("f2", "escape")
+            await pilot.pause()
+            assert app.query_one("#console-controls").has_class("collapsed")
+
+            await pilot.press("ctrl+l")
+            await pilot.pause()
+            assert not app.query_one("#console-controls").has_class("collapsed")
+            assert app.focused is command
+            assert command.value == "start campaign-2"
+            assert (
+                app.query_one("#panel-campaign-2", CampaignPanel).region.height
+                == expanded_height
+            )
+            assert machinery.started == []
 
     asyncio.run(scenario())
 

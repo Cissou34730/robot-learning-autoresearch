@@ -102,6 +102,9 @@ Press **F2** or click **Settings** for labelled shared launch/reset settings;
 Type `start` and press Enter or click Execute to resume the active campaign
 without resetting it. Untargeted commands follow the active campaign tab;
 an explicit count or folder list still selects a batch.
+**Ctrl+L** opens/closes the bottom command area, preserving the draft. Opening
+focuses the input; closing returns focus and four rows to the campaign report.
+The footer remains visible so commands can always be reopened.
 
 Reset controls retain Fresh/Baseline, Clean and recipe/baseline references.
 The default is Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force;

@@ -130,7 +130,7 @@ HELP_TEXT = (
     "120000 timesteps, 360000 max timesteps, 15 inquiries and 180s stop timeout.\n"
     "Model/provider remain launcher-selected unless explicitly supplied.\n"
     "models: list available models | diagnostics: this campaign's console logs\n\n"
-    "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L Command\n"
+    "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L show/hide commands\n"
     "Ctrl+Tab: next campaign | Tab/Shift+Tab: focus | Ctrl+C: copy only\n"
     "Ctrl+Q: stop all owned campaigns and exit"
 )
@@ -319,7 +319,7 @@ class CampaignConsole(App):
         Binding("f3", "command_history", "Recent commands", priority=True, show=False),
         Binding("ctrl+tab", "next_tab", "Next tab", priority=True, show=False),
         Binding("ctrl+c", "copy_selection", "Copy", priority=True, show=False),
-        Binding("ctrl+l", "command", "Command", priority=True),
+        Binding("ctrl+l", "command", "Commands", priority=True),
         Binding("/", "search_log", "Search events", show=False),
         Binding("f", "filter_log", "Filter events", show=False),
         Binding("r", "raw_event", "Raw event", show=False),
@@ -332,6 +332,9 @@ class CampaignConsole(App):
         + """
     Screen { layout: vertical; overflow: hidden; }
     #console-controls { dock: bottom; height: 5; }
+    #console-controls.collapsed { height: 1; }
+    #console-controls.collapsed #command-row,
+    #console-controls.collapsed #commands-summary { display: none; }
     #command-row { height: 3; padding: 0 1; }
     #command-label { width: 8; height: 3; content-align: left middle; text-style: bold; }
     #commands-input { width: 1fr; min-width: 8; height: 3; border: solid $panel; }
@@ -419,7 +422,7 @@ class CampaignConsole(App):
         for label in self._layout.installed():
             self._controller.state(label)
         self._refresh_status_now()
-        self.action_command()
+        self.query_one("#commands-input", Input).focus()
         self._update_campaign_visibility()
 
     # ------------------------------------------------------------------
@@ -686,7 +689,10 @@ class CampaignConsole(App):
             self._log(
                 "Shared settings updated for future commands. Active runs are unchanged."
             )
-        self.action_command()
+        if self.query_one("#console-controls").has_class("collapsed"):
+            self._focus_campaign()
+        else:
+            self.query_one("#commands-input", Input).focus()
 
     def action_command_history(self) -> None:
         self.push_screen(
@@ -733,8 +739,26 @@ class CampaignConsole(App):
             self.copy_to_clipboard(text)
 
     def action_command(self) -> None:
-        if not isinstance(self.screen, SharedSettings):
+        """Ctrl+L toggles the command area without discarding its draft."""
+        if isinstance(self.screen, ModalScreen):
+            return
+        controls = self.query_one("#console-controls")
+        controls.toggle_class("collapsed")
+        if controls.has_class("collapsed"):
+            self._focus_campaign()
+        else:
             self.query_one("#commands-input", Input).focus()
+
+    def _focus_campaign(self) -> None:
+        if isinstance(self.screen, ModalScreen):
+            return
+        tabs = self.query_one(TabbedContent)
+        if tabs.display and tabs.active:
+            panel = self.query_one(f"#panel-{tabs.active}", CampaignPanel)
+            output = panel.query_one("#output")
+            (output if output.display else panel.query_one("#models")).focus()
+        else:
+            self.screen.set_focus(None)
 
     def action_search_log(self) -> None:
         self._panel_action("action_search_log")
@@ -783,6 +807,8 @@ class CampaignConsole(App):
     # ------------------------------------------------------------------
 
     def action_next_tab(self) -> None:
+        if isinstance(self.screen, ModalScreen):
+            return
         tabs = self.query_one(TabbedContent)
         panes = [pane.id for pane in tabs.query(TabPane)]
         if not panes:
@@ -791,7 +817,12 @@ class CampaignConsole(App):
             tabs.active = panes[0]
             return
         index = (panes.index(tabs.active) + 1) % len(panes)
+        collapsed = self.query_one("#console-controls").has_class("collapsed")
+        if collapsed:
+            self.screen.set_focus(None)
         tabs.active = panes[index]
+        if collapsed:
+            self.call_after_refresh(self._focus_campaign)
 
     # ------------------------------------------------------------------
     # Shutdown
