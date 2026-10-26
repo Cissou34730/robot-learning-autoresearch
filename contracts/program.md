@@ -31,8 +31,9 @@ compatibility only for the calls it exercises, not scientific validity or goal
 progress.
 
 Before a costly experiment, identify assumptions whose failure would prevent
-the result from answering the intended question. Use existing evidence to
-assess them.
+the result from answering the intended question. These assumptions include the
+choice of method, not only the correctness of its implementation. Use existing
+evidence to assess them.
 
 Choose an additional check when its possible results can change the plan and
 justify its implementation and execution effort. Existing evidence may be
@@ -87,7 +88,9 @@ evidence. The PI uses scientific work in this session to establish or refine
 that direction, including building or adapting reusable scientific tools and
 PI-owned methods where needed. These capabilities can support subsequent
 inquiries. The PI chooses the first useful scientific action and explains why
-it advances the direction. The scientific session record preserves the work
+it advances the direction. The inherited recipe is the first reference. A first
+experiment that changes several parts of it at once produces a result that
+cannot be attributed to any one of them. The scientific session record preserves the work
 actually performed, resulting understanding, remaining uncertainties and
 chosen next action. The campaign then enters goal review.
 

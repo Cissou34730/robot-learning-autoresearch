@@ -614,11 +614,38 @@ function Get-CampaignResourceSummary {
     $completed = @($State.operation_events | Where-Object { $_.status -eq "completed" })
     $measurements = @($completed | Where-Object { $_.kind -eq "measurement" }).Count
     $training = @($completed | Where-Object { $_.kind -eq "training" }).Count
-    return (
+    $invariant = [System.Globalization.CultureInfo]::InvariantCulture
+    $parts = @()
+    if ($State.campaign.started_at) {
+        $elapsed = [DateTimeOffset]::UtcNow - [DateTimeOffset]$State.campaign.started_at
+        $parts += "elapsed {0}h{1:00}m" -f [int][Math]::Floor($elapsed.TotalHours), $elapsed.Minutes
+    }
+    $usagePath = Join-Path "reports\session_usage" "$($State.campaign.id).jsonl"
+    if (Test-Path -LiteralPath $usagePath) {
+        $pi = 0.0
+        $coding = 0.0
+        foreach ($line in Get-Content -LiteralPath $usagePath) {
+            if (-not $line.Trim()) { continue }
+            try { $row = ConvertFrom-Json -InputObject $line } catch { continue }
+            if ($null -eq $row.aiu) { continue }
+            if ($row.role -in @("scientific_coder", "scientific_reviewer")) {
+                $coding += [double]$row.aiu
+            } else {
+                $pi += [double]$row.aiu
+            }
+        }
+        $parts += [string]::Format(
+            $invariant,
+            "AI usage of completed sessions {0:0.0} AIU (PI {1:0.0}, coding and review {2:0.0})",
+            $pi + $coding, $pi, $coding
+        )
+    }
+    $parts += (
         "inquiries $([int]$State.counters.inquiry) | " +
         "sessions $([int]$State.counters.session) | measurements $measurements | " +
         "training $training | candidates $(@($State.candidates.PSObject.Properties).Count)"
     )
+    return $parts -join " | "
 }
 
 function Get-RunnerOperationAvailability {
