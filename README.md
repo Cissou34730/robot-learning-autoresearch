@@ -109,8 +109,9 @@ an explicit range or folder list selects a batch. Numbers are identities:
 **Ctrl+L** opens/closes the bottom command area, preserving the draft. Opening
 focuses the input; closing returns focus and four rows to the campaign report.
 The footer remains visible so commands can always be reopened.
-**F6 / Shift+F6** switch campaign tabs. Ctrl+Tab remains an alias when the
-terminal passes it through; Windows Terminal normally intercepts it.
+**Tab / Shift+Tab** switch campaign tabs. Inside dialogs they navigate fields
+normally. F6/Shift+F6 move focus between report controls; Ctrl+L toggles commands.
+Ctrl+Tab remains an optional alias when the terminal passes it through.
 Stop commands remain available while another batch is preparing/resetting.
 An interrupted or failed TUI reset leaves a Git-administration safety record;
 `start` is blocked until an explicit TUI reset/run completes successfully.

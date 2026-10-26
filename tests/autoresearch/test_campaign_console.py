@@ -330,7 +330,7 @@ def test_compact_console_contextual_command_and_copy_only(tmp_path, size):
                 assert button.region.height >= 1
                 assert 0 <= button.region.y < button.region.bottom <= size[1]
                 assert button.region.right <= size[0]
-            await pilot.press("f6")
+            await pilot.press("tab")
             assert app.query_one(TabbedContent).active == "campaign-2"
             await _run_batch(app, pilot, "start")
             assert machinery.started[0][0] == layout.folder(2)
@@ -489,6 +489,54 @@ def test_empty_console_has_no_fake_campaign_or_commands_tab(tmp_path):
             await pilot.pause()
             assert app.focused is app.query_one("#commands-input", Input)
             assert not app._command_running
+
+    asyncio.run(scenario())
+
+
+def test_tab_switches_campaigns_but_navigates_fields_inside_settings(tmp_path):
+    from textual.widgets import Input, TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(160, 45)) as pilot:
+            tabs = app.query_one(TabbedContent)
+            command = app.query_one("#commands-input", Input)
+            command.value = "start 2"
+            await pilot.press("tab")
+            assert tabs.active == "campaign-2"
+            await pilot.press("shift+tab")
+            assert tabs.active == "campaign-1"
+            assert command.value == "start 2"
+            app.query_one("#panel-campaign-1 #output").focus()
+            await pilot.pause()
+            await pilot.press("tab")
+            await pilot.pause()
+            assert tabs.active == "campaign-2"
+            await pilot.press("shift+tab")
+            await pilot.pause()
+            assert tabs.active == "campaign-1"
+            await pilot.press("ctrl+l", "tab")
+            await pilot.pause()
+            assert tabs.active == "campaign-2"
+            assert app.query_one("#console-controls").has_class("collapsed")
+            await pilot.press("f2")
+            await pilot.pause()
+            settings = app.screen
+            assert isinstance(settings, SharedSettings)
+            focused = app.focused
+            await pilot.press("tab")
+            assert app.screen is settings and app.focused is not focused
+            assert tabs.active == "campaign-2"
+            await pilot.press("shift+tab")
+            assert app.focused is focused
+            await pilot.press("escape", "shift+tab")
+            await pilot.pause()
+            assert tabs.active == "campaign-1"
+            assert not machinery.started
 
     asyncio.run(scenario())
 

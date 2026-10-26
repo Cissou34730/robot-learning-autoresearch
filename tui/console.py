@@ -134,9 +134,9 @@ HELP_TEXT = (
     "Model/provider remain launcher-selected unless explicitly supplied.\n"
     "models: list available models | diagnostics: this campaign's console logs\n\n"
     "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L show/hide commands\n"
-    "F6 / Shift+F6: next/previous campaign (works without Ctrl+Tab delivery)\n"
+    "Tab / Shift+Tab: next/previous campaign; move focus inside dialogs\n"
     "Ctrl+Tab: next campaign if the terminal passes it through\n"
-    "Tab/Shift+Tab: focus | Ctrl+C: copy only\n"
+    "F6 / Shift+F6: move focus between report controls | Ctrl+C: copy only\n"
     "Ctrl+Q: stop all owned campaigns and exit"
 )
 
@@ -324,10 +324,12 @@ class CampaignConsole(App):
         Binding("f2", "settings", "Settings", priority=True),
         Binding("f3", "command_history", "Recent commands", priority=True, show=False),
         Binding("ctrl+tab", "next_tab", "Next tab", priority=True, show=False),
-        Binding("f6", "next_tab", "Campaign", priority=True),
+        Binding("tab", "next_tab", "Campaign", priority=True),
         Binding(
-            "shift+f6", "previous_tab", "Previous campaign", priority=True, show=False
+            "shift+tab", "previous_tab", "Previous campaign", priority=True, show=False
         ),
+        Binding("f6", "focus_next", "Focus next control", show=False),
+        Binding("shift+f6", "focus_previous", "Focus previous control", show=False),
         Binding("ctrl+c", "copy_selection", "Copy", priority=True, show=False),
         Binding("/", "search_log", "Search events", show=False),
         Binding("f", "filter_log", "Filter events", show=False),
@@ -850,10 +852,16 @@ class CampaignConsole(App):
     # ------------------------------------------------------------------
 
     def action_next_tab(self) -> None:
-        self._cycle_campaign(1)
+        if isinstance(self.screen, ModalScreen):
+            self.action_focus_next()
+        else:
+            self._cycle_campaign(1)
 
     def action_previous_tab(self) -> None:
-        self._cycle_campaign(-1)
+        if isinstance(self.screen, ModalScreen):
+            self.action_focus_previous()
+        else:
+            self._cycle_campaign(-1)
 
     def _cycle_campaign(self, direction: int) -> None:
         if isinstance(self.screen, ModalScreen):
@@ -866,11 +874,14 @@ class CampaignConsole(App):
             tabs.active = panes[0]
             return
         index = (panes.index(tabs.active) + direction) % len(panes)
-        collapsed = self.query_one("#console-controls").has_class("collapsed")
-        if collapsed:
+        controls = self.query_one("#console-controls")
+        focus_report = controls.has_class(
+            "collapsed"
+        ) or self.focused not in controls.query("*")
+        if focus_report:
             self.screen.set_focus(None)
         tabs.active = panes[index]
-        if collapsed:
+        if focus_report:
             self.call_after_refresh(self._focus_campaign)
 
     # ------------------------------------------------------------------

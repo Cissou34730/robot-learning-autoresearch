@@ -57,7 +57,7 @@ one report tab per installed campaign folder, initially showing the first
 installed campaign (normally campaign-1). Command entry is alongside the report,
 not on a separate Commands tab, following the maintainer's updated UX direction
 on 26 October. The standard folders are `robot-learning-campaigns\campaign-1`
-through `campaign-5`; `Ctrl+Tab` cycles their tabs. Launching the console starts
+through `campaign-5`; Tab/Shift+Tab cycle their tabs. Launching the console starts
 nothing; campaigns run only when a command is submitted.
 
 Controlled execution uses the existing PowerShell 7 on PATH, including
@@ -144,8 +144,9 @@ cleanup attempts for the others.
 
 Owned launchers have a private hidden console with redirected standard handles.
 A native Windows check confirms a distinct, non-visible child console; this is
-not a physical Windows Terminal rendering test. F6/Shift+F6 are the default
-campaign-tab keys. Ctrl+Tab is retained only as an alias if the host delivers it;
+not a physical Windows Terminal rendering test. Tab/Shift+Tab switch campaign
+tabs; inside dialogs they retain normal focus navigation. F6/Shift+F6 move
+focus between report controls. Ctrl+Tab is only an alias if the host delivers it;
 its physical Windows Terminal delivery remains unverified. Tool-path shortening
 uses each report's root, and normal exit classification reads recorded terminal
 outcomes immediately. Cancellation before the Copilot message channel exists
@@ -205,7 +206,9 @@ capability are respected; `--light` selects the light theme.
 Reading keys: Up/Down or `j`/`k` move, `Enter`/`Space` expand or collapse,
 `Left`/`Right` collapse or expand, `/` searches, `f` filters by kind, `r`
 opens the raw event payload, `End` returns to live follow, mouse wheel scrolls,
-Tab/Shift+Tab move focus; Ctrl+C copies selected output text or does nothing.
+In the controller, Tab/Shift+Tab switch campaigns and F6/Shift+F6 move local
+focus. In dialogs and standalone read-only reports, Tab/Shift+Tab move focus.
+Ctrl+C copies selected output text or does nothing.
 Ctrl+Q closes a read-only report without affecting external campaigns; in
 the console it first stops all owned campaigns.
 
