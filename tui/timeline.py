@@ -24,6 +24,8 @@ KIND_GLYPHS = {
     "operation": "[E]",
     "pi": "[P]",
     "tool": "[>]",
+    "coding": "[>]",
+    "file": "[~]",
     "result": "[=]",
     "checkpoint": "[#]",
     "role": "[R]",
@@ -36,23 +38,45 @@ KIND_GLYPHS = {
 FILTER_CATEGORIES = {
     "sessions": {"session"},
     "inquiries": {"inquiry"},
-    "training": {"training", "training_progress"},
-    "measurements": {"measurement", "eval_progress"},
-    "tools": {"tool", "tool_call"},
-    "pi": {"pi_message"},
+    "training": {"training", "training_progress", "training_checkpoints"},
+    "measurements": {
+        "measurement",
+        "eval_progress",
+        "measurement_panel_started",
+        "measurement_panel_completed",
+    },
+    "tools": {
+        "tool",
+        "tool_call",
+        "tool_call_started",
+        "tool_call_completed",
+        "tool_call_failed",
+        "tool_denied",
+        "coding",
+        "file_changed",
+    },
+    "pi": {"pi_message", "pi_context"},
     "roles": {"role", "role_assigned", "candidate_created", "checkpoint_saved"},
-    "usage": {"usage", "usage_update"},
-    "warnings": {"warning", "error", "operation_failed"},
+    "usage": {"usage", "usage_update", "campaign_usage", "session_usage"},
+    "warnings": {
+        "warning",
+        "error",
+        "operation_failed",
+        "publication_retry",
+    },
     "operations": {
         "operation",
         "operation_requested",
         "operation_started",
         "operation_completed",
         "operation_failed",
+        "operation_submitted",
         "execution_end",
         "campaign_started",
         "campaign_concluded",
+        "campaign_goal_review",
         "run_state",
+        "scientific_model_validated",
         "console_line",
         "console_card",
     },
@@ -65,7 +89,7 @@ def _now() -> datetime:
 
 def _clock(stamp: datetime | None) -> str:
     if stamp is None:
-        return "--:--:--"
+        return ""
     return f"{stamp.astimezone():%H:%M:%S}"
 
 
@@ -155,6 +179,7 @@ class TimelineReducer:
         self._progress: dict[str, tuple[datetime | None, int | None]] = {}
         self._pi_items: dict[str, TimelineItem] = {}
         self._pi_text: dict[str, str] = {}
+        self._tools: dict[str, TimelineItem] = {}
         self._current_session = ""
         self._current_inquiry = ""
         self._active_operation = ""
@@ -178,6 +203,8 @@ class TimelineReducer:
         kind = event.kind
         fields = event.fields or {}
         ts = event.ts
+        if kind == "liveness":
+            return
         session_id = event.session_id or str(fields.get("session_id") or "")
         inquiry_id = event.inquiry_id or str(fields.get("inquiry_id") or "")
         operation_id = event.operation_id or str(
@@ -186,7 +213,7 @@ class TimelineReducer:
         if kind == "session_start":
             self._session(session_id or str(fields.get("id") or ""), ts, fields)
             return
-        if kind in {"inquiry_opened", "inquiry_closed"}:
+        if kind in {"inquiry_opened", "inquiry_closed", "inquiry_reframed"}:
             self._inquiry_event(kind, inquiry_id, session_id, ts, fields)
             return
         if kind in {
@@ -204,23 +231,71 @@ class TimelineReducer:
         if kind in {"training_progress", "eval_progress"}:
             self._progress_event(kind, operation_id, inquiry_id, session_id, ts, fields)
             return
+        if kind in {"session_started", "session_ended"}:
+            self._session_event(kind, session_id, ts, fields)
+            return
         if kind in {"pi_message"}:
             self._pi_event(ts, session_id, inquiry_id, operation_id, fields)
+            return
+        if kind in {
+            "tool_call_started",
+            "tool_call_completed",
+            "tool_call_failed",
+            "tool_denied",
+        }:
+            self._tool_lifecycle(kind, ts, session_id, inquiry_id, operation_id, fields)
+            return
+        if kind == "coding":
+            self._coding_event(ts, session_id, inquiry_id, operation_id, fields)
+            return
+        if kind == "file_changed":
+            self._file_event(ts, session_id, inquiry_id, operation_id, fields)
+            return
+        if kind == "pi_context":
+            self._pi_context_event(ts, session_id, inquiry_id, operation_id, fields)
             return
         if kind in {"tool", "tool_call"}:
             self._tool_event(ts, session_id, inquiry_id, operation_id, fields)
             return
+        if kind in {
+            "measurement_panel_started",
+            "measurement_panel_completed",
+        }:
+            self._panel_event(kind, ts, session_id, inquiry_id, operation_id, fields)
+            return
+        if kind == "training_checkpoints":
+            self._training_checkpoints_event(
+                ts, session_id, inquiry_id, operation_id, fields
+            )
+            return
         if kind in {"role_assigned", "candidate_created", "checkpoint_saved"}:
             self._simple_event(kind, ts, session_id, inquiry_id, operation_id, fields)
             return
-        if kind in {"usage", "usage_update"}:
-            self._usage_event(ts, session_id, fields)
+        if kind in {
+            "usage",
+            "usage_update",
+            "campaign_usage",
+            "session_usage",
+        }:
+            self._usage_event(kind, ts, session_id, fields)
             return
-        if kind in {"warning", "error"}:
+        if kind in {"warning", "error", "publication_retry"}:
             self._warning_event(kind, ts, session_id, inquiry_id, operation_id, fields)
             return
-        if kind in {"campaign_started", "campaign_concluded", "run_state"}:
+        if kind in {
+            "campaign_started",
+            "campaign_concluded",
+            "campaign_goal_review",
+            "run_state",
+            "publication_recovered",
+            "scientific_model_validated",
+        }:
             self._root_event(kind, ts, fields)
+            return
+        if kind == "operation_submitted":
+            self._operation_submitted_event(
+                ts, session_id, inquiry_id, operation_id, fields
+            )
             return
         if kind in {"console_line", "console_card"}:
             self._console_event(ts, session_id, inquiry_id, operation_id, fields)
@@ -373,10 +448,18 @@ class TimelineReducer:
         if kind == "inquiry_closed":
             item.status = "closed"
             item.end_ts = ts or item.end_ts
+        elif kind == "inquiry_reframed":
+            item.status = "reframed"
         leaf = TimelineItem(
             item_id=f"leaf:{kind}:{inquiry_id}:{ts}",
             kind="inquiry",
-            title="inquiry opened" if kind == "inquiry_opened" else "inquiry closed",
+            title=(
+                "inquiry opened"
+                if kind == "inquiry_opened"
+                else "inquiry reframed"
+                if kind == "inquiry_reframed"
+                else "inquiry closed"
+            ),
             summary="",
             ts=ts,
             detail=tuple(
@@ -517,6 +600,14 @@ class TimelineReducer:
                 if isinstance(steps, int) and isinstance(target, int) and target
                 else ""
             )
+            scenario_metric = str(fields.get("scenario_metric") or "")
+            training_success = fields.get("training_success")
+            if (
+                not scenario_metric
+                and isinstance(training_success, (int, float))
+                and not isinstance(training_success, bool)
+            ):
+                scenario_metric = f"success {round(float(training_success) * 100)}%"
             parts = [
                 f"{_number(steps)} / {_number(target)}",
                 percent,
@@ -525,10 +616,7 @@ class TimelineReducer:
                 f"reward {fields.get('ep_rew_mean')}"
                 if fields.get("ep_rew_mean") is not None
                 else "",
-                f"success {round(float(fields['training_success']) * 100)}%"
-                if isinstance(fields.get("training_success"), (int, float))
-                and not isinstance(fields.get("training_success"), bool)
-                else "",
+                scenario_metric,
             ]
             summary = "  ".join(part for part in parts if part)
             item.summary = summary
@@ -563,6 +651,387 @@ class TimelineReducer:
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
+
+    def _session_event(
+        self, kind: str, session_id: str, ts: datetime | None, fields: dict
+    ) -> None:
+        sid = session_id or str(fields.get("id") or "")
+        item = self._session(sid, ts, fields)
+        if item is None:
+            return
+        if kind == "session_started":
+            item.status = "running"
+            title = "started"
+            summary = _first_line(fields.get("objective") or fields.get("kind") or "")
+            detail = tuple(
+                line
+                for line in (
+                    f"Objective: {_first_line(fields.get('objective'))}"
+                    if fields.get("objective")
+                    else "",
+                    f"Backend session: {fields.get('backend_session_id')}"
+                    if fields.get("backend_session_id")
+                    else "",
+                )
+                if line
+            )
+        else:
+            item.status = "closed"
+            title = "ended"
+            summary = _first_line(fields.get("summary") or "")
+            detail = tuple(
+                line
+                for line in (
+                    f"Summary: {_first_line(fields.get('summary'))}"
+                    if fields.get("summary")
+                    else "",
+                    f"Next question: {_first_line(fields.get('next_question'))}"
+                    if fields.get("next_question")
+                    else "",
+                    f"Next: {_first_line(fields.get('next'))}"
+                    if fields.get("next")
+                    else "",
+                )
+                if line
+            )
+        leaf = TimelineItem(
+            item_id=f"leaf:{kind}:{sid}:{ts}",
+            kind="session",
+            title=title,
+            summary=summary,
+            ts=ts,
+            detail=detail,
+            payload=dict(fields),
+        )
+        item.children.append(leaf)
+        self._items[leaf.item_id] = leaf
+        item.end_ts = ts or item.end_ts
+
+    def _tool_lifecycle(
+        self,
+        kind: str,
+        ts: datetime | None,
+        session_id: str,
+        inquiry_id: str,
+        operation_id: str,
+        fields: dict,
+    ) -> None:
+        name = str(fields.get("name") or fields.get("tool") or "tool")
+        call_id = str(fields.get("tool_call_id") or "")
+        key = call_id or f"{name}:{ts}"
+        item = self._tools.get(key)
+        status = str(fields.get("status") or "")
+        if kind == "tool_call_started":
+            detail = fields.get("detail")
+            if detail in (None, ""):
+                detail = fields.get("arguments")
+            item = TimelineItem(
+                item_id=f"tool:{key}",
+                kind="tool",
+                title=f"> {name}",
+                summary=_first_line(detail or ""),
+                ts=ts,
+                status="started",
+                detail=(_json_text(detail),) if detail not in (None, "") else (),
+                payload=dict(fields),
+            )
+            self._tools[key] = item
+            self._attach(item, operation_id, inquiry_id, session_id)
+        else:
+            if item is None:
+                item = TimelineItem(
+                    item_id=f"tool:{key}",
+                    kind="tool",
+                    title=f"> {name}",
+                    ts=ts,
+                    payload=dict(fields),
+                )
+                self._tools[key] = item
+                self._attach(item, operation_id, inquiry_id, session_id)
+            if kind == "tool_denied":
+                status = "denied"
+            item.status = status or item.status
+            item.end_ts = ts
+            duration = ""
+            if ts is not None and item.ts is not None:
+                duration = console.format_duration((ts - item.ts).total_seconds())
+            item.summary = " | ".join(part for part in (item.status, duration) if part)
+            extra: list[str] = []
+            error = fields.get("error") or fields.get("reason")
+            if error:
+                extra.append(f"Error: {_first_line(error, 400)}")
+                item.severity = "error" if kind == "tool_call_failed" else "warning"
+            result = fields.get("result")
+            if result not in (None, ""):
+                extra.append(_short(_json_text(result), 600))
+            elif fields.get("content"):
+                extra.append(_short(str(fields["content"]), 600))
+            elif fields.get("content_length"):
+                extra.append(f"Content: {_number(fields['content_length'])} characters")
+            if extra:
+                item.detail = (*item.detail, *extra)
+            item.payload = {**item.payload, **fields}
+        if ts is not None:
+            self._touch_groups(ts, operation_id, inquiry_id, session_id)
+
+    def _coding_event(
+        self,
+        ts: datetime | None,
+        session_id: str,
+        inquiry_id: str,
+        operation_id: str,
+        fields: dict,
+    ) -> None:
+        phase = str(fields.get("phase") or "coding")
+        status = str(fields.get("status") or "")
+        agent = str(fields.get("agent") or "")
+        detail = fields.get("detail") if isinstance(fields.get("detail"), dict) else {}
+        summary = " | ".join(
+            part
+            for part in (
+                agent,
+                status,
+                _first_line(detail.get("intent") or detail.get("verdict") or ""),
+            )
+            if part
+        )
+        severity = str(fields.get("severity") or "")
+        leaf = TimelineItem(
+            item_id=f"leaf:coding:{phase}:{ts}:{len(self._seen)}",
+            kind="coding",
+            title=f"coding {phase}".strip(),
+            summary=summary,
+            ts=ts,
+            severity="error"
+            if severity == "error"
+            else "warning"
+            if severity == "warning"
+            else "info",
+            detail=(_json_text(detail),) if detail else (),
+            payload=dict(fields),
+        )
+        self._attach(leaf, operation_id, inquiry_id, session_id)
+        if ts is not None:
+            self._touch_groups(ts, operation_id, inquiry_id, session_id)
+
+    def _file_event(
+        self,
+        ts: datetime | None,
+        session_id: str,
+        inquiry_id: str,
+        operation_id: str,
+        fields: dict,
+    ) -> None:
+        path = str(fields.get("display_path") or fields.get("path") or "")
+        operation = str(fields.get("operation") or "changed")
+        marker = {"created": "+", "deleted": "-"}.get(operation, "~")
+        suffix = (
+            " | PI operation request updated" if fields.get("operation_request") else ""
+        )
+        leaf = TimelineItem(
+            item_id=f"leaf:file:{path}:{ts}:{len(self._seen)}",
+            kind="file",
+            title=f"{marker} {path}",
+            summary=operation + suffix,
+            ts=ts,
+            detail=(f"Path: {fields.get('path')}",) if fields.get("path") else (),
+            payload=dict(fields),
+        )
+        self._attach(leaf, operation_id, inquiry_id, session_id)
+        if ts is not None:
+            self._touch_groups(ts, operation_id, inquiry_id, session_id)
+
+    def _pi_context_event(
+        self,
+        ts: datetime | None,
+        session_id: str,
+        inquiry_id: str,
+        operation_id: str,
+        fields: dict,
+    ) -> None:
+        tokens = fields.get("input_tokens")
+        calls = fields.get("model_calls")
+        summary = " | ".join(
+            part
+            for part in (
+                f"{_number(tokens)} tokens" if tokens is not None else "",
+                f"model call {calls}" if calls is not None else "",
+            )
+            if part
+        )
+        leaf = TimelineItem(
+            item_id=f"leaf:pi_context:{ts}:{len(self._seen)}",
+            kind="pi",
+            title="context",
+            summary=summary,
+            ts=ts,
+            payload=dict(fields),
+        )
+        self._attach(leaf, operation_id, inquiry_id, session_id)
+        if ts is not None:
+            self._touch_groups(ts, operation_id, inquiry_id, session_id)
+
+    def _panel_event(
+        self,
+        kind: str,
+        ts: datetime | None,
+        session_id: str,
+        inquiry_id: str,
+        operation_id: str,
+        fields: dict,
+    ) -> None:
+        op_id = operation_id or "official"
+        item = self._operation(op_id, inquiry_id, session_id, ts, "measurement")
+        if item is None:
+            return
+        item.status = "running"
+        artifact = str(fields.get("artifact") or fields.get("instrument") or "")
+        if kind == "measurement_panel_started":
+            title = f"panel {artifact}".strip()
+            summary = " | ".join(
+                part
+                for part in (
+                    f"{_number(fields.get('episodes'))} episodes"
+                    if fields.get("episodes") is not None
+                    else "",
+                    f"seed {fields.get('seed')}"
+                    if fields.get("seed") is not None
+                    else "",
+                    str(fields.get("instrument") or ""),
+                )
+                if part
+            )
+            severity = "info"
+        else:
+            title = f"panel complete {artifact}".strip()
+            elapsed = fields.get("elapsed_seconds")
+            summary = " | ".join(
+                part
+                for part in (
+                    f"{_number(fields.get('episodes'))} / "
+                    f"{_number(fields.get('episodes_total'))}"
+                    if fields.get("episodes_total") is not None
+                    else "",
+                    f"success {float(fields['success_percent']):.1f}%"
+                    if fields.get("success_percent") is not None
+                    else "",
+                    console.format_duration(float(elapsed))
+                    if isinstance(elapsed, (int, float))
+                    and not isinstance(elapsed, bool)
+                    else "",
+                )
+                if part
+            )
+            severity = "info"
+        leaf = TimelineItem(
+            item_id=f"leaf:{kind}:{op_id}:{ts}",
+            kind="measurement",
+            title=title,
+            summary=summary,
+            ts=ts,
+            severity=severity,
+            detail=tuple(
+                f"{key}: {_short(value)}"
+                for key, value in fields.items()
+                if key not in {"operation_id", "instrument"}
+            ),
+            payload=dict(fields),
+        )
+        item.children.append(leaf)
+        self._items[leaf.item_id] = leaf
+        item.end_ts = ts or item.end_ts
+        self._active_operation = op_id
+        item.summary = self._operation_summary(item)
+
+    def _training_checkpoints_event(
+        self,
+        ts: datetime | None,
+        session_id: str,
+        inquiry_id: str,
+        operation_id: str,
+        fields: dict,
+    ) -> None:
+        candidates = (
+            fields.get("candidates")
+            if isinstance(fields.get("candidates"), list)
+            else []
+        )
+        lines = []
+        for candidate in candidates:
+            if not isinstance(candidate, dict):
+                continue
+            if candidate.get("summary"):
+                lines.append(
+                    " | ".join(
+                        part
+                        for part in (
+                            str(candidate.get("candidate") or ""),
+                            str(candidate.get("summary")),
+                        )
+                        if part
+                    )
+                )
+                continue
+            lines.append(
+                " | ".join(
+                    part
+                    for part in (
+                        str(candidate.get("candidate") or ""),
+                        f"{_number(candidate.get('steps'))} steps"
+                        if candidate.get("steps") is not None
+                        else "",
+                        f"reward {candidate.get('ep_rew_mean')}"
+                        if candidate.get("ep_rew_mean") is not None
+                        else "",
+                        f"success {round(float(candidate['training_success']) * 100)}%"
+                        if isinstance(candidate.get("training_success"), (int, float))
+                        and not isinstance(candidate.get("training_success"), bool)
+                        else "",
+                    )
+                    if part
+                )
+            )
+        leaf = TimelineItem(
+            item_id=f"leaf:training_checkpoints:{operation_id}:{ts}",
+            kind="training",
+            title="training results",
+            summary=f"{len(candidates)} candidates",
+            ts=ts,
+            detail=tuple(lines),
+            payload=dict(fields),
+        )
+        self._attach(leaf, operation_id, inquiry_id, session_id)
+        if ts is not None:
+            self._touch_groups(ts, operation_id, inquiry_id, session_id)
+
+    def _operation_submitted_event(
+        self,
+        ts: datetime | None,
+        session_id: str,
+        inquiry_id: str,
+        operation_id: str,
+        fields: dict,
+    ) -> None:
+        status = str(fields.get("status") or "")
+        leaf = TimelineItem(
+            item_id=f"leaf:operation_submitted:{ts}:{len(self._seen)}",
+            kind="operation",
+            title="submitted",
+            summary=status,
+            ts=ts,
+            severity="error"
+            if status in {"rejected", "implementation_error", "validation_fatal"}
+            else "warning"
+            if status not in {"completed", "accepted", "needs_pi", "checkpointed"}
+            else "info",
+            detail=(f"Error: {_first_line(fields.get('error'))}",)
+            if fields.get("error")
+            else (),
+            payload=dict(fields),
+        )
+        self._attach(leaf, operation_id, inquiry_id, session_id)
+        if ts is not None:
+            self._touch_groups(ts, operation_id, inquiry_id, session_id)
 
     def _pi_event(
         self,
@@ -660,7 +1129,8 @@ class TimelineReducer:
             "activity": f"activity {fields.get('label') or ''}".strip(),
         }.get(kind, kind.replace("_", " "))
         summary = _first_line(
-            fields.get("candidate")
+            fields.get("current_synthesis")
+            or fields.get("candidate")
             or fields.get("label")
             or fields.get("text")
             or fields.get("summary")
@@ -668,19 +1138,42 @@ class TimelineReducer:
         )
         leaf = TimelineItem(
             item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
-            kind=kind if kind in KIND_GLYPHS else "log",
+            kind={
+                "role_assigned": "role",
+                "candidate_created": "role",
+                "checkpoint_saved": "checkpoint",
+            }.get(kind, kind if kind in KIND_GLYPHS else "log"),
             title=title,
             summary=summary,
             ts=ts,
             detail=tuple(
                 line
                 for line in (
+                    f"Current synthesis: {_first_line(fields.get('current_synthesis'))}"
+                    if fields.get("current_synthesis")
+                    else "",
+                    f"Next question: {_first_line(fields.get('next_question'))}"
+                    if fields.get("next_question")
+                    else "",
+                    f"Next: {_first_line(fields.get('next_direction_or_closure'))}"
+                    if fields.get("next_direction_or_closure")
+                    else "",
+                    f"Scientific commit: {fields.get('scientific_commit')}"
+                    if fields.get("scientific_commit")
+                    else "",
                     f"Candidate: {fields.get('candidate')}"
                     if fields.get("candidate")
                     else "",
                     f"Role: {fields.get('role')}" if fields.get("role") else "",
                     f"Evidence: {_first_line(fields.get('evidence'))}"
                     if fields.get("evidence")
+                    else "",
+                    f"Steps: {_number(fields.get('training_steps'))}"
+                    if fields.get("training_steps") is not None
+                    else "",
+                    f"Success: {round(float(fields['training_success']) * 100)}%"
+                    if isinstance(fields.get("training_success"), (int, float))
+                    and not isinstance(fields.get("training_success"), bool)
                     else "",
                 )
                 if line
@@ -691,15 +1184,66 @@ class TimelineReducer:
         if ts is not None:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
 
-    def _usage_event(self, ts: datetime | None, session_id: str, fields: dict) -> None:
+    def _usage_event(
+        self, kind: str, ts: datetime | None, session_id: str, fields: dict
+    ) -> None:
         rows = fields.get("rows")
+        totals = fields.get("totals") if isinstance(fields.get("totals"), dict) else {}
+        if kind in {"campaign_usage", "session_usage"}:
+            title = "campaign usage" if kind == "campaign_usage" else "session usage"
+            summary = str(fields.get("text") or "")
+            if not summary and totals:
+                summary = " | ".join(
+                    part
+                    for part in (
+                        console.format_duration(float(totals["duration_seconds"]))
+                        if totals.get("duration_seconds") is not None
+                        else "",
+                        f"{float(totals['aiu']):.2f} AIU" if totals.get("aiu") else "",
+                        f"prompt {_number(totals.get('input_tokens'))}"
+                        if totals.get("input_tokens")
+                        else "",
+                        f"output {_number(totals.get('output_tokens'))}"
+                        if totals.get("output_tokens")
+                        else "",
+                    )
+                    if part
+                )
+            detail = (_json_text(totals),) if totals else ()
+        elif isinstance(rows, list):
+            title = "usage recorded"
+            summary = f"{len(rows)} accounting rows"
+            detail = (_json_text(rows),)
+        else:
+            role = str(fields.get("role") or "usage")
+            title = f"usage {role}"
+            summary = " | ".join(
+                part
+                for part in (
+                    str(fields.get("model") or ""),
+                    console.format_duration(float(fields["duration_seconds"]))
+                    if fields.get("duration_seconds") is not None
+                    else "",
+                    f"prompt {_number(fields.get('input_tokens'))}"
+                    if fields.get("input_tokens") is not None
+                    else "",
+                    f"output {_number(fields.get('output_tokens'))}"
+                    if fields.get("output_tokens") is not None
+                    else "",
+                    f"{fields.get('tool_calls')} tool calls"
+                    if fields.get("tool_calls") is not None
+                    else "",
+                )
+                if part
+            )
+            detail = (_json_text(fields),)
         leaf = TimelineItem(
-            item_id=f"leaf:usage:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
             kind="usage",
-            title="usage recorded",
-            summary=f"{len(rows)} accounting rows" if isinstance(rows, list) else "",
+            title=title,
+            summary=summary,
             ts=ts,
-            detail=(_json_text(rows),) if rows else (),
+            detail=detail,
             payload=dict(fields),
         )
         self._attach(leaf, "", "", session_id)
@@ -720,7 +1264,7 @@ class TimelineReducer:
         leaf = TimelineItem(
             item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
             kind="error" if kind == "error" else "warning",
-            title=f"{code} {kind}".strip(),
+            title=(f"{code} {kind}".strip() if code else kind.replace("_", " ")),
             summary=_first_line(message),
             ts=ts,
             severity="error" if kind == "error" else "warning",
@@ -738,13 +1282,24 @@ class TimelineReducer:
         title = {
             "campaign_started": "campaign started",
             "campaign_concluded": "campaign concluded",
+            "campaign_goal_review": "campaign goal review",
+            "publication_recovered": "publication recovered",
+            "scientific_model_validated": "scientific model validated",
             "run_state": f"run state {fields.get('state') or ''}".strip(),
         }.get(kind, kind.replace("_", " "))
         leaf = TimelineItem(
             item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
-            kind="campaign",
+            kind="result"
+            if kind in {"publication_recovered", "scientific_model_validated"}
+            else "campaign",
             title=title,
-            summary=_first_line(fields.get("summary") or fields.get("state") or ""),
+            summary=_first_line(
+                fields.get("summary")
+                or fields.get("state")
+                or fields.get("reason")
+                or fields.get("commit")
+                or ""
+            ),
             ts=ts,
             detail=tuple(f"{key}: {_short(value)}" for key, value in fields.items()),
             payload=dict(fields),
@@ -828,6 +1383,8 @@ class TimelineReducer:
             parent = self._inquiries.get(inquiry_id)
         if parent is None and session_id:
             parent = self._sessions.get(session_id)
+        if parent is None and self._current_session:
+            parent = self._sessions.get(self._current_session)
         if parent is None and self._active_operation:
             parent = self._operations.get(self._active_operation)
         if parent is not None:
@@ -839,6 +1396,9 @@ class TimelineReducer:
             "log",
             "pi",
             "tool",
+            "coding",
+            "file",
+            "result",
             "warning",
             "error",
         }:
@@ -1054,10 +1614,12 @@ class TimelineReducer:
         if self._last_completed:
             stamp = _clock(self._last_completed_ts)
             state = self._run_state or "idle"
-            return (
-                f"Now: {state} | last completed {self._last_completed} "
-                f"{self._last_completed_kind} | {stamp}"
+            latest = (
+                f"last completed {self._last_completed} {self._last_completed_kind}"
             )
+            if stamp:
+                latest = f"{latest} | {stamp}"
+            return f"Now: {state} | {latest}"
         if self._run_state:
             return f"Now: {self._run_state}"
         return "Now: waiting for the first operation"

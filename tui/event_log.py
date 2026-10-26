@@ -6,10 +6,15 @@ import json
 from collections.abc import Iterable
 from typing import ClassVar
 
+from rich.segment import Segment
+from rich.style import Style
 from rich.text import Text
+from textual import events
 from textual.binding import Binding
 from textual.containers import VerticalScroll
 from textual.screen import ModalScreen
+from textual.selection import Selection
+from textual.strip import Strip
 from textual.widgets import SelectionList, Static, Tree
 from textual.widgets._tree import TreeNode
 
@@ -56,10 +61,20 @@ class RawEventScreen(ModalScreen[None]):
         self.item = item
 
     def compose(self):
+        stamp = ""
+        if self.item.ts is not None:
+            stamp = self.item.ts.astimezone().isoformat(sep=" ", timespec="seconds")
+            if self.item.end_ts is not None:
+                stopped = self.item.end_ts.astimezone().isoformat(
+                    sep=" ", timespec="seconds"
+                )
+                stamp = f"{stamp} - {stopped}"
+        prefix = f"Recorded {stamp}\n\n" if stamp else ""
         yield VerticalScroll(
             Static(f"Raw event: {self.item.title}", id="raw-title"),
             Static(
-                json.dumps(
+                prefix
+                + json.dumps(
                     self.item.payload, ensure_ascii=False, indent=2, default=str
                 ),
                 id="raw-body",
@@ -143,6 +158,7 @@ class FilterScreen(ModalScreen[set[str] | None]):
 class EventLog(Tree[TimelineItem]):
     """A virtualized, collapsible chronological event stream."""
 
+    ALLOW_SELECT = True
     ICON_NODE = "> "
     ICON_NODE_EXPANDED = "v "
 
@@ -265,6 +281,25 @@ class EventLog(Tree[TimelineItem]):
             self.scroll_to(y=scroll_y, animate=False)
             if new_items:
                 self._missed += 1
+        if selected is None and roots:
+            self.call_after_refresh(self._select_latest_visible)
+
+    def _select_latest_visible(self) -> None:
+        if self.cursor_node is not None:
+            return
+        lines = self._tree_lines
+        if not lines:
+            return
+        start = max(0, int(self.scroll_offset.y))
+        height = max(1, self.size.height)
+        for line in reversed(lines[start : start + height]):
+            if line.node.data is not None:
+                self.move_cursor(line.node, animate=False)
+                return
+        for line in reversed(lines):
+            if line.node.data is not None:
+                self.move_cursor(line.node, animate=False)
+                return
 
     def _flatten_ids(self, roots: list[TimelineItem]) -> Iterable[str]:
         for item in roots:
@@ -314,11 +349,8 @@ class EventLog(Tree[TimelineItem]):
 
     def _label(self, item: TimelineItem) -> Text:
         styles = self._styles
-        stamp = item.ts.astimezone().strftime("%H:%M:%S") if item.ts else "--:--:--"
-        label = Text()
-        label.append(stamp, style=styles.get("muted", ""))
-        label.append(" ")
         kind_style = self._kind_style(item)
+        label = Text()
         label.append(item.glyph, style=kind_style)
         label.append(" ")
         label.append(item.title, style=kind_style)
@@ -331,6 +363,89 @@ class EventLog(Tree[TimelineItem]):
                 label.append("  ")
                 label.append(f"[{duration}]", style=styles.get("muted", ""))
         return label
+
+    def _column(self, item: TimelineItem | None, selected: bool) -> list[Segment]:
+        """Fixed left column: selection marker, clock, and separator."""
+        marker = "▌ " if selected else "  "
+        stamp = (
+            item.ts.astimezone().strftime("%H:%M:%S")
+            if item is not None and item.ts is not None
+            else "        "
+        )
+        accent = self._styles.get("accent", "")
+        muted = self._styles.get("muted", "")
+        marker_style = Style.parse(f"bold {accent}".strip()) if selected else Style()
+        muted_style = Style.parse(muted) if muted else Style()
+        if item is None:
+            return [
+                Segment(marker, marker_style),
+                Segment(" " * (len(stamp) + 3), muted_style),
+            ]
+        return [
+            Segment(marker, marker_style),
+            Segment(stamp, muted_style),
+            Segment(" │ ", muted_style),
+        ]
+
+    def _decorated_strip(self, content_y: int, scroll_x: int, width: int) -> Strip:
+        width = max(1, width)
+        if not 0 <= content_y < len(self._tree_lines):
+            return Strip.blank(width, self.rich_style)
+        line = self._tree_lines[content_y]
+        node = line.node
+        item = node.data
+        hovered = self._get_node(self.hover_line)
+        selected = (
+            hovered in line.path if hovered is not None else node is self.cursor_node
+        )
+        column = self._column(item, selected)
+        column_width = sum(len(segment.text) for segment in column)
+        content_width = max(1, width - column_width)
+        content = self._render_line(
+            content_y,
+            scroll_x,
+            scroll_x + content_width,
+            self.rich_style,
+        )
+        return (
+            Strip([*column, *content])
+            .crop_extend(0, width, self.rich_style)
+            .apply_meta({"line": content_y})
+        )
+
+    def render_line(self, y: int) -> Strip:
+        content_y = y + int(self.scroll_offset.y)
+        strip = self._decorated_strip(
+            content_y,
+            int(self.scroll_offset.x),
+            self.size.width,
+        )
+        selection = self.text_selection
+        if (
+            selection is not None
+            and (span := selection.get_span(content_y)) is not None
+        ):
+            start, end = span
+            text_length = len(strip.text)
+            start = strip.index_to_cell_position(min(start, text_length))
+            end = strip.index_to_cell_position(
+                text_length if end == -1 else min(end, text_length)
+            )
+            selection_style = self.screen.get_component_rich_style("screen--selection")
+            selected = strip.crop(start, end)
+            # Selection must override the existing label colours/background.
+            selected = Strip(Segment.apply_style(selected, post_style=selection_style))
+            strip = Strip.join((strip.crop(0, start), selected, strip.crop(end)))
+        return strip.apply_offsets(0, content_y)
+
+    def get_selection(self, selection: Selection) -> tuple[str, str]:
+        width = max(1, self.size.width)
+        scroll_x = int(self.scroll_offset.x)
+        lines = [
+            self._decorated_strip(y, scroll_x, width).text.rstrip()
+            for y in range(self.last_line + 1)
+        ]
+        return selection.extract("\n".join(lines)), "\n"
 
     def _kind_style(self, item: TimelineItem) -> str:
         styles = self._styles
@@ -358,6 +473,19 @@ class EventLog(Tree[TimelineItem]):
     # ------------------------------------------------------------------
     # Interaction
     # ------------------------------------------------------------------
+
+    def watch_hover_line(self, previous_hover_line: int, hover_line: int) -> None:
+        super().watch_hover_line(previous_hover_line, hover_line)
+        # Hover marks the whole visible subtree. Repaint the keyboard cursor's
+        # marker as well when entering/leaving a block without moving the cursor.
+        self.refresh()
+
+    def on_click(self, event: events.Click) -> None:
+        # App synthesizes Click even after a drag. Do not let Tree toggle a
+        # block (or Widget select all on a repeated click) after text selection.
+        if self.text_selection is not None:
+            event.prevent_default()
+            event.stop()
 
     def action_collapse_node(self) -> None:
         node = self.cursor_node

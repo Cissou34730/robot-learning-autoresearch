@@ -359,20 +359,22 @@ async def shutdown_runtime(client, session, console: Console, *, abort: bool) ->
     try:
         await asyncio.wait_for(graceful_shutdown(), timeout=SHUTDOWN_TIMEOUT_SECONDS)
     except TimeoutError:
-        console.line(
-            f"  ! Copilot shutdown timed out after {SHUTDOWN_TIMEOUT_SECONDS:g}s; "
-            "forcing the adapter-owned runtime to stop"
+        console.warning(
+            f"Copilot shutdown timed out after {SHUTDOWN_TIMEOUT_SECONDS:g}s; "
+            "forcing the adapter-owned runtime to stop",
+            code="copilot_shutdown_timeout",
         )
     except asyncio.CancelledError as error:
         interruption = error
-        console.line(
-            "  ! Copilot shutdown interrupted; "
-            "forcing the adapter-owned runtime to stop"
+        console.warning(
+            "Copilot shutdown interrupted; forcing the adapter-owned runtime to stop",
+            code="copilot_shutdown_interrupted",
         )
     except Exception as error:  # noqa: BLE001 - SDK cleanup needs owned-runtime recovery
-        console.line(
-            f"  ! Copilot shutdown failed: {error}; "
-            "forcing the adapter-owned runtime to stop"
+        console.warning(
+            f"Copilot shutdown failed: {error}; "
+            "forcing the adapter-owned runtime to stop",
+            code="copilot_shutdown_failed",
         )
     else:
         return
@@ -383,7 +385,10 @@ async def shutdown_runtime(client, session, console: Console, *, abort: bool) ->
         raise RuntimeError(
             f"Copilot forced shutdown timed out after {FORCE_STOP_TIMEOUT_SECONDS:g}s"
         ) from error
-    console.line("  ! Copilot owned runtime force-stopped; session data preserved")
+    console.warning(
+        "Copilot owned runtime force-stopped; session data preserved",
+        code="copilot_force_stopped",
+    )
     if interruption is not None:
         raise interruption
 
@@ -408,7 +413,9 @@ async def converse(session, args, console: Console, finished, operations):
     )
 
     def timed_out():
-        console.line(f"  ! session timed out after {args.timeout}s")
+        console.warning(
+            f"session timed out after {args.timeout}s", code="session_timeout"
+        )
         console.summary(changed_since(before))
         return EXIT_TIMEOUT, True
 
@@ -437,14 +444,14 @@ async def converse(session, args, console: Console, finished, operations):
                 finished_task = asyncio.create_task(finished.wait())
                 await session.send(CONTINUE_PROMPT + json.dumps(operations.state))
         if stop_task in done:
-            console.line("  ! session interrupted")
+            console.warning("session interrupted", code="session_interrupted")
             return EXIT_INTERRUPTED, True
         if timeout_task in done:
             return timed_out()
     except TimeoutError:
         return timed_out()
     except KeyboardInterrupt:
-        console.line("  ! session interrupted")
+        console.warning("session interrupted", code="session_interrupted")
         return EXIT_INTERRUPTED, True
     finally:
         for task in (finished_task, stop_task, timeout_task):
@@ -465,6 +472,8 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
         args.reasoning = "max"
     await prepare_provider(args)
     console = getattr(args, "usage_console", None) or Console()
+    if getattr(args, "session_id", ""):
+        console.session_id = args.session_id
     finished = asyncio.Event()
     if stop_requested():
         return EXIT_INTERRUPTED
@@ -674,10 +683,28 @@ def announce_usage(args) -> None:
     if not args.campaign_id or not args.session_id:
         return
     from runner import console as runner_console
+    from runner import typed_events
 
+    totals = runner_console.usage_totals(args.campaign_id, args.session_id)
+    summary = runner_console.usage_summary(args.campaign_id, args.session_id)
+    typed_events.set_campaign(args.campaign_id)
+    typed_events.emit(
+        "session_usage",
+        {
+            "phase": args.phase,
+            "session_id": args.session_id,
+            "totals": totals,
+            "text": summary,
+        },
+        scope="usage",
+        session_id=args.session_id,
+        event_id=(
+            f"domain:session_usage:{args.session_id}:{args.phase or ''}:{args.attempt}"
+        ),
+    )
     runner_console.announce(
-        f"[session] USAGE | {args.phase or 'session'} | "
-        f"{runner_console.usage_summary(args.campaign_id, args.session_id)}"
+        f"[session] USAGE | {args.phase or 'session'} | {summary}",
+        typed=False,
     )
 
 

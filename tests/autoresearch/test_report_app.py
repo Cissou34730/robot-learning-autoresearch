@@ -7,6 +7,8 @@ no campaign files are read or written.
 import asyncio
 from datetime import UTC, datetime, timedelta
 
+import pytest
+
 from tui.observations import Observation
 from tui.report import CampaignReport, DemoSources
 
@@ -553,8 +555,246 @@ async def _campaign_switch():
         assert app._campaign_id == "new-campaign-id"
 
 
+def test_event_log_uses_a_fixed_time_column():
+    from tui.event_log import EventLog
+    from tui.timeline import TimelineItem
+
+    log = EventLog({})
+    stamp = datetime(2026, 10, 26, 14, 32, 5, tzinfo=UTC)
+    local = stamp.astimezone()
+    leaf = TimelineItem(
+        item_id="leaf",
+        kind="tool",
+        title="read_file",
+        ts=stamp,
+    )
+    untimed = TimelineItem(item_id="untimed", kind="tool", title="read_file")
+    assert log._label(leaf).plain == "[>] read_file"
+    assert log._label(untimed).plain == "[>] read_file"
+    assert log._column(leaf, False)[1].text == f"{local:%H:%M:%S}"
+    assert log._column(untimed, False)[1].text == "        "
+
+
+def test_selected_row_uses_a_gutter_marker():
+    _run(_gutter_marker())
+
+
+async def _gutter_marker():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        node = out._node_by_id["session:S7"]
+        out.move_cursor(node, animate=False)
+        await pilot.pause()
+        strip = out.render_line(out.cursor_line - int(out.scroll_offset.y))
+        assert strip.text.startswith("▌ ")
+
+
+def test_mouse_hover_marks_the_block_in_the_left_gutter():
+    _run(_hover_block())
+
+
+async def _hover_block():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        session = out._node_by_id["session:S7"]
+        session_y = next(
+            y for y, line in enumerate(out._tree_lines) if line.node is session
+        )
+        cursor = out.cursor_node
+        await pilot.hover(out, offset=(50, session_y))
+        await pilot.pause()
+        painted = out.render_lines(out.size.region)
+        for y, line in enumerate(out._tree_lines):
+            strip = painted[y]
+            assert strip.text.startswith("▌ ") == (session in line.path)
+            assert not any(
+                segment.style and segment.style.underline for segment in strip
+            )
+        assert out.cursor_node is cursor
+
+        # The fixed clock/gutter must be hoverable too, not just the tree label.
+        await pilot.hover(out, offset=(0, session_y))
+        await pilot.pause()
+        assert out.render_line(session_y).text.startswith("▌ ")
+
+        # Moving to a nested block removes the parent's marker immediately.
+        child_y = session_y + 1
+        child = out._tree_lines[child_y].node
+        await pilot.hover(out, offset=(30, child_y))
+        await pilot.pause()
+        painted = out.render_lines(out.size.region)
+        for y, line in enumerate(out._tree_lines):
+            assert painted[y].text.startswith("▌ ") == (child in line.path)
+
+        await pilot.hover("#context")
+        await pilot.pause()
+        assert not out.render_line(session_y).text.startswith("▌ ")
+
+
+def test_output_has_a_fixed_clock_column():
+    _run(_clock_column())
+
+
+async def _clock_column():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        for y, line in enumerate(out._tree_lines):
+            if line.node.data is None:
+                continue
+            strip = out.render_line(y - int(out.scroll_offset.y))
+            assert strip.text[11] == "│"
+            stamp = line.node.data.ts
+            expected = stamp.astimezone().strftime("%H:%M:%S") if stamp else " " * 8
+            assert strip.text[2:10] == expected
+
+
+@pytest.mark.parametrize("theme", ["textual-dark", "textual-light"])
+def test_output_text_selection_copies_instead_of_quitting(theme):
+    _run(_copy_output_selection(theme))
+
+
+async def _copy_output_selection(theme):
+    app = _demo_app()
+    app.theme = theme
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        assert out.ALLOW_SELECT is True
+        selection_style = app.screen.get_component_rich_style("screen--selection")
+        assert selection_style.bgcolor is not None
+        assert selection_style.color is not None
+        assert selection_style.color != selection_style.bgcolor
+        original_style = app.screen.get_style_at(
+            out.content_region.x + 25, out.content_region.y + 3
+        )
+        await pilot.mouse_down(out, offset=(20, 3))
+        await pilot.hover(out, offset=(45, 5))
+        await pilot.pause()
+        # Check what is painted, not just the internal selection/clipboard state.
+        for x, y in ((25, 3), (25, 4), (25, 5)):
+            style = app.screen.get_style_at(
+                out.content_region.x + x, out.content_region.y + y
+            )
+            assert style.bgcolor == selection_style.bgcolor
+            assert style.color == selection_style.color
+            assert style.color != style.bgcolor
+            assert not style.conceal
+        outside = app.screen.get_style_at(
+            out.content_region.x + 18, out.content_region.y + 3
+        )
+        assert outside.bgcolor != selection_style.bgcolor
+        await pilot.mouse_up(out, offset=(45, 5))
+        await pilot.pause()
+        # The visible selection must remain after releasing the mouse button.
+        assert (
+            app.screen.get_style_at(
+                out.content_region.x + 25, out.content_region.y + 4
+            ).bgcolor
+            == selection_style.bgcolor
+        )
+        selection = out.text_selection
+        assert selection is not None
+        assert selection.start is not None
+        assert selection.end is not None
+        selected = app.screen.get_selected_text()
+        assert selected
+        assert len(selected.splitlines()) == 3
+        assert selected == "\n".join(
+            (
+                out.render_line(3).text.rstrip()[20:],
+                out.render_line(4).text.rstrip(),
+                out.render_line(5).text.rstrip()[:46],
+            )
+        )
+        await pilot.press("ctrl+c")
+        await pilot.pause()
+        assert app.clipboard == selected
+        assert app.is_running
+        await pilot.click(out, offset=(18, 3))
+        await pilot.pause()
+        assert out.text_selection is None
+        cleared_style = app.screen.get_style_at(
+            out.content_region.x + 25, out.content_region.y + 3
+        )
+        assert cleared_style.bgcolor == original_style.bgcolor
+
+        # A backwards, single-line drag must select only the requested text.
+        await pilot.mouse_down(out, offset=(45, 3))
+        await pilot.hover(out, offset=(20, 3))
+        await pilot.mouse_up(out, offset=(20, 3))
+        await pilot.pause()
+        assert app.screen.get_selected_text() == out.render_line(3).text[20:46]
+        assert (
+            app.screen.get_style_at(
+                out.content_region.x + 25, out.content_region.y + 3
+            ).bgcolor
+            == selection_style.bgcolor
+        )
+        assert (
+            app.screen.get_style_at(
+                out.content_region.x + 48, out.content_region.y + 3
+            ).bgcolor
+            != selection_style.bgcolor
+        )
+
+
 def test_event_log_collapses_and_expands_active_chain():
     _run(_collapse_expand())
+
+
+def test_terminal_drag_release_does_not_collapse_the_selected_block():
+    _run(_terminal_drag_release())
+
+
+async def _terminal_drag_release():
+    from textual import events
+
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        session = out._node_by_id["session:S7"]
+        row = next(y for y, line in enumerate(out._tree_lines) if line.node is session)
+        # Send terminal input through App, including its synthetic Click on
+        # mouse release. Pilot.mouse_up bypasses that part of input processing.
+        for event_type, x in (
+            (events.MouseDown, 60),
+            (events.MouseMove, 20),
+            (events.MouseUp, 20),
+        ):
+            app.post_message(
+                event_type(
+                    widget=None,
+                    x=out.content_region.x + x,
+                    y=out.content_region.y + row,
+                    delta_x=0,
+                    delta_y=0,
+                    button=1,
+                    shift=False,
+                    meta=False,
+                    ctrl=False,
+                )
+            )
+            await pilot.pause()
+        assert session.is_expanded
+        assert app.screen.get_selected_text()
+        selection_style = app.screen.get_component_rich_style("screen--selection")
+        assert (
+            app.screen.get_style_at(
+                out.content_region.x + 25, out.content_region.y + row
+            ).bgcolor
+            == selection_style.bgcolor
+        )
+        await pilot.click(out, offset=(13, row))
+        await pilot.pause()
+        assert out.text_selection is None
+        assert not session.is_expanded
 
 
 async def _collapse_expand():

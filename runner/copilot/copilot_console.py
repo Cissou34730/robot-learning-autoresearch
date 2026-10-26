@@ -499,8 +499,9 @@ def tool_detail(name: str, arguments: object) -> str:
 class Console:
     """Everything the human sees, and nothing the protocol reads back."""
 
-    def __init__(self, columns: int | None = None) -> None:
+    def __init__(self, columns: int | None = None, *, session_id: str = "") -> None:
         self.usage = SessionUsage()
+        self.session_id = str(session_id or "")
         self._mid_stream = False
         self._at_line_start = True
         self._message_width = max((columns or _console_width()) - 4, 20)
@@ -521,19 +522,41 @@ class Console:
         self.last_input_tokens = 0
         self._context_band = 0
 
-    def line(self, text: str, color: str | None = None) -> None:
+    def _emit(
+        self,
+        kind: str,
+        payload: dict,
+        *,
+        scope: str = "",
+        severity: str = "info",
+        event_id: str | None = None,
+    ) -> None:
+        """One domain fact owned by this PI session."""
+        if kind != "pi_message":
+            self._close_message()
+        typed_events.emit(
+            kind,
+            payload,
+            scope=scope,
+            severity=severity,
+            session_id=self.session_id,
+            event_id=event_id,
+        )
+
+    def line(self, text: str, color: str | None = None, *, typed: bool = True) -> None:
         self._close_message()
         scope = _observation_scope(text, color)
-        typed_events.emit(
-            "tool_call" if scope == "tool" else "console_line",
-            {"text": text.strip(), "color": color, "scope": scope},
-            scope=scope,
-            severity="error"
-            if scope == "error"
-            else "warning"
-            if scope == "warning"
-            else "info",
-        )
+        if typed:
+            self._emit(
+                "console_line",
+                {"text": text.strip(), "color": color, "scope": scope},
+                scope=scope,
+                severity="error"
+                if scope == "error"
+                else "warning"
+                if scope == "warning"
+                else "info",
+            )
         observation_feed.emit(
             {
                 "kind": "console_line",
@@ -549,7 +572,7 @@ class Console:
             return
         message = self._message_text
         if message.strip():
-            typed_events.emit(
+            self._emit(
                 "pi_message",
                 {
                     "text": message,
@@ -674,7 +697,7 @@ class Console:
         addition = snapshot[self._message_emitted :]
         self._message_emitted = len(snapshot)
         self._message_emitted_at = now
-        typed_events.emit(
+        self._emit(
             "pi_message",
             {
                 "text": addition,
@@ -709,10 +732,25 @@ class Console:
         if tool_call_id:
             self.active_tools[tool_call_id] = (name, arguments)
         detail = tool_detail(name, arguments)
-        self.line(f"  > {name}: {detail}" if detail else f"  > {name}")
+        self._emit(
+            "tool_call_started",
+            {
+                "name": name,
+                "arguments": arguments,
+                "tool_call_id": tool_call_id,
+                "detail": detail,
+                "status": "started",
+            },
+            scope="tool",
+        )
+        self.line(f"  > {name}: {detail}" if detail else f"  > {name}", typed=False)
 
     def tool_failed(
-        self, error: object, name: str = "tool", arguments: object = None
+        self,
+        error: object,
+        name: str = "tool",
+        arguments: object = None,
+        tool_call_id: str | None = None,
     ) -> None:
         target = ""
         if isinstance(arguments, dict):
@@ -738,18 +776,73 @@ class Console:
                         break
             target = " ".join(target.split())
         reason = " ".join(compact_console_text(error).split())
+        self._emit(
+            "tool_call_failed",
+            {
+                "name": name,
+                "arguments": arguments,
+                "tool_call_id": tool_call_id,
+                "target": target,
+                "error": reason,
+                "status": "failed",
+            },
+            scope="tool",
+            severity="error",
+        )
         operation = f"{name} ({target})" if target else name
-        self.line(f"  x {operation} failed: {reason}")
+        self.line(f"  x {operation} failed: {reason}", typed=False)
 
-    def tool_issue(self, name: str, issue: str) -> None:
-        self.line(f"  x {name}: {issue}")
+    def tool_completed(
+        self, name: str = "tool", tool_call_id: str | None = None
+    ) -> None:
+        """Close a successful call whose result the console does not print."""
+        self._emit(
+            "tool_call_completed",
+            {
+                "name": name,
+                "tool_call_id": tool_call_id,
+                "status": "completed",
+            },
+            scope="tool",
+        )
 
-    def tool_result(self, name: str, content: object) -> None:
+    def tool_issue(
+        self, name: str, issue: str, tool_call_id: str | None = None
+    ) -> None:
+        self._emit(
+            "tool_call_failed",
+            {
+                "name": name,
+                "tool_call_id": tool_call_id,
+                "error": issue,
+                "status": "failed",
+            },
+            scope="tool",
+            severity="warning",
+        )
+        self.line(f"  x {name}: {issue}", typed=False)
+
+    def tool_result(
+        self, name: str, content: object, tool_call_id: str | None = None
+    ) -> None:
         """One line per number the PI will reason from; the full result stays in its context."""
         try:
             result = json.loads(content) if isinstance(content, str) else None
         except ValueError:
-            return
+            result = None
+        payload = {
+            "name": name,
+            "tool_call_id": tool_call_id,
+            "status": "completed",
+        }
+        if isinstance(result, dict):
+            payload["result"] = result
+        elif isinstance(content, str):
+            if len(content) <= 4000:
+                payload["content"] = content
+            else:
+                payload["content_length"] = len(content)
+        self._emit("tool_call_completed", payload, scope="tool")
         if not isinstance(result, dict) or result.get("status") != "computed":
             return
         if name == "success_rate_pass_probability":
@@ -764,19 +857,22 @@ class Console:
                     f"{bounds.get('upper', 0.0):.1%}; "
                     f"{item.get('interval_vs_target_rate')} target rate)",
                     color,
+                    typed=False,
                 )
         elif name == "episode_outcome_breakdown":
             for item in result.get("measurements", []):
                 self.line(
                     f"  = {item.get('operation_id')} {item.get('candidate')}: "
-                    f"{item.get('successes')}/{item.get('trials')}"
+                    f"{item.get('successes')}/{item.get('trials')}",
+                    typed=False,
                 )
             paired = result.get("paired")
             if paired:
                 self.line(
                     f"  = paired: first only {paired.get('first_only_success')} | "
                     f"second only {paired.get('second_only_success')} | "
-                    f"sign test p {paired.get('sign_test_p_value', 1.0):.3g}"
+                    f"sign test p {paired.get('sign_test_p_value', 1.0):.3g}",
+                    typed=False,
                 )
         elif name == "training_series_statistics":
             window = result.get("window") or {}
@@ -784,7 +880,8 @@ class Console:
                 f"  = {result.get('metric')}: {window.get('rows')} rows | "
                 f"min {window.get('min', {}).get('value')} | "
                 f"max {window.get('max', {}).get('value')} | "
-                f"last {window.get('last', {}).get('value')}"
+                f"last {window.get('last', {}).get('value')}",
+                typed=False,
             )
             for check in result.get("checks", []):
                 verdict = "holds" if check.get("holds") else "fails"
@@ -792,6 +889,7 @@ class Console:
                     f"  = check {check.get('statistic')} {check.get('comparison')} "
                     f"{check.get('threshold')}: {verdict} (value {check.get('value')})",
                     GREEN if check.get("holds") else RED,
+                    typed=False,
                 )
 
     def model_call(self, input_tokens: int | None) -> None:
@@ -800,6 +898,14 @@ class Console:
         band = (input_tokens or 0) // CONTEXT_BAND_TOKENS
         if band > self._context_band:
             self._context_band = band
+            self._emit(
+                "pi_context",
+                {
+                    "input_tokens": input_tokens,
+                    "model_calls": self.model_calls,
+                },
+                scope="pi",
+            )
             color = (
                 RED
                 if self.last_input_tokens >= 150_000
@@ -811,26 +917,89 @@ class Console:
                 f"  ~ context {input_tokens / 1000:.0f}k tokens "
                 f"at model call {self.model_calls}",
                 color,
+                typed=False,
             )
 
     def denied(self, reason: str, tool_call_id: str | None = None) -> None:
         if tool_call_id:
             self.denied_calls.add(tool_call_id)
-        self.line(f"  x {reason.splitlines()[0]}")
+        name, arguments = ("tool", None)
+        if tool_call_id:
+            name, arguments = self.active_tools.get(tool_call_id, ("tool", None))
+        self._emit(
+            "tool_denied",
+            {
+                "name": name,
+                "arguments": arguments,
+                "tool_call_id": tool_call_id,
+                "reason": reason,
+                "status": "denied",
+            },
+            scope="tool",
+            severity="warning",
+        )
+        self.line(f"  x {reason.splitlines()[0]}", typed=False)
 
-    def warning(self, text: str) -> None:
-        self.line(f"  ! {text}", YELLOW)
+    def coding(
+        self,
+        phase: str,
+        text: str,
+        *,
+        agent: str = "",
+        status: str = "",
+        detail: dict | None = None,
+        severity: str = "info",
+    ) -> None:
+        """Report one coding handoff fact without making the TUI parse its line."""
+        self._emit(
+            "coding",
+            {
+                "phase": phase,
+                "agent": agent,
+                "status": status,
+                "detail": detail or {},
+            },
+            scope="tool",
+            severity=severity,
+        )
+        self.line(text, typed=False)
+
+    def operation_submitted(self, status: str, error: str | None = None) -> None:
+        self._emit(
+            "operation_submitted",
+            {"status": status, "error": error or ""},
+            scope="operation",
+            severity="error"
+            if status in {"rejected", "implementation_error", "validation_fatal"}
+            else "info",
+        )
+        self.line(f"  > submit_operation: {status}", typed=False)
+
+    def warning(self, text: str, *, code: str = "", color: str | None = None) -> None:
+        self._emit(
+            "warning",
+            {"code": code, "message": text},
+            scope="warning",
+            severity="warning",
+        )
+        self.line(f"  ! {text}", color, typed=False)
 
     def compaction(self, data) -> None:
         if not data.success:
-            self.warning(f"context compaction failed: {data.error or 'unknown error'}")
+            self.warning(
+                f"context compaction failed: {data.error or 'unknown error'}",
+                code="compaction_failed",
+                color=YELLOW,
+            )
             return
         before = data.pre_compaction_tokens or 0
         after = data.post_compaction_tokens or 0
         self._context_band = after // CONTEXT_BAND_TOKENS
         self.warning(
             f"context compacted: {before / 1000:.0f}k -> {after / 1000:.0f}k tokens, "
-            f"{data.messages_removed or 0} messages replaced by a summary"
+            f"{data.messages_removed or 0} messages replaced by a summary",
+            code="compaction",
+            color=YELLOW,
         )
 
     def file_changed(self, operation: str, path: str) -> None:
@@ -841,30 +1010,55 @@ class Console:
         marker = {"created": "+", "deleted": "-"}.get(str(operation), "~")
         if self.changed_files.get(path) != marker:
             self.changed_files[path] = marker
+            self._emit(
+                "file_changed",
+                {
+                    "operation": operation,
+                    "path": path,
+                    "display_path": compact_console_path(path),
+                    "operation_request": operation_request,
+                },
+                scope="tool",
+            )
             suffix = " | PI operation request updated" if operation_request else ""
-            self.line(f"  {marker} {path}{suffix}")
+            self.line(f"  {marker} {path}{suffix}", typed=False)
 
     def error(self, message: str) -> None:
         self.session_error = message
-        self.line(f"  ! session error: {message}")
+        self._emit(
+            "error",
+            {"code": "session_error", "message": message},
+            scope="error",
+            severity="error",
+        )
+        self.line(f"  ! session error: {message}", typed=False)
 
     def summary(self, changed: list[str]) -> None:
         """Expose unannounced changes; lifecycle summaries come from the Runner."""
         for path in changed:
             path = full_console_path(path)
             if path not in self.changed_files:
-                self.line(f"  ~ {path}")
+                self._emit(
+                    "file_changed",
+                    {
+                        "operation": "changed",
+                        "path": path,
+                        "display_path": compact_console_path(path),
+                    },
+                    scope="tool",
+                )
+                self.line(f"  ~ {path}", typed=False)
 
 
 class CodingConsole(Console):
     """Collect child accounting; forward only file names of child patches to the parent."""
 
     def __init__(self, parent: Console | None = None, agent: str = "") -> None:
-        super().__init__()
+        super().__init__(session_id=parent.session_id if parent is not None else "")
         self.parent = parent
         self.agent = agent
 
-    def line(self, text: str, color: str | None = None) -> None:
+    def line(self, text: str, color: str | None = None, *, typed: bool = True) -> None:
         pass
 
     def tool(
@@ -874,7 +1068,13 @@ class CodingConsole(Console):
         if self.parent is not None and name == "apply_patch":
             files = _patch_detail(arguments)
             if files:
-                self.parent.line(f"  + {self.agent} patch: {files}")
+                self.parent.coding(
+                    "patch",
+                    f"  + {self.agent} patch: {files}",
+                    agent=self.agent,
+                    status="changed",
+                    detail={"files": files},
+                )
 
     def model_call(self, input_tokens: int | None) -> None:
         self.model_calls += 1

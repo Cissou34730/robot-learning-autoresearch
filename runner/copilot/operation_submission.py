@@ -167,7 +167,7 @@ class OperationSubmission:
             }
             encoded = json.dumps(result, ensure_ascii=False, separators=(",", ":"))
             self.responses[call_id] = encoded
-            self.console.line(f"  > submit_operation: {self.status}")
+            self.console.operation_submitted(self.status, self.error)
             return encoded
         except asyncio.CancelledError:
             self.closed = True

@@ -292,6 +292,9 @@ class CampaignReport(App):
         color: $text;
         padding: 0 1;
     }
+    Screen > .screen--selection {
+        color: $foreground;
+    }
     #context {
         width: 100%;
         height: auto;
@@ -325,9 +328,6 @@ class CampaignReport(App):
     }
     #models:focus {
         background-tint: transparent;
-    }
-    #models:focus > .datatable--header {
-        text-style: bold underline;
     }
     #progress {
         display: none;
@@ -370,11 +370,15 @@ class CampaignReport(App):
     EventLog > .tree--guides-selected {
         color: $text-muted;
     }
-    EventLog > .tree--cursor,
+    EventLog > .tree--highlight,
     EventLog > .tree--highlight-line {
-        background: $surface;
+        background: transparent;
+        text-style: none;
+    }
+    EventLog > .tree--cursor {
+        background: transparent;
         color: $text;
-        text-style: bold underline;
+        text-style: none;
     }
     #reading {
         height: 1;
@@ -712,8 +716,8 @@ class CampaignReport(App):
     ) -> list[Text]:
         from tui.projector import campaign_age, stage_elapsed
 
-        age = campaign_age(snapshot.started_at, _now())
-        elapsed = stage_elapsed(snapshot.stage_started_at, _now())
+        age = campaign_age(snapshot.started_at, _now(), snapshot.ended_at)
+        elapsed = stage_elapsed(snapshot.stage_started_at, _now(), snapshot.ended_at)
 
         palette = self._palette
         gap = 3
@@ -1022,6 +1026,8 @@ class CampaignReport(App):
             training.success, bool
         ):
             parts.append(f"Success {round(training.success * 100)}%")
+        elif isinstance(training.success, str) and training.success:
+            parts.append(training.success[:1].upper() + training.success[1:])
         title = self._progress_title(
             f"Training {training.operation_id}",
             f"bold {palette.accent}",
@@ -1384,7 +1390,8 @@ class CampaignReport(App):
             "target": event.fields.get("target"),
             "elapsed_seconds": event.fields.get("elapsed_seconds"),
             "reward": event.fields.get("ep_rew_mean"),
-            "success": event.fields.get("training_success"),
+            "success": event.fields.get("scenario_metric")
+            or event.fields.get("training_success"),
             "last_ts": event.ts or _now(),
         }
         self._render_progress()

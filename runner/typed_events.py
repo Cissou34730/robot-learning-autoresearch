@@ -11,6 +11,9 @@ from __future__ import annotations
 import json
 import os
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar, Token
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -22,6 +25,9 @@ _DISABLED_VALUES = frozenset({"", "0", "off", "none", "false"})
 _path: Path | None = None
 _resolved = False
 _campaign_id: str | None = None
+_context: ContextVar[dict[str, str] | None] = ContextVar(
+    "typed_event_context", default=None
+)
 failures = 0
 
 
@@ -78,12 +84,64 @@ def reset() -> None:
     _path = None
     _resolved = False
     _campaign_id = None
+    _context.set(None)
 
 
 def set_campaign(campaign_id: object) -> None:
     global _campaign_id
     text = str(campaign_id or "").strip()
     _campaign_id = text or None
+
+
+@contextmanager
+def context(
+    *,
+    operation_id: object = "",
+    session_id: object = "",
+    inquiry_id: object = "",
+) -> Iterator[None]:
+    """Attach the current operation to every event emitted in this scope.
+
+    Handlers call this around one operation so console fallbacks and domain
+    events share the same identity without threading it through presentation
+    functions. Non-empty values override the enclosing scope; empty values
+    inherit it, so an operation inside a session keeps both identities.
+    """
+    token = bind(
+        operation_id=operation_id, session_id=session_id, inquiry_id=inquiry_id
+    )
+    try:
+        yield
+    finally:
+        reset_context(token)
+
+
+def bind(
+    *,
+    operation_id: object = "",
+    session_id: object = "",
+    inquiry_id: object = "",
+) -> Token:
+    """Return a token for a caller that cannot wrap the scope in ``with``."""
+    current = dict(_context.get() or {})
+    for key, value in (
+        ("operation_id", operation_id),
+        ("session_id", session_id),
+        ("inquiry_id", inquiry_id),
+    ):
+        text = str(value or "").strip()
+        if text:
+            current[key] = text
+        current.setdefault(key, "")
+    return _context.set(current)
+
+
+def reset_context(token: Token) -> None:
+    _context.reset(token)
+
+
+def current_context() -> dict[str, str]:
+    return dict(_context.get() or {})
 
 
 def emit(
@@ -104,6 +162,7 @@ def emit(
             configure()
         if _path is None:
             return
+        current = _context.get() or {}
         record = {
             "schema_version": SCHEMA_VERSION,
             "event_id": event_id or str(uuid.uuid4()),
@@ -112,9 +171,9 @@ def emit(
             "kind": kind,
             "scope": scope,
             "severity": severity,
-            "operation_id": operation_id,
-            "session_id": session_id,
-            "inquiry_id": inquiry_id,
+            "operation_id": operation_id or current.get("operation_id", ""),
+            "session_id": session_id or current.get("session_id", ""),
+            "inquiry_id": inquiry_id or current.get("inquiry_id", ""),
             "payload": payload or {},
         }
         line = json.dumps(record, ensure_ascii=False, default=str)

@@ -47,10 +47,12 @@ capability are respected; `--light` selects the light theme.
 Reading keys: Up/Down or `j`/`k` move, `Enter`/`Space` expand or collapse,
 `Left`/`Right` collapse or expand, `/` searches, `f` filters by kind, `r`
 opens the raw event payload, `End` returns to live follow, mouse wheel scrolls,
-Tab/Shift+Tab move between the event log and the model table; Ctrl+Q or Ctrl+C
-closes the report (presentation only, never the campaign).
+Tab/Shift+Tab move between the event log and the model table; Ctrl+C copies
+selected output text, and Ctrl+Q or Ctrl+C without a selection closes the
+report (presentation only, never the campaign).
 
-The durable snapshot and the elapsed clock refresh every 15 seconds. The
+The durable snapshot and the elapsed clock refresh every 15 seconds. Campaign
+age and stage elapsed freeze at the campaign's recorded stop time. The
 observation feed is drained every second so PI messages and console lines stay
 live; training progress events arrive every 15 seconds, matching the console
 heartbeat.
@@ -83,17 +85,34 @@ deferred and is not shown.
 The output region is a virtualized `Tree` of collapsible timeline items:
 
 - campaign → session → inquiry → operation → leaf event;
+- backend PI sessions, scientific sessions, inquiries and operations are
+  distinct groups, so a coding child never hides the operation that requested
+  it;
 - the active chain is expanded by default, older groups are collapsed;
 - warnings and errors are expanded by default;
-- every leaf shows `HH:MM:SS`; group headers show start–end and duration;
+- every row has a fixed `HH:MM:SS` clock column at the left edge, independent of
+  tree depth, separated by `│`; an event with no timestamp leaves the clock
+  column blank rather than showing a placeholder, group headers add duration,
+  and `r` shows the full recorded timestamp;
 - training progress rows show the interval since the previous row, steps
   delta and steps per second when derivable;
+- a tool call is one row: start detail, then completion status, duration,
+  result summary or error, paired by `tool_call_id`;
+- coding handoffs show phase, agent, status and their structured detail;
+- file changes show the repository-relative path, operation marker (`+`, `~`,
+  `-`) and whether the PI operation request changed;
+- measurement panel rows show episodes, seed and instrument on start, and
+  episodes, duration and success on completion;
 - the sticky `Now` line names the active or pending operation and its summary.
 
 `Enter`/`Space` toggles the selected row, `Left`/`Right` collapse or expand,
 `/` searches the full event text (including collapsed detail), `f` filters by
 kind/category while keeping ancestors, and `r` opens the selected event's full
-payload in a modal. `Esc` clears search or filter.
+payload in a modal. `Esc` clears search or filter. Hovering a block marks its
+visible rows with an accent `▌` in the left gutter. When the mouse leaves the
+log, the marker returns to the keyboard cursor. There is no underline or pane
+outline. Dragging across output text paints a text-selection background that
+remains after release; `Ctrl+C` copies that selection.
 
 The log renders typed events when `reports/tui_observations/<campaign-id>.events.jsonl`
 exists. Otherwise it renders the legacy `console_line` feed and the durable
@@ -141,14 +160,14 @@ Events follow this shape (one JSON object per line):
 ```json
 {"campaign_id": "...", "ts": "2026-10-24T12:41:04+00:00", "kind": "training_progress",
  "operation_id": "T4", "steps": 72000, "target": 120000, "elapsed_seconds": 728,
- "ep_rew_mean": 86.3, "training_success": 0.97}
+ "ep_rew_mean": 86.3, "scenario_metric": "success 97%"}
 ```
 
 Kinds: `pi_message {text, final, turn}` (whole-word snapshots while the PI
 writes, `final: true` at turn end; the report appends only the new text, so a
 growing message never duplicates), `console_line {scope, text}`,
 `training_progress` (`operation_id, steps, target, elapsed_seconds,
-ep_rew_mean, training_success`), `eval_progress` (`operation_id, instrument,
+ep_rew_mean, scenario_metric`), `eval_progress` (`operation_id, instrument,
 official, episodes, episodes_total, elapsed_seconds`), `execution_end
 {operation_id, status, text}`, `liveness {}`. The consumer still tolerates the
 optional `session_start`, `activity` and `tool` kinds for future emitters.
@@ -169,25 +188,68 @@ rejected; replayed events are deduplicated.
  "scope": "training", "severity": "info", "operation_id": "T4",
  "session_id": "S7", "inquiry_id": "I3",
  "payload": {"steps": 72000, "target": 120000, "ep_rew_mean": 86.3,
-             "training_success": 0.97}}
+             "scenario_metric": "success 97%"}}
 ```
 
 The writer is best-effort and never raises into the Runner. `TUI_TYPED_EVENTS`
-moves the file or disables it with `off`. Current emitters:
+moves the file or disables it with `off`. A domain handler owns the typed fact
+and the console funnel prints it with `typed=False`; the console-shaped
+`console_line`/`console_card` record remains a fallback only for call sites
+with no structured owner.
 
-- the launcher (`researcher_session.ps1`) writes the same status lines to both
-  the legacy and typed feeds;
-- `runner/console.py` `announce()` and `card()`: full text and card body before
-  console compaction;
-- `runner/copilot/copilot_console.py`: PI messages and tool/console lines;
-- `runner/execution.py`: `training_progress` and `eval_progress` with full
-  structured payloads;
-- `runner/run_experiment.py`: operation requested/started/completed/failed,
-  interrupted operations, and official-assessment progress/completion.
+Domain emitters:
+
+- launcher (`researcher_session.ps1`, `run_research.ps1`): `session_start` and
+  status lines, written to both feeds;
+- `runner/run_experiment.py`: `session_started`, `session_ended`,
+  `campaign_goal_review`, `inquiry_opened`, `inquiry_reframed`,
+  `inquiry_closed`, `checkpoint_saved`, `campaign_concluded`,
+  `operation_requested`, `operation_started`, `operation_completed`,
+  `operation_failed`, `role_assigned`, `candidate_created`,
+  `scientific_model_validated`, and campaign/session usage totals;
+- `runner/execution.py`: `training_checkpoints` (one record per saved
+  candidate), `measurement_panel_started`, `measurement_panel_completed`,
+  training/evaluation progress, `liveness` and structured warnings for stalls,
+  timeouts and stops;
+- `runner/repository.py`: `publication_retry` and `publication_recovered`;
+- `runner/copilot/copilot_console.py` and `session_events.py`:
+  `pi_message`, `pi_context`, `tool_call_started`, `tool_call_completed`,
+  `tool_call_failed`, `tool_denied`, `file_changed`, `coding`,
+  `operation_submitted`, `warning` and `error`;
+- `runner/copilot/usage.py`: `usage_update` per durable accounting row;
+- `runner/copilot/copilot_adapter.py`: `session_usage` at session end.
+
+`typed_events.context()` binds `operation_id`, `session_id` and `inquiry_id`
+for one execution scope, so progress and publication events inherit identity
+without threading it through presentation functions. Lifecycle event IDs are
+deterministic (`domain:<kind>:<id>:<state>`), so a resumed operation or a
+replayed feed does not duplicate a fact the reducer has already seen.
+
+Training progress carries the scenario-owned metric as the rendered
+`scenario_metric` fragment; the Runner and the live progress path never read
+the scenario's success field directly.
 
 The TUI prefers the typed file and falls back to the legacy feed. Durable
 history is folded into the same reducer, so a late attach still rebuilds the
 campaign timeline.
+
+### Parity with the console
+
+The console stays canonical during this pass. Every pushed console funnel
+accepts `typed=False`; the flag suppresses only the typed record and never
+changes stdout, the legacy observation feed, campaign state or timing. The
+tests assert that:
+
+- `announce()`, `card()` and `boundary()` print identical text with the typed
+  emitter on and off;
+- domain-owned lifecycle cards write their typed fact and no duplicate
+  `console_card`;
+- tool, coding, file and usage domain events carry the same numbers the console
+  prints, before compaction;
+- the reducer renders those facts as one paired row with duration and status.
+
+Removing the console funnels and the remaining `console_line` fallback is the
+separate cutover, not part of this pass.
 
 ## Validation
 
@@ -196,14 +258,16 @@ uv run pytest tests/autoresearch/test_observation_feed.py tests/autoresearch/tes
 ```
 
 The tests cover the legacy and typed feed writers, console stdout identity
-with the typed emitter on/off, the projector contracts, the timeline reducer
-and the headless rendering behavior:
+with the typed emitter on/off and with domain-owned `typed=False` funnels,
+context merging, the projector contracts, the timeline reducer and the
+headless rendering behavior:
 single-screen composition, stage IDs, goal gap, counters, pending chip,
 last-training proxy, live training reward/success, streamed/final PI
 deduplication, timeline grouping, default collapse, search/filter, timestamps
-and training intervals, the progress lifecycle (training and evaluation,
-official assessment label, module measurement with unavailable counters,
-end-of-execution removal), reading position while new output arrives, the
-80x24 compact floor, the too-small fallback and stale counter labeling. Real
-campaign state is exercised read-only by starting the report against the
-campaign root; no integration check starts execution.
+and training intervals, paired tool calls with duration, coding/file/usage
+rows, measurement-panel and training-checkpoint numbers, the progress lifecycle
+(training and evaluation, official assessment label, module measurement with
+unavailable counters, end-of-execution removal), reading position while new
+output arrives, the 80x24 compact floor, the too-small fallback and stale
+counter labeling. Real campaign state is exercised read-only by starting the
+report against the campaign root; no integration check starts execution.

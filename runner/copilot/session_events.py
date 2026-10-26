@@ -63,14 +63,21 @@ def event_handler(
                 and data.tool_call_id not in console.denied_calls
             ):
                 name, arguments = tool or ("tool", None)
-                console.tool_failed(data.error, name, arguments)
+                console.tool_failed(
+                    data.error, name, arguments, tool_call_id=data.tool_call_id
+                )
             elif data.success and tool is not None and tool[0] in RESULT_ISSUE_TOOLS:
                 content = getattr(data.result, "content", None)
                 issue = result_issue(content)
                 if issue:
-                    console.tool_issue(tool[0], issue)
+                    console.tool_issue(tool[0], issue, tool_call_id=data.tool_call_id)
                 else:
-                    console.tool_result(tool[0], content)
+                    console.tool_result(
+                        tool[0], content, tool_call_id=data.tool_call_id
+                    )
+            elif data.success:
+                name = tool[0] if tool is not None else "tool"
+                console.tool_completed(name, data.tool_call_id)
         elif isinstance(data, SessionWorkspaceFileChangedData):
             console.file_changed(data.operation, data.path)
         elif isinstance(data, AssistantUsageData):
@@ -223,15 +230,17 @@ class ModelCallRetry:
         ):
             return None
         if self.retries >= MODEL_CALL_RETRY_LIMIT:
-            self.console.line(
-                "  ! Copilot model request failed after five retries; stopping"
+            self.console.warning(
+                "Copilot model request failed after five retries; stopping",
+                code="model_retry_exhausted",
             )
             return {"errorHandling": "abort"}
         self.retries += 1
-        self.console.line(
-            f"  ! Copilot model request failed; retry "
+        self.console.warning(
+            f"Copilot model request failed; retry "
             f"{self.retries}/{MODEL_CALL_RETRY_LIMIT} "
-            f"in {MODEL_CALL_RETRY_DELAY_SECONDS:g}s"
+            f"in {MODEL_CALL_RETRY_DELAY_SECONDS:g}s",
+            code="model_retry",
         )
         await asyncio.sleep(MODEL_CALL_RETRY_DELAY_SECONDS)
         if self.closed():

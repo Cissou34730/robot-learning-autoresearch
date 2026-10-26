@@ -211,3 +211,230 @@ def test_campaign_feed_prefers_typed_file(tmp_path):
     assert len(events) == 1
     assert events[0].kind == "run_state"
     assert feed.path == typed
+
+
+def _event(kind, ts, fields=None, **identity):
+    return Observation(kind=kind, ts=ts, fields=fields or {}, **identity)
+
+
+def test_liveness_keeps_the_timeline_quiet():
+    reducer = _demo_reducer()
+    before = len(list(_walk(reducer.view()[0])))
+    reducer.ingest(_event("liveness", datetime(2026, 10, 24, 12, 0, tzinfo=UTC)))
+    assert len(list(_walk(reducer.view()[0]))) == before
+
+
+def test_tool_lifecycle_pairs_by_call_id_and_reports_duration():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    reducer.ingest(
+        _event(
+            "tool_call_started",
+            start,
+            {
+                "name": "artifact_evidence_query",
+                "tool_call_id": "call-1",
+                "detail": "M6 artifact 0",
+            },
+        )
+    )
+    reducer.ingest(
+        _event(
+            "tool_call_completed",
+            start + timedelta(seconds=3),
+            {
+                "name": "artifact_evidence_query",
+                "tool_call_id": "call-1",
+                "status": "completed",
+                "result": {"status": "computed", "value": 3},
+            },
+        )
+    )
+    roots, _ = reducer.view()
+    tools = [item for item in _walk(roots) if item.kind == "tool"]
+    assert len(tools) == 1
+    assert tools[0].status == "completed"
+    assert "3s" in tools[0].summary
+    assert any("value" in line for line in tools[0].detail)
+
+
+def test_session_inquiry_and_checkpoint_domain_events_build_groups():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    reducer.ingest(
+        _event(
+            "session_started",
+            start,
+            {"id": "S8", "kind": "experiment", "objective": "Test the policy."},
+            session_id="S8",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "inquiry_opened",
+            start,
+            {"question": "Does the policy reach the target?"},
+            session_id="S8",
+            inquiry_id="I4",
+        )
+    )
+    reducer.ingest(
+        _event("inquiry_reframed", start, {"question": "Reframed?"}, inquiry_id="I4")
+    )
+    reducer.ingest(
+        _event("inquiry_closed", start, {"outcome": "Yes."}, inquiry_id="I4")
+    )
+    reducer.ingest(
+        _event(
+            "checkpoint_saved",
+            start,
+            {"current_synthesis": "It reaches the target."},
+            session_id="S8",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "session_ended",
+            start,
+            {"summary": "It reaches the target.", "next_question": "At what speed?"},
+            session_id="S8",
+        )
+    )
+    roots, _ = reducer.view()
+    items = list(_walk(roots))
+    session = next(item for item in items if item.item_id == "session:S8")
+    inquiry = next(item for item in items if item.item_id == "inquiry:I4")
+    assert session.status == "closed"
+    assert inquiry in session.children
+    titles = [item.title for item in items]
+    assert "started" in titles
+    assert "inquiry reframed" in titles
+    assert "inquiry closed" in titles
+    assert "ended" in titles
+    checkpoint = next(item for item in items if item.title == "checkpoint saved")
+    assert checkpoint.kind == "checkpoint"
+    assert "It reaches the target." in checkpoint.detail[0]
+
+
+def test_panel_and_training_checkpoints_keep_console_numbers():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    reducer.ingest(
+        _event(
+            "measurement_panel_started",
+            start,
+            {
+                "operation_id": "M9",
+                "instrument": "official",
+                "artifact": "candidate-a",
+                "episodes": 100,
+                "seed": 7,
+            },
+            operation_id="M9",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "measurement_panel_completed",
+            start + timedelta(seconds=42),
+            {
+                "operation_id": "M9",
+                "instrument": "official",
+                "artifact": "candidate-a",
+                "episodes": 100,
+                "episodes_total": 100,
+                "elapsed_seconds": 42.0,
+                "success_percent": 97.5,
+            },
+            operation_id="M9",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "training_checkpoints",
+            start,
+            {
+                "operation_id": "T9",
+                "candidates": [
+                    {
+                        "candidate": "T9:checkpoint-1000",
+                        "steps": 1000,
+                        "ep_rew_mean": 12.5,
+                        "summary": "reward 12.5 | success 75%",
+                    },
+                    {
+                        "candidate": "T9:checkpoint-2000",
+                        "steps": 2000,
+                        "ep_rew_mean": 14.0,
+                        "training_success": 0.8,
+                    },
+                ],
+            },
+            operation_id="T9",
+        )
+    )
+    roots, _ = reducer.view()
+    items = list(_walk(roots))
+    panels = [item for item in items if item.title.startswith("panel complete")]
+    assert panels
+    assert "100 / 100" in panels[0].summary
+    assert "97.5%" in panels[0].summary
+    assert "42s" in panels[0].summary
+    results = next(item for item in items if item.title == "training results")
+    assert "reward 12.5 | success 75%" in results.detail[0]
+    assert "2,000 steps" in results.detail[1]
+    assert "reward 14.0" in results.detail[1]
+    assert "success 80%" in results.detail[1]
+
+
+def test_usage_and_publication_events_render_structured_numbers():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    reducer.ingest(
+        _event(
+            "usage_update",
+            start,
+            {
+                "role": "pi",
+                "model": "gpt-test",
+                "duration_seconds": 90.0,
+                "input_tokens": 12000,
+                "output_tokens": 3000,
+                "tool_calls": 5,
+            },
+            session_id="S8",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "campaign_usage",
+            start,
+            {
+                "totals": {
+                    "duration_seconds": 3600.0,
+                    "input_tokens": 50000,
+                    "output_tokens": 9000,
+                    "aiu": 1.5,
+                },
+                "text": "1h00m | 1.50 AIU | prompt 50k | output 9k",
+            },
+        )
+    )
+    reducer.ingest(
+        _event(
+            "publication_retry",
+            start,
+            {"retry": 1, "limit": 3, "delay_seconds": 5, "error": "remote error"},
+        )
+    )
+    roots, _ = reducer.view()
+    items = list(_walk(roots))
+    usage = next(item for item in items if item.title == "usage pi")
+    assert "1m30s" in usage.summary
+    assert "prompt 12,000" in usage.summary
+    assert "5 tool calls" in usage.summary
+    campaign_usage = next(item for item in items if item.title == "campaign usage")
+    assert "1.50 AIU" in campaign_usage.summary
+    retry = next(item for item in items if item.kind == "warning")
+    assert retry.title == "publication retry"
+    assert "remote error" in retry.detail[0]

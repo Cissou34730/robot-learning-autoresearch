@@ -7,6 +7,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
+from runner import typed_events
 from runner.copilot.coding_contracts import normalize_model
 from runner.copilot.opencode_provider import provider_of
 from runner.copilot.path_policy import ROOT
@@ -114,3 +115,14 @@ def record_usage(
         row["actual_reasoning_efforts"] = actual_reasoning_efforts
     with (directory / f"{campaign_id}.jsonl").open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+    typed_events.set_campaign(campaign_id)
+    typed_events.emit(
+        "usage_update",
+        {**row},
+        scope="usage",
+        session_id=str(row.get("session_id") or ""),
+        event_id=(
+            f"domain:usage:{campaign_id}:{row.get('session_id') or ''}:"
+            f"{row.get('role') or ''}:{args.phase}:{args.attempt}:{row['recorded_at']}"
+        ),
+    )

@@ -182,6 +182,41 @@ def test_stage_and_terminal_status():
     assert ended.model_rows  # role assignments remain readable after the end
 
 
+def test_campaign_age_stops_at_the_recorded_end():
+    started = datetime(2026, 10, 20, 8, 0, tzinfo=UTC)
+    ended = datetime(2026, 10, 20, 9, 30, tzinfo=UTC)
+    later = datetime(2026, 10, 21, 12, 0, tzinfo=UTC)
+    frozen = projector.campaign_age(started, later, ended)
+    assert frozen == projector.campaign_age(started, ended)
+    assert frozen != projector.campaign_age(started, later)
+
+
+def test_terminal_snapshot_uses_the_recorded_stop_time():
+    state, _, _ = _observation_args()
+    state["terminal_state"] = {
+        "status": "official_assessment_requested",
+        "reason": "the campaign ended",
+        "model": "T4:checkpoint-120000",
+    }
+    state["official_assessment"] = None
+    state["operation_events"] = [{"completed_at": "2026-10-25T12:00:00+00:00"}]
+    snapshot = projector.build_snapshot(state, [], [])
+    assert snapshot.ended_at == datetime(2026, 10, 25, 12, 0, tzinfo=UTC)
+
+
+def test_official_assessment_time_wins_over_earlier_operations():
+    state, _, _ = _observation_args()
+    state["terminal_state"] = {
+        "status": "official_assessment_passed",
+        "reason": "goal reached",
+        "model": "T4:checkpoint-120000",
+    }
+    state["official_assessment"] = {"completed_at": "2026-10-25T13:00:00+00:00"}
+    state["operation_events"] = [{"completed_at": "2026-10-25T12:00:00+00:00"}]
+    snapshot = projector.build_snapshot(state, [], [])
+    assert snapshot.ended_at == datetime(2026, 10, 25, 13, 0, tzinfo=UTC)
+
+
 def test_timeline_pending_accepted_is_not_execution():
     snapshot = _demo_snapshot()
     kinds = [entry.kind for entry in snapshot.timeline]

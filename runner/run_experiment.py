@@ -471,6 +471,19 @@ def replace_failed_operation(
     original.update(copy.deepcopy(working))
     accepted = original["pending_operation"]
     _write_accepted_request_handoff(accepted)
+    typed_events.set_campaign(repository.current_campaign_id(original))
+    typed_events.emit(
+        "operation_requested",
+        accepted,
+        scope=str(accepted.get("kind") or "operation"),
+        operation_id=str(accepted.get("id") or ""),
+        session_id=str(accepted.get("session_id") or ""),
+        inquiry_id=str(accepted.get("inquiry_id") or ""),
+        event_id=(
+            f"domain:operation:{accepted.get('id') or ''}:requested:"
+            f"{accepted.get('supersedes') or ''}"
+        ),
+    )
     if not repository.commit_runner_memory(
         f"supersede {accepted['supersedes']} with {accepted['id']}"
     ):
@@ -509,6 +522,7 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
         operation_id=str(accepted.get("id") or ""),
         session_id=str(accepted.get("session_id") or ""),
         inquiry_id=str(accepted.get("inquiry_id") or ""),
+        event_id=f"domain:operation:{accepted.get('id') or ''}:requested",
     )
     return accepted
 
@@ -771,6 +785,23 @@ def _execute_model_role(state: dict, pending: dict) -> int:
             "evidence": plan["evidence"],
         },
         apply,
+    )
+    role = (
+        plan["label"]
+        if plan["action"] == "retain"
+        else plan["action"].removeprefix("set_").replace("_", " ")
+    )
+    typed_events.emit(
+        "role_assigned",
+        {
+            "candidate": plan["candidate_id"],
+            "action": plan["action"],
+            "role": role,
+            "evidence": plan["evidence"],
+        },
+        scope="role",
+        operation_id=str(pending.get("id") or ""),
+        event_id=f"domain:role:{pending.get('id') or ''}",
     )
     return 0
 
@@ -1817,6 +1848,23 @@ def execute_training(state: dict, pending: dict) -> int:
         session = current["scientific_session"]
         session["scientific_parent_commit"] = str(data["scientific_commit"])
 
+    for candidate, archived_item in zip(records, archived, strict=True):
+        typed_events.emit(
+            "candidate_created",
+            {
+                "candidate": candidate["id"],
+                "name": candidate["name"],
+                "artifact": candidate["artifact"],
+                "fingerprint": candidate["fingerprint"],
+                "origin_operation": operation_id,
+                "training_steps": candidate["training_steps"],
+                "training_success": archived_item.get("training_success"),
+                "ep_rew_mean": archived_item.get("ep_rew_mean"),
+            },
+            scope="training",
+            operation_id=operation_id,
+            event_id=f"domain:candidate:{candidate['id']}",
+        )
     _complete_operation(state, result, apply)
     if candidate_dir.exists():
         execution.remove_candidate_dir(candidate_dir)
@@ -2067,11 +2115,27 @@ def _sections(*sections: tuple[str, object]) -> str:
     ).rstrip()
 
 
+def _emit_campaign_usage(
+    state: dict, *, operation_id: str = "", session_id: str = ""
+) -> None:
+    campaign_id = repository.current_campaign_id(state)
+    totals = console.usage_totals(campaign_id)
+    typed_events.emit(
+        "campaign_usage",
+        {"totals": totals, "text": console.usage_summary(campaign_id)},
+        scope="usage",
+        operation_id=operation_id,
+        session_id=session_id,
+        event_id=f"domain:campaign:{campaign_id}:usage:{operation_id}",
+    )
+
+
 def _announce_consequential_completion(presentation: dict) -> None:
     pending = copy.deepcopy(presentation["pending"])
     result = pending["data"].get("result") or {}
     kind = presentation["kind"]
     context = presentation.get("context", "")
+    operation_id = str(pending.get("id") or "")
     if kind == "inquiry":
         action = str(result.get("action", "")).upper()
         inquiry_id = str(result.get("inquiry_id", ""))
@@ -2079,16 +2143,78 @@ def _announce_consequential_completion(presentation: dict) -> None:
         if action == "CLOSE":
             outcome = request.get("outcome") or result.get("outcome", "")
             body = _sections(("Outcome", outcome))
+            typed_events.emit(
+                "inquiry_closed",
+                {
+                    "action": action,
+                    "inquiry_id": inquiry_id,
+                    "outcome": outcome,
+                    "reason": request.get("reason", ""),
+                },
+                scope="inquiry",
+                operation_id=operation_id,
+                inquiry_id=inquiry_id,
+                event_id=f"domain:inquiry:{inquiry_id}:closed",
+            )
         else:
             body = _sections(("Question", request.get("question", "")))
-        console.boundary("inquiry", action, inquiry_id, f"{context}\n\n{body}")
+            typed_events.emit(
+                "inquiry_reframed" if action == "REFRAME" else "inquiry_opened",
+                {
+                    "action": action,
+                    "inquiry_id": inquiry_id,
+                    "question": request.get("question", ""),
+                    "goal_connection": request.get("goal_connection", ""),
+                    "closure_condition": request.get("closure_condition", ""),
+                },
+                scope="inquiry",
+                operation_id=operation_id,
+                inquiry_id=inquiry_id,
+                event_id=(
+                    f"domain:inquiry:{inquiry_id}:reframed"
+                    if action == "REFRAME"
+                    else f"domain:inquiry:{inquiry_id}:opened"
+                ),
+            )
+        console.boundary(
+            "inquiry", action, inquiry_id, f"{context}\n\n{body}", typed=False
+        )
     elif kind == "checkpoint":
         plan = pending["data"].get("plan") or {}
+        session_id = str(presentation["session_id"])
+        typed_events.emit(
+            "checkpoint_saved",
+            {
+                "session_id": session_id,
+                "inquiry_id": pending.get("inquiry_id"),
+                "current_synthesis": plan.get("current_synthesis"),
+                "next_question": plan.get("next_question"),
+                "next_direction_or_closure": plan.get("next_direction_or_closure"),
+                "scientific_commit": pending["data"].get("scientific_commit"),
+            },
+            scope="session",
+            operation_id=operation_id,
+            session_id=session_id,
+            event_id=f"domain:checkpoint:{operation_id}",
+        )
+        typed_events.emit(
+            "session_ended",
+            {
+                "session_id": session_id,
+                "kind": presentation.get("session_kind"),
+                "summary": plan.get("current_synthesis"),
+                "next_question": plan.get("next_question"),
+                "next": plan.get("next_direction_or_closure"),
+            },
+            scope="session",
+            operation_id=operation_id,
+            session_id=session_id,
+            event_id=f"domain:session:{session_id}:ended:{operation_id}",
+        )
         console.boundary(
             "session",
             "END",
-            f"{presentation['session_id']} "
-            f"{str(presentation['session_kind']).replace('_', ' ')}",
+            f"{session_id} {str(presentation['session_kind']).replace('_', ' ')}",
             f"{context}\n\n"
             + _sections(
                 ("Outcome", plan.get("current_synthesis", "Session summary saved.")),
@@ -2104,6 +2230,7 @@ def _announce_consequential_completion(presentation: dict) -> None:
                     ),
                 ),
             ),
+            typed=False,
         )
     elif kind == "campaign_conclusion":
         plan = pending["data"].get("plan") or {}
@@ -2111,6 +2238,32 @@ def _announce_consequential_completion(presentation: dict) -> None:
             "Run the protected official assessment."
             if result.get("status") == "official_assessment_requested"
             else "End the campaign."
+        )
+        typed_events.emit(
+            "campaign_concluded",
+            {
+                "status": result.get("status"),
+                "reason": plan.get("reason"),
+                "next": next_transition,
+            },
+            scope="campaign",
+            operation_id=operation_id,
+            event_id=f"domain:campaign:{operation_id}:concluded",
+        )
+        typed_events.emit(
+            "session_ended",
+            {
+                "session_id": presentation["session_id"],
+                "kind": presentation.get("session_kind"),
+                "summary": plan.get("reason"),
+                "next": next_transition,
+            },
+            scope="session",
+            operation_id=operation_id,
+            session_id=str(presentation["session_id"]),
+            event_id=(
+                f"domain:session:{presentation['session_id']}:ended:{operation_id}"
+            ),
         )
         console.boundary(
             "session",
@@ -2122,6 +2275,7 @@ def _announce_consequential_completion(presentation: dict) -> None:
                 ("Outcome", plan.get("reason", "Campaign decision recorded.")),
                 ("Next", next_transition),
             ),
+            typed=False,
         )
         status = str(result.get("status", "")).replace("_", " ")
         action = "END" if result.get("status") == "no_credible_route" else "DECISION"
@@ -2130,6 +2284,17 @@ def _announce_consequential_completion(presentation: dict) -> None:
             action,
             status,
             presentation["campaign_usage"],
+            typed=False,
+        )
+        typed_events.emit(
+            "campaign_usage",
+            {
+                "totals": console.usage_totals(presentation["campaign_id"]),
+                "text": presentation["campaign_usage"],
+            },
+            scope="usage",
+            operation_id=operation_id,
+            event_id=f"domain:campaign:{presentation['campaign_id']}:usage:{operation_id}",
         )
 
 
@@ -2151,6 +2316,7 @@ def _announce_completed_operation(presentation: dict) -> None:
         operation_id=str(pending.get("id") or ""),
         session_id=str(pending.get("session_id") or ""),
         inquiry_id=str(pending.get("inquiry_id") or ""),
+        event_id=f"domain:operation:{pending.get('id') or ''}:completed",
     )
     # Inquiry, checkpoint and conclusion cards already carry the operation and its context.
     if kind not in {"inquiry", "checkpoint", "campaign_conclusion"}:
@@ -2159,7 +2325,9 @@ def _announce_completed_operation(presentation: dict) -> None:
             detail = "\n\n".join(
                 part for part in (presentation.get("context"), detail) if part
             )
-        console.boundary("operation", "COMPLETE", _operation_subject(pending), detail)
+        console.boundary(
+            "operation", "COMPLETE", _operation_subject(pending), detail, typed=False
+        )
     _announce_consequential_completion(presentation)
 
 
@@ -2200,6 +2368,15 @@ def execute_pending_operation() -> int:
     }:
         _training_allocation(request["training"], state)
     _write_accepted_request_handoff(pending)
+    with typed_events.context(
+        operation_id=pending.get("id"),
+        session_id=pending.get("session_id"),
+        inquiry_id=pending.get("inquiry_id"),
+    ):
+        return _execute_pending_operation(state, pending)
+
+
+def _execute_pending_operation(state: dict, pending: dict) -> int:
     typed_events.emit(
         "operation_started",
         pending,
@@ -2207,6 +2384,7 @@ def execute_pending_operation() -> int:
         operation_id=str(pending.get("id") or ""),
         session_id=str(pending.get("session_id") or ""),
         inquiry_id=str(pending.get("inquiry_id") or ""),
+        event_id=f"domain:operation:{pending.get('id') or ''}:started",
     )
     typed_events.emit("run_state", {"state": "executing"}, scope="campaign")
     subject = _operation_subject(pending)
@@ -2220,6 +2398,7 @@ def execute_pending_operation() -> int:
             action,
             subject,
             "\n\n".join(part for part in (presentation["context"], detail) if part),
+            typed=False,
         )
     try:
         if pending["progress"] == "completed":
@@ -2269,12 +2448,14 @@ def execute_pending_operation() -> int:
             operation_id=str(pending.get("id") or ""),
             session_id=str(pending.get("session_id") or ""),
             inquiry_id=str(pending.get("inquiry_id") or ""),
+            event_id=f"domain:operation:{pending.get('id') or ''}:failed",
         )
         console.boundary(
             "error",
             "PUBLICATION FAILED" if publication_failure else "OPERATION FAILED",
             subject,
             str(error),
+            typed=False,
         )
         typed_events.emit("run_state", {"state": "failed"}, scope="campaign")
         # The card already shows the error; the entry point skips the duplicate traceback.
@@ -2302,9 +2483,10 @@ def execute_pending_operation() -> int:
             operation_id=str(pending.get("id") or ""),
             session_id=str(pending.get("session_id") or ""),
             inquiry_id=str(pending.get("inquiry_id") or ""),
+            event_id=f"domain:operation:{pending.get('id') or ''}:interrupted",
         )
         typed_events.emit("run_state", {"state": "paused"}, scope="campaign")
-        console.boundary("warning", "OPERATION PAUSED", subject)
+        console.boundary("warning", "OPERATION PAUSED", subject, typed=False)
         return exit_code
     _announce_completed_operation(presentation)
     typed_events.emit("run_state", {"state": "idle"}, scope="campaign")
@@ -2467,6 +2649,7 @@ def _validate_official_assessment_artifact(
 def run_official_assessment() -> int:
     state = repository.load_state(allow_missing_artifact=True)
     observation_feed.set_campaign(repository.current_campaign_id(state))
+    typed_events.set_campaign(repository.current_campaign_id(state))
     terminal = state["terminal_state"]
     if not isinstance(terminal, dict) or not terminal["status"].startswith(
         "official_assessment_"
@@ -2475,7 +2658,26 @@ def run_official_assessment() -> int:
     candidate = state["candidates"].get(terminal["model"])
     if not isinstance(candidate, dict):
         raise TypeError("the requested official-assessment model is unavailable")
-    console.boundary("assessment", "START", "official", str(candidate["id"]))
+    with typed_events.context(operation_id="official"):
+        return _run_official_assessment(state, candidate)
+
+
+def _run_official_assessment(state: dict, candidate: dict) -> int:
+    typed_events.emit(
+        "operation_started",
+        {
+            "id": "official",
+            "kind": "measurement",
+            "model": candidate["id"],
+            "official": True,
+        },
+        scope="measurement",
+        operation_id="official",
+        event_id="domain:operation:official:started",
+    )
+    console.boundary(
+        "assessment", "START", "official", str(candidate["id"]), typed=False
+    )
     existing = state["official_assessment"]
     if isinstance(existing, dict):
         if existing["model"] != candidate["id"]:
@@ -2508,19 +2710,35 @@ def run_official_assessment() -> int:
             scope="measurement",
             severity="info" if existing["status"] == "passed" else "error",
             operation_id="official",
+            event_id="domain:operation:official:completed",
         )
         console.boundary(
             "assessment",
             "COMPLETE",
             str(existing["status"]).upper(),
             str(existing["summary"]),
+            typed=False,
         )
         console.boundary(
             "campaign",
             "END",
             f"official assessment {existing['status']}",
             console.usage_summary(repository.current_campaign_id(state)),
+            typed=False,
         )
+        typed_events.emit(
+            "campaign_concluded",
+            {
+                "status": existing["status"],
+                "reason": existing.get("summary"),
+                "next": "End the campaign.",
+                "official_assessment": True,
+            },
+            scope="campaign",
+            operation_id="official",
+            event_id=(f"domain:campaign:official:concluded:{existing['status']}"),
+        )
+        _emit_campaign_usage(state, operation_id="official")
         return 0
     artifact = _validate_official_assessment_artifact(candidate)
 
@@ -2571,19 +2789,37 @@ def run_official_assessment() -> int:
         scope="measurement",
         severity="info" if passed else "error",
         operation_id="official",
+        event_id="domain:operation:official:completed",
     )
     console.boundary(
         "assessment",
         "COMPLETE",
         "PASSED" if passed else "FAILED",
         summary,
+        typed=False,
     )
     console.boundary(
         "campaign",
         "END",
         f"official assessment {'passed' if passed else 'failed'}",
         console.usage_summary(repository.current_campaign_id(state)),
+        typed=False,
     )
+    typed_events.emit(
+        "campaign_concluded",
+        {
+            "status": "passed" if passed else "failed",
+            "reason": summary,
+            "next": "End the campaign.",
+            "official_assessment": True,
+        },
+        scope="campaign",
+        operation_id="official",
+        event_id=(
+            f"domain:campaign:official:concluded:{'passed' if passed else 'failed'}"
+        ),
+    )
+    _emit_campaign_usage(state, operation_id="official")
     return 0
 
 
@@ -2671,7 +2907,14 @@ def main() -> int:
         repository.write_state(state)
         if not repository.commit_runner_memory("publish scientific model"):
             repository.push_head()
-        console.boundary("validation", "SCIENTIFIC MODEL VALIDATED")
+        typed_events.set_campaign(repository.current_campaign_id(state))
+        typed_events.emit(
+            "scientific_model_validated",
+            {"commit": commit, "path": "pi_workspace/scientific_model.md"},
+            scope="validation",
+            event_id=f"domain:scientific_model:{commit}",
+        )
+        console.boundary("validation", "SCIENTIFIC MODEL VALIDATED", typed=False)
         return 0
     if args.reaccept_pending:
         pending = reaccept_pending_operation()
@@ -2680,6 +2923,7 @@ def main() -> int:
             "REACCEPTED",
             _operation_subject(pending),
             f"supersedes {pending['supersedes']}",
+            typed=False,
         )
         return 0
     if args.run_official_assessment:
@@ -2716,18 +2960,49 @@ def main() -> int:
             backend_reasoning=args.backend_reasoning,
         )
         repository.write_state(state)
+        typed_events.set_campaign(repository.current_campaign_id(state))
+        typed_events.emit(
+            "session_started",
+            {
+                "id": session["id"],
+                "kind": session["kind"],
+                "objective": session["objective"],
+                "backend_session_id": session.get("backend_session_id"),
+                "started_at": session.get("started_at"),
+            },
+            scope="session",
+            session_id=str(session["id"]),
+            event_id=f"domain:session:{session['id']}:started",
+        )
         console.boundary(
             "session",
             "START",
             f"{session['id']} {session['kind'].replace('_', ' ')}",
             f"Objective: {session['objective']}",
+            typed=False,
         )
         if session["kind"] == "goal_review":
+            typed_events.emit(
+                "campaign_goal_review",
+                {
+                    "summary": _campaign_resource_summary(state),
+                    "counters": copy.deepcopy(state.get("counters")),
+                },
+                scope="campaign",
+                session_id=str(session["id"]),
+                event_id=f"domain:session:{session['id']}:goal_review",
+            )
             console.boundary(
                 "campaign",
                 "GOAL REVIEW",
                 _campaign_resource_summary(state),
                 console.usage_summary(repository.current_campaign_id(state)),
+                typed=False,
+            )
+            _emit_campaign_usage(
+                state,
+                operation_id=f"session:{session['id']}",
+                session_id=str(session["id"]),
             )
         return 0
     if args.check_operation or args.check_operation_input:

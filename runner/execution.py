@@ -288,6 +288,7 @@ def announce_training_checkpoints(
         if match is not None:
             candidates.append((int(path.name.removeprefix("checkpoint-")), path))
     rows: list[tuple[str, str]] = []
+    records: list[dict] = []
     for _, path in sorted(candidates):
         if path.name in announced:
             continue
@@ -297,10 +298,26 @@ def announce_training_checkpoints(
         except (FileNotFoundError, json.JSONDecodeError, OSError):
             continue
         summary = console.training_progress_suffix(metrics).removeprefix(" | ")
-        rows.append((f"{operation_id}:{path.name}", summary or "metrics unavailable"))
+        candidate = f"{operation_id}:{path.name}"
+        rows.append((candidate, summary or "metrics unavailable"))
+        records.append(
+            {
+                "candidate": candidate,
+                "checkpoint": path.name,
+                "steps": metrics.get("timesteps", metrics.get("total_timesteps")),
+                "ep_rew_mean": metrics.get("ep_rew_mean"),
+                "summary": summary,
+            }
+        )
         announced.add(path.name)
     if not rows:
         return
+    typed_events.emit(
+        "training_checkpoints",
+        {"operation_id": operation_id, "candidates": records},
+        scope="training",
+        operation_id=operation_id,
+    )
     candidate_width = max(len(candidate) for candidate, _ in rows)
     console.boundary(
         "training",
@@ -309,6 +326,7 @@ def announce_training_checkpoints(
         "\n".join(
             f"{candidate:<{candidate_width}} | {summary}" for candidate, summary in rows
         ),
+        typed=False,
     )
 
 
@@ -321,9 +339,6 @@ def training_progress_event(
 ) -> dict:
     """Maintainer-only training progress payload for the TUI feed."""
     record = record or {}
-    success = record.get("success_rate")
-    if success is None:
-        success = record.get("training_success")
     return {
         "kind": "training_progress",
         "operation_id": operation_id,
@@ -331,7 +346,7 @@ def training_progress_event(
         "target": target,
         "elapsed_seconds": round(elapsed_seconds, 1),
         "ep_rew_mean": record.get("ep_rew_mean"),
-        "training_success": success,
+        "scenario_metric": console.scenario_progress_metric(record),
     }
 
 
@@ -410,6 +425,7 @@ def train_candidate(
                 record = latest_training_record(log_text)
                 steps = latest_step_count(log_text)
                 observation_feed.emit({"kind": "liveness"})
+                typed_events.emit("liveness", {}, scope="info")
                 if steps is None:
                     _emit_progress(
                         training_progress_event(
@@ -470,6 +486,18 @@ def train_candidate(
                         "TRAINING FAILED",
                         operation_id,
                         "no progress for 30 minutes; stopping",
+                        typed=False,
+                    )
+                    typed_events.emit(
+                        "error",
+                        {
+                            "code": "training_stalled",
+                            "message": "no progress for 30 minutes; stopping",
+                            "operation_id": operation_id,
+                        },
+                        scope="error",
+                        severity="error",
+                        operation_id=operation_id,
                     )
                     stop_process(process, graceful=False)
                     raise TimeoutError("training made no progress for 30 minutes")
@@ -484,6 +512,18 @@ def train_candidate(
                         "TRAINING FAILED",
                         operation_id,
                         "12 hour safety limit reached; stopping",
+                        typed=False,
+                    )
+                    typed_events.emit(
+                        "error",
+                        {
+                            "code": "training_timeout",
+                            "message": "12 hour safety limit reached; stopping",
+                            "operation_id": operation_id,
+                        },
+                        scope="error",
+                        severity="error",
+                        operation_id=operation_id,
                     )
                     stop_process(process, graceful=False)
                     raise TimeoutError("training exceeded the 12 hour safety limit")
@@ -498,6 +538,18 @@ def train_candidate(
                 "TRAINING STOPPING",
                 operation_id,
                 "waiting for the process to close",
+                typed=False,
+            )
+            typed_events.emit(
+                "warning",
+                {
+                    "code": "training_stopping",
+                    "message": "waiting for the process to close",
+                    "operation_id": operation_id,
+                },
+                scope="warning",
+                severity="warning",
+                operation_id=operation_id,
             )
             stop_process(process, graceful=True)
             raise
@@ -683,11 +735,26 @@ def evaluate_artifact(
         command.append("--task-reference")
     progress_label = evaluation_label(artifact_dir.name)
     started = time.monotonic()
+    typed_events.emit(
+        "measurement_panel_started",
+        {
+            "operation_id": operation_id,
+            "instrument": label,
+            "artifact": artifact_dir.name,
+            "episodes": episodes,
+            "seed": seed,
+            "official": bool(official_benchmark),
+            "task_reference": bool(task_reference),
+        },
+        scope="measurement",
+        operation_id=operation_id,
+    )
     console.boundary(
         "measurement",
         "PANEL",
         f"{operation_id} {progress_label}",
         f"{episodes} episodes | seed {seed} | {label}",
+        typed=False,
     )
     last_progress_at = started
     completed_episodes = 0
@@ -745,6 +812,7 @@ def evaluate_artifact(
                         }
                     )
                     observation_feed.emit({"kind": "liveness"})
+                    typed_events.emit("liveness", {}, scope="info")
                     if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
                         stop_process(process, graceful=False)
                         raise TimeoutError(
@@ -765,6 +833,18 @@ def evaluate_artifact(
                 "MEASUREMENT STOPPING",
                 operation_id,
                 label,
+                typed=False,
+            )
+            typed_events.emit(
+                "warning",
+                {
+                    "code": "measurement_stopping",
+                    "message": label,
+                    "operation_id": operation_id,
+                },
+                scope="warning",
+                severity="warning",
+                operation_id=operation_id,
             )
             stop_process(process, graceful=True)
             raise
@@ -777,6 +857,23 @@ def evaluate_artifact(
     if process.returncode != 0:
         raise RuntimeError(f"{label} failed:\n{stdout}\n{stderr}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
+    typed_events.emit(
+        "measurement_panel_completed",
+        {
+            "operation_id": operation_id,
+            "instrument": label,
+            "artifact": artifact_dir.name,
+            "episodes": int(metrics["episodes"]),
+            "episodes_total": episodes,
+            "elapsed_seconds": round(time.monotonic() - started, 1),
+            "success_percent": metrics["success_percent"],
+            "seed": seed,
+            "official": bool(official_benchmark),
+            "task_reference": bool(task_reference),
+        },
+        scope="measurement",
+        operation_id=operation_id,
+    )
     console.boundary(
         "measurement",
         "PANEL COMPLETE",
@@ -784,6 +881,7 @@ def evaluate_artifact(
         f"{int(metrics['episodes'])}/{episodes} | "
         f"{console.format_duration(time.monotonic() - started)} | "
         f"success {metrics['success_percent']:.1f}%",
+        typed=False,
     )
     return metrics
 

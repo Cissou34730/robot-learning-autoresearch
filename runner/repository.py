@@ -19,7 +19,7 @@ from collections import deque
 from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
 
-from runner import console, paths
+from runner import console, paths, typed_events
 
 
 class PublicationError(RuntimeError):
@@ -537,6 +537,18 @@ def push_head() -> None:
                     f"retry {retry + 1}/{GIT_PUSH_RETRIES} "
                     f"in {GIT_PUSH_RETRY_SECONDS} seconds",
                     str(error),
+                    typed=False,
+                )
+                typed_events.emit(
+                    "publication_retry",
+                    {
+                        "retry": retry + 1,
+                        "limit": GIT_PUSH_RETRIES,
+                        "delay_seconds": GIT_PUSH_RETRY_SECONDS,
+                        "error": str(error),
+                    },
+                    scope="warning",
+                    severity="warning",
                 )
                 time.sleep(GIT_PUSH_RETRY_SECONDS)
             else:
@@ -545,6 +557,12 @@ def push_head() -> None:
                         "runner",
                         "PUBLICATION RECOVERED",
                         f"retry {retry}/{GIT_PUSH_RETRIES}",
+                        typed=False,
+                    )
+                    typed_events.emit(
+                        "publication_recovered",
+                        {"retry": retry, "limit": GIT_PUSH_RETRIES},
+                        scope="info",
                     )
                 return
     except RuntimeError as error:

@@ -162,7 +162,7 @@ class TrainingProgress:
     target: int | None = None
     elapsed_seconds: float | None = None
     reward: float | None = None
-    success: float | None = None
+    success: float | str | None = None
     stale: bool = False
 
 
@@ -185,6 +185,7 @@ class EvaluationProgress:
 class CampaignSnapshot:
     campaign_id: str = "unknown"
     started_at: datetime | None = None
+    ended_at: datetime | None = None
     status: str = "Loading"
     human_goal: str = ""
     goal: GoalSummary = field(default_factory=GoalSummary)
@@ -268,6 +269,28 @@ def terminal_stage_text(state: dict) -> str:
         else status.replace("_", " ")
     )
     return f"Campaign ended - goal {verb}"
+
+
+def _campaign_ended_at(state: dict, records: list[dict]) -> datetime | None:
+    """The recorded stop time, never the wall clock after the campaign ended."""
+    if not state.get("terminal_state"):
+        return None
+    assessment = _as_dict(state.get("official_assessment"))
+    stamp = parse_timestamp(assessment.get("completed_at"))
+    if stamp is not None:
+        return stamp
+    recorded: list[datetime] = []
+    for event in _as_list(state.get("operation_events")):
+        if isinstance(event, dict):
+            value = parse_timestamp(event.get("completed_at"))
+            if value is not None:
+                recorded.append(value)
+    for record in records:
+        if isinstance(record, dict):
+            value = parse_timestamp(record.get("completed_at"))
+            if value is not None:
+                recorded.append(value)
+    return max(recorded) if recorded else None
 
 
 # --------------------------------------------------------------------------
@@ -978,6 +1001,7 @@ def build_snapshot(
     campaign = _as_dict(state.get("campaign"))
     campaign_id = str(campaign.get("id") or "unknown")
     started_at = parse_timestamp(campaign.get("started_at"))
+    ended_at = _campaign_ended_at(state, records)
     stage, session_id, inquiry_id = _stage_text(state)
     terminal = bool(state.get("terminal_state"))
 
@@ -1026,6 +1050,7 @@ def build_snapshot(
     return CampaignSnapshot(
         campaign_id=campaign_id,
         started_at=started_at,
+        ended_at=ended_at,
         status=status,
         human_goal=_human_goal_text(state),
         goal=goal,
@@ -1053,16 +1078,26 @@ def build_snapshot(
     )
 
 
-def campaign_age(started_at: datetime | None, now: datetime) -> str:
+def campaign_age(
+    started_at: datetime | None,
+    now: datetime,
+    ended_at: datetime | None = None,
+) -> str:
     if started_at is None:
         return "unavailable"
-    return console.format_duration((now - started_at).total_seconds())
+    end = ended_at or now
+    return console.format_duration(max(0.0, (end - started_at).total_seconds()))
 
 
-def stage_elapsed(stage_started_at: datetime | None, now: datetime) -> str:
+def stage_elapsed(
+    stage_started_at: datetime | None,
+    now: datetime,
+    ended_at: datetime | None = None,
+) -> str:
     if stage_started_at is None:
         return "unavailable"
-    return console.format_duration((now - stage_started_at).total_seconds())
+    end = ended_at or now
+    return console.format_duration(max(0.0, (end - stage_started_at).total_seconds()))
 
 
 def role_assignment_text(snapshot: CampaignSnapshot) -> str:

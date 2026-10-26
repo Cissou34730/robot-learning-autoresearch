@@ -350,7 +350,12 @@ class ScientificCoding:
         try:
             binding, context, before = await self._prepare(params, invocation)
         except (OSError, ValueError) as error:
-            self.console.line(f"  > scientific_coding: rejected; {error}")
+            self.console.coding(
+                "rejected",
+                f"  > scientific_coding: rejected; {error}",
+                status="error",
+                detail={"error": str(error)},
+            )
             return json.dumps({"status": "error", "error": str(error)})
         if self.locked or self.runner_locked:
             return json.dumps(
@@ -372,7 +377,18 @@ class ScientificCoding:
                 f"evidence {len(params.evidence_inputs or [])}"
             )
         )
-        self.console.line(f"  > scientific_coding: request | {scope} | {intent_line}")
+        self.console.coding(
+            "request",
+            f"  > scientific_coding: request | {scope} | {intent_line}",
+            status="started",
+            detail={
+                "scope": scope,
+                "intent": intent_line,
+                "write_paths": list(binding.get("allowed_paths") or []),
+                "read_files": len(binding.get("read_paths") or []),
+                "evidence_inputs": len(params.evidence_inputs or []),
+            },
+        )
         result = {
             "status": "error",
             "review_required": True,
@@ -554,9 +570,17 @@ class ScientificCoding:
             "coding_session_handle": coder_handle,
         }
         result["review"] = review
-        self.console.line(
+        self.console.coding(
+            "review",
             f"  > scientific_coding: {mode} review "
-            f"({self.reviewer_model}, {self.reviewer_reasoning})"
+            f"({self.reviewer_model}, {self.reviewer_reasoning})",
+            agent=REVIEWER,
+            status="started",
+            detail={
+                "mode": mode,
+                "model": self.reviewer_model,
+                "reasoning": self.reviewer_reasoning,
+            },
         )
         review_request = {
             "mode": mode,
@@ -598,10 +622,20 @@ class ScientificCoding:
             verdict = (
                 "passed"
                 if review_report.validation
-                else "failed: "
-                + " ".join(review_report.what_is_wrong.split())[:160]
+                else "failed: " + " ".join(review_report.what_is_wrong.split())[:160]
             )
-            self.console.line(f"  > scientific_coding: {mode} review {verdict}")
+            self.console.coding(
+                "review_result",
+                f"  > scientific_coding: {mode} review {verdict}",
+                agent=REVIEWER,
+                status="passed" if review_report.validation else "failed",
+                severity="info" if review_report.validation else "warning",
+                detail={
+                    "mode": mode,
+                    "verdict": verdict,
+                    "what_is_wrong": review_report.what_is_wrong,
+                },
+            )
         if (
             not isinstance(review_report, ReviewReport)
             or review["status"] != "completed"
@@ -632,12 +666,24 @@ class ScientificCoding:
             result.pop("diff", None)
             result["review_output_path"] = str(output)
             encoded = json.dumps(result, ensure_ascii=False)
-        self.console.line(
-            f"  > scientific_coding: {result['status']}; source review required"
+        self.console.coding(
+            "result",
+            f"  > scientific_coding: {result['status']}; source review required",
+            status=str(result["status"]),
+            severity="warning" if result["status"] != "completed" else "info",
+            detail={
+                "review_required": True,
+                "cancelled": cancelled,
+                "changes": result.get("changes") or [],
+            },
         )
         if cancelled:
-            self.console.line(
-                f"  ! Coding cancelled; partial-change review: {result['review_output_path']}"
+            self.console.coding(
+                "cancelled",
+                f"  ! Coding cancelled; partial-change review: {result['review_output_path']}",
+                status="cancelled",
+                severity="warning",
+                detail={"review_output_path": result["review_output_path"]},
             )
             raise asyncio.CancelledError
         return encoded
@@ -698,11 +744,21 @@ class ScientificCoding:
         while True:
             await asyncio.sleep(CHILD_HEARTBEAT_SECONDS)
             usage = self.child_console
-            self.console.line(
+            self.console.coding(
+                "heartbeat",
                 f"  ~ scientific_coding: {role} working "
                 f"{(time.monotonic() - started) / 60:.0f}m | "
                 f"context {usage.last_input_tokens / 1000:.0f}k | "
-                f"{usage.model_calls} model calls | {usage.usage.tool_calls} tool calls"
+                f"{usage.model_calls} model calls | {usage.usage.tool_calls} tool calls",
+                agent=agent,
+                status="running",
+                detail={
+                    "role": role,
+                    "elapsed_seconds": round(time.monotonic() - started, 1),
+                    "input_tokens": usage.last_input_tokens,
+                    "model_calls": usage.model_calls,
+                    "tool_calls": usage.usage.tool_calls,
+                },
             )
 
     async def _dispatch_child(self, agent, prompt, binding, handle) -> None:
@@ -825,7 +881,14 @@ class ScientificCoding:
             )
         except (OSError, ValueError) as error:
             result["usage_error"] = str(error)
-            self.console.line(f"  ! {agent} usage could not be recorded: {error}")
+            self.console.coding(
+                "usage_error",
+                f"  ! {agent} usage could not be recorded: {error}",
+                agent=agent,
+                status="error",
+                severity="warning",
+                detail={"error": str(error)},
+            )
 
     async def wait_child_idle(self) -> None:
         # Stop hooks run on every correction; subagent.completed is not repeated on

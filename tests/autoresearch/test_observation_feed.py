@@ -49,21 +49,25 @@ def test_emit_writes_identity_and_payload(tmp_path):
     assert event["ts"]
 
 
-def test_training_progress_event_carries_reward_and_success():
-    from runner.execution import training_progress_event
+def test_training_progress_event_carries_reward_and_scenario_metric(monkeypatch):
+    from runner import console, execution
 
-    event = training_progress_event(
+    monkeypatch.setattr(
+        console, "scenario_progress_metric", lambda record: "success 97%"
+    )
+    event = execution.training_progress_event(
         "T4",
         72000,
         120000,
         728.0,
-        {"ep_rew_mean": 86.3, "success_rate": 0.97},
+        {"ep_rew_mean": 86.3},
     )
     assert event["kind"] == "training_progress"
     assert event["steps"] == 72000
     assert event["target"] == 120000
     assert event["ep_rew_mean"] == 86.3
-    assert event["training_success"] == 0.97
+    assert event["scenario_metric"] == "success 97%"
+    assert "training_success" not in event
 
 
 def test_typed_emit_writes_schema_and_full_payload(tmp_path):
@@ -151,6 +155,170 @@ def test_console_funnels_emit_classified_lines(tmp_path, capsys):
     assert scopes == ["operation", "pi"]
     assert events[0]["text"].startswith("=== Operation REQUEST ===")
     assert events[1]["text"] == "The policy reaches the target."
+
+
+def test_context_merges_session_and_operation_identity():
+    typed_events.reset()
+    with typed_events.context(session_id="S7"):
+        with typed_events.context(operation_id="T4"):
+            assert typed_events.current_context() == {
+                "operation_id": "T4",
+                "session_id": "S7",
+                "inquiry_id": "",
+            }
+        assert typed_events.current_context()["operation_id"] == ""
+    assert typed_events.current_context() == {}
+
+
+def test_console_domain_events_carry_session_identity(tmp_path, capsys):
+    path = tmp_path / "typed.events.jsonl"
+    typed_events.reset()
+    typed_events.set_campaign("campaign-1")
+    session = Console(columns=200, session_id="backend-1")
+    session.tool("read_file", {"path": "robot_learning/x.py"}, "call-1")
+    session.tool_result(
+        "artifact_evidence_query",
+        json.dumps({"status": "computed", "value": 3}),
+        tool_call_id="call-1",
+    )
+    session.file_changed("created", "robot_learning/x.py")
+    session.coding(
+        "request",
+        "  > scientific_coding: request | scope | intent",
+        status="started",
+        detail={"scope": "x"},
+    )
+    session.operation_submitted("accepted")
+    session.warning("context compacted", code="compaction")
+    capsys.readouterr()
+    events = _events(path)
+    kinds = [event["kind"] for event in events]
+    assert "tool_call_started" in kinds
+    assert "tool_call_completed" in kinds
+    assert "file_changed" in kinds
+    assert "coding" in kinds
+    assert "operation_submitted" in kinds
+    assert "warning" in kinds
+    assert "console_line" not in kinds
+    assert {event["session_id"] for event in events} == {"backend-1"}
+    completed = next(
+        event for event in events if event["kind"] == "tool_call_completed"
+    )
+    assert completed["payload"]["tool_call_id"] == "call-1"
+    assert completed["payload"]["result"]["value"] == 3
+
+
+def test_domain_event_closes_the_pi_message_first(tmp_path, capsys):
+    path = tmp_path / "typed.events.jsonl"
+    typed_events.reset()
+    typed_events.set_campaign("campaign-1")
+    session = Console(columns=200, session_id="backend-1")
+    session.delta("PI answer\n\n")
+    session.warning("context compacted", code="compaction")
+    capsys.readouterr()
+    events = _events(path)
+    final_message = next(
+        index
+        for index, event in enumerate(events)
+        if event["kind"] == "pi_message" and event["payload"].get("final")
+    )
+    warning = next(
+        index for index, event in enumerate(events) if event["kind"] == "warning"
+    )
+    assert final_message < warning
+
+
+def test_typed_false_funnels_keep_stdout_and_skip_typed(tmp_path, capsys):
+    import re
+
+    path = tmp_path / "typed.events.jsonl"
+    typed_events.reset()
+    typed_events.set_campaign("campaign-1")
+
+    def run(*, typed: bool) -> str:
+        console.card("operation", "Operation REQUEST", ["T4 accepted"], typed=typed)
+        console.boundary("warning", "OPERATION PAUSED", "T4", typed=typed)
+        console.announce("[pi] no typed copy", typed=typed)
+        return capsys.readouterr().out
+
+    untracked = run(typed=False)
+    assert not path.exists()
+    tracked = run(typed=True)
+    pattern = re.compile(r"^\[[^\]]+\] ", re.MULTILINE)
+    assert pattern.sub("", untracked) == pattern.sub("", tracked)
+    assert _events(path)
+
+
+def test_lifecycle_cards_are_owned_by_domain_events(tmp_path, capsys):
+    from runner import run_experiment
+
+    typed_events.reset()
+    typed_events.set_campaign("campaign-1")
+    presentation = {
+        "campaign_id": "campaign-1",
+        "context": "campaign context",
+        "kind": "inquiry",
+        "session_id": "S8",
+        "pending": {
+            "id": "I9",
+            "kind": "inquiry",
+            "session_id": "S8",
+            "inquiry_id": "I9",
+            "data": {"result": {"action": "OPEN", "inquiry_id": "I9"}},
+            "request": {
+                "inquiry": {
+                    "question": "Does the policy reach the target?",
+                    "goal_connection": "It tests the campaign objective.",
+                    "closure_condition": "A measured success rate.",
+                }
+            },
+        },
+    }
+    run_experiment._announce_consequential_completion(presentation)
+    capsys.readouterr()
+    events = _events(tmp_path / "typed.events.jsonl")
+    assert [event["kind"] for event in events] == ["inquiry_opened"]
+    assert events[0]["inquiry_id"] == "I9"
+    assert events[0]["payload"]["question"] == "Does the policy reach the target?"
+    assert "console_card" not in {event["kind"] for event in events}
+
+
+def test_training_results_card_is_owned_by_a_domain_event(
+    monkeypatch, tmp_path, capsys
+):
+    from runner import execution
+
+    typed_events.reset()
+    typed_events.set_campaign("campaign-1")
+    checkpoint = tmp_path / "candidate_pool" / "checkpoint-1000"
+    checkpoint.mkdir(parents=True)
+    (checkpoint / "training_metrics.json").write_text(
+        json.dumps(
+            {
+                "timesteps": 1000,
+                "ep_rew_mean": 12.5,
+                "success_rate": 0.75,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        execution.console,
+        "training_progress_suffix",
+        lambda record: " | reward 12.5 | success 75%",
+    )
+    announced: set[str] = set()
+    execution.announce_training_checkpoints(tmp_path, "T9", announced)
+    capsys.readouterr()
+    events = _events(tmp_path / "typed.events.jsonl")
+    assert [event["kind"] for event in events] == ["training_checkpoints"]
+    (candidate,) = events[0]["payload"]["candidates"]
+    assert candidate["candidate"] == "T9:checkpoint-1000"
+    assert candidate["steps"] == 1000
+    assert candidate["ep_rew_mean"] == 12.5
+    assert "training_success" not in candidate
+    assert candidate["summary"] == "reward 12.5 | success 75%"
+    assert announced == {"checkpoint-1000"}
 
 
 def test_copilot_console_emits_one_pi_message_and_tool_line(tmp_path, capsys):

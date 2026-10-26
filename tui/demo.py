@@ -274,10 +274,22 @@ def demo_schedule() -> list[tuple[float, Observation]]:
     deduplication, the training/evaluation progress switch and the
     execution-end removal of the progress area.
     """
-    _, stage_start, _ = demo_clock()
+    _, stage_start, now = demo_clock()
+    first_pi = stage_start + timedelta(seconds=0.5)
 
-    def event(seconds: float, kind: str, **fields) -> tuple[float, Observation]:
-        return seconds, Observation(kind, None, fields)
+    def event(
+        seconds: float,
+        kind: str,
+        *,
+        at: datetime | None = None,
+        **fields,
+    ) -> tuple[float, Observation]:
+        stamp = at
+        if stamp is None:
+            stamp = (
+                now if kind == "liveness" else stage_start + timedelta(seconds=seconds)
+            )
+        return seconds, Observation(kind, stamp, fields)
 
     return [
         event(0.0, "liveness"),
@@ -288,8 +300,14 @@ def demo_schedule() -> list[tuple[float, Observation]]:
             stage_started_at=stage_start.isoformat(),
         ),
         event(0.3, "console_line", scope="activity", text="M6 measurement accepted"),
-        event(0.5, "pi_message", session_id="S7", text=_PI_MESSAGE),
-        event(0.8, "pi_message", session_id="S7", text=_PI_MESSAGE),  # replay duplicate
+        event(0.5, "pi_message", session_id="S7", text=_PI_MESSAGE, at=first_pi),
+        event(
+            0.8,
+            "pi_message",
+            session_id="S7",
+            text=_PI_MESSAGE,
+            at=first_pi,
+        ),  # replay duplicate
         event(
             1.2,
             "tool",

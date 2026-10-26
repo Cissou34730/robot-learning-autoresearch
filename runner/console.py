@@ -237,22 +237,23 @@ def _observation_scope(text: str) -> tuple[str, str]:
     return "info", text
 
 
-def announce(message: str) -> None:
+def announce(message: str, *, typed: bool = True) -> None:
     _progress.clear()
     _progress.archived()
     leading_break = "\n" if message.startswith("\n") else ""
     full_text = message.lstrip("\n")
     scope, _ = _observation_scope(compact_text(full_text))
-    typed_events.emit(
-        "console_line",
-        {"text": full_text, "scope": scope},
-        scope=scope,
-        severity="error"
-        if scope == "error"
-        else "warning"
-        if scope == "warning"
-        else "info",
-    )
+    if typed:
+        typed_events.emit(
+            "console_line",
+            {"text": full_text, "scope": scope},
+            scope=scope,
+            severity="error"
+            if scope == "error"
+            else "warning"
+            if scope == "warning"
+            else "info",
+        )
     text = compact_text(full_text)
     scope, observation_text = _observation_scope(text)
     observation_feed.emit(
@@ -285,7 +286,13 @@ def announce(message: str) -> None:
     print(leading_break + "\n".join(wrapped), flush=True)
 
 
-def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> None:
+def card(
+    scope: str,
+    title: str,
+    lines: list[str] | tuple[str, ...] = (),
+    *,
+    typed: bool = True,
+) -> None:
     """Print one spaced console card for a meaningful lifecycle boundary."""
     _progress.clear()
     _progress.archived()
@@ -293,16 +300,17 @@ def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> Non
     color = _SEMANTIC_COLORS.get(scope, _CYAN)
     body_color = color if scope in {"error", "warning"} else _WHITE
     timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
-    typed_events.emit(
-        "console_card",
-        {"title": title, "body": list(lines), "scope": scope},
-        scope=scope,
-        severity="error"
-        if scope == "error"
-        else "warning"
-        if scope == "warning"
-        else "info",
-    )
+    if typed:
+        typed_events.emit(
+            "console_card",
+            {"title": title, "body": list(lines), "scope": scope},
+            scope=scope,
+            severity="error"
+            if scope == "error"
+            else "warning"
+            if scope == "warning"
+            else "info",
+        )
     title = compact_text(title)
     body = [compact_text(line) for line in lines]
     observation_text = f"=== {title} ==="
@@ -335,21 +343,33 @@ def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> Non
     print(flush=True)
 
 
-def boundary(scope: str, action: str, subject: str = "", detail: str = "") -> None:
+def boundary(
+    scope: str,
+    action: str,
+    subject: str = "",
+    detail: str = "",
+    *,
+    typed: bool = True,
+) -> None:
     """Print one durable lifecycle boundary with a stable visual hierarchy."""
     normalized_scope = scope.casefold()
     if normalized_scope in _CARD_SCOPES:
         title = " | ".join(
             part for part in (normalized_scope.upper(), action.upper(), subject) if part
         )
-        card(normalized_scope, title, tuple(detail.splitlines()) if detail else ())
+        card(
+            normalized_scope,
+            title,
+            tuple(detail.splitlines()) if detail else (),
+            typed=typed,
+        )
         return
     head = " | ".join(part for part in (action.upper(), subject) if part)
     if "\n" in detail:
-        announce(f"[{normalized_scope}] {head}\n{detail}")
+        announce(f"[{normalized_scope}] {head}\n{detail}", typed=typed)
         return
     body = " | ".join(part for part in (head, detail) if part)
-    announce(f"[{normalized_scope}] {body}")
+    announce(f"[{normalized_scope}] {body}", typed=typed)
 
 
 def format_duration(seconds: float) -> str:
@@ -460,25 +480,43 @@ def usage_aiu(campaign_id: str) -> float | None:
     return sum(float(row.get("aiu") or 0) for row in rows) if rows else None
 
 
-def usage_summary(campaign_id: str, session_id: str | None = None) -> str:
-    """Aggregate existing durable accounting without creating a new budget."""
+def usage_totals(campaign_id: str, session_id: str | None = None) -> dict:
+    """Aggregate durable accounting without creating a new budget."""
     rows = _usage_rows(campaign_id, session_id)
     if not rows:
-        return "usage unavailable"
+        return {}
     duration = sum(float(row.get("duration_seconds") or 0) for row in rows)
     prompt = sum(int(row.get("input_tokens") or 0) for row in rows)
     cached = sum(int(row.get("cache_read_tokens") or 0) for row in rows)
     output = sum(int(row.get("output_tokens") or 0) for row in rows)
     aiu = sum(float(row.get("aiu") or 0) for row in rows)
     cost = sum(float(row.get("reported_cost_usd") or 0) for row in rows)
-    parts = [format_duration(duration)]
-    if aiu:
-        parts.append(f"{aiu:.2f} AIU")
-    if cost:
-        parts.append(f"${cost:.4f} estimated")
+    return {
+        "rows": len(rows),
+        "duration_seconds": duration,
+        "input_tokens": prompt,
+        "cache_read_tokens": cached,
+        "output_tokens": output,
+        "aiu": aiu,
+        "cost_usd": cost,
+    }
+
+
+def usage_summary(campaign_id: str, session_id: str | None = None) -> str:
+    """Render the durable accounting aggregate shown in lifecycle cards."""
+    totals = usage_totals(campaign_id, session_id)
+    if not totals:
+        return "usage unavailable"
+    prompt = totals["input_tokens"]
+    cached = totals["cache_read_tokens"]
+    parts = [format_duration(totals["duration_seconds"])]
+    if totals["aiu"]:
+        parts.append(f"{totals['aiu']:.2f} AIU")
+    if totals["cost_usd"]:
+        parts.append(f"${totals['cost_usd']:.4f} estimated")
     if prompt:
         cache_share = round(100 * cached / prompt) if cached else 0
         parts.append(f"prompt {format_count(prompt)} ({cache_share}% cached)")
-    if output:
-        parts.append(f"output {format_count(output)}")
+    if totals["output_tokens"]:
+        parts.append(f"output {format_count(totals['output_tokens'])}")
     return " | ".join(parts)
