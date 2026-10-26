@@ -115,12 +115,15 @@ orchestration); both are terminal-free and tested with fake executors in
 
 ### Controller validation status (26 October 2026)
 
-- 147 targeted controller, headless console, report/projection/timeline and
+- 152 targeted controller, headless console, report/projection/timeline and
   stop-control tests pass. Windows boundary checks use the installed packaged
   PowerShell 7.6.8 and native Windows PowerShell 5.1 dummy scripts. They verify
   native child membership, forced cleanup, failed assignment, creation-policy
   failure and owner-process exit. A separate installed-PowerShell test verifies
   the `pwsh → uv → Python` chain and cooperative exit 130 without forced cleanup.
+  Stop requests before or during the persistent Copilot runtime's initial
+  connection return 130 without submitting a session. A genuine connection
+  failure without a stop request remains a failure.
 - An earlier real headless campaign attempt used the Windows PowerShell 5.1
   fallback, which failed in the existing launcher's `.ArgumentList` API before
   scientific work. That fallback and the subsequent unpackaged-only restriction

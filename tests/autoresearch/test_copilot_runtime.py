@@ -26,6 +26,29 @@ SOURCE = "robot_learning/training/environment.py"
 LIMITS = {"context": 200000, "output": 32000}
 
 
+@pytest.mark.parametrize("stop_at", ["before_connect", "during_connect", "never"])
+def test_controller_runtime_startup_stop_does_not_report_connection_failure(
+    monkeypatch, stop_at
+):
+    stopped = [stop_at == "before_connect"]
+    monkeypatch.setattr(adapter, "stop_requested", lambda: stopped[0])
+
+    async def connect(*args, **kwargs):
+        assert stop_at != "before_connect"
+        stopped[0] = stop_at == "during_connect"
+        raise ConnectionRefusedError("listener closed")
+
+    monkeypatch.setattr(adapter.asyncio, "open_connection", connect)
+    if stop_at == "never":
+        with pytest.raises(ConnectionRefusedError):
+            asyncio.run(adapter.serve(SimpleNamespace(controller_port=12345)))
+    else:
+        assert (
+            asyncio.run(adapter.serve(SimpleNamespace(controller_port=12345)))
+            == adapter.EXIT_INTERRUPTED
+        )
+
+
 def catalog():
     openai = "https://opencode.ai/inference/openai/v1"
     return {

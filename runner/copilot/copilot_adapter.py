@@ -652,11 +652,18 @@ async def serve_session(args, client, channel, command: dict) -> int:
 
 
 async def serve(args) -> int:
+    if stop_requested():
+        return EXIT_INTERRUPTED
     from copilot import CopilotClient
 
-    reader, writer = await asyncio.open_connection(
-        "127.0.0.1", args.controller_port, limit=4 * 1024 * 1024
-    )
+    try:
+        reader, writer = await asyncio.open_connection(
+            "127.0.0.1", args.controller_port, limit=4 * 1024 * 1024
+        )
+    except OSError:
+        if stop_requested():
+            return EXIT_INTERRUPTED
+        raise
     channel = ControllerChannel(reader, writer)
     client = CopilotClient(working_directory=str(ROOT))
     try:

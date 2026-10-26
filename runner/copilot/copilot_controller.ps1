@@ -85,6 +85,9 @@ function Get-RunnerSubmissionError {
 }
 
 function Start-PersistentCopilotRuntime {
+    if (Test-CampaignStopRequested) {
+        return
+    }
     if ($script:CopilotProcess) {
         if ($script:CopilotProcess.HasExited) {
             throw "The owned Copilot runtime stopped; refusing an in-run replacement."
@@ -125,10 +128,12 @@ function Start-PersistentCopilotRuntime {
         $accept = $listener.AcceptTcpClientAsync()
         $deadline = [DateTime]::UtcNow.AddSeconds(120)
         while (-not $accept.Wait(100)) {
+            if (Test-CampaignStopRequested) {
+                return
+            }
             if (
                 $script:CopilotProcess.HasExited -or
-                [DateTime]::UtcNow -ge $deadline -or
-                (Test-CampaignStopRequested)
+                [DateTime]::UtcNow -ge $deadline
             ) {
                 throw "Copilot runtime did not connect to its launcher."
             }
@@ -281,6 +286,9 @@ function Invoke-PersistentCopilotSession {
     )
 
     Start-PersistentCopilotRuntime
+    if (Test-CampaignStopRequested) {
+        return 130
+    }
     $binding = @{
         type = "session"
         invocation_id = [guid]::NewGuid().ToString()

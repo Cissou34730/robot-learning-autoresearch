@@ -3,6 +3,7 @@
 import asyncio
 import shutil
 import subprocess
+import sys
 import threading
 from pathlib import Path
 
@@ -16,6 +17,54 @@ from runner.stop_control import (
     stop_requested,
     wait_for_stop_request,
 )
+
+
+@pytest.mark.parametrize("stop_before_start", [True, False])
+def test_launcher_stop_during_runtime_startup_returns_130_without_session(
+    tmp_path, stop_before_start
+):
+    powershell = shutil.which("pwsh")
+    if powershell is None:
+        pytest.skip("PowerShell 7 is required")
+    controller = (
+        Path(__file__).resolve().parents[2] / "runner/copilot/copilot_controller.ps1"
+    )
+    exercise = tmp_path / "startup-stop.ps1"
+    exercise.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+. '{controller}'
+$script:CopilotRepositoryRoot = '{tmp_path}'
+$script:StopRequestPath = '{tmp_path / "stop.request"}'
+$Model = 'unused'
+$Reasoning = 'high'
+$script:StopPolls = 0
+function Test-CampaignStopRequested {{
+    $script:StopPolls += 1
+    return ($script:StopPolls -ge {1 if stop_before_start else 2})
+}}
+function Enter-TrustedMutableInvocation {{}}
+function Get-Command {{ [pscustomobject]@{{ Source = '{sys.executable}' }} }}
+function Send-CopilotControlMessage {{ throw 'A stopped startup must not submit a session.' }}
+try {{
+    $code = Invoke-PersistentCopilotSession -SessionArguments @('unused') -Prompt 'unused' -State @{{}}
+    if ($code -ne 130) {{ throw "Expected interrupted startup, got $code" }}
+    if (${str(stop_before_start).lower()} -and $script:CopilotProcess) {{
+        throw 'A pre-existing stop request must not start a runtime.'
+    }}
+}}
+finally {{ Stop-PersistentCopilotRuntime }}
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_stop_request_is_explicit_and_run_scoped(monkeypatch, tmp_path):
