@@ -129,10 +129,22 @@ orchestration); both are terminal-free and tested with fake executors in
   scientific work. That fallback and the subsequent unpackaged-only restriction
   have been removed. The existing packaged PowerShell is now used with the
   inherited Windows child policy; there is no runtime reinstall requirement.
-- The real campaign-1-only reset → stop → resume → Ctrl+Q sequence remains to
-  be rerun with this corrected boundary. Physical Windows Terminal Ctrl+Tab
-  delivery and terminal restoration also need an interactive check. Headless
-  tests do not establish those physical-terminal behaviors.
+- The real headless TUI exercised default `run 1` → `stop campaign-1` →
+  `start campaign-1` → Ctrl+Q using the installed packaged PowerShell 7.6.8.
+  Reset succeeded; both launchers returned 130 cooperatively, the first stop
+  in 2.23 seconds. Resume preserved campaign ID
+  `ecc45677-789c-42fe-b261-68dc326c3458`. The reset helper returned 0; all three
+  jobs were empty at cleanup, with no forced termination. Campaign-2 and
+  campaign-3 retained their state hashes, modification times, Git HEADs and
+  clean Git status. The smoke driver's final bookkeeping assertion initially
+  counted the reset helper as a launcher; its audit now separates the two.
+  The application lifecycle assertions had completed before that driver error;
+  no extra reset was performed for the bookkeeping correction.
+- No operations completed during the observation window (campaign preparation),
+  so this does not establish recovery of completed scientific work or a saved
+  checkpoint. Physical Windows Terminal Ctrl+Tab delivery and terminal
+  restoration still need an interactive check; headless tests cannot establish
+  those physical-terminal behaviors.
 
 Reference size is 160x45; the layout adapts down to an 80x24 and 60-column
 fallback and below 48x16 shows a `Terminal too small - need 48x16` message.
