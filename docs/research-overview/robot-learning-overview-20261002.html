@@ -653,7 +653,8 @@
               engineering commits.</li>
             <li><code>robot-learning-campaigns</code> is a plain folder holding one campaign repository per slot,
               <code>campaign-1</code> to <code>campaign-5</code>. Each holds scientific source, state and artifacts in
-              its own Git repository with no remotes.</li>
+              its own Git repository with no remotes.
+            </li>
             <li>The old inquiry-centered-lifecycle worktree remains a forensic safeguard.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">The harness is no longer a linked worktree. Updating it does
@@ -748,10 +749,12 @@
       <div class="card" style="margin-top: 16px">
         <h3>Run campaigns from the harness folder</h3>
         <p><strong>Standard: 1 to 5 campaigns at once.</strong> <code>.\tools\run_parallel.ps1 -Count 3</code> uses
-          <code>campaign-1</code> to <code>campaign-3</code>, initializes missing slots from an existing one, resets each
+          <code>campaign-1</code> to <code>campaign-3</code>, initializes missing slots from an existing one, resets
+          each
           to the recipe, launches each campaign in its own window and starts a monitor that stops a campaign
           cooperatively at 6 h of active time or 120 AIU (defaults; the PI never sees these caps). Transcripts and one
-          report per campaign go to <code>%TEMP%\robot-learning\parallel-&lt;time&gt;</code>.</p>
+          report per campaign go to <code>%TEMP%\robot-learning\parallel-&lt;time&gt;</code>.
+        </p>
         <p><strong>One campaign by hand.</strong> <code>.\run_research.ps1</code> launches or resumes the selected
           campaign. It does not reset it.</p>
         <p>
@@ -2063,7 +2066,8 @@
                 episodes, per stratum when asked. The maintainer reversed "no harness tool": in <code>e7dbbece</code>
                 the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts
                 unchanged, and the PI-owned <code>comparison.py</code> stays available. Track use. Use: 8 calls in
-                <code>cfa88359</code>, 45 in <code>5d94bf8a</code>.</td>
+                <code>cfa88359</code>, 45 in <code>5d94bf8a</code>.
+              </td>
             </tr>
             <tr>
               <td>OI-040</td>
@@ -2102,7 +2106,8 @@
                 session's <code>contracts/scenario.md</code> re-reads fell from 21 to 0 in <code>cfa88359</code>; it
                 still re-read <code>authority.md</code> (11) and <code>policy_runtime.py</code> (6), which are now
                 included. Remaining check: context growth and cost across a campaign longer than about 15 sessions. Keep
-                the complete history accessible. Do not infer a context repair from faster model responses.</td>
+                the complete history accessible. Do not infer a context repair from faster model responses.
+              </td>
             </tr>
             <tr>
               <td>OI-051</td>
@@ -2114,7 +2119,8 @@
                 result. All other tools stay blocked meanwhile. The PI session activity limit is now 6 h; coder and
                 reviewer time counts toward it, Runner waits do not. Observed 25 October in the minimal-recipe campaign
                 <code>05229297</code> (M42, 3 × 2,400 episodes, about 35 minutes). No campaign has yet run an operation
-                longer than 25 minutes, so the slice has not been exercised.</td>
+                longer than 25 minutes, so the slice has not been exercised.
+              </td>
             </tr>
             <tr>
               <td>OI-053</td>
@@ -2132,7 +2138,8 @@
             <tr>
               <td>OI-054</td>
               <td>The PI is told the campaign is judged on time and AI usage, but sees neither number. In
-                <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.</td>
+                <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.
+              </td>
               <td><span class="tag">Implemented</span></td>
               <td><code>4ce2fdb1</code> (26 October): the campaign resource line shows elapsed time and AI usage of
                 completed sessions by role (PI; coding and review). Caps stay hidden. Watch for earlier
@@ -2222,7 +2229,8 @@
                   <td>Goal review compares official prospects with further work and considers selection bias. In
                     <code>2d4fcc0e</code>, the PI continued at 97.2% on pooled fresh panels and requested assessment at
                     400/400. No automatic assessment rule or readiness condition was added. Closure does not guarantee
-                    future assessment success.</td>
+                    future assessment success.
+                  </td>
                 </tr>
                 <tr>
                   <td>OI-009</td>
@@ -2314,7 +2322,8 @@
                   <td>Closed by maintainer decision on 22 October. Coders receive contract excerpts and the recorded
                     structure of selected evidence (<code>evidence_inputs</code>); missing scientific decisions return
                     to the PI; independent review remains. Coding and review cost 7.1 of 30.1 AIU in
-                    <code>cfa88359</code>. No separate clarification-cost measurement was completed.</td>
+                    <code>cfa88359</code>. No separate clarification-cost measurement was completed.
+                  </td>
                 </tr>
                 <tr>
                   <td>OI-027</td>
@@ -2420,7 +2429,8 @@
                     <code>contracts/instruments/coding.md</code>): runtime changes reach a candidate only through
                     training; frozen-weight runtime tests are diagnostics; measurement artifacts never become
                     candidates. The repackaging operation is not built. In <code>cfa88359</code> the PI trained T2 fresh
-                    with a reflection in its policy I/O and passed at 199/200.</td>
+                    with a reflection in its policy I/O and passed at 199/200.
+                  </td>
                 </tr>
                 <tr>
                   <td>OI-045</td>
@@ -2441,7 +2451,8 @@
                     campaign repository's local tag <code>baseline-distinct-episodes-v3-robot</code> (commit
                     <code>8bee2b4</code> on top of <code>baseline-distinct-episodes-v3</code>) updates the two recipe
                     imports and <code>campaigns/task_contract.json</code>; Fresh resets use it.
-                    <code>tools/initialize_campaign.py</code> still defaults to the old tag.</td>
+                    <code>tools/initialize_campaign.py</code> still defaults to the old tag.
+                  </td>
                 </tr>
                 <tr>
                   <td>OI-041</td>
@@ -2574,7 +2585,8 @@
                   </td>
                   <td><span class="tag">Proposal</span></td>
                   <td>Low priority. Remove the <code>read</code> tool, <code>read_alias</code> and
-                    <code>json_editors</code> if external providers are no longer used.</td>
+                    <code>json_editors</code> if external providers are no longer used.
+                  </td>
                 </tr>
                 <tr>
                   <td>OI-050</td>
@@ -2611,8 +2623,10 @@
                     scored 0%; the PI then abandoned RL for imitation of an IK teacher it wrote (11 runs, 0–2.8%) and
                     never revisited normalization, reward scale or PPO settings, never used longer runs or repeated
                     seeds, and spent most effort on large confirmation panels. The main recipe reaches 64–94% in one
-                    120k run. The worktree was removed; the branch, the minimal recipe repository and the minimal
-                    campaign folder remain for reference.</td>
+                    120k run. On 26 October the experiment was removed: its worktree, branch
+                    <code>experiment/minimal-recipe</code>, the minimal recipe repository and the campaign folder
+                    <code>robot-learning-campaigns-minimal</code> no longer exist; this entry is its record.
+                  </td>
                 </tr>
               </tbody>
             </table>
