@@ -63,12 +63,15 @@ def test_training_progress_event_carries_reward_and_scenario_metric(monkeypatch)
         120000,
         728.0,
         {"ep_rew_mean": 86.3},
+        eta_seconds=44.5,
     )
     assert event["kind"] == "training_progress"
     assert event["steps"] == 72000
     assert event["target"] == 120000
     assert event["ep_rew_mean"] == 86.3
     assert event["scenario_metric"] == "success 97%"
+    assert event["elapsed_seconds"] == 728.0
+    assert event["eta_seconds"] == 44.5
     assert "training_success" not in event
 
 

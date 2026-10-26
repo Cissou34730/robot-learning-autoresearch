@@ -112,6 +112,7 @@ def test_training_progress_keeps_timestamp_and_interval():
                 "operation_id": "T9",
                 "steps": 1000,
                 "target": 10000,
+                "elapsed_seconds": 10,
                 "ep_rew_mean": 10.0,
                 "training_success": 0.5,
             },
@@ -125,6 +126,7 @@ def test_training_progress_keeps_timestamp_and_interval():
                 "operation_id": "T9",
                 "steps": 2000,
                 "target": 10000,
+                "elapsed_seconds": 20,
                 "ep_rew_mean": 11.0,
                 "training_success": 0.6,
             },
@@ -140,6 +142,49 @@ def test_training_progress_keeps_timestamp_and_interval():
     assert "+15s" in progress[1].title
     assert "reward 11.0" in progress[1].title
     assert "success 60%" in progress[1].title
+    assert "Elapsed 20s" in progress[1].title
+    assert "ETA 1m" in progress[1].title
+
+
+def test_live_and_durable_candidate_announcements_share_one_non_repeated_label():
+    reducer = TimelineReducer()
+    candidate = "T1:checkpoint-65536"
+    stamp = datetime(2026, 10, 26, 12, tzinfo=UTC)
+    reducer.ingest(
+        Observation(
+            "candidate_created",
+            None,
+            {"candidate": candidate, "artifact": "checkpoint.zip"},
+            event_id="history:candidate",
+        )
+    )
+    reducer.ingest(
+        Observation(
+            "candidate_created",
+            stamp,
+            {"candidate": candidate, "training_steps": 65536},
+            event_id="live:candidate",
+        )
+    )
+    reducer.ingest(
+        Observation(
+            "candidate_created",
+            None,
+            {"candidate": candidate},
+            event_id="history:again",
+        )
+    )
+    candidates = [
+        item
+        for item in _walk(reducer.view()[0])
+        if item.item_id == f"candidate:{candidate}"
+    ]
+    assert len(candidates) == 1
+    item = candidates[0]
+    assert (item.title + item.summary).count(candidate) == 1
+    assert item.ts == stamp
+    assert item.payload["artifact"] == "checkpoint.zip"
+    assert item.payload["training_steps"] == 65536
 
 
 def test_unknown_event_renders_generically():

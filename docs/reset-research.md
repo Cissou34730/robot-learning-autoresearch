@@ -20,7 +20,7 @@ not bypass ownership checks. Do not use it just to resume a stopped campaign.
 The semicolon separates commands; it is not a success-only condition. If reset
 fails, inspect that failure before authorizing launch.
 
-The maintainer TUI provides the success-dependent batch form: `run N` completes
+The maintainer TUI provides the success-dependent batch form: `run 1-3` completes
 all selected resets before launching any selected campaign. Its default is
 `-Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force`.
 Fresh/Baseline, Clean and the relevant reference are configurable in the shared
@@ -28,6 +28,8 @@ Settings dialog (F2), alongside the campaign report.
 An initialization/reset failure stops further preparation and starts none of
 the batch; earlier successful resets are not rolled back. `reset N` never
 launches, and `start N` never resets. Resetting a busy owned campaign is refused.
+Here N is a campaign identity: `start 2` selects only campaign-2. Use inclusive
+ranges such as `reset 2-3` for multiple campaigns.
 Measurements and logs may be deleted; ignored files have no reset backup.
 
 References resolve in campaign Git. Initialize a new campaign repository once

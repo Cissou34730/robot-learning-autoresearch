@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import threading
 import time
@@ -189,9 +190,8 @@ class BatchOutcome:
 def parse_command(text: str) -> tuple[str, list[int]]:
     """Parse one command line into ``(verb, slots)``.
 
-    A bare number selects the first N standard folders, as with
-    ``tools/run_parallel.ps1 -Count N``; ``campaign-k`` tokens select
-    explicit folders. Campaign actions without a target are allowed only
+    A bare number selects that campaign; ``1-3`` selects an inclusive range.
+    ``campaign-k`` tokens also select explicit folders. Campaign actions without a target are allowed only
     inside a campaign tab, where the caller supplies that campaign.
     """
     tokens = text.strip().split()
@@ -206,28 +206,32 @@ def parse_command(text: str) -> tuple[str, list[int]]:
     if selection == ["all"]:
         if verb != "stop":
             raise CommandError(
-                "Use a count or explicit campaign folders; all is stop-only."
+                "Use campaign numbers, ranges or folder names; all is stop-only."
             )
         return verb, list(range(1, MAX_SLOTS + 1))
-    if len(selection) == 1 and selection[0].isdigit():
-        count = int(selection[0])
-        if not 1 <= count <= MAX_SLOTS:
-            raise CommandError(f"Count must be between 1 and {MAX_SLOTS}.")
-        return verb, list(range(1, count + 1))
     slots: list[int] = []
     for token in selection:
         lowered = token.lower()
-        if (
-            not lowered.startswith("campaign-")
-            or not lowered[len("campaign-") :].isdigit()
-        ):
-            raise CommandError(f"Unknown target: {token!r}")
-        slot = int(lowered[len("campaign-") :])
-        if not 1 <= slot <= MAX_SLOTS:
-            raise CommandError(f"Campaign slot must be between 1 and {MAX_SLOTS}.")
-        if slot in slots:
-            raise CommandError(f"Duplicate target: campaign-{slot}")
-        slots.append(slot)
+        if lowered.startswith("campaign-"):
+            identity = lowered[len("campaign-") :]
+            if identity not in {str(slot) for slot in range(1, MAX_SLOTS + 1)}:
+                raise CommandError(f"Invalid campaign folder: {token!r}")
+            selected = [int(identity)]
+        else:
+            match = re.fullmatch(r"([1-5])(?:-([1-5]))?", lowered)
+            if match is None:
+                raise CommandError(
+                    f"Invalid target {token!r}; use a campaign number 1–5, a range such as 1-3, or a folder name."
+                )
+            first = int(match[1])
+            last = int(match[2] or match[1])
+            if first > last:
+                raise CommandError(f"Invalid descending range: {token!r}")
+            selected = range(first, last + 1)
+        for slot in selected:
+            if slot in slots:
+                raise CommandError(f"Duplicate target: campaign-{slot}")
+            slots.append(slot)
     return verb, sorted(slots)
 
 
@@ -499,7 +503,9 @@ class CampaignController:
             slot = self._layout.slot_for(external_target)
             slots = [slot]
         if not slots:
-            raise CommandError(f"{verb} requires a campaign target or count.")
+            raise CommandError(
+                f"{verb} requires a campaign number, range or folder name."
+            )
         if len(set(slots)) != len(slots):
             raise CommandError("Duplicate campaign targets.")
         if verb not in {"start", "stop", "reset", "run"}:

@@ -811,12 +811,17 @@ async def _campaign_switch():
         await pilot.pause()
         assert "OLD CAMPAIGN OUTPUT" in "\n".join(strip.text for strip in out.lines)
         sources.campaign_id = "new-campaign-id"
+        app.set_process_running(True)
+        app.set_process_running(False)
+        assert app._paused_at is not None
         app.refresh_snapshot()
         await pilot.pause()
         rendered = "\n".join(strip.text for strip in out.lines)
         assert "OLD CAMPAIGN OUTPUT" not in rendered
         assert "new-campaign-id" in rendered
         assert app._campaign_id == "new-campaign-id"
+        assert app._paused_at is None
+        assert app._paused_intervals == []
 
 
 def test_event_log_uses_a_fixed_time_column():
@@ -1347,13 +1352,14 @@ async def _active_training_metrics():
             [
                 Observation(
                     "training_progress",
-                    datetime(2026, 10, 24, 12, 0, tzinfo=UTC),
+                    datetime.now(tz=UTC),
                     {
                         "operation_id": "T9",
                         "attempt": 1,
                         "steps": 24000,
                         "target": 80000,
                         "elapsed_seconds": 720,
+                        "eta_seconds": 1680,
                         "ep_rew_mean": 86.3,
                         "training_success": 0.97,
                     },
@@ -1364,6 +1370,8 @@ async def _active_training_metrics():
         rendered = str(app.query_one("#progress").render())
         assert "Reward 86.3" in rendered
         assert "Success 97%" in rendered
+        assert "Elapsed 12m" in rendered
+        assert "ETA 28m" in rendered
         assert app.query_one("#training").display is False
 
 

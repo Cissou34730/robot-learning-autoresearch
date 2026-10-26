@@ -152,7 +152,10 @@ Do not generate a new scientific summary or expose private reasoning.
 ### 3.2 Duration rules
 
 - Label time since `campaign.started_at` as `Campaign age`.
-- Campaign age includes periods when execution was inactive.
+- Read-only campaign age includes periods when execution was inactive. For
+  TUI-owned campaigns, label the counter `Campaign elapsed`, freeze it after an
+  acknowledged stop and exclude paused intervals observed in the current TUI
+  session on resume. Do not change recorded timestamps or infer offline pauses.
 - Stage elapsed measures the current stage/session interval, not campaign age.
 - Training elapsed measures the current execution attempt.
 - Evaluation elapsed identifies whether it covers the current panel or the whole measurement.
@@ -245,7 +248,10 @@ Do not reinterpret continuation counters.
 
 Before the first counter, show `Starting - no step count yet`.
 Do not fabricate a measured zero.
-ETA and FPS are not required for this version.
+Show the runner's ETA when available. For older feeds, estimate only from
+advancing observations in the same attempt; otherwise show unavailable. FPS
+remains optional. TUI numeric targets are identities, not counts: `start 2`
+selects only campaign-2; `start 1-2` and `start 2-3` select inclusive ranges.
 
 ### 4.2 Evaluation
 

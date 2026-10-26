@@ -337,6 +337,8 @@ def training_progress_event(
     target: int | None,
     elapsed_seconds: float,
     record: dict | None,
+    *,
+    eta_seconds: float | None = None,
 ) -> dict:
     """Maintainer-only training progress payload for the TUI feed."""
     record = record or {}
@@ -346,6 +348,7 @@ def training_progress_event(
         "steps": steps,
         "target": target,
         "elapsed_seconds": round(elapsed_seconds, 1),
+        "eta_seconds": round(eta_seconds, 1) if eta_seconds is not None else None,
         "ep_rew_mean": record.get("ep_rew_mean"),
         "scenario_metric": console.scenario_progress_metric(record),
     }
@@ -472,7 +475,12 @@ def train_candidate(
                     )
                     _emit_progress(
                         training_progress_event(
-                            operation_id, steps, progress_target, elapsed, record
+                            operation_id,
+                            steps,
+                            progress_target,
+                            elapsed,
+                            record,
+                            eta_seconds=eta if completed_this_run else None,
                         )
                     )
                 stalled_for = time.monotonic() - last_progress_at

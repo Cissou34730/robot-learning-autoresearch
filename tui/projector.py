@@ -17,6 +17,7 @@ zero.
 
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -164,6 +165,46 @@ class TrainingProgress:
     reward: float | None = None
     success: float | str | None = None
     stale: bool = False
+    eta_seconds: float | None = None
+
+
+def training_eta_seconds(progress: dict, previous: dict | None = None) -> float | None:
+    """Prefer the producer's ETA; estimate older feeds only from actual advancement."""
+
+    def number(value):
+        return (
+            isinstance(value, (int, float))
+            and not isinstance(value, bool)
+            and math.isfinite(value)
+        )
+
+    eta = progress.get("eta_seconds")
+    if number(eta) and eta >= 0:
+        return float(eta)
+    steps, target = progress.get("steps"), progress.get("target")
+    if not number(steps) or not number(target) or target <= 0:
+        return None
+    if steps >= target:
+        return 0.0
+    previous = previous or {}
+    if progress.get("operation_id") != previous.get("operation_id") or (
+        progress.get("attempt") or "unknown"
+    ) != (previous.get("attempt") or "unknown"):
+        return None
+    before, elapsed, prior_elapsed = (
+        previous.get("steps"),
+        progress.get("elapsed_seconds"),
+        previous.get("elapsed_seconds"),
+    )
+    if (
+        number(before)
+        and number(elapsed)
+        and number(prior_elapsed)
+        and steps > before
+        and elapsed > prior_elapsed
+    ):
+        return (target - steps) * (elapsed - prior_elapsed) / (steps - before)
+    return None
 
 
 @dataclass(frozen=True)

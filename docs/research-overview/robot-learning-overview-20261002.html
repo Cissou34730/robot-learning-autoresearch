@@ -1144,6 +1144,8 @@
                 campaign (up to five), and opening the interface starts nothing.
                 Explicit <code>run N</code>, <code>reset N</code>, <code>start N</code> and
                 <code>stop N</code>/<code>stop all</code> reuse the existing scripts with shared launch settings.
+                A number is a campaign identity: <code>start 2</code> selects only campaign-2;
+                inclusive ranges such as <code>start 1-2</code> and <code>start 2-3</code> select batches.
                 Default reset is Fresh + Clean + <code>baseline-distinct-episodes-v3-robot</code> + Force;
                 measurements/logs may be deleted without a backup. All batch resets precede launch, and reset failure
                 blocks every batch launch. Stop is cooperative (180 seconds by default, plus five seconds controller

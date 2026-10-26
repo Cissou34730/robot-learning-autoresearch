@@ -82,8 +82,11 @@ reset or launch, without preventing the interface from opening.
   the active report. The command draft and shared settings survive the toggle.
   The footer remains visible. Tab changes and applying/cancelling settings do
   not reopen a collapsed command area; toggling is inactive inside a dialog.
-  Untargeted campaign actions select that folder only; explicit counts/folder
-  lists select batches. Without any installed campaign, an empty state requires
+  Untargeted campaign actions select that folder only. A number selects that
+  identity (`start 2` means only campaign-2); inclusive ranges (`start 1-2`,
+  `start 2-3`, `run 1-3`) or folder lists select batches. Overlapping/duplicate,
+  descending and out-of-bounds selections are refused before any action.
+  Without any installed campaign, an empty state requires
   explicit targets and shows no fake campaign tab. `models` lists available models
   through the existing launcher. `diagnostics campaign-1` shows the last 64 KiB
   of each run-private console log, separately from scientific observations.
@@ -188,12 +191,23 @@ Tab/Shift+Tab move focus; Ctrl+C copies selected output text or does nothing.
 Ctrl+Q closes a read-only report without affecting external campaigns; in
 the console it first stops all owned campaigns.
 
-The durable snapshot and the elapsed clock refresh every 15 seconds. Campaign
-age and stage elapsed freeze at the campaign's recorded stop time. The
-header shows the recorded campaign and stage start times alongside those
-durations, in local time. Earlier-day starts include the date; missing start
-times are marked unavailable. On narrower screens the timing facts move to
-their own rows rather than disappearing.
+The durable snapshot and elapsed clocks refresh every 15 seconds. Terminal
+campaigns freeze at recorded completion. For a TUI-owned launcher, acknowledged
+stop/failure also freezes displayed campaign/stage elapsed clocks. Resume
+excludes the paused intervals observed in this TUI session; a new stage excludes
+only pauses overlapping that stage. The display is labelled `Campaign elapsed`
+for owned runs, versus wall-clock `Campaign age` for read-only/unknown ownership.
+Pause accounting is presentation-only and session-local: it does not alter
+scientific timestamps or infer historical offline pauses. Reset clears it.
+The header retains recorded start times, in local time; earlier days include
+the date and unknown times are unavailable.
+
+Active training shows elapsed duration and ETA in the progress panel and
+timestamped timeline. New observations carry the existing runner ETA; older
+feeds can estimate from two advancing observations in the same attempt. Missing,
+stale, stopped or non-advancing data does not produce a fabricated zero ETA.
+Live and reconstructed candidate announcements share a candidate identity, so
+each checkpoint appears once and its identifier is not repeated in the row.
 
 The observation feed is drained every second so PI messages and console lines
 stay live; training progress events arrive every 15 seconds, matching the
@@ -320,7 +334,7 @@ Events follow this shape (one JSON object per line):
 Kinds: `pi_message {text, final, turn}` (whole-word snapshots while the PI
 writes, `final: true` at turn end; the report appends only the new text, so a
 growing message never duplicates), `console_line {scope, text}`,
-`training_progress` (`operation_id, steps, target, elapsed_seconds,
+`training_progress` (`operation_id, steps, target, elapsed_seconds, eta_seconds,
 ep_rew_mean, scenario_metric`), `eval_progress` (`operation_id, instrument,
 official, episodes, episodes_total, elapsed_seconds`), `execution_end
 {operation_id, status, text}`, `liveness {}`. The consumer still tolerates the

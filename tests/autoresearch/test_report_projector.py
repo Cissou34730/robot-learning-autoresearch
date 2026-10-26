@@ -34,6 +34,27 @@ def _observation_args():
     return demo_state(now, started), demo_records(now), demo_usage_rows(now)
 
 
+def test_eta_uses_the_current_attempt_and_never_invents_zero_before_progress():
+    before = {"operation_id": "T1", "attempt": 1, "steps": 1000, "elapsed_seconds": 10}
+    current = {
+        "operation_id": "T1",
+        "attempt": 1,
+        "steps": 2000,
+        "target": 10000,
+        "elapsed_seconds": 20,
+    }
+    assert projector.training_eta_seconds(current) is None
+    assert projector.training_eta_seconds(current, before) == 80
+    assert projector.training_eta_seconds({**current, "eta_seconds": 75}, before) == 75
+    assert projector.training_eta_seconds({**current, "attempt": 2}, before) is None
+    assert (
+        projector.training_eta_seconds({**current, "elapsed_seconds": 2}, before)
+        is None
+    )
+    assert projector.training_eta_seconds({**current, "steps": 1000}, before) is None
+    assert projector.training_eta_seconds({**current, "steps": 10000}) == 0
+
+
 def test_model_rows_join_roles_and_recorded_metrics():
     snapshot = _demo_snapshot()
     rows = {row.candidate_id: row for row in snapshot.model_rows}

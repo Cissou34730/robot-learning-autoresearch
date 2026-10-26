@@ -85,7 +85,7 @@ initialization/reset; opening the interface still starts nothing.
 campaign-1), with a visible **Command / Execute / Settings** row below it.
 There is no separate Commands tab. Other installed campaigns have their own
 report tabs. Campaigns only run when a
-command is submitted (`run 3`, `reset campaign-1 campaign-2`,
+command is submitted (`run 1-3`, `reset campaign-1 campaign-2`,
 `start campaign-2`, `stop all`); each batch sends the exact same shared
 launcher options to every selected campaign, defaulting to the launcher's
 own defaults for any field left empty. `run` initializes a missing standard
@@ -101,7 +101,11 @@ Press **F2** or click **Settings** for labelled shared launch/reset settings;
 **F1** opens help and **F3** shows recent commands and their step outcomes.
 Type `start` and press Enter or click Execute to resume the active campaign
 without resetting it. Untargeted commands follow the active campaign tab;
-an explicit count or folder list still selects a batch.
+an explicit range or folder list selects a batch. Numbers are identities:
+`start 2` starts only campaign-2, `start 1-2` selects campaigns 1 and 2, and
+`start 2-3` selects campaigns 2 and 3. This also applies to run/reset/stop;
+`stop all` still stops every owned campaign. The direct `run_parallel.ps1`
+`-Count` option is unchanged.
 **Ctrl+L** opens/closes the bottom command area, preserving the draft. Opening
 focuses the input; closing returns focus and four rows to the campaign report.
 The footer remains visible so commands can always be reopened.

@@ -15,6 +15,7 @@ from runner import paths
 from runner import reporting as console
 from runner.copilot.reporting import tool_detail, tool_result_lines
 from tui.observations import Observation
+from tui.projector import training_eta_seconds
 
 KIND_GLYPHS = {
     "campaign": "[C]",
@@ -217,6 +218,7 @@ class TimelineReducer:
         self._inquiries: dict[str, TimelineItem] = {}
         self._operations: dict[str, TimelineItem] = {}
         self._progress: dict[str, tuple[datetime | None, int | None]] = {}
+        self._training_samples: dict[str, dict] = {}
         self._pi_items: dict[str, TimelineItem] = {}
         self._pi_text: dict[str, str] = {}
         self._tools: dict[str, TimelineItem] = {}
@@ -644,6 +646,9 @@ class TimelineReducer:
             step_delta += f" ({max(0.0, (steps - previous_steps) / elapsed):,.0f}/s)"
         self._progress[operation_id] = (ts, steps if isinstance(steps, int) else None)
         if kind == "training_progress":
+            sample = {**fields, "operation_id": operation_id}
+            eta = training_eta_seconds(sample, self._training_samples.get(operation_id))
+            self._training_samples[operation_id] = sample
             percent = (
                 f"{100 * steps / target:.0f}%"
                 if isinstance(steps, int) and isinstance(target, int) and target
@@ -662,6 +667,12 @@ class TimelineReducer:
                 percent,
                 interval,
                 step_delta,
+                f"Elapsed {console.format_duration(float(fields['elapsed_seconds']))}"
+                if isinstance(fields.get("elapsed_seconds"), (int, float))
+                else "Elapsed unavailable",
+                f"ETA {console.format_duration(eta)}"
+                if eta is not None
+                else "ETA unavailable",
                 f"reward {fields.get('ep_rew_mean')}"
                 if fields.get("ep_rew_mean") is not None
                 else "",
@@ -1161,6 +1172,19 @@ class TimelineReducer:
         operation_id: str,
         fields: dict,
     ) -> None:
+        candidate = (
+            str(fields.get("candidate") or fields.get("id") or "")
+            if kind == "candidate_created"
+            else ""
+        )
+        item_id = (
+            f"candidate:{candidate}"
+            if candidate
+            else f"leaf:{kind}:{ts}:{len(self._seen)}"
+        )
+        existing = self._items.get(item_id) if candidate else None
+        if existing is not None:
+            fields = {**existing.payload, **fields}
         title = {
             "role_assigned": f"role {fields.get('role') or ''}".strip(),
             "candidate_created": f"candidate {fields.get('candidate') or fields.get('id') or ''}".strip(),
@@ -1175,8 +1199,12 @@ class TimelineReducer:
             or fields.get("summary")
             or ""
         )
+        if candidate:
+            summary = _first_line(fields.get("summary") or fields.get("text") or "")
+            if summary == candidate:
+                summary = ""
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
+            item_id=item_id,
             kind={
                 "role_assigned": "role",
                 "candidate_created": "role",
@@ -1219,6 +1247,13 @@ class TimelineReducer:
             ),
             payload=dict(fields),
         )
+        if existing is not None:
+            existing.title = leaf.title
+            existing.summary = leaf.summary
+            existing.detail = leaf.detail
+            existing.payload = leaf.payload
+            existing.ts = existing.ts or ts
+            return
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
@@ -1471,8 +1506,8 @@ class TimelineReducer:
                 ),
                 None,
             )
-            if latest is not None:
-                parts.append(latest.summary)
+            if latest is not None and item.status in {"running", "requested"}:
+                parts.append(latest.title)
             else:
                 completed = next(
                     (

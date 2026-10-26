@@ -10,7 +10,9 @@ from __future__ import annotations
 import asyncio
 import subprocess
 import time
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -93,7 +95,7 @@ def test_console_opens_first_campaign_with_report_and_visible_command_composer(
             assert app.submit_command("deploy 2") is None
             await _run_batch(app, pilot, "run 9")
             log_text = "\n".join(app._command_history)
-            assert "campaign-9" in log_text or "Count" in log_text
+            assert "run 9" in log_text
             # Ctrl+C must copy or do nothing; it must never quit or shut down.
             await pilot.press("ctrl+c")
             await pilot.pause()
@@ -125,6 +127,56 @@ def test_console_start_command_launches_and_stop_command_stops(tmp_path):
             child = machinery.children[layout.folder(1)]
             assert child.stop_requests == 1
             assert app._controller.state("campaign-1").stage == "stopping"
+
+    asyncio.run(scenario())
+
+
+def test_stopped_campaign_clocks_freeze_and_resume_without_counting_the_pause(
+    tmp_path, monkeypatch
+):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import report
+
+    clock = [datetime(2026, 10, 26, 12, tzinfo=UTC)]
+    monkeypatch.setattr(report, "_now", lambda: clock[0])
+    app, _ = _console(tmp_path, FakeMachinery())
+
+    async def scenario():
+        async with app.run_test(size=(160, 45)) as pilot:
+            await pilot.pause()
+            first = app.query_one("#panel-campaign-1", CampaignPanel)
+            second = app.query_one("#panel-campaign-2", CampaignPanel)
+            started = clock[0] - timedelta(minutes=10)
+            stage = clock[0] - timedelta(minutes=2)
+            for slot, panel in enumerate((first, second), start=1):
+                state = {
+                    "campaign": {
+                        "id": f"campaign-{slot}",
+                        "started_at": started.isoformat(),
+                    }
+                }
+                panel._sources = SimpleNamespace(
+                    read=lambda state=state: (state, [], [])
+                )
+                panel._stage_started = stage
+                panel.refresh_snapshot()
+            await _run_batch(app, pilot, "start 1")
+            await _run_batch(app, pilot, "start 2")
+            await _run_batch(app, pilot, "stop 1")
+            app._controller.reap("campaign-1")
+            app._refresh_status_now()
+            frozen = first._clock_end(started)
+            clock[0] += timedelta(minutes=20)
+            first.tick_clock()
+            first.refresh_snapshot()
+            assert first._clock_end(started) == frozen
+            assert second._clock_end(started) == clock[0]
+            await _run_batch(app, pilot, "start 1")
+            assert first._clock_end(started) == frozen
+            clock[0] += timedelta(seconds=30)
+            assert first._clock_end(started) == frozen + timedelta(seconds=30)
+            assert first.snapshot.started_at == started
+            assert first._clock_end(clock[0] - timedelta(seconds=10)) == clock[0]
 
     asyncio.run(scenario())
 
@@ -239,7 +291,7 @@ def test_reset_options_failure_popup_and_persistent_details(tmp_path):
             assert settings.query_one("#reset-baseline-field").display
             await pilot.click("#settings-apply")
             await pilot.pause()
-            await _run_batch(app, pilot, "run 2")
+            await _run_batch(app, pilot, "run 1-2")
             assert len(calls) == 1
             assert "Baseline" in calls[0] and "selected-baseline" in calls[0]
             assert "-RecipeRef" not in calls[0] and "-Clean" not in calls[0]
@@ -272,7 +324,7 @@ def test_initialized_campaign_gets_one_real_tab(tmp_path):
 
     async def scenario():
         async with app.run_test(size=(120, 45)) as pilot:
-            await _run_batch(app, pilot, "run 3")
+            await _run_batch(app, pilot, "run 1-3")
             panes = [p.id for p in app.query_one(TabbedContent).query("TabPane")]
             assert panes == ["campaign-1", "campaign-2", "campaign-3"]
             assert len(machinery.started) == 3

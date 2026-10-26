@@ -150,11 +150,20 @@ def _controller(
     return controller, machinery, layout, runner
 
 
-def test_parse_command_count_and_targets():
-    assert control.parse_command("run 3") == ("run", [1, 2, 3])
+def test_parse_command_numbers_ranges_and_targets():
+    assert control.parse_command("run 3") == ("run", [3])
     assert control.parse_command("stop 1") == ("stop", [1])
     assert control.parse_command("reset campaign-1 campaign-3") == ("reset", [1, 3])
     assert control.parse_command("start campaign-2 campaign-1") == ("start", [1, 2])
+
+
+@pytest.mark.parametrize("verb", ["start", "run", "reset", "stop"])
+def test_numeric_targets_always_mean_identities_and_ranges_are_inclusive(verb):
+    assert control.parse_command(f"{verb} 2") == (verb, [2])
+    assert control.parse_command(f"{verb} 1-2") == (verb, [1, 2])
+    assert control.parse_command(f"{verb} 2-3") == (verb, [2, 3])
+    assert control.parse_command(f"{verb} 1-5") == (verb, [1, 2, 3, 4, 5])
+    assert control.parse_command(f"{verb} 1 3") == (verb, [1, 3])
 
 
 @pytest.mark.parametrize(
@@ -167,6 +176,12 @@ def test_parse_command_count_and_targets():
         "run campaign-0",
         "run campaign-2 campaign-2",
         "reset foo",
+        "start 3-2",
+        "run 0-2",
+        "reset 1-6",
+        "stop 1-2-3",
+        "start 1-3 2",
+        "start 2 campaign-2",
     ],
 )
 def test_parse_command_rejects_invalid(text):
@@ -365,6 +380,21 @@ def test_duplicate_command_submission_refused(tmp_path):
     with pytest.raises(control.ControllerError):
         controller.execute("start", [1], settings=control.LaunchSettings())
     assert len(machinery.started) == 1
+
+
+def test_start_2_does_not_retarget_or_interrupt_running_campaign_1(tmp_path):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    controller.execute("start", [1], settings=control.LaunchSettings())
+    first = machinery.children[layout.folder(1)]
+    verb, slots = control.parse_command("start 2")
+    outcome = controller.execute(verb, slots, settings=control.LaunchSettings())
+    assert outcome.ok
+    assert [folder for folder, _ in machinery.started] == [
+        layout.folder(1),
+        layout.folder(2),
+    ]
+    assert first.stop_requests == 0
+    assert not first.forced
 
 
 def test_stop_sends_request_and_marks_stopping(tmp_path):
@@ -686,7 +716,9 @@ def test_force_stop_terminates_the_whole_contained_tree(tmp_path, native_shell):
     launcher = builder.start(script, [], tmp_path / "control")
     try:
         deadline = time.monotonic() + 15
-        while not pidfile.exists() and time.monotonic() < deadline:
+        while (
+            not pidfile.exists() or not pidfile.read_text(encoding="utf-8-sig").strip()
+        ) and time.monotonic() < deadline:
             time.sleep(0.05)
         descendant = int(pidfile.read_text(encoding="utf-8-sig").strip())
         assert {launcher.pid, descendant}.issubset(launcher.job_process_ids())
@@ -734,7 +766,9 @@ def test_kill_on_close_contains_native_descendants_after_owner_crash(
     try:
         launcher_pid = int(owner.stdout.readline())
         deadline = time.monotonic() + 15
-        while not pidfile.exists() and time.monotonic() < deadline:
+        while (
+            not pidfile.exists() or not pidfile.read_text(encoding="utf-8-sig").strip()
+        ) and time.monotonic() < deadline:
             time.sleep(0.05)
         descendant = int(pidfile.read_text(encoding="utf-8-sig").strip())
         for pid in (launcher_pid, descendant):

@@ -18,7 +18,7 @@ from __future__ import annotations
 import re
 import textwrap
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import ClassVar
 
@@ -473,6 +473,9 @@ class CampaignPanel(Widget):
         self._log_categories: set[str] = set()
         self._search_visible = False
         self._now_rows = 0
+        self._process_running: bool | None = None
+        self._paused_at: datetime | None = None
+        self._paused_intervals: list[tuple[datetime, datetime]] = []
 
     @property
     def _view_size(self) -> Size:
@@ -622,6 +625,9 @@ class CampaignPanel(Widget):
         self._observed_signature = None
         self._last_error = ""
         self._source_note_sent = False
+        self._process_running = None
+        self._paused_at = None
+        self._paused_intervals = []
         if not self._demo and self._events_path is None:
             self._feed = None
             self._feed_campaign = None
@@ -712,6 +718,42 @@ class CampaignPanel(Widget):
 
     # -- live progress objects -----------------------------------------
 
+    def set_process_running(self, running: bool) -> None:
+        """Presentation-only clock state, supplied by the owning controller."""
+        if running == self._process_running or (
+            not running and self._process_running is None
+        ):
+            return
+        now = _now()
+        if running:
+            if self._paused_at is not None:
+                self._paused_intervals.append((self._paused_at, now))
+                self._training = None
+                self._evaluation = None
+            self._paused_at = None
+        elif self._process_running is True:
+            self._paused_at = now
+        self._process_running = running
+        if self.snapshot is not None:
+            self._render_context()
+            self._render_progress()
+            self._render_training_status()
+            self._apply_layout()
+
+    def _clock_end(self, started_at: datetime | None) -> datetime:
+        end = (
+            (self.snapshot.ended_at if self.snapshot else None)
+            or self._paused_at
+            or _now()
+        )
+        if started_at is None:
+            return end
+        paused = sum(
+            max(0.0, (min(stop, end) - max(start, started_at)).total_seconds())
+            for start, stop in self._paused_intervals
+        )
+        return end - timedelta(seconds=paused)
+
     def _training_progress(self) -> projector.TrainingProgress | None:
         state = self._training
         if not state:
@@ -725,6 +767,9 @@ class CampaignPanel(Widget):
             reward=state.get("reward"),
             success=state.get("success"),
             stale=self._progress_stale(state),
+            eta_seconds=state.get("eta_seconds")
+            if self._paused_at is None and not self._progress_stale(state)
+            else None,
         )
 
     def _evaluation_progress(self) -> projector.EvaluationProgress | None:
@@ -783,19 +828,29 @@ class CampaignPanel(Widget):
         from tui.projector import campaign_age, stage_elapsed
 
         now = _now()
-        age = campaign_age(snapshot.started_at, now, snapshot.ended_at)
-        elapsed = stage_elapsed(snapshot.stage_started_at, now, snapshot.ended_at)
+        age = campaign_age(snapshot.started_at, self._clock_end(snapshot.started_at))
+        elapsed = stage_elapsed(
+            snapshot.stage_started_at, self._clock_end(snapshot.stage_started_at)
+        )
 
         palette = self._palette
         gap = 3
-        status_style = _status_style(snapshot.status, palette)
+        status = (
+            "STOPPED (TUI)"
+            if self._paused_at is not None and not snapshot.terminal
+            else snapshot.status
+        )
+        status_style = _status_style(status, palette)
         left = Text("Autoresearch", style=f"bold {palette.heading}")
         left.append(" | ", style=palette.muted)
-        left.append(snapshot.status, style=status_style)
+        left.append(status, style=status_style)
         left.append(" | ", style=palette.muted)
         left.append("campaign ", style=palette.muted)
         left.append(snapshot.campaign_id[:13], style=palette.muted)
-        campaign_time = Text(f"Campaign age {age} (started ", style=palette.muted)
+        age_label = (
+            "Campaign elapsed" if self._process_running is not None else "Campaign age"
+        )
+        campaign_time = Text(f"{age_label} {age} (started ", style=palette.muted)
         campaign_time.append(_start_time(snapshot.started_at, now), style=palette.text)
         campaign_time.append(")", style=palette.muted)
         stage_time = Text(f"Stage elapsed {elapsed} (started ", style=palette.muted)
@@ -1100,7 +1155,10 @@ class CampaignPanel(Widget):
     ) -> list[Text]:
         palette = self._palette
         parts = [f"Attempt {training.attempt}"]
+        if self._paused_at is not None:
+            parts.append("Paused")
         parts.append(_elapsed_text(training.elapsed_seconds, "Elapsed"))
+        parts.append(_elapsed_text(training.eta_seconds, "ETA"))
         if isinstance(training.reward, (int, float)) and not isinstance(
             training.reward, bool
         ):
@@ -1469,12 +1527,17 @@ class CampaignPanel(Widget):
 
     def _event_training_progress(self, event: Observation) -> None:
         attempt = event.fields.get("attempt")
+        operation_id = event.operation_id or str(event.fields.get("operation_id") or "")
+        eta = projector.training_eta_seconds(
+            {**event.fields, "operation_id": operation_id}, self._training
+        )
         self._training = {
-            "operation_id": str(event.fields.get("operation_id") or ""),
+            "operation_id": operation_id,
             "attempt": attempt if attempt not in (None, "") else "unknown",
             "steps": event.fields.get("steps"),
             "target": event.fields.get("target"),
             "elapsed_seconds": event.fields.get("elapsed_seconds"),
+            "eta_seconds": eta,
             "reward": event.fields.get("ep_rew_mean"),
             "success": event.fields.get("scenario_metric")
             or event.fields.get("training_success"),

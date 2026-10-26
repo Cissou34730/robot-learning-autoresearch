@@ -121,7 +121,8 @@ HELP_TEXT = (
     "Fresh reset and start (destructive): run 1\n"
     "Stop cooperatively: stop 1 | stop all\n"
     "Reset without starting (destructive): reset 1\n\n"
-    "A count N selects campaigns 1 through N (1–5).\n"
+    "Numbers select one campaign: start 2 starts only campaign-2.\n"
+    "Ranges are inclusive: start 1-2 | start 2-3 | run 1-3.\n"
     "Explicit folders also work: start campaign-1 campaign-3.\n"
     "Without a target, start/run/reset/stop selects the active campaign tab.\n"
     "Reset/run may delete measurements and logs. There is no reset backup.\n\n"
@@ -496,7 +497,9 @@ class CampaignConsole(App):
         if not slots and active:
             slots = [self._layout.slot_for(active)]
         if not slots and verb not in {"models"}:
-            self._log(f"> {text}\nerror: {verb} requires a count or campaign folder.")
+            self._log(
+                f"> {text}\nerror: {verb} requires a campaign number, range or folder name."
+            )
             return
         if verb == "diagnostics":
             asyncio.create_task(self._show_diagnostics(slots))
@@ -599,9 +602,15 @@ class CampaignConsole(App):
             self.call_from_thread(self._batch_finished)
 
     def _refresh_status_now(self) -> None:
+        for panel in self.query(CampaignPanel):
+            target = self._controller.state(panel.id.removeprefix("panel-"))
+            if target.stage in {"launching", "running", "stopping"}:
+                panel.set_process_running(True)
+            elif target.stage in {"stopped", "failed", "completed"}:
+                panel.set_process_running(False)
         command = self.query_one("#commands-input", Input)
         active = self.query_one(TabbedContent).active
-        command.border_title = active or "Explicit batch target required"
+        command.border_title = active or "Explicit target required"
         if command.value.strip():
             try:
                 verb, slots = parse_command(command.value)
