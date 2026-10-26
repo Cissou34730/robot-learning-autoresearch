@@ -80,6 +80,44 @@ def test_stop_request_is_explicit_and_run_scoped(monkeypatch, tmp_path):
     assert stop_requested()
 
 
+def test_cancelled_startup_without_channel_cleans_up_bootstrap_without_failure(
+    tmp_path,
+):
+    powershell = shutil.which("pwsh")
+    if powershell is None:
+        pytest.skip("PowerShell 7 is required")
+    controller = (
+        Path(__file__).resolve().parents[2] / "runner/copilot/copilot_controller.ps1"
+    )
+    exercise = tmp_path / "cancel-bootstrap.ps1"
+    exercise.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+. '{controller}'
+function Test-CampaignStopRequested {{ return $true }}
+$script:StopDeadline = [DateTime]::UtcNow.AddSeconds(180)
+$process = [pscustomobject]@{{ HasExited=$false; Killed=$false; Disposed=$false; Waits=[System.Collections.Generic.List[int]]::new() }}
+$process | Add-Member ScriptMethod WaitForExit {{ param($ms) $this.Waits.Add($ms); return $this.HasExited }}
+$process | Add-Member ScriptMethod Kill {{ param($tree) if (-not $tree) {{ throw 'expected owned tree cleanup' }}; $this.Killed=$true; $this.HasExited=$true }}
+$process | Add-Member ScriptMethod Dispose {{ $this.Disposed=$true }}
+$script:CopilotProcess=$process
+$script:CopilotWriter=$null
+Stop-PersistentCopilotRuntime
+if (-not $process.Killed -or -not $process.Disposed -or $script:CopilotProcess) {{ throw 'bootstrap not cleaned up' }}
+if ($process.Waits[0] -gt 5000 -or $process.Waits.Count -ne 2) {{ throw 'startup cancellation used the normal session deadline' }}
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [powershell, "-NoProfile", "-File", str(exercise)],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
 def test_sync_runner_bridge_interrupts_when_request_appears(tmp_path):
     request = tmp_path / "stop.request"
     interrupted = threading.Event()

@@ -57,6 +57,8 @@ from tui.controller import (
 from tui.process import LauncherMachinery
 from tui.report import REPORT_CSS, CampaignPanel, CampaignSources
 
+HELPER_SHUTDOWN_GRACE_SECONDS = 15.0
+
 
 class CommandInputs:
     """Session-only shared settings; empty values preserve launcher omission."""
@@ -132,7 +134,9 @@ HELP_TEXT = (
     "Model/provider remain launcher-selected unless explicitly supplied.\n"
     "models: list available models | diagnostics: this campaign's console logs\n\n"
     "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L show/hide commands\n"
-    "Ctrl+Tab: next campaign | Tab/Shift+Tab: focus | Ctrl+C: copy only\n"
+    "F6 / Shift+F6: next/previous campaign (works without Ctrl+Tab delivery)\n"
+    "Ctrl+Tab: next campaign if the terminal passes it through\n"
+    "Tab/Shift+Tab: focus | Ctrl+C: copy only\n"
     "Ctrl+Q: stop all owned campaigns and exit"
 )
 
@@ -315,12 +319,16 @@ class CampaignConsole(App):
 
     BINDINGS: ClassVar[list] = [
         Binding("ctrl+q", "shutdown_all", "Stop & exit", priority=True),
+        Binding("ctrl+l", "command", "Commands", priority=True),
         Binding("f1", "help", "Help", priority=True),
         Binding("f2", "settings", "Settings", priority=True),
         Binding("f3", "command_history", "Recent commands", priority=True, show=False),
         Binding("ctrl+tab", "next_tab", "Next tab", priority=True, show=False),
+        Binding("f6", "next_tab", "Campaign", priority=True),
+        Binding(
+            "shift+f6", "previous_tab", "Previous campaign", priority=True, show=False
+        ),
         Binding("ctrl+c", "copy_selection", "Copy", priority=True, show=False),
-        Binding("ctrl+l", "command", "Commands", priority=True),
         Binding("/", "search_log", "Search events", show=False),
         Binding("f", "filter_log", "Filter events", show=False),
         Binding("r", "raw_event", "Raw event", show=False),
@@ -475,6 +483,16 @@ class CampaignConsole(App):
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "commands-input" and self.is_mounted:
             self._refresh_status_now()
+            self._update_execute_state()
+
+    def _update_execute_state(self) -> None:
+        try:
+            verb, _ = parse_command(self.query_one("#commands-input", Input).value)
+        except CommandError:
+            verb = None
+        self.query_one("#execute-command", Button).disabled = self._shutting_down or (
+            self._command_running and verb != "stop"
+        )
 
     def submit_command(self, text: str) -> None:
         if not text:
@@ -482,13 +500,13 @@ class CampaignConsole(App):
         if self._shutting_down:
             self._log("> " + text + "\nrefused: the console is shutting down")
             return
-        if self._command_running:
-            self._log("> " + text + "\nrefused: a previous command is still running")
-            return
         try:
             verb, slots = parse_command(text)
         except CommandError as error:
             self._log(f"> {text}\nerror: {error}")
+            return
+        if self._command_running and verb != "stop":
+            self._log("> " + text + "\nrefused: a previous command is still running")
             return
         if verb == "help":
             self.action_help()
@@ -503,6 +521,22 @@ class CampaignConsole(App):
             return
         if verb == "diagnostics":
             asyncio.create_task(self._show_diagnostics(slots))
+            return
+        if verb == "stop":
+            # Stop requests only create private local files; never queue them
+            # behind a reset/model-listing worker or replace that worker handle.
+            try:
+                outcome = self._controller.execute(
+                    verb, slots, settings=LaunchSettings()
+                )
+                message = "> " + text + "\n" + outcome.summary()
+                for step in outcome.steps:
+                    if step.detail:
+                        message += "\n  " + step.target + ": " + step.detail
+                self._log(message)
+                self.query_one("#commands-input", Input).value = ""
+            except (OSError, RuntimeError, ValueError) as error:
+                self._log(f"> {text}\nstop failed: {error}")
             return
         try:
             settings = (
@@ -542,7 +576,7 @@ class CampaignConsole(App):
             )
         self._command_running = True
         self.query_one("#commands-input", Input).value = ""
-        self.query_one("#execute-command", Button).disabled = True
+        self._update_execute_state()
         self._command_thread = threading.Thread(
             target=self._execute_batch,
             args=(verb, slots, settings, reset, text),
@@ -680,7 +714,7 @@ class CampaignConsole(App):
                 )
         self._command_running = False
         self._command_thread = None
-        self.query_one("#execute-command", Button).disabled = False
+        self._update_execute_state()
         self._update_campaign_visibility()
 
     def action_help(self) -> None:
@@ -816,6 +850,12 @@ class CampaignConsole(App):
     # ------------------------------------------------------------------
 
     def action_next_tab(self) -> None:
+        self._cycle_campaign(1)
+
+    def action_previous_tab(self) -> None:
+        self._cycle_campaign(-1)
+
+    def _cycle_campaign(self, direction: int) -> None:
         if isinstance(self.screen, ModalScreen):
             return
         tabs = self.query_one(TabbedContent)
@@ -825,7 +865,7 @@ class CampaignConsole(App):
         if tabs.active is None or len(panes) == 1:
             tabs.active = panes[0]
             return
-        index = (panes.index(tabs.active) + 1) % len(panes)
+        index = (panes.index(tabs.active) + direction) % len(panes)
         collapsed = self.query_one("#console-controls").has_class("collapsed")
         if collapsed:
             self.screen.set_focus(None)
@@ -847,12 +887,19 @@ class CampaignConsole(App):
         self._log("Shutting down: stop requests sent to all owned campaigns...")
 
         def job() -> None:
+            cleanup_failed = False
             try:
                 thread = self._command_thread
                 if thread is not None:
-                    thread.join(self._last_stop_timeout + 5)
+                    thread.join(HELPER_SHUTDOWN_GRACE_SECONDS)
                     if thread.is_alive():
-                        controller.stop_helpers()
+                        try:
+                            controller.stop_helpers()
+                        except (OSError, RuntimeError) as error:
+                            cleanup_failed = True
+                            self.call_from_thread(
+                                self._log, f"Helper cleanup failed: {error}"
+                            )
                         thread.join(5)
                 busy = [
                     state.label
@@ -873,16 +920,18 @@ class CampaignConsole(App):
 
                 if busy:
                     with ThreadPoolExecutor(max_workers=len(busy)) as pool:
-                        list(
-                            pool.map(
-                                settle,
-                                busy,
-                            )
-                        )
+                        for future in [pool.submit(settle, label) for label in busy]:
+                            try:
+                                future.result()
+                            except (OSError, RuntimeError) as error:
+                                cleanup_failed = True
+                                self.call_from_thread(
+                                    self._log, f"Campaign cleanup failed: {error}"
+                                )
                 # A missed cooperative deadline must never survive the console.
                 controller.force_all(timeout=15.0)
                 controller.reap_all()
-                self._shutdown_complete = True
+                self._shutdown_complete = not cleanup_failed
             except (OSError, RuntimeError) as error:
                 self.call_from_thread(self._log, f"Shutdown cleanup failed: {error}")
             finally:
@@ -921,9 +970,13 @@ def run_console(light: bool = False) -> int:
     finally:
         try:
             if "app" in locals() and not app._shutdown_complete:
-                app._controller.latch_shutdown()
-                app._controller.stop_helpers()
-                app._controller.force_all()
+                try:
+                    app._controller.latch_shutdown()
+                finally:
+                    try:
+                        app._controller.stop_helpers()
+                    finally:
+                        app._controller.force_all()
         finally:
             lock.release()
     return 0

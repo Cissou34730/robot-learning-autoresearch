@@ -10,8 +10,8 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from pathlib import Path
 
-from runner import paths
 from runner import reporting as console
 from runner.copilot.reporting import tool_detail, tool_result_lines
 from tui.observations import Observation
@@ -121,23 +121,26 @@ def _json_text(value: object) -> str:
         return str(value)
 
 
-def _tool_context(fields: dict) -> str:
+def _tool_context(fields: dict, root: Path | None = None) -> str:
     text = str(
         fields.get("detail")
         or tool_detail(str(fields.get("name") or "tool"), fields.get("arguments"))
     )
-    for root in {str(paths.ROOT), paths.ROOT.as_posix()}:
-        text = text.replace(root + "\\", "").replace(root + "/", "")
+    if root is not None:
+        for prefix in {str(root), root.as_posix()}:
+            text = text.replace(prefix + "\\", "").replace(prefix + "/", "")
     return " ".join(text.split())
 
 
-def _tool_summary(fields: dict, status: str, seconds: float | None = None) -> str:
+def _tool_summary(
+    fields: dict, status: str, seconds: float | None = None, *, root: Path | None = None
+) -> str:
     state = "running" if status == "started" else status
     return " | ".join(
         part
         for part in (
             state if state not in {"ok", "completed", ""} else "",
-            _tool_context(fields),
+            _tool_context(fields, root),
             console.format_duration(seconds)
             if seconds is not None and seconds >= 1
             else "",
@@ -210,7 +213,8 @@ class TimelineItem:
 class TimelineReducer:
     """Events in, grouped timeline out. No terminal and no campaign writes."""
 
-    def __init__(self) -> None:
+    def __init__(self, campaign_root: Path | None = None) -> None:
+        self._campaign_root = campaign_root
         self._items: dict[str, TimelineItem] = {}
         self._roots: list[TimelineItem] = []
         self._seen: set[str] = set()
@@ -235,7 +239,7 @@ class TimelineReducer:
     # ------------------------------------------------------------------
 
     def clear(self) -> None:
-        self.__init__()
+        self.__init__(self._campaign_root)
 
     def ingest(self, event: Observation) -> None:
         event_id = event.event_id or self._fallback_id(event)
@@ -783,7 +787,7 @@ class TimelineReducer:
                 item_id=f"tool:{key}",
                 kind="tool",
                 title=name,
-                summary=_tool_summary(fields, "started"),
+                summary=_tool_summary(fields, "started", root=self._campaign_root),
                 ts=ts,
                 status="started",
                 default_expanded=True,
@@ -812,7 +816,9 @@ class TimelineReducer:
             if ts is not None and item.ts is not None:
                 seconds = max(0.0, (ts - item.ts).total_seconds())
             item.payload = {**item.payload, **fields}
-            item.summary = _tool_summary(item.payload, item.status, seconds)
+            item.summary = _tool_summary(
+                item.payload, item.status, seconds, root=self._campaign_root
+            )
             error = fields.get("error") or fields.get("reason")
             if error:
                 item.severity = "error" if kind == "tool_call_failed" else "warning"
@@ -1147,7 +1153,10 @@ class TimelineReducer:
             else None
         )
         summary = _tool_summary(
-            {**fields, "name": name, "detail": detail}, status, seconds
+            {**fields, "name": name, "detail": detail},
+            status,
+            seconds,
+            root=self._campaign_root,
         )
         leaf = TimelineItem(
             item_id=f"leaf:tool:{name}:{ts}:{len(self._seen)}",

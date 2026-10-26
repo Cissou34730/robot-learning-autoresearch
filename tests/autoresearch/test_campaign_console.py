@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import subprocess
+import threading
 import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -131,6 +132,95 @@ def test_console_start_command_launches_and_stop_command_stops(tmp_path):
     asyncio.run(scenario())
 
 
+def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
+    from textual.widgets import Button, Input
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+    entered, release = threading.Event(), threading.Event()
+
+    def reset(arguments):
+        entered.set()
+        assert release.wait(10)
+        return subprocess.CompletedProcess(arguments, 0, stdout="", stderr="")
+
+    app._controller._runner = reset
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await _run_batch(app, pilot, "start 1")
+            app.submit_command("reset 2")
+            try:
+                assert await asyncio.to_thread(entered.wait, 5)
+                worker = app._command_thread
+                app.query_one("#commands-input", Input).value = "stop 1"
+                await pilot.pause()
+                assert not app.query_one("#execute-command", Button).disabled
+                await pilot.click("#execute-command")
+                await pilot.pause()
+                assert next(iter(machinery.children.values())).stop_requests == 1
+                assert app._command_thread is worker
+                assert app._command_running
+            finally:
+                release.set()
+                for _ in range(100):
+                    await pilot.pause()
+                    if not app._command_running:
+                        break
+
+    asyncio.run(scenario())
+
+
+def test_shutdown_interrupts_reset_with_separate_grace_and_persistent_guard(
+    tmp_path, monkeypatch
+):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import console
+
+    machinery = FakeMachinery()
+    entered, release = threading.Event(), threading.Event()
+    stopped = []
+    app, layout = _console(tmp_path, machinery)
+    monkeypatch.setattr(console, "HELPER_SHUTDOWN_GRACE_SECONDS", 0)
+    app._last_stop_timeout = 3600
+
+    def reset(arguments):
+        entered.set()
+        assert release.wait(10)
+        return subprocess.CompletedProcess(
+            arguments, 1, stdout="", stderr="reset interrupted"
+        )
+
+    def stop_helpers():
+        stopped.append(True)
+        release.set()
+
+    machinery.stop_helpers = stop_helpers
+    app._controller._runner = reset
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            app.submit_command("reset 2")
+            try:
+                assert await asyncio.to_thread(entered.wait, 5)
+                await pilot.press("ctrl+q")
+                for _ in range(100):
+                    await pilot.pause()
+                    if not app.is_running:
+                        break
+                assert not app.is_running
+                assert stopped == [True]
+                assert not machinery.started
+                assert control.reset_marker_path(layout.folder(2)).exists()
+                assert app._controller.state("campaign-2").stage == "failed"
+            finally:
+                release.set()
+
+    asyncio.run(scenario())
+
+
 def test_stopped_campaign_clocks_freeze_and_resume_without_counting_the_pause(
     tmp_path, monkeypatch
 ):
@@ -240,7 +330,7 @@ def test_compact_console_contextual_command_and_copy_only(tmp_path, size):
                 assert button.region.height >= 1
                 assert 0 <= button.region.y < button.region.bottom <= size[1]
                 assert button.region.right <= size[0]
-            await pilot.press("ctrl+tab")
+            await pilot.press("f6")
             assert app.query_one(TabbedContent).active == "campaign-2"
             await _run_batch(app, pilot, "start")
             assert machinery.started[0][0] == layout.folder(2)

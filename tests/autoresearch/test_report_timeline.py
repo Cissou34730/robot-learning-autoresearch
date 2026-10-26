@@ -29,6 +29,32 @@ def _walk(items):
         yield from _walk(item.children)
 
 
+def test_tool_path_shortening_is_per_campaign_and_survives_clear(tmp_path):
+    for slot in (2, 5):
+        root = tmp_path / f"campaign-{slot}"
+        path = root / "robot_learning" / "train.py"
+        reducer = TimelineReducer(root)
+        for _ in range(2):
+            reducer.ingest(
+                Observation(
+                    "tool_call_started",
+                    None,
+                    {
+                        "tool_call_id": "read",
+                        "name": "view",
+                        "arguments": {"path": str(path)},
+                    },
+                )
+            )
+            item = next(
+                item for item in _walk(reducer.view()[0]) if item.kind == "tool"
+            )
+            assert str(root) not in item.summary
+            assert "train.py" in item.summary
+            assert item.payload["arguments"]["path"] == str(path)
+            reducer.clear()
+
+
 def test_history_groups_sessions_inquiries_and_operations():
     reducer = _demo_reducer()
     roots, _ = reducer.view()
@@ -348,13 +374,8 @@ def test_tool_lifecycle_pairs_by_call_id_and_reports_duration():
     assert not any("END_TOOL_RESULT" in line for line in tools[0].detail)
 
 
-def test_tool_rows_shorten_campaign_paths_but_keep_full_arguments(
-    monkeypatch, tmp_path
-):
-    from runner import paths
-
-    monkeypatch.setattr(paths, "ROOT", tmp_path)
-    reducer = TimelineReducer()
+def test_tool_rows_shorten_campaign_paths_but_keep_full_arguments(tmp_path):
+    reducer = TimelineReducer(tmp_path)
     stamp = datetime(2026, 10, 26, 9, 8, 24, tzinfo=UTC)
     for name in ("environment.py", "observations.py"):
         path = str(tmp_path / "robot_learning" / "scenario" / name)

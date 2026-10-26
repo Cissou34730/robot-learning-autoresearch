@@ -19,6 +19,7 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Protocol
 
@@ -393,6 +394,38 @@ def _run_git(arguments: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def reset_marker_path(folder: Path) -> Path:
+    """Administrative safety record, outside scientific state and Git publication."""
+    admin = folder / ".git"
+    if admin.is_file():
+        pointer = admin.read_text(encoding="utf-8").strip()
+        if not pointer.startswith("gitdir:"):
+            raise ControllerError(f"Cannot locate Git administration for {folder}.")
+        admin = (folder / pointer.split(":", 1)[1].strip()).resolve()
+    return admin / "tui-reset-incomplete.json"
+
+
+def _unfinished_reset(folder: Path) -> str:
+    marker = reset_marker_path(folder)
+    return (
+        f"A previous reset has no successful completion record ({marker}). "
+        "It may have been interrupted. Inspect the folder and explicitly reset/run before starting."
+        if marker.exists()
+        else ""
+    )
+
+
+def _recorded_terminal(folder: Path) -> str | None:
+    state_file = folder / "runner/state/research_state.json"
+    if not state_file.is_file():
+        return None
+    durable = json.loads(state_file.read_text(encoding="utf-8-sig"))
+    terminal = durable.get("terminal_state") or {}
+    return (
+        terminal.get("status") if terminal.get("status") in TERMINAL_OUTCOMES else None
+    )
+
+
 class CampaignController:
     """Orchestrates initialize/reset/launch/stop over standard folders."""
 
@@ -436,6 +469,13 @@ class CampaignController:
             folder = CampaignFolderState(
                 label=label, slot=slot, folder=self._layout.folder(slot)
             )
+            try:
+                interrupted = _unfinished_reset(folder.folder)
+            except (OSError, ControllerError) as error:
+                interrupted = str(error)
+            if interrupted:
+                folder.stage = "failed"
+                folder.detail = interrupted
             self._folders[label] = folder
         return folder
 
@@ -663,6 +703,20 @@ class CampaignController:
         target.stage = "resetting"
         target.detail = ""
         try:
+            marker = reset_marker_path(target.folder)
+            operation_id = uuid.uuid4().hex
+            record = {
+                "operation_id": operation_id,
+                "started_at": datetime.now(UTC).isoformat(),
+                "arguments": reset.arguments(),
+                "status": "incomplete",
+            }
+            temporary = marker.with_suffix(".tmp")
+            with temporary.open("w", encoding="utf-8") as stream:
+                json.dump(record, stream)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, marker)
             completed = self._runner(
                 [
                     "pwsh",
@@ -690,6 +744,18 @@ class CampaignController:
             )
             self._record(outcome, "reset", target.label, FAILED, target.detail)
             return
+        # A later reset from another harness must not have its record removed.
+        try:
+            if (
+                json.loads(marker.read_text(encoding="utf-8"))["operation_id"]
+                == operation_id
+            ):
+                marker.unlink()
+        except (OSError, ValueError, KeyError) as error:
+            target.stage = "failed"
+            target.detail = f"Reset returned successfully, but its safety record could not be completed: {error}"
+            self._record(outcome, "reset", target.label, FAILED, target.detail)
+            return
         target.stage = "stopped"
         target.detail = ""
         target.campaign_id = self._campaign_id_reader(target.folder)
@@ -711,27 +777,28 @@ class CampaignController:
                 outcome, "launch", target.label, SKIPPED, f"campaign is {target.stage}"
             )
             return
-        state_file = target.folder / "runner/state/research_state.json"
-        if state_file.is_file():
-            try:
-                durable = json.loads(state_file.read_text(encoding="utf-8-sig"))
-            except (OSError, ValueError) as error:
-                target.stage = "failed"
-                target.detail = f"Cannot read campaign state: {error}"
-                self._record(outcome, "launch", target.label, FAILED, target.detail)
-                return
-            terminal = durable.get("terminal_state") or {}
-            if terminal.get("status") in TERMINAL_OUTCOMES:
-                target.stage = "completed"
-                target.detail = terminal["status"]
-                self._record(
-                    outcome,
-                    "launch",
-                    target.label,
-                    SKIPPED,
-                    f"Recorded outcome: {target.detail}; use reset or run for a new campaign.",
-                )
-                return
+        try:
+            interrupted = _unfinished_reset(target.folder)
+            terminal = _recorded_terminal(target.folder)
+        except (OSError, ValueError, ControllerError) as error:
+            interrupted = f"Cannot establish campaign readiness: {error}"
+            terminal = None
+        if interrupted:
+            target.stage = "failed"
+            target.detail = interrupted
+            self._record(outcome, "launch", target.label, FAILED, interrupted)
+            return
+        if terminal:
+            target.stage = "completed"
+            target.detail = terminal
+            self._record(
+                outcome,
+                "launch",
+                target.label,
+                SKIPPED,
+                f"Recorded outcome: {target.detail}; use reset or run for a new campaign.",
+            )
+            return
         control_directory = self._control_directory_factory()
         target.control_directory = control_directory
         target.stop_timeout = settings.stop_timeout_seconds or DEFAULT_STOP_TIMEOUT
@@ -760,6 +827,15 @@ class CampaignController:
         self._record(outcome, "launch", target.label, SUCCESS)
 
     def _stop_one(self, outcome: BatchOutcome, target: CampaignFolderState) -> None:
+        if target.child is None or target.stage not in {"running", "launching"}:
+            self._record(
+                outcome, "stop", target.label, SKIPPED, f"campaign is {target.stage}"
+            )
+            return
+        with target.cleanup_lock:
+            self._request_stop(outcome, target)
+
+    def _request_stop(self, outcome: BatchOutcome, target: CampaignFolderState) -> None:
         if target.child is None or target.stage not in {"running", "launching"}:
             self._record(
                 outcome, "stop", target.label, SKIPPED, f"campaign is {target.stage}"
@@ -816,10 +892,16 @@ class CampaignController:
             target.stage = "stopped"
             target.detail = "stopped by the cooperative stop request"
         elif code == 0:
-            target.stage = "stopped"
-            target.detail = (
-                "launcher returned normally; inspect durable state before resuming"
-            )
+            try:
+                terminal = _recorded_terminal(target.folder)
+                target.stage = "completed" if terminal else "stopped"
+                target.detail = (
+                    terminal
+                    or "launcher returned normally; inspect durable state before resuming"
+                )
+            except (OSError, ValueError) as error:
+                target.stage = "failed"
+                target.detail = f"Launcher returned normally, but campaign state is unreadable: {error}"
         else:
             target.stage = "failed"
             target.detail = f"launcher exited with code {code}"
@@ -855,16 +937,24 @@ class CampaignController:
         return self.reap(label)
 
     def force_all(self, timeout: float | None = None) -> None:
+        errors = []
         for label in self._layout.installed():
             target = self._folders.get(label)
             if target is not None:
                 with target.cleanup_lock:
                     if target.child is not None:
-                        self._machinery.force_stop(target.child, timeout)
-                        self._machinery.finish(target.child)
-                        target.stage = "failed"
-                        target.detail = "forced termination (console shutdown)"
-                        target.child = None
+                        try:
+                            self._machinery.force_stop(target.child, timeout)
+                            self._machinery.finish(target.child)
+                            target.stage = "failed"
+                            target.detail = "forced termination (console shutdown)"
+                            target.child = None
+                        except (OSError, RuntimeError) as error:
+                            errors.append(error)
+        if errors:
+            raise RuntimeError(
+                f"Failed to stop {len(errors)} launcher(s): {errors[0]}"
+            ) from errors[0]
 
     def stop_helpers(self) -> None:
         stop = getattr(self._machinery, "stop_helpers", None)

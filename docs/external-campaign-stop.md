@@ -136,6 +136,20 @@ descendant would otherwise still be running.
 
 ## Operator console implementation
 
+The launcher uses `CREATE_NEW_CONSOLE` with `STARTF_USESHOWWINDOW`/`SW_HIDE` so
+it and ordinary descendants use a private hidden console, not Textual's console.
+Standard input/output/error remain redirected. Native Windows checks verify
+separate console identity and hidden visibility; interactive Windows Terminal
+rendering/restoration still needs a manual check.
+
+Stop requests are not queued behind an initializer/reset batch. In-flight
+helpers have a separate 15-second finish grace on console shutdown, followed by
+owned-job cleanup if necessary. Incomplete TUI resets retain an administrative
+marker in the campaign's Git directory and block later TUI starts; an explicit
+successful reset/run clears the matching marker. No automatic repair or
+scientific-state rewrite occurs. Cleanup attempts continue after a failure in
+another owned helper or launcher.
+
 The console TUI (`uv run python -m tui`, `tui/console.py`, issue #68) is an
 external controller that implements this contract directly:
 

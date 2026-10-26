@@ -133,6 +133,24 @@ orchestration); both are terminal-free and tested with fake executors in
 
 ### Controller validation status (26 October 2026)
 
+Review follow-up: stop requests are accepted during another batch. Reset helpers
+have a separate 15-second shutdown grace, not the scientific stop timeout. Before
+reset, the TUI writes `.git/tui-reset-incomplete.json` (or the worktree's Git
+administration directory); only a successful matching reset clears it. A new
+TUI session displays incomplete resets as failed and blocks start until an
+explicit reset/run succeeds. This administrative record is not scientific
+evidence or a reset backup. A failure stopping one owned process does not skip
+cleanup attempts for the others.
+
+Owned launchers have a private hidden console with redirected standard handles.
+A native Windows check confirms a distinct, non-visible child console; this is
+not a physical Windows Terminal rendering test. F6/Shift+F6 are the default
+campaign-tab keys. Ctrl+Tab is retained only as an alias if the host delivers it;
+its physical Windows Terminal delivery remains unverified. Tool-path shortening
+uses each report's root, and normal exit classification reads recorded terminal
+outcomes immediately. Cancellation before the Copilot message channel exists
+cleans up the owned bootstrap without pretending a scientific session ran.
+
 - The report-first UX revision passes 102 focused controller, headless console
   and report-app checks. Synthetic rendered frames cover 160x45, 178x33,
   80x24, 60x24 and 48x16: actual report space, command/editor/button bounds,

@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import threading
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -127,6 +128,9 @@ def _controller(
 
         def __call__(self, arguments: list[str]):
             self.calls.append(list(arguments))
+            if "tools.initialize_campaign" in arguments:
+                destination = Path(arguments[arguments.index("--campaign-root") + 1])
+                (destination / ".git").mkdir(parents=True)
             dirty = "\n".join(harness_dirty or [])
             if arguments[:2] == ["git", "-C"]:
                 return subprocess.CompletedProcess(
@@ -332,6 +336,87 @@ def test_start_preserves_terminal_outcomes_but_resumes_pending_assessment(
     outcome = controller.execute("start", [1], settings=control.LaunchSettings())
     assert bool(machinery.started) is launch
     assert outcome.ok
+
+
+@pytest.mark.parametrize(
+    "status",
+    [
+        "official_assessment_passed",
+        "official_assessment_failed",
+        "no_credible_route",
+        "official_assessment_requested",
+    ],
+)
+def test_normal_exit_classifies_recorded_completion_immediately(tmp_path, status):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    controller.execute("start", [1], settings=control.LaunchSettings())
+    state_file = layout.folder(1) / "runner/state/research_state.json"
+    state_file.parent.mkdir(parents=True)
+    state_file.write_text(
+        json.dumps({"terminal_state": {"status": status}}), encoding="utf-8"
+    )
+    machinery.children[layout.folder(1)].pending_stop = False
+    state = controller.reap("campaign-1")
+    assert state.stage == (
+        "stopped" if status == "official_assessment_requested" else "completed"
+    )
+    assert state.child is None
+
+
+@pytest.mark.parametrize("git_file", [False, True])
+def test_interrupted_reset_blocks_start_in_a_new_controller_until_explicit_reset(
+    tmp_path, git_file
+):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    if git_file:
+        admin = tmp_path / "git-admin"
+        admin.mkdir()
+        git_path = layout.folder(1) / ".git"
+        git_path.rmdir()
+        git_path.write_text(f"gitdir: {admin.as_posix()}\n", encoding="utf-8")
+
+    def interrupted(arguments):
+        raise KeyboardInterrupt
+
+    controller._runner = interrupted
+    with pytest.raises(KeyboardInterrupt):
+        controller.execute("reset", [1], settings=control.LaunchSettings())
+    marker = control.reset_marker_path(layout.folder(1))
+    record = json.loads(marker.read_text(encoding="utf-8"))
+    assert record["status"] == "incomplete"
+    assert record["arguments"] == control.ResetConfig().arguments()
+    assert not machinery.started
+
+    fresh = control.CampaignController(
+        layout,
+        machinery,
+        runner=lambda args: subprocess.CompletedProcess(args, 0, stdout="", stderr=""),
+    )
+    assert fresh.state("campaign-1").stage == "failed"
+    refused = fresh.execute("start", [1], settings=control.LaunchSettings())
+    assert not refused.ok and not machinery.started
+    assert fresh.execute("reset", [1], settings=control.LaunchSettings()).ok
+    assert not marker.exists()
+    assert fresh.execute("start", [1], settings=control.LaunchSettings()).ok
+    assert len(machinery.started) == 1
+
+
+def test_one_failed_forced_cleanup_does_not_skip_other_launchers(tmp_path):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    controller.execute("start", [1, 2], settings=control.LaunchSettings())
+    first = machinery.children[layout.folder(1)]
+    original = machinery.force_stop
+
+    def force(child, timeout=None):
+        if child is first:
+            raise TimeoutError("stuck first child")
+        original(child, timeout)
+
+    machinery.force_stop = force
+    with pytest.raises(RuntimeError):
+        controller.force_all()
+    assert machinery.children[layout.folder(2)].forced
+    assert controller.state("campaign-2").child is None
 
 
 def test_run_stops_batch_when_reset_fails(tmp_path):
@@ -796,3 +881,104 @@ def test_instance_lock_entry_closes_on_release(tmp_path):
     second = acquire_instance_lock(tmp_path)
     assert second is not None
     second.release()
+
+
+@requires_windows
+@pytest.mark.parametrize("cached_error", [0, 183])
+def test_instance_lock_uses_the_ctypes_saved_error_not_raw_get_last_error(
+    tmp_path, monkeypatch, cached_error
+):
+    import ctypes
+
+    from tui import process
+
+    closed = []
+
+    def create(*args):
+        ctypes.set_last_error(cached_error)
+        return 123
+
+    monkeypatch.setattr(process.kernel32, "CreateMutexW", create)
+    monkeypatch.setattr(process.kernel32, "CloseHandle", closed.append)
+    monkeypatch.setattr(
+        process.kernel32, "GetLastError", lambda: pytest.fail("raw error slot used")
+    )
+    lock = process.acquire_instance_lock(tmp_path)
+    if cached_error:
+        assert lock is None and closed == [123]
+    else:
+        assert lock is not None
+        lock.release()
+        assert closed == [123]
+
+
+def test_helper_shutdown_attempts_every_helper_before_reporting_failure():
+    from tui.process import LauncherMachinery
+
+    calls = []
+
+    def first():
+        calls.append(1)
+        raise TimeoutError("first helper stuck")
+
+    machinery = object.__new__(LauncherMachinery)
+    machinery._helper_lock = threading.Lock()
+    machinery._helpers = [
+        SimpleNamespace(force_stop=first),
+        SimpleNamespace(force_stop=lambda: calls.append(2)),
+    ]
+    machinery._closing = False
+    with pytest.raises(RuntimeError):
+        machinery.stop_helpers()
+    assert calls == [1, 2]
+    assert machinery._closing
+
+
+@requires_windows
+def test_owned_launch_has_a_private_hidden_console_not_the_owners_console(tmp_path):
+    import sys
+
+    harness = Path(__file__).resolve().parents[2]
+    worker = tmp_path / "worker.py"
+    worker.write_text(
+        "import ctypes,json\n"
+        "k=ctypes.WinDLL('kernel32',use_last_error=True)\n"
+        "k.GetConsoleWindow.restype=ctypes.c_void_p\n"
+        "u=ctypes.WinDLL('user32'); u.IsWindowVisible.argtypes=[ctypes.c_void_p]\n"
+        "window=k.GetConsoleWindow()\n"
+        "print(json.dumps({'window':window,'visible':bool(u.IsWindowVisible(window)),'codepage':k.GetConsoleCP()}))\n",
+        encoding="utf-8",
+    )
+    shell = tmp_path / "worker.ps1"
+    shell.write_text(
+        f"& '{sys.executable}' '{worker}'\nexit $LASTEXITCODE\n", encoding="utf-8"
+    )
+    owner = tmp_path / "owner.py"
+    owner.write_text(
+        "import ctypes,json\nfrom pathlib import Path\nfrom tui.process import LauncherBuilder\n"
+        "k=ctypes.WinDLL('kernel32'); k.GetConsoleWindow.restype=ctypes.c_void_p\n"
+        "window=k.GetConsoleWindow(); assert window and k.GetConsoleCP()\n"
+        f"child=LauncherBuilder(Path({str(harness)!r})).start(Path({str(shell)!r}),[],Path({str(tmp_path / 'control')!r}))\n"
+        "try:\n"
+        " assert child.wait(20)==0\n"
+        " result=json.loads(child._log.stdout_path.read_text(encoding='utf-8-sig'))\n"
+        " assert result['window'] and result['window'] != window\n"
+        " assert result['codepage'] and not result['visible']\n"
+        "finally: child.close()\n",
+        encoding="utf-8",
+    )
+    hidden = subprocess.STARTUPINFO()
+    hidden.dwFlags = subprocess.STARTF_USESHOWWINDOW
+    hidden.wShowWindow = 0
+    completed = subprocess.run(
+        [sys.executable, str(owner)],
+        cwd=harness,
+        env={**os.environ, "PYTHONPATH": str(harness)},
+        startupinfo=hidden,
+        creationflags=subprocess.CREATE_NEW_CONSOLE,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr

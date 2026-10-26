@@ -342,6 +342,23 @@ function Stop-PersistentCopilotRuntime {
     }
     try {
         if (-not $script:CopilotProcess.HasExited) {
+            if (-not $script:CopilotWriter -and (Test-CampaignStopRequested)) {
+                # No session command could have been sent without a channel.
+                # Cancel only the owned bootstrap tree, not a scientific session.
+                $graceMs = 5000
+                if ($script:StopDeadline) {
+                    $graceMs = [int][Math]::Max(0, [Math]::Min(
+                        $graceMs, ($script:StopDeadline - [DateTime]::UtcNow).TotalMilliseconds
+                    ))
+                }
+                if (-not $script:CopilotProcess.WaitForExit($graceMs)) {
+                    $script:CopilotProcess.Kill($true)
+                    if (-not $script:CopilotProcess.WaitForExit(5000)) {
+                        throw "Owned Copilot bootstrap did not exit after cancellation."
+                    }
+                }
+                return
+            }
             if ($script:CopilotWriter) {
                 try {
                     Send-CopilotControlMessage -Message @{ type = "shutdown" }

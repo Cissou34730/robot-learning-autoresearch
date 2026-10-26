@@ -444,6 +444,10 @@ class CampaignPanel(Widget):
         super().__init__(id=id)
         self._demo = demo
         self._campaign_root = Path(campaign_root) if campaign_root else None
+        if self._campaign_root is None and not demo:
+            from runner import paths
+
+            self._campaign_root = paths.ROOT
         self._sources = sources or (DemoSources() if demo else CampaignSources())
         self._events_path = Path(events_path) if events_path else None
         self._palette = PALETTES["dark"]
@@ -466,7 +470,7 @@ class CampaignPanel(Widget):
         self._source_note_sent: bool = False
         self._feed_campaign: str | None = None
         self._campaign_id: str | None = None
-        self._timeline = TimelineReducer()
+        self._timeline = TimelineReducer(self._campaign_root)
         self._history_events: list[Observation] = []
         self._feed_mode = ""
         self._log_query = ""

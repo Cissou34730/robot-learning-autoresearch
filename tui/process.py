@@ -40,6 +40,7 @@ kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
 _CREATE_SUSPENDED = 0x00000004
 _CREATE_NEW_PROCESS_GROUP = 0x00000200
 _CREATE_UNICODE_ENVIRONMENT = 0x00000400
+_CREATE_NEW_CONSOLE = 0x00000010
 _EXTENDED_STARTUPINFO_PRESENT = 0x00080000
 _PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY = 0x00020012
 _PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE = 0x02
@@ -118,6 +119,7 @@ class _STARTUPINFOW(ctypes.Structure):
 
 
 _STARTF_USESTDHANDLES = 0x00000100
+_STARTF_USESHOWWINDOW = 0x00000001
 
 
 class _STARTUPINFOEXW(ctypes.Structure):
@@ -216,7 +218,6 @@ for _name, _restype, _argtypes in (
         wintypes.HANDLE,
         [ctypes.c_void_p, wintypes.BOOL, wintypes.LPCWSTR],
     ),
-    ("GetLastError", wintypes.DWORD, []),
     (
         "InitializeProcThreadAttributeList",
         wintypes.BOOL,
@@ -319,10 +320,11 @@ class InstanceLock:
 def acquire_instance_lock(harness_root: Path) -> InstanceLock | None:
     """Acquire the per-harness-directory TUI lock, or ``None`` if held."""
     name = instance_lock_name(harness_root)
+    ctypes.set_last_error(0)
     handle = kernel32.CreateMutexW(None, False, name)
     if not handle:
         _raise_winerror("acquiring the campaign-console instance lock")
-    if kernel32.GetLastError() == _ERROR_ALREADY_EXISTS:
+    if ctypes.get_last_error() == _ERROR_ALREADY_EXISTS:
         kernel32.CloseHandle(handle)
         return None
     return InstanceLock(handle=handle, name=name)
@@ -598,7 +600,8 @@ class LauncherBuilder:
             extended_startup = _STARTUPINFOEXW()
             startup = extended_startup.StartupInfo
             startup.cb = ctypes.sizeof(extended_startup)
-            startup.dwFlags = _STARTF_USESTDHANDLES
+            startup.dwFlags = _STARTF_USESTDHANDLES | _STARTF_USESHOWWINDOW
+            startup.wShowWindow = 0  # SW_HIDE: descendants inherit a private console.
             startup.hStdInput = log.stdin_path
             startup.hStdOutput = log._stdout
             startup.hStdError = log._stderr
@@ -616,6 +619,7 @@ class LauncherBuilder:
                     True,
                     _CREATE_SUSPENDED
                     | _CREATE_NEW_PROCESS_GROUP
+                    | _CREATE_NEW_CONSOLE
                     | _CREATE_UNICODE_ENVIRONMENT
                     | _EXTENDED_STARTUPINFO_PRESENT,
                     ctypes.cast(
@@ -783,10 +787,18 @@ class LauncherMachinery:
                 self._helpers.remove(child)
 
     def stop_helpers(self) -> None:
+        errors = []
         with self._helper_lock:
             self._closing = True
             for child in self._helpers:
-                child.force_stop()
+                try:
+                    child.force_stop()
+                except (OSError, RuntimeError) as error:
+                    errors.append(error)
+        if errors:
+            raise RuntimeError(
+                f"Failed to stop {len(errors)} command helper(s): {errors[0]}"
+            ) from errors[0]
 
 
 __all__ = [
