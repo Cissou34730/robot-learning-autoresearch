@@ -1,12 +1,17 @@
-# Starts the read-only autoresearch campaign report.
+# Starts the autoresearch operator console (or the read-only article report).
 #
-# The report never writes into the campaign; it only reads durable state,
-# results and usage of the selected campaign root. Runner/PI launch behavior
-# is untouched: run your campaign as before, then open this report beside it.
+# Default: the multi-campaign console (issue #68). It shows one tab per
+# installed campaign folder plus a Commands tab; campaigns only run when a
+# command is submitted, and Ctrl+Q stops the console-owned campaigns.
+#
+# Legacy single-campaign report options (-CampaignRoot/-EventsPath/-Demo)
+# open the read-only report exactly as before; it never writes into the
+# campaign and only reads durable state, results and usage.
 #
 # Usage:
-#   .\tools\run-report.ps1                     # default sibling campaign root
-#   .\tools\run-report.ps1 -CampaignRoot D:\path\to\campaign
+#   .\tools\run-report.ps1                     # console (commands + campaigns)
+#   .\tools\run-report.ps1 -Console            # console explicitly
+#   .\tools\run-report.ps1 -CampaignRoot D:\path\to\campaign   # legacy report
 #   .\tools\run-report.ps1 -EventsPath D:\path\to\tui_observations.jsonl
 #   .\tools\run-report.ps1 -Demo
 [CmdletBinding()]
@@ -14,10 +19,25 @@ param(
     [string]$CampaignRoot = "",
     [string]$EventsPath = "",
     [switch]$Demo,
+    [switch]$Console,
     [switch]$Light
 )
 
 $productRoot = Split-Path -Parent $PSScriptRoot
+
+$arguments = @()
+if ($Console -or (-not $CampaignRoot -and -not $EventsPath -and -not $Demo)) {
+    # Console mode discovers every installed campaign folder beside the harness.
+    if ($Light) { $arguments += "--light" }
+    Push-Location $productRoot
+    try {
+        & uv run python -m tui @arguments
+    }
+    finally {
+        Pop-Location
+    }
+    return
+}
 
 if (-not $CampaignRoot) {
     $sibling = Join-Path (Split-Path -Parent $productRoot) "robot-learning-campaigns\campaign-1"
@@ -33,8 +53,6 @@ if (-not (Test-Path -LiteralPath $CampaignRoot)) {
 
 Write-Host "Campaign root: $CampaignRoot"
 
-$arguments = @()
-if ($CampaignRoot) { $arguments += @("--campaign-root", $CampaignRoot) }
 if ($EventsPath) { $arguments += @("--events", $EventsPath) }
 if ($Demo) { $arguments += "--demo" }
 if ($Light) { $arguments += "--light" }

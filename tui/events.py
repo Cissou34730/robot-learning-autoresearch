@@ -168,16 +168,18 @@ class CampaignEventFeed:
         return events
 
 
-def typed_path_for(campaign_id: str) -> Path:
+def typed_path_for(campaign_id: str, root: Path | None = None) -> Path:
     from runner import paths
 
-    return paths.ROOT / "reports" / "tui_observations" / f"{campaign_id}{_TYPED_SUFFIX}"
+    base = root if root is not None else paths.ROOT
+    return base / "reports" / "tui_observations" / f"{campaign_id}{_TYPED_SUFFIX}"
 
 
-def legacy_path_for(campaign_id: str) -> Path:
+def legacy_path_for(campaign_id: str, root: Path | None = None) -> Path:
     from runner import paths
 
-    return paths.ROOT / "reports" / "tui_observations" / f"{campaign_id}.jsonl"
+    base = root if root is not None else paths.ROOT
+    return base / "reports" / "tui_observations" / f"{campaign_id}.jsonl"
 
 
 def _history_event(

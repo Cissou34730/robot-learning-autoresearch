@@ -29,10 +29,14 @@ root only.
 
 ## Running the report
 
+The default entry point is now the multi-campaign operator console (see the
+next section). The single-campaign report stays unchanged:
+
 ```powershell
-.\tools\run-report.ps1                 # default robot-learning-campaigns\campaign-1
-.\tools\run-report.ps1 -CampaignRoot <path>
-.\tools\run-report.ps1 -Demo           # synthetic material, reads nothing
+uv run python -m tui --report                      # legacy report
+.\tools\run-report.ps1 -CampaignRoot <path>        # legacy report
+.\tools\run-report.ps1 -Demo                       # legacy report, synthetic
+.\tools\run-report.ps1                             # console (campaigns + commands)
 ```
 
 For parallel campaigns, open one report per campaign slot, for example
@@ -41,8 +45,51 @@ Each report follows only that repository's campaign state and event feed.
 The parallel launcher clears inherited observation-file overrides so its
 campaign processes use their own per-campaign feed paths.
 
-Directly: `uv run python -m tui --help` (options: `--campaign-root`,
+Directly: `uv run python -m tui --help` (options: `--report`, `--campaign-root`,
 `--events`, `--demo`, `--light`).
+
+## Operator console (multi-campaign control)
+
+Issue #68 implementation. `uv run python -m tui` (or
+`.\tools\run-report.ps1` with no arguments) opens one Textual console with
+a Commands tab and one tab per installed campaign folder
+(`robot-learning-campaigns\campaign-1` to `campaign-5`, `Ctrl+Tab` cycles
+tabs). Launching the console starts nothing; campaigns run only when a
+command is submitted.
+
+- Commands tab: a command line (`run 3`, `reset campaign-2`,
+  `start campaign-2`, `stop all`) plus shared launch-parameter fields
+  (Model, Provider, Reasoning, Timesteps, MaxTimesteps, MaxInquiries,
+  StopTimeoutSeconds). A field left empty uses the launcher's own default
+  exactly as the launcher would. Every campaign in one batch receives the
+  same parameters.
+- `run` initializes a missing standard folder from the recipe (same as
+  `tools\run_parallel.ps1`), resets it (`-Mode Fresh -Clean -RecipeRef
+  baseline-distinct-episodes-v3-robot -Force`) and launches it. `start`
+  launches without resetting; `reset` resets without launching; `stop`
+  sends the cooperative stop request. A failed step stops the rest of the
+  batch; earlier successes are never rolled back, and a failed campaign
+  never launches.
+- The launcher refuses to run while the harness worktree is dirty, so the
+  console reports that refusal and skips the batch.
+- Campaign tabs are the single-campaign report (above) bound to that
+  folder explicitly.
+- `Ctrl+C` copies the current text selection or does nothing; it never
+  stops campaigns. `Ctrl+Q` sends the cooperative stop request to every
+  console-owned launcher, waits up to the stop timeout (default 180 s),
+  escalates to the guarded forced stop, and then exits. Closing the
+  console process triggers the kill-on-close Job Object directly.
+- One console per harness directory: a second console instance refuses to
+  start. Campaign processes owned by the console run in separate job
+  objects (see `docs/external-campaign-stop.md`); by-runner windows launched
+  outside the console remain untouched.
+
+The machinery lives in `tui/process.py` (Job Objects, suspended creation,
+instance lock, per-run control directories with captured console logs) and
+`tui/controller.py` (command parsing, per-folder stage machines, batch
+orchestration); both are terminal-free and tested with fake executors in
+`tests/autoresearch/test_campaign_controller.py` and
+`tests/autoresearch/test_campaign_console.py`.
 
 Reference size is 160x45; the layout adapts down to an 80x24 and 60-column
 fallback and below 48x16 shows a `Terminal too small - need 48x16` message.
@@ -287,7 +334,7 @@ eventual console cutover are separate work, not part of this pass.
 ## Validation
 
 ```powershell
-uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py
+uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py tests/autoresearch/test_campaign_controller.py tests/autoresearch/test_campaign_console.py
 ```
 
 The tests cover the legacy and typed feed writers, console stdout identity

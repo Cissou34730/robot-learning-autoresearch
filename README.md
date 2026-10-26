@@ -13,8 +13,8 @@ Current operating guidance, reviewed 26 October 2026:
   implementation stages, validation and migration corrections.
 - [Reset guide](docs/reset-research.md), [external stop contract](docs/external-campaign-stop.md)
   and [saved-policy runtime](docs/policy-runtime.md): operator procedures.
-- [Terminal report](docs/tui-report.md): the read-only single-screen campaign
-  report (`tools\run-report.ps1`, `-Demo` for synthetic rendering).
+- [Terminal report](docs/tui-report.md): the multi-campaign operator console
+  (`python -m tui`) and the read-only single-screen campaign report.
 - [Maintainer instructions](AGENTS.md) and [runtime mechanics](docs/runtime-mechanics.md):
   maintainer conventions and agent-runtime internals, reserved from campaign agents.
 - [Authority](contracts/authority.md), [scientific program](contracts/program.md)
@@ -71,6 +71,22 @@ The monitor stops a campaign cooperatively at `-MaxHours` of active time
 Transcripts, the monitor log and one report per campaign go to
 `%TEMP%\robot-learning\parallel-<UTC time>`. Watch one campaign with
 `.\tools\run-report.ps1 -CampaignRoot <campaign folder>`.
+
+### Operator console
+
+`uv run python -m tui` opens the multi-campaign console: a Commands tab plus
+one report tab per installed campaign folder. Campaigns only run when a
+command is submitted (`run 3`, `reset campaign-1 campaign-2`,
+`start campaign-2`, `stop all`); each batch sends the exact same shared
+launcher options to every selected campaign, defaulting to the launcher's
+own defaults for any field left empty. `run` initializes a missing standard
+folder, resets it to the v3 recipe and launches it, skipping the rest of the
+batch if a step fails. `Ctrl+C` copies text selection only; `Ctrl+Q` stops
+every console-owned campaign before exiting (no campaign survives a closed
+console). Only one console may run against a harness directory, and the
+launcher's dirty-worktree refusal applies. See
+[console details](docs/tui-report.md#operator-console-multi-campaign-control)
+and the [stop contract](docs/external-campaign-stop.md).
 
 ### Initialize a campaign repository once
 

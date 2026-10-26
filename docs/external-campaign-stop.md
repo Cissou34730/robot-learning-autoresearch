@@ -118,3 +118,31 @@ abort/disconnect, persistent-runtime cleanup, or any other `finally` block. Herm
 must not start another invocation for the campaign until the old job is empty,
 because a killed launcher releases its named mutex even if an uncontained
 descendant would otherwise still be running.
+
+## Operator console implementation
+
+The console TUI (`uv run python -m tui`, `tui/console.py`, issue #68) is an
+external controller that implements this contract directly:
+
+- every owned launcher runs through `tui/process.py`: suspended creation in a
+  new process group, assignment to a `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` job,
+  per-run private control directory under `%TEMP%\robot-learning\tui` with
+  captured launcher stdout/stderr and the `stop.request` file;
+- `run`, `reset`, `start` and `stop` commands delegate to the existing
+  `run_research.ps1` / `reset_research.ps1` entry points with the launcher's
+  own options; launch batches carry `-StopRequestPath` and stop with a
+  cooperative deadline of 180 seconds (configurable per command through
+  `-StopTimeoutSeconds`);
+- exit classification follows the wait rules above: 130 is a cooperative
+  stop, 0 is a normal return that requires inspecting durable state, 124 and
+  any other exit are failures; a missed cooperative deadline escalates to
+  `TerminateJobObject` and is reported as a failed campaign;
+- closing the console or pressing `Ctrl+Q` asks every owned launcher to stop
+  concurrently, waits up to the stop timeout, escalates to the forced
+  fallback and only then exits, so the console process cannot outlive a
+  campaign it owns (the kill-on-close job handle is the backstop);
+- `Ctrl+C` copies the current text selection or does nothing; it never
+  reaches the campaign processes because the launchers are in their own
+  process group with redirected input;
+- one named-mutex instance lock (`Local\RobotLearningTui-<hash>`) refuses a
+  second console against the same canonical harness directory.

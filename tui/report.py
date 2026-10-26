@@ -24,6 +24,8 @@ from typing import ClassVar
 
 from rich.text import Text
 from textual.app import App, ComposeResult
+from textual.geometry import Size
+from textual.widget import Widget
 from textual.widgets import DataTable, Input, Static
 
 from runner import paths
@@ -265,17 +267,29 @@ def _metric_cell(value: str, missing: str = "unavailable", muted: str = "dim") -
 class CampaignSources:
     """Reads the durable campaign files selected by the campaign root."""
 
+    def __init__(self, campaign_root: Path | None = None) -> None:
+        self._campaign_root = Path(campaign_root) if campaign_root else None
+
     def read(self) -> tuple[dict | None, list[dict], list[dict]]:
         from tui.sources import read_json, read_jsonl
 
-        state = read_json(paths.STATE_PATH)
-        records = read_jsonl(paths.RESULTS_PATH)
+        if self._campaign_root is not None:
+            # Explicit per-campaign root (operator console tabs): frozen at
+            # construction, never rebound through runner.paths globals.
+            root = self._campaign_root
+            state_path = root / "runner" / "state" / "research_state.json"
+            results_path = root / "campaigns" / "results.jsonl"
+            usage_dir = root / "reports" / "session_usage"
+        else:
+            state_path = paths.STATE_PATH
+            results_path = paths.RESULTS_PATH
+            usage_dir = paths.ROOT / "reports" / "session_usage"
+        state = read_json(state_path)
+        records = read_jsonl(results_path)
         usage_rows = []
         campaign_id = (state or {}).get("campaign", {}).get("id")
         if campaign_id:
-            usage_rows = read_jsonl(
-                paths.ROOT / "reports" / "session_usage" / f"{campaign_id}.jsonl"
-            )
+            usage_rows = read_jsonl(usage_dir / f"{campaign_id}.jsonl")
         return state, records, usage_rows
 
 
@@ -293,129 +307,128 @@ def _demo_args():
     return demo_snapshot_args()
 
 
-class CampaignReport(App):
-    TITLE = "Autoresearch campaign report"
+REPORT_CSS = """
+Screen {
+    background: $surface;
+    color: $text;
+}
+CampaignPanel {
+    width: 100%;
+    height: 100%;
+    padding: 0 1;
+}
+Screen > .screen--selection {
+    color: $foreground;
+}
+#context {
+    width: 100%;
+    height: auto;
+    margin-bottom: 1;
+}
+#models-heading {
+    height: 1;
+    color: $text;
+}
+#models {
+    height: auto;
+    max-height: 10;
+    background: $surface;
+    color: $text;
+    scrollbar-size-horizontal: 1;
+}
+#models > .datatable--header {
+    background: $surface;
+    color: $text;
+    text-style: bold;
+}
+#models > .datatable--header-cursor,
+#models > .datatable--cursor,
+#models > .datatable--hover,
+#models > .datatable--even-row,
+#models > .datatable--odd-row,
+#models > .datatable--fixed,
+#models > .datatable--fixed-cursor {
+    background: $surface;
+    color: $text;
+}
+#models:focus {
+    background-tint: transparent;
+}
+#progress {
+    display: none;
+    margin-top: 1;
+    height: auto;
+}
+#training {
+    display: none;
+    margin-top: 1;
+    height: auto;
+}
+#output-heading {
+    height: 1;
+    color: $text;
+}
+#now {
+    height: 1;
+    color: $text;
+}
+#log-search {
+    display: none;
+    height: 1;
+    margin-bottom: 1;
+    background: $surface;
+    color: $text;
+    border: none;
+}
+#output {
+    height: 1fr;
+    padding: 0;
+    background: $background;
+    color: $text;
+    background-tint: transparent;
+    scrollbar-size-vertical: 1;
+}
+EventLog > .tree--label {
+    color: $text;
+}
+EventLog > .tree--guides,
+EventLog > .tree--guides-hover,
+EventLog > .tree--guides-selected {
+    color: $text-muted;
+}
+EventLog > .tree--highlight,
+EventLog > .tree--highlight-line {
+    background: transparent;
+    text-style: none;
+}
+EventLog > .tree--cursor {
+    background: transparent;
+    color: $text;
+    text-style: none;
+}
+#reading {
+    height: 1;
+    color: $text-muted;
+}
+#too-small {
+    display: none;
+    layer: alert;
+    width: 100%;
+    height: 100%;
+    content-align: center middle;
+    background: $surface;
+    color: $text;
+}
+"""
 
-    AUTO_FOCUS = "#output"
 
-    BINDINGS: ClassVar[list] = [
-        ("ctrl+c", "quit", "Close report"),
-        ("ctrl+q", "quit", "Close report"),
-        ("/", "search_log", "Search events"),
-        ("f", "filter_log", "Filter events"),
-        ("r", "raw_event", "Raw event"),
-        ("escape", "clear_log_filter", "Clear filter"),
-        ("end", "follow_log", "Follow live"),
-    ]
+class CampaignPanel(Widget):
+    """One campaign's complete read-only report view.
 
-    CSS = """
-    Screen {
-        background: $surface;
-        color: $text;
-        padding: 0 1;
-    }
-    Screen > .screen--selection {
-        color: $foreground;
-    }
-    #context {
-        width: 100%;
-        height: auto;
-        margin-bottom: 1;
-    }
-    #models-heading {
-        height: 1;
-        color: $text;
-    }
-    #models {
-        height: auto;
-        max-height: 10;
-        background: $surface;
-        color: $text;
-        scrollbar-size-horizontal: 1;
-    }
-    #models > .datatable--header {
-        background: $surface;
-        color: $text;
-        text-style: bold;
-    }
-    #models > .datatable--header-cursor,
-    #models > .datatable--cursor,
-    #models > .datatable--hover,
-    #models > .datatable--even-row,
-    #models > .datatable--odd-row,
-    #models > .datatable--fixed,
-    #models > .datatable--fixed-cursor {
-        background: $surface;
-        color: $text;
-    }
-    #models:focus {
-        background-tint: transparent;
-    }
-    #progress {
-        display: none;
-        margin-top: 1;
-        height: auto;
-    }
-    #training {
-        display: none;
-        margin-top: 1;
-        height: auto;
-    }
-    #output-heading {
-        height: 1;
-        color: $text;
-    }
-    #now {
-        height: 1;
-        color: $text;
-    }
-    #log-search {
-        display: none;
-        height: 1;
-        margin-bottom: 1;
-        background: $surface;
-        color: $text;
-        border: none;
-    }
-    #output {
-        height: 1fr;
-        padding: 0;
-        background: $background;
-        color: $text;
-        background-tint: transparent;
-        scrollbar-size-vertical: 1;
-    }
-    EventLog > .tree--label {
-        color: $text;
-    }
-    EventLog > .tree--guides,
-    EventLog > .tree--guides-hover,
-    EventLog > .tree--guides-selected {
-        color: $text-muted;
-    }
-    EventLog > .tree--highlight,
-    EventLog > .tree--highlight-line {
-        background: transparent;
-        text-style: none;
-    }
-    EventLog > .tree--cursor {
-        background: transparent;
-        color: $text;
-        text-style: none;
-    }
-    #reading {
-        height: 1;
-        color: $text-muted;
-    }
-    #too-small {
-        display: none;
-        layer: alert;
-        width: 100%;
-        height: 100%;
-        content-align: center middle;
-        background: $surface;
-        color: $text;
-    }
+    ``CampaignPanel`` owns every rendering, refresh and layout behaviour so it
+    can also be embedded in the multi-campaign operator console (one panel per
+    campaign tab). The :class:`CampaignReport` application at the bottom of
+    this module composes exactly one panel and provides the app-level keys.
     """
 
     def __init__(
@@ -424,9 +437,12 @@ class CampaignReport(App):
         sources: CampaignSources | DemoSources | None = None,
         events_path: Path | None = None,
         demo: bool = False,
+        campaign_root: Path | None = None,
+        id: str | None = None,
     ) -> None:
-        super().__init__()
+        super().__init__(id=id)
         self._demo = demo
+        self._campaign_root = Path(campaign_root) if campaign_root else None
         self._sources = sources or (DemoSources() if demo else CampaignSources())
         self._events_path = Path(events_path) if events_path else None
         self._palette = PALETTES["dark"]
@@ -456,6 +472,20 @@ class CampaignReport(App):
         self._log_categories: set[str] = set()
         self._search_visible = False
         self._now_rows = 0
+
+    @property
+    def _view_size(self) -> Size:
+        """This view's on-screen footprint including its own padding.
+
+        The panel keeps the padding that used to sit on the Screen, so adding
+        it back reproduces the pre-refactor application size exactly at the
+        same terminal dimensions; every layout threshold below relies on that.
+        """
+        padding = self.styles.padding
+        return Size(
+            self.size.width + padding.left + padding.right,
+            self.size.height + padding.top + padding.bottom,
+        )
 
     # ------------------------------------------------------------------
     # Composition
@@ -504,12 +534,13 @@ class CampaignReport(App):
 
     def _resolve_palette(self) -> Palette:
         try:
-            return PALETTES["light" if not self.current_theme.dark else "dark"]
+            return PALETTES["light" if not self.app.current_theme.dark else "dark"]
         except Exception:  # noqa: BLE001 - theme is not ready before mount
             return PALETTES["dark"]
 
-    def watch_theme(self, old_theme: str, new_theme: str) -> None:
-        if not self.is_running:
+    def apply_theme(self) -> None:
+        """Re-resolve palette colours; the App forwards theme changes here."""
+        if not self.is_mounted:
             return
         self._palette = self._resolve_palette()
         self._apply_log_background()
@@ -518,8 +549,6 @@ class CampaignReport(App):
 
     def _apply_log_background(self) -> None:
         """Keep the reading area on its base colour and the time gutter distinct."""
-        if not self.is_mounted:
-            return
         event_log = self.query_one("#output", EventLog)
         event_log.styles.background = self._palette.log_bg
 
@@ -607,8 +636,8 @@ class CampaignReport(App):
         ):
             return
         self._feed = CampaignEventFeed(
-            typed_path_for(campaign),
-            legacy_path_for(campaign),
+            typed_path_for(campaign, self._campaign_root),
+            legacy_path_for(campaign, self._campaign_root),
             campaign_id=campaign,
         )
         self._feed_campaign = campaign
@@ -726,7 +755,7 @@ class CampaignReport(App):
 
     def _render_context(self) -> None:
         snapshot = self.snapshot or projector.build_snapshot(None, [], [])
-        width = max(self.size.width - 2, 40)
+        width = max(self._view_size.width - 2, 40)
         lines = self._context_lines(snapshot, width)
         self._context_rows = len(lines)
         rendered = Text()
@@ -740,10 +769,10 @@ class CampaignReport(App):
         self.query_one("#context", Static).update(rendered)
 
     def _context_budget(self) -> int:
-        width = self.size.width
+        width = self._view_size.width
         if width < 60:
             return 4
-        if width < 120 or self.size.height < 40:
+        if width < 120 or self._view_size.height < 40:
             return 6
         return 8
 
@@ -913,7 +942,10 @@ class CampaignReport(App):
         return self._palette.muted
 
     def _models_layout(self) -> str:
-        if self.size.width < COMPACT_WIDTH or self.size.height < COMPACT_HEIGHT:
+        if (
+            self._view_size.width < COMPACT_WIDTH
+            or self._view_size.height < COMPACT_HEIGHT
+        ):
             return "compact"
         return "full"
 
@@ -987,7 +1019,7 @@ class CampaignReport(App):
         self.query_one("#models-heading", Static).update(heading)
 
     def _models_budget_rows(self) -> int:
-        height = self.size.height
+        height = self._view_size.height
         reserved = self._context_rows + 1
         if not self._output_hidden:
             reserved += 2 + self._now_rows + (1 if self._search_visible else 0)
@@ -996,7 +1028,7 @@ class CampaignReport(App):
         return max(1, min(20, height - reserved - output_min))
 
     def _output_min_rows(self) -> int:
-        height = self.size.height
+        height = self._view_size.height
         if height >= 40:
             return max(5, int(height * 0.55))
         return max(4, height // 2)
@@ -1014,7 +1046,7 @@ class CampaignReport(App):
             widget.display = False
             widget.update("")
             return
-        width = max(24, self.size.width - 2)
+        width = max(24, self._view_size.width - 2)
         if training is not None:
             lines = self._training_lines(training, width)
         else:
@@ -1158,7 +1190,10 @@ class CampaignReport(App):
         palette = self._palette
         proxy = snapshot.last_training
         line = Text()
-        compact = self.size.width < COMPACT_WIDTH or self.size.height < COMPACT_HEIGHT
+        compact = (
+            self._view_size.width < COMPACT_WIDTH
+            or self._view_size.height < COMPACT_HEIGHT
+        )
         line.append("Last " if compact else "Last training ", style=palette.muted)
         line.append(proxy.operation_id, style=f"bold {palette.accent}")
         line.append(" | proxy " if compact else " | best proxy ", style=palette.muted)
@@ -1172,7 +1207,7 @@ class CampaignReport(App):
         line.append(proxy.success, style=palette.text)
         self._training_rows = 1
         widget.display = True
-        widget.update(_fit_text(line, max(20, self.size.width - 2)))
+        widget.update(_fit_text(line, max(20, self._view_size.width - 2)))
 
     def _render_log(self) -> None:
         event_log = self.query_one("#output", EventLog)
@@ -1184,7 +1219,7 @@ class CampaignReport(App):
         event_log.set_view(roots, active_ids=self._timeline.active_ids())
         now = Text(self._timeline.now_text, style=self._palette.accent)
         self.query_one("#now", Static).update(
-            _fit_text(now, max(20, self.size.width - 2))
+            _fit_text(now, max(20, self._view_size.width - 2))
         )
         self._now_rows = 1
         heading = Text("Events", style=f"bold {self._palette.heading}")
@@ -1198,7 +1233,7 @@ class CampaignReport(App):
                 style=self._palette.warning,
             )
         self.query_one("#output-heading", Static).update(
-            _fit_text(heading, max(12, self.size.width - 2))
+            _fit_text(heading, max(12, self._view_size.width - 2))
         )
 
     # ------------------------------------------------------------------
@@ -1278,7 +1313,7 @@ class CampaignReport(App):
         except Exception:  # noqa: BLE001 - layout not ready yet
             width = 0
         if not width:
-            width = self.size.width - 4
+            width = self._view_size.width - 4
         return max(20, width)
 
     def _attach_output(self) -> None:
@@ -1494,7 +1529,7 @@ class CampaignReport(App):
         search.focus()
 
     def action_filter_log(self) -> None:
-        self.push_screen(
+        self.app.push_screen(
             FilterScreen(self._log_categories),
             callback=self._apply_filter,
         )
@@ -1509,7 +1544,7 @@ class CampaignReport(App):
     def action_raw_event(self) -> None:
         item = self._output().selected_item()
         if item is not None:
-            self.push_screen(RawEventScreen(item))
+            self.app.push_screen(RawEventScreen(item))
 
     def action_follow_log(self) -> None:
         self._output().action_follow()
@@ -1559,13 +1594,13 @@ class CampaignReport(App):
             return
         widget = self.query_one("#reading", Static)
         out = self._output()
-        if self.size.width < 80:
+        if self._view_size.width < 80:
             text = (
                 "Following | Enter: open | End: live"
                 if out.following
                 else f"History - {out.missed} newer | End: live"
             )
-        elif self.size.width < 110:
+        elif self._view_size.width < 110:
             text = (
                 "Following live | Space: open | / search | f filter | End: live"
                 if out.following
@@ -1583,7 +1618,7 @@ class CampaignReport(App):
             )
         widget.update(
             Text(
-                text[: max(20, self.size.width - 2)],
+                text[: max(20, self._view_size.width - 2)],
                 style=self._palette.muted,
             )
         )
@@ -1593,7 +1628,7 @@ class CampaignReport(App):
     # ------------------------------------------------------------------
 
     def _apply_layout(self) -> None:
-        size = self.size
+        size = self._view_size
         too_small = size.width < MIN_COLUMNS or size.height < MIN_ROWS
         overlay = self.query_one("#too-small", Static)
         overlay.display = too_small
@@ -1616,7 +1651,7 @@ class CampaignReport(App):
         )
         self.query_one("#reading", Static).display = not compact
         self._now_rows = 0 if compact else 1
-        if compact and self.focused is output:
+        if compact and self.app.focused is output:
             self.query_one("#models", DataTable).focus()
         table = self.query_one("#models", DataTable)
         rows = len(table.rows)
@@ -1630,15 +1665,79 @@ class CampaignReport(App):
     def _render_output_heading(self) -> None:
         if self._output_hidden:
             return
-        width = max(12, self.size.width - 2)
+        width = max(12, self._view_size.width - 2)
         heading = Text("Output", style=f"bold {self._palette.heading}")
         heading.append(" " + "-" * (width - 8), style=self._palette.muted)
         self.query_one("#output-heading", Static).update(heading[:width])
 
     def on_resize(self) -> None:
-        if not self.is_running or self.snapshot is None:
+        if not self.is_mounted or self.snapshot is None:
             return
         self.refresh_snapshot()
 
     def refresh_and_layout(self) -> None:
         self.refresh_snapshot()
+        self._apply_layout()
+
+
+class CampaignReport(App):
+    """Single-campaign report application.
+
+    A thin app shell around exactly one :class:`CampaignPanel`: it supplies
+    the title, key bindings, global styles and screen composition. Campaign
+    interactions (`snapshot`, refresh and feed plumbing) live on the panel and
+    are forwarded below so tests and callers of the old class keep working.
+    """
+
+    TITLE = "Autoresearch campaign report"
+
+    AUTO_FOCUS = "#output"
+
+    BINDINGS: ClassVar[list] = [
+        ("ctrl+c", "quit", "Close report"),
+        ("ctrl+q", "quit", "Close report"),
+        ("/", "search_log", "Search events"),
+        ("f", "filter_log", "Filter events"),
+        ("r", "raw_event", "Raw event"),
+        ("escape", "clear_log_filter", "Clear filter"),
+        ("end", "follow_log", "Follow live"),
+    ]
+
+    CSS = REPORT_CSS
+
+    def __init__(
+        self,
+        *,
+        sources: CampaignSources | DemoSources | None = None,
+        events_path: Path | None = None,
+        demo: bool = False,
+    ) -> None:
+        super().__init__()
+        self._panel = CampaignPanel(
+            sources=sources,
+            events_path=events_path,
+            demo=demo,
+        )
+
+    def compose(self) -> ComposeResult:
+        yield self._panel
+
+    def watch_theme(self, old_theme: str, new_theme: str) -> None:
+        if self.is_running:
+            self._panel.apply_theme()
+
+    def __getattr__(self, name: str):
+        """Forward panel state and behaviour (``snapshot``, ``_timeline``...)."""
+        panel = self.__dict__.get("_panel")
+        if panel is None:
+            raise AttributeError(name)
+        return getattr(panel, name)
+
+    def __setattr__(self, name: str, value) -> None:
+        # Tests and callers replace panel state through the facade.
+        if name in {"snapshot", "_campaign_id"}:
+            panel = self.__dict__.get("_panel")
+            if panel is not None:
+                setattr(panel, name, value)
+                return
+        super().__setattr__(name, value)
