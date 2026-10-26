@@ -84,11 +84,11 @@ that these edits will improve final success or solve every PI failure.
 
 Sources:
 
-- Current [program](../contracts/program.md), especially Inquiry work and
+- Current [program](../../contracts/program.md), especially Inquiry work and
   Bounded scientific sessions.
-- Current [instrument contract](../contracts/instruments.md), including the
+- Current [instrument contract](../../contracts/instruments.md), including the
   unchanged session permissions and checkpoint fields.
-- Current [measurement contract](../contracts/instruments/measurement.md),
+- Current [measurement contract](../../contracts/instruments/measurement.md),
   including the existing `python_module` instrument.
 - Local [PI root-cause review](C:/Users/cyril.beurier/.codex/visualizations/2026/10/24/01a16fda-cf1c-7870-ac7c-4fc5f949f985/pi-rca/PI-root-cause-review.md),
   findings 2–4 and the independent replay files linked there. This local audit

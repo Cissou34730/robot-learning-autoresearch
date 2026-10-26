@@ -23,7 +23,7 @@ Current operating guidance, reviewed 19 October 2026:
 - [Change tracker](docs/harness-experiment-log.md): issue status and maintenance history.
 
 Dated RCAs, campaign HTML reports, implementation proposals and
-[old integration notes](docs/INTEGRATION_NOTES.md) describe the revisions and
+[old integration notes](docs/archive/INTEGRATION_NOTES.md) describe the revisions and
 campaigns named in them, not the current repository layout or current campaign.
 [Protocol decisions](docs/protocol-decisions.md) retain superseded decisions
 as history; the latest dated entry identifies the current storage design.

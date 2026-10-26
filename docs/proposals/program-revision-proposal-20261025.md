@@ -60,7 +60,7 @@ T10, M32 and E73; campaign `f83fca4d` at `6d5493d7`; campaign `faff0d94` before
 the reset at `388acf00`. The maintainer review and independent replay outputs
 are stored in the local [PI root-cause review](C:/Users/cyril.beurier/.codex/visualizations/2026/10/24/01a16fda-cf1c-7870-ac7c-4fc5f949f985/pi-rca/PI-root-cause-review.md).
 That local link is not a portable repository artifact. See also the
-[maintainer experiment log](harness-experiment-log.md).
+[maintainer experiment log](../harness-experiment-log.md).
 
 ## Proposed campaign-facing program
 

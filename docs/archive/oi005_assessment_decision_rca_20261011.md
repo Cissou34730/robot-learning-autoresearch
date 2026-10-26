@@ -50,7 +50,7 @@ bodies are normalized as `request.action`, `request.reason` and checkpoint
 fields, not nested under an operation-kind wrapper.
 
 Earlier context comes from the
-[legacy log](archive/harness-experiment-log-legacy.md), especially lines
+[legacy log](harness-experiment-log-legacy.md), especially lines
 1183-1329 and 2520-2558, and the
 [`79395c88` comprehensive RCA](campaign_79395c88_comprehensive_rca_20261009.md).
 Older campaigns used different schemas and prompt versions; they support

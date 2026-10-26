@@ -26,7 +26,7 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
   preserves failures, reversals, superseded reasoning and decision evolution;
   the archive is supporting source material, not the primary explanation.
   See
-  [`harness-change-narrative.md`](harness-change-narrative.md).
+  [`archive/harness-change-narrative.md`](archive/harness-change-narrative.md).
 
 ## Current architecture and operational status
 
@@ -377,7 +377,7 @@ The historical evidence remains valid.
 | OI-012 | The proposal permits separate publication of a frozen policy. | **Proposal** | The maintainer did not approve or implement the proposal. This proposal does not authorize campaign recovery. |
 | OI-013 | The proposal removes the fifteen-inquiry limit. | **Withdrawn** | The maintainer retained the limit. The campaign pauses after a saved checkpoint when it reaches that limit. The resume mechanism is unchanged. |
 | OI-020 | One proposed issue combined unrelated assessment concerns and task-specific terms. | **Withdrawn** | The generic issue was invalid. Assessment decisions remain under OI-005. Task-specific observations remain in their campaign analysis. This entry does not authorize a generic repair. |
-| OI-042 | Each new session receives whole context files. Only named sections could reduce cost further. | **Proposal** | Distant future. One PI-selected named-sections context tool, as in the [SDK consolidation plan](copilot-sdk-consolidation-plan.md). Reconsider after OI-008 shows the remaining context cost. |
+| OI-042 | Each new session receives whole context files. Only named sections could reduce cost further. | **Proposal** | Distant future. One PI-selected named-sections context tool, as in the [SDK consolidation plan](archive/copilot-sdk-consolidation-plan.md). Reconsider after OI-008 shows the remaining context cost. |
 | OI-043 | Instruction changes are tested only in full campaigns. | **Proposal** | Replay one recorded PI decision point with the same fixed evidence under the old and the new instructions, with no operations, and compare the chosen action. Precedent: two fixed-evidence replays of the pre-I13 goal-review boundary of `79395c88` under OI-016; both chose differently from the campaign. A replay is not campaign evidence. No framework or test infrastructure is approved. |
 | OI-044 | The PI can attribute a recorded measurement to the wrong candidate. | **Proposal** | Implement an on-demand `artifact_evidence_query` action that returns one candidate's recorded measurements if a campaign shows this error again. Precedent: E11 in `49e58c12` attributed T1's 192/200 to T2. Recorded references in `success_rate_pass_probability` already cover the counts behind pass estimates. |
 | OI-047 | Code paths used only for external inference providers remain when the PI runs on GitHub Copilot. | **Proposal** | Low priority. Remove the `read` tool, `read_alias` and `json_editors` if external providers are no longer used. |
@@ -693,7 +693,7 @@ or mutated by this review; the evidence-fidelity RCA remains deferred.
 
 ## Historical comprehensive RCA crosswalk
 
-Source: [`campaign_79395c88_comprehensive_rca_20261009.md`](campaign_79395c88_comprehensive_rca_20261009.md).
+Source: [`campaign_79395c88_comprehensive_rca_20261009.md`](archive/campaign_79395c88_comprehensive_rca_20261009.md).
 
 This table preserves the earlier review, not current status.
 The outstanding issue register above records later evidence and closures.
@@ -803,7 +803,7 @@ operations and must remain separate from campaign execution:
 | 2026-10-10 | Three-layer harness documentation structure | Adopted: compact tracker, curated thematic narrative and unchanged chronological archive. Narrative curation remains pending. |
 | 2026-10-12 | Harness-only bug tracking: OI-027/OI-028 | The maintainer authorized investigation and tracking, not repairs. A bounded pass covered native coding, submission and session reporting. Isolated response expressions reproduce omitted runtime errors and stale status. Existing evidence confirms the accepted-stage publication classification gap. Only this tracker changes. No runtime or PI source changed. No human tests, live SDK session or campaign operation ran. Campaign state, history and the live request remain unchanged. |
 | 2026-10-12 | Approved OI-027/OI-028 reporting repairs | Session outcomes now retain SDK errors and distinguish failed exits, timeout and interruption from the last operation status. A typed push failure crosses the existing subprocess boundary through exit code 3. Both replacement request forms preserve that signal. The controller reports publication failure even before execution. Inert checks cover session outcomes, both replacement forms and controller classifications. Compilation and baseline-relative lint pass. No human tests, live SDK session or campaign operation ran. No retry, new tool, scientific gate or state transition is added. PI sources and campaign files remain unchanged. |
-| 2026-10-12 | Combined tooling RCA, corrections and rejected loop | Recorded in `copilot_tools_combined_rca_20261012.md`. Corrected six alleged argument failures to four schema failures plus two closed-context denials, and 81 discovery calls to 91 attempts/81 successes. Role cost does not prove workload displacement. M31-M40 share one malformed input; fifteen queries hit the whole-artifact ceiling. The maintainer permanently rejects Runner-controlled coding/debugging coordination. OI-029/OI-030 start the approved interface batch; OI-031/OI-032 remain separate batches. PI review, scientific authority, retry limits and campaign state remain unchanged. No campaign launched, resumed, reset or mutated. |
+| 2026-10-12 | Combined tooling RCA, corrections and rejected loop | Recorded in `archive/copilot_tools_combined_rca_20261012.md`. Corrected six alleged argument failures to four schema failures plus two closed-context denials, and 81 discovery calls to 91 attempts/81 successes. Role cost does not prove workload displacement. M31-M40 share one malformed input; fifteen queries hit the whole-artifact ceiling. The maintainer permanently rejects Runner-controlled coding/debugging coordination. OI-029/OI-030 start the approved interface batch; OI-031/OI-032 remain separate batches. PI review, scientific authority, retry limits and campaign state remain unchanged. No campaign launched, resumed, reset or mutated. |
 | 2026-10-12 | Approved OI-029/OI-030 interface batch | Implemented/unmeasured. SDK and Runner share exclusive wrapper structure with actionable errors; operation bodies remain under existing stateful validation. Handle-only PI corrections retain and revalidate scope; explicit scope changes, foreign/stale handles and non-idle children reject. Stop guidance and AGENTS record the authority boundary. Actual SDK handlers pass 112 inert assertions with fake channels/tasks, compilation passes, and touched-file lint adds no findings over HEAD. No human tests, live SDK session, model inference, native author edits or campaign operation ran. Campaign and PI sources remain unchanged. OI-031/OI-032 are not implemented by this batch. No Runner-controlled loop, retry increase, new agent, dependency change or scientific gate is added. |
 
 | 2026-10-12 | Approved OI-031/OI-032 completion | Implemented/unmeasured. Compact operation/checkpoint lookup and frozen named artifact references address history-search and filename-transcription failures. File-backed selection removes the whole-artifact ceiling while retaining integrity, syntax validation and query budgets. Controlled validation passes 482 assertions, including exact shallow/deep values on recorded 38.7, 46.3 and 77.8 MB artifacts. No campaign operation, PI-source repair, dependency, new agent or Runner-controlled engineering loop. All approved implementation batches are complete; cost and campaign effects remain unmeasured. |
@@ -859,10 +859,10 @@ operations and must remain separate from campaign execution:
 | `campaigns/brief.md` | Generated current campaign context; identifies the preserved PI checkpoint as historical after official assessment. |
 | `campaigns/EXPERIMENTS.md` | Generated campaign-readable history. |
 | `reports/session_usage/*.jsonl` | AIU, token and tool-call accounting. |
-| `docs/campaign_79395c88_comprehensive_rca_20261009.md` | Full independent RCA and proposed validation. |
-| `docs/oi016_post_campaign_rca_20261009.md` | Earlier OI-016-specific analysis; superseded where the comprehensive RCA differs. |
-| `docs/oi005_assessment_decision_rca_20261011.md` | Reconciled parent and Opus 5.5/high RCAs, evidence, disagreements, bounded repair and campaign-observation criteria. |
-| `docs/copilot_tools_combined_rca_20261012.md` | Reconciled tooling RCA, corrected statistics, OI-029/OI-030 implementation scope, later evidence-access batches and the rejected Runner-controlled loop. |
+| `docs/archive/campaign_79395c88_comprehensive_rca_20261009.md` | Full independent RCA and proposed validation. |
+| `docs/archive/oi016_post_campaign_rca_20261009.md` | Earlier OI-016-specific analysis; superseded where the comprehensive RCA differs. |
+| `docs/archive/oi005_assessment_decision_rca_20261011.md` | Reconciled parent and Opus 5.5/high RCAs, evidence, disagreements, bounded repair and campaign-observation criteria. |
+| `docs/archive/copilot_tools_combined_rca_20261012.md` | Reconciled tooling RCA, corrected statistics, OI-029/OI-030 implementation scope, later evidence-access batches and the rejected Runner-controlled loop. |
 | `docs/research-overview/robot-campaign-ec7f3d3a-20261010-error-correction-report.html` | Detailed report for the historical `ec7f3d3a` campaign. |
 | `docs/research-overview/robot-campaign-0d39d52c-20261011-tooling-review.html` | Stopped tooling campaign evidence, final cost, correction topics and separately labeled subsequent harness repairs. |
 | `docs/research-overview/robot-campaign-1c940d68-20261020.html` | Failed `1c940d68` campaign (189/200), its likely geometric cause and proposed harness changes. |
@@ -870,7 +870,7 @@ operations and must remain separate from campaign execution:
 | `docs/research-overview/robot-campaign-5d94bf8a-20261023.html` | Failed `5d94bf8a` campaign (193/200), the only clean OI-041 system-prompt run: what `3afe89f2` changed, the one-sided plateau and the RL-centric, defensive PI. |
 | `docs/research-overview/robot-campaign-faff0d94-20261023.html` | Passed `faff0d94` campaign (200/200) with a gated hybrid controller on `ba92677f`; information only because `0b64ea66` and `ec21e7bf` added behavioural directives. |
 | `docs/research-overview/robot-campaign-f83fca4d-20261024.html` | Passed `f83fca4d` campaign (200/200) on `a969f07b`, the first goal-focused OI-041 system-prompt run: episode-latched analytic IK and computed-torque controller with a learned posture choice, prompt assessment decision, and the maintainer concern about the analytic shortcut. |
-| `docs/harness-change-narrative.md` | Curated explanation of harness failures, attempted repairs, reversals and current conclusions. |
+| `docs/archive/harness-change-narrative.md` | Curated explanation of harness failures, attempted repairs, reversals and current conclusions. |
 | `archive/harness-experiment-log-legacy.md` | Full prior narrative log, retained for historical lookup only. |
 
 ## Maintenance template

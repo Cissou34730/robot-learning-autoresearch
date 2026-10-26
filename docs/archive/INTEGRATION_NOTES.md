@@ -3,7 +3,7 @@
 > Historical branch-integration record. The branch names, validation results
 > and merge procedure below apply to that revision, not the current split.
 > For today's independent harness and local campaign repositories, start with
-> [README](../README.md) and the [split record](harness-campaign-split.md).
+> [README](../../README.md) and the [split record](../harness-campaign-split.md).
 
 This branch (`issue-33-42-integration`) carries only the reviewed harness
 remediation commits. It is based on the harness tip `50049ae` of
