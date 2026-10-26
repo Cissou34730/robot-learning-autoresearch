@@ -58,6 +58,8 @@ class Palette:
 
     name: str
     background: str
+    log_bg: str
+    column_bg: str
     text: str
     muted: str
     heading: str
@@ -76,6 +78,8 @@ PALETTES: dict[str, Palette] = {
     "dark": Palette(
         name="dark",
         background="#1e1e1e",
+        log_bg="#000000",
+        column_bg="#262626",
         text="#e6e6e6",
         muted="#b0b0b0",
         heading="#f0f0f0",
@@ -92,6 +96,8 @@ PALETTES: dict[str, Palette] = {
     "light": Palette(
         name="light",
         background="#f5f5f5",
+        log_bg="#ffffff",
+        column_bg="#e2e2e2",
         text="#1a1a1a",
         muted="#4a4a4a",
         heading="#111111",
@@ -374,8 +380,9 @@ class CampaignReport(App):
     #output {
         height: 1fr;
         padding: 0;
-        background: $surface;
+        background: $background;
         color: $text;
+        background-tint: transparent;
         scrollbar-size-vertical: 1;
     }
     EventLog > .tree--label {
@@ -486,6 +493,7 @@ class CampaignReport(App):
         event_log = self.query_one("#output", EventLog)
         event_log._styles = self._log_styles()
         event_log.on_follower(self._on_follow)
+        self._apply_log_background()
         self._make_feed()
         self.refresh_snapshot()
         self.drain_feed()
@@ -504,8 +512,16 @@ class CampaignReport(App):
         if not self.is_running:
             return
         self._palette = self._resolve_palette()
+        self._apply_log_background()
         if self.snapshot is not None:
             self.refresh_snapshot()
+
+    def _apply_log_background(self) -> None:
+        """Keep the reading area on its base colour and the time gutter distinct."""
+        if not self.is_mounted:
+            return
+        event_log = self.query_one("#output", EventLog)
+        event_log.styles.background = self._palette.log_bg
 
     def _on_snapshot_interval(self) -> None:
         self.refresh_snapshot()
@@ -539,6 +555,7 @@ class CampaignReport(App):
             "special_tool": palette.accent,
             "result": palette.pi,
             "section": palette.section,
+            "column_bg": palette.column_bg,
         }
 
     def _switch_campaign(self, campaign_id: str | None) -> None:

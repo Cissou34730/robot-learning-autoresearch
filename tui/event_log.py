@@ -482,8 +482,21 @@ class EventLog(Tree[TimelineItem]):
         )
         accent = self._styles.get("accent", "")
         muted = self._styles.get("muted", "")
-        marker_style = Style.parse(f"bold {accent}".strip()) if selected else Style()
-        muted_style = Style.parse(muted) if muted else Style()
+        column_bg = self._styles.get("column_bg", "")
+        suffix = f" on {column_bg}" if column_bg else ""
+
+        def column_style(color: str, *, bold: bool = False) -> Style:
+            parts = []
+            if bold and color:
+                parts.append("bold")
+            if color:
+                parts.append(color)
+            if suffix:
+                parts.append(suffix.strip())
+            return Style.parse(" ".join(parts)) if parts else Style()
+
+        marker_style = column_style(accent, bold=selected)
+        muted_style = column_style(muted)
         if item is None:
             return [
                 Segment(marker, marker_style),

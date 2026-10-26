@@ -119,6 +119,8 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   session context and ordinary result lines, emphasized scientific tool names,
   green success/created files, yellow warnings and red failures/deleted files;
   result assessments retain their individual success/warning/error colours;
+- the reading area stays black (white in the light theme) while the fixed time
+  column and its separator share a lighter grey band;
 - coding handoffs show phase, agent, status and their structured detail;
 - file changes show the repository-relative path, operation marker (`+`, `~`,
   `-`) and whether the PI operation request changed;

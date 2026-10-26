@@ -392,6 +392,56 @@ def test_report_has_no_background_bands_or_cursor():
     _run(_no_bands())
 
 
+@pytest.mark.parametrize("theme", ["textual-dark", "textual-light"])
+def test_time_gutter_is_lighter_than_the_black_reading_area(theme):
+    _run(_gutter_background(theme))
+
+
+async def _gutter_background(theme):
+    from rich.color import Color
+    from textual.color import Color as TextualColor
+
+    from tui.report import _relative_luminance
+
+    app = _demo_app()
+    app.theme = theme
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        out = app.query_one("#output")
+        out.focus()
+        await pilot.pause()
+        palette = app._palette
+        dark = theme == "textual-dark"
+        assert palette.log_bg == ("#000000" if dark else "#ffffff")
+        if dark:
+            assert _relative_luminance(palette.column_bg) > _relative_luminance(
+                palette.log_bg
+            )
+        else:
+            assert _relative_luminance(palette.column_bg) < _relative_luminance(
+                palette.log_bg
+            )
+        region = out.content_region
+        assert out.styles.background == TextualColor.parse(palette.log_bg)
+        row = next(
+            y for y in range(region.height) if out.render_line(y).text[16:].strip()
+        )
+        assert app.screen.get_style_at(
+            region.x + 2, region.y + row
+        ).bgcolor == Color.parse(palette.column_bg)
+        assert app.screen.get_style_at(
+            region.x + 16, region.y + row
+        ).bgcolor == Color.parse(palette.log_bg)
+
+        app.theme = "textual-light" if dark else "textual-dark"
+        await pilot.pause()
+        changed = app._palette
+        assert out.styles.background == TextualColor.parse(changed.log_bg)
+        assert app.screen.get_style_at(
+            region.x + 2, region.y + row
+        ).bgcolor == Color.parse(changed.column_bg)
+
+
 async def _no_bands():
     from textual.color import Color
 
