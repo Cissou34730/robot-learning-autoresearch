@@ -31,7 +31,7 @@ For every launcher invocation, Hermes must:
    # Hermes performs the suspended creation, Job Object assignment and resume.
    # Run from robot-learning-harness, not the campaign folder.
    pwsh -NoProfile -File .\run_research.ps1 `
-       -CampaignRoot C:\Users\cyril.beurier\code\robot-learning-campaigns `
+       -CampaignRoot C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1 `
        -StopRequestPath $stopRequest `
        -StopTimeoutSeconds 180
    ```

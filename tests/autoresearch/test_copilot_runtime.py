@@ -8,9 +8,11 @@ import pytest
 
 from runner.copilot import copilot_adapter as adapter
 from runner.copilot import opencode_provider as provider
+from runner.copilot import operation_submission as submission_module
 from runner.copilot.coding_contracts import CODING_TOOLS, REVIEW_TOOLS
 from runner.copilot.coding_session import ScientificCoding
 from runner.copilot.copilot_console import Console, tool_detail
+from runner.copilot.operation_submission import OperationSubmission
 from runner.copilot.pi_tools import scoped_search
 from runner.copilot.system_prompt import (
     REFERENCE_READ_DENIAL,
@@ -286,6 +288,84 @@ def test_a_locked_runner_denies_every_call():
     hook = scoped_tool_hook(operations=SimpleNamespace(locked=True))
     decision = hook({"toolName": "view", "toolArgs": {"path": SOURCE}}, {})
     assert decision["permissionDecision"] == "deny"
+
+
+def test_a_long_operation_is_awaited_in_slices(monkeypatch, tmp_path, capsys):
+    from runner import typed_events
+
+    monkeypatch.setattr(submission_module, "WAIT_SLICE_SECONDS", 0.05)
+    feed = tmp_path / "typed.events.jsonl"
+    monkeypatch.setenv("TUI_TYPED_EVENTS", str(feed))
+    typed_events.set_campaign("c")
+
+    class Channel:
+        def __init__(self) -> None:
+            self.sent: list[dict] = []
+            self.reply: asyncio.Future = asyncio.get_running_loop().create_future()
+
+        async def send(self, message: dict) -> None:
+            self.sent.append(message)
+
+        async def receive(self) -> dict:
+            return await self.reply
+
+    async def exercise() -> None:
+        channel = Channel()
+        binding = {
+            "session_id": "s",
+            "invocation_id": "i",
+            "campaign_id": "c",
+            "state": {"operation_event_count": 0},
+        }
+        operations = OperationSubmission(
+            channel, binding, Console(session_id="s"), None
+        )
+        hook = scoped_tool_hook(operations=operations)
+
+        def call(call_id: str, request):
+            return operations.invoke(
+                SimpleNamespace(request=request),
+                SimpleNamespace(session_id="s", tool_call_id=call_id),
+            )
+
+        first = json.loads(await call("a", {"kind": "train"}))
+        assert first["status"] == "running" and len(channel.sent) == 1
+        assert (
+            hook({"toolName": "view", "toolArgs": {}}, {})["permissionDecision"]
+            == "deny"
+        )
+        assert hook({"toolName": "submit_operation", "toolArgs": {}}, {}) is None
+        other = json.loads(await call("b", {"kind": "train"}))
+        assert other["status"] == "running" and len(channel.sent) == 1
+
+        waiting = asyncio.ensure_future(call("c", None))
+        await asyncio.sleep(0)
+        channel.reply.set_result(
+            {
+                "type": "operation_result",
+                "invocation_id": "i",
+                "call_id": "a",
+                "status": "completed",
+            }
+        )
+        assert json.loads(await waiting)["status"] == "completed"
+        assert not operations.locked and len(channel.sent) == 1
+
+    asyncio.run(exercise())
+    events = [
+        json.loads(line) for line in feed.read_text(encoding="utf-8").splitlines()
+    ]
+    assert [event["kind"] for event in events] == [
+        "operation_submitted",
+        "operation_submitted",
+    ]
+    assert [event["payload"]["status"] for event in events] == ["running", "completed"]
+    assert all(
+        event["campaign_id"] == "c" and event["session_id"] == "s" for event in events
+    )
+    assert capsys.readouterr().out == (
+        "  > submit_operation: running\n  > submit_operation: completed\n"
+    )
 
 
 # --- native children ----------------------------------------------------------------

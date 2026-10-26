@@ -925,6 +925,30 @@ def test_comparisons_are_resolved_to_planned_canonical_candidates_at_acceptance(
         run_experiment.accept_operation(invalid, state)
 
 
+def test_measurement_request_refuses_a_repeated_panel(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Compare two candidates.")
+    first = _candidate("T1:checkpoint-10", _artifact(tmp_path / "first", b"first"))
+    second = _candidate("T2:checkpoint-10", _artifact(tmp_path / "second", b"second"))
+    state["candidates"] = {first["id"]: first, second["id"]: second}
+    state["model_roles"]["working"] = first["id"]
+    panel = {"instrument": "research_evaluation", "episodes": 2, "seed": 100}
+    request = {
+        "description": "Compare two candidates.",
+        "rationale": "The paired result informs the next decision.",
+        "measurements": [
+            {**panel, "candidate": first["id"]},
+            {**panel, "candidate": second["id"]},
+            {**panel, "candidate": "working"},
+        ],
+    }
+
+    with pytest.raises(ValueError, match="measurement 3 repeats measurement 1"):
+        protocol.planned_measurements(request, state)
+    request["measurements"][2]["seed"] = 200
+    assert len(protocol.planned_measurements(request, state)) == 3
+
+
 def test_paired_comparison_uses_only_the_exact_frozen_shared_episodes(
     monkeypatch, tmp_path
 ):

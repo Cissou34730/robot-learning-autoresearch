@@ -224,6 +224,42 @@ def test_liveness_keeps_the_timeline_quiet():
     assert len(list(_walk(reducer.view()[0]))) == before
 
 
+def test_sliced_wait_is_informational_and_keeps_the_operation_active():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 26, 12, 0, tzinfo=UTC)
+    reducer.ingest(
+        _event("operation_started", start, {"kind": "training"}, operation_id="T9")
+    )
+    reducer.ingest(
+        _event(
+            "operation_submitted",
+            start + timedelta(minutes=25),
+            {"status": "running", "error": ""},
+            operation_id="T9",
+        )
+    )
+    items = list(_walk(reducer.view()[0]))
+    waiting = next(item for item in items if item.title == "submitted")
+    operation = next(item for item in items if item.item_id == "operation:T9")
+    assert waiting.severity == "info"
+    assert waiting.summary == "running"
+    assert operation.status == "running"
+    assert "operation:T9" in reducer.active_ids()
+    reducer.ingest(
+        _event(
+            "operation_completed",
+            start + timedelta(minutes=30),
+            {"kind": "training"},
+            operation_id="T9",
+        )
+    )
+    completed = next(
+        item for item in _walk(reducer.view()[0]) if item.item_id == "operation:T9"
+    )
+    assert completed.status == "completed"
+    assert "operation:T9" not in reducer.active_ids()
+
+
 def test_tool_lifecycle_pairs_by_call_id_and_reports_duration():
     reducer = TimelineReducer()
     start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)

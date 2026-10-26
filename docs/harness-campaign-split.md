@@ -13,7 +13,9 @@ Approved maintainer plan (2026-10-19). Resume work from this file.
   directory, and `harness` is the GitHub default branch.
 - **Campaign repository:** `C:\Users\cyril.beurier\code\robot-learning-campaigns`,
   a separate local Git repository with no GitHub remote. Campaign commits are
-  never pushed anywhere.
+  never pushed anywhere. *Since 26 October 2026 this folder is a plain root that
+  holds one campaign repository per slot (`campaign-1` to `campaign-5`); the
+  original repository is `campaign-1`.*
 - **PI-owned code lives in the campaign repository.**
 - **Initial campaign content:** the result of a reset from baseline v3
   (`baseline-distinct-episodes-v3`, commit `8256c8c`).

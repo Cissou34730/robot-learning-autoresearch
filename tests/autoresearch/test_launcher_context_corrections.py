@@ -16,6 +16,48 @@ from runner import assessment, protocol, repository, run_experiment
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def test_parallel_launch_does_not_inherit_shared_observation_paths(tmp_path):
+    import shutil
+
+    powershell = shutil.which("pwsh") or shutil.which("powershell")
+    if powershell is None:
+        pytest.skip("no PowerShell host to exercise parallel launch")
+    campaigns = tmp_path / "campaigns"
+    (campaigns / "campaign-1" / ".git").mkdir(parents=True)
+    exercise = tmp_path / "exercise-parallel-feeds.ps1"
+    exercise.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+$env:TUI_OBSERVATIONS = 'shared-observations.jsonl'
+$env:TUI_TYPED_EVENTS = 'shared-events.jsonl'
+function global:git {{ $global:LASTEXITCODE = 0 }}
+function global:Start-Sleep {{ param([int]$Seconds) }}
+function global:Start-Process {{
+    [CmdletBinding()]
+    param(
+        [string]$FilePath, [string]$WorkingDirectory, [string]$WindowStyle,
+        [string[]]$ArgumentList, [switch]$PassThru
+    )
+    if (Test-Path Env:TUI_OBSERVATIONS) {{ throw 'shared legacy feed inherited' }}
+    if (Test-Path Env:TUI_TYPED_EVENTS) {{ throw 'shared typed feed inherited' }}
+    [pscustomobject]@{{ Id = 123 }}
+}}
+& '{ROOT / "tools" / "run_parallel.ps1"}' -Count 1 -NoReset `
+    -CampaignsRoot '{campaigns}' -ControlDirectory '{tmp_path / "control"}'
+""",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=45,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def _ready_state(monkeypatch, *, session_kind: str = "startup") -> dict:
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
     state = repository.empty_campaign_state(
@@ -642,3 +684,64 @@ if (-not $result.checkpoint_required -or
         check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_campaign_resources_report_elapsed_time_and_usage_by_role(tmp_path):
+    import json
+    import shutil
+
+    powershell = shutil.which("pwsh") or shutil.which("powershell")
+    if powershell is None:
+        pytest.skip("no PowerShell host to run launcher helper")
+    usage = tmp_path / "reports" / "session_usage" / "campaign.jsonl"
+    usage.parent.mkdir(parents=True)
+    usage.write_text(
+        "\n".join(
+            json.dumps(row)
+            for row in (
+                {"role": "pi", "aiu": 2.5},
+                {"role": "scientific_coder", "aiu": 1.25},
+                {"role": "scientific_reviewer", "aiu": 0.5},
+                {"role": "pi", "aiu": None},
+            )
+        ),
+        encoding="utf-8",
+    )
+    exercise = tmp_path / "exercise-resources.ps1"
+    exercise.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{ROOT / "run_research.ps1"}', [ref]$null, [ref]$null)
+$definition = $ast.Find({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -eq 'Get-CampaignResourceSummary'
+}}, $true)
+. ([scriptblock]::Create($definition.Extent.Text))
+$state = [pscustomobject]@{{
+    campaign = [pscustomobject]@{{
+        id = 'campaign'
+        started_at = [DateTimeOffset]::UtcNow.AddMinutes(-125).ToString('o')
+    }}
+    counters = [pscustomobject]@{{ inquiry = 1; session = 3 }}
+    operation_events = @()
+    candidates = [pscustomobject]@{{}}
+}}
+Get-CampaignResourceSummary -State $state
+""",
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=45,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert result.stdout.strip().startswith(
+        "elapsed 2h05m | AI usage of completed sessions 4.3 AIU "
+        "(PI 2.5, coding and review 1.8) | inquiries 1 | sessions 3"
+    )

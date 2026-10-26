@@ -46,9 +46,9 @@ commit associated with each old artifact. The human-only migration tool exports
 a new copy using that code in a temporary checkout, without switching branches:
 
 ```powershell
-$env:ROBOT_LEARNING_CAMPAIGN_ROOT = 'C:\Users\cyril.beurier\code\robot-learning-campaigns'
+$env:ROBOT_LEARNING_CAMPAIGN_ROOT = 'C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1'
 uv run python -m runner.migrate_policy_runtime `
-  --artifact C:\Users\cyril.beurier\code\robot-learning-campaigns\campaigns\checkpoints\retained\<selected-artifact> `
+  --artifact C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1\campaigns\checkpoints\retained\<selected-artifact> `
   --output C:\Users\cyril.beurier\code\migrated-champion `
   --source-ref <scientific-commit> --identity-actions
 ```

@@ -30,10 +30,16 @@ root only.
 ## Running the report
 
 ```powershell
-.\tools\run-report.ps1                 # default sibling robot-learning-campaigns
+.\tools\run-report.ps1                 # default robot-learning-campaigns\campaign-1
 .\tools\run-report.ps1 -CampaignRoot <path>
 .\tools\run-report.ps1 -Demo           # synthetic material, reads nothing
 ```
+
+For parallel campaigns, open one report per campaign slot, for example
+`.\tools\run-report.ps1 -CampaignRoot ..\robot-learning-campaigns\campaign-2`.
+Each report follows only that repository's campaign state and event feed.
+The parallel launcher clears inherited observation-file overrides so its
+campaign processes use their own per-campaign feed paths.
 
 Directly: `uv run python -m tui --help` (options: `--campaign-root`,
 `--events`, `--demo`, `--light`).

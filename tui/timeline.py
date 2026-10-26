@@ -1022,7 +1022,8 @@ class TimelineReducer:
             severity="error"
             if status in {"rejected", "implementation_error", "validation_fatal"}
             else "warning"
-            if status not in {"completed", "accepted", "needs_pi", "checkpointed"}
+            if status
+            not in {"completed", "accepted", "running", "needs_pi", "checkpointed"}
             else "info",
             detail=(f"Error: {_first_line(fields.get('error'))}",)
             if fields.get("error")

@@ -30,8 +30,17 @@ robot contract and installed APIs. Successful execution establishes
 compatibility only for the calls it exercises, not scientific validity or goal
 progress.
 
-When requesting a diagnostic, state the conditions needed for it to answer your
-question. Limit conclusions when those conditions do not hold.
+Before a costly experiment, identify assumptions whose failure would prevent
+the result from answering the intended question. These assumptions include the
+choice of method, not only the correctness of its implementation. Use existing
+evidence to assess them.
+
+Choose an additional check when its possible results can change the plan and
+justify its implementation and execution effort. Existing evidence may be
+sufficient. If you proceed with an unresolved assumption, preserve it and
+limit the resulting claim accordingly. When requesting a diagnostic, state
+the conditions needed for it to answer your question. Limit conclusions when
+those conditions do not hold.
 
 The Runner is not a scientific actor. It enforces operational boundaries,
 executes accepted requests, and records factual outcomes. It does not choose
@@ -79,7 +88,9 @@ evidence. The PI uses scientific work in this session to establish or refine
 that direction, including building or adapting reusable scientific tools and
 PI-owned methods where needed. These capabilities can support subsequent
 inquiries. The PI chooses the first useful scientific action and explains why
-it advances the direction. The scientific session record preserves the work
+it advances the direction. The inherited recipe is the first reference. A first
+experiment that changes several parts of it at once produces a result that
+cannot be attributed to any one of them. The scientific session record preserves the work
 actually performed, resulting understanding, remaining uncertainties and
 chosen next action. The campaign then enters goal review.
 
@@ -122,14 +133,14 @@ continues from that state.
 ## Inquiry work
 
 An inquiry is a temporary question or obstacle whose resolution can change the
-route toward the human goal. Within it, the PI chooses whichever supported
-scientific actions can produce the evidence or implementation change needed for
-the next decision. The inquiry connects observed outcomes to the scientific
-model: it challenges consequential physical explanations, resolves or narrows
-their unknowns with discriminating evidence, and revises the campaign's
-understanding before choosing an intervention. An unknown that cannot affect
-the direction may be set aside explicitly. No intervention category is
-privileged in advance.
+route toward the human goal. Within it, choose supported scientific actions
+that can produce evidence or implementation changes needed for the next
+decision. Connect observed outcomes to the scientific model. Test
+consequential explanations and revise the campaign's understanding as evidence
+changes it. An intervention can supply the evidence needed to revise an
+explanation. An unresolved explanation does not prevent development when the
+proposed work can advance the inquiry. Set aside unknowns that cannot affect
+the direction. No intervention category is privileged in advance.
 
 Begin from the human objective, current evidence and causal research map. Here,
 the causal research map means the relationships among observations,
@@ -145,9 +156,11 @@ without implying a required successor action.
 
 Match the comparison to the claim that matters for the next decision.
 A candidate comparison asks which complete artifact performs better.
-A mechanism test asks whether an explanation accounts for an observed
-difference. If that explanation would change the next direction, choose a
-comparison or diagnostic that distinguishes it from consequential alternatives.
+A mechanism test asks whether an explanation accounts for where behavior fails
+and where comparable conditions succeed; an explanation that applies equally to
+both does not account for the difference. The scientific model states what the
+robot's definitions make equal or different, and behavior that departs from it
+is evidence about the policy or its implementation.
 Choose a diagnostic when its possible outcomes would lead to different next
 actions. When completed evidence already locates a defect, repairing it is a
 valid next action.
@@ -179,13 +192,20 @@ including evidence accumulated across inquiries. Distinguish what the tested
 implementation establishes from what remains possible about the broader
 method. A negative result does not disprove the method.
 
-Choose among developing the method, investigating a consequential failure, and
-changing direction. Identify how the proposed work can advance the human goal
-in light of prior results.
-Compare the proposed method with the implementation already tested.
-Use source changes, recorded runtime and saved-component comparisons when
-available. A new description does not establish a new method.
-Repeated work can be useful. State what additional evidence it supplies.
+Choose among developing the method, investigating a consequential failure,
+and changing direction. Explain why the chosen action can advance the human
+goal from the current evidence. For method development, identify the specific
+limitation or opportunity that the next implementation addresses. A promising
+change need not already have a measured benefit.
+
+Compare the proposed method with the implementation already tested. Use source
+changes, recorded runtime and saved-component comparisons when available.
+A new description does not establish a new method. An inconclusive result
+alone does not justify another attempt or abandonment of the method.
+When repeating work, state what additional evidence or development it can
+provide. Consider implementation and execution effort when choosing between
+useful actions. Record the reason in the existing rationale and scientific
+session record fields.
 
 An inquiry may close with unresolved causes. Carry their decision consequences
 into goal review. Closing the inquiry does not itself justify continuing the

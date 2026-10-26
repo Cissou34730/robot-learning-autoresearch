@@ -7,9 +7,9 @@ present form.
 
 It complements, but does not duplicate:
 
-- [`harness-experiment-log.md`](harness-experiment-log.md), the compact live
+- [`harness-experiment-log.md`](../harness-experiment-log.md), the compact live
   tracker and current source of issue status;
-- [`archive/harness-experiment-log-legacy.md`](archive/harness-experiment-log-legacy.md),
+- [`archive/harness-experiment-log-legacy.md`](harness-experiment-log-legacy.md),
   the complete chronological record retained as source material and audit
   history;
 - dedicated RCAs and campaign reports, which hold detailed evidence.
@@ -95,8 +95,8 @@ Repairing the log classification did not recover the conversation that had
 already received `validation_fatal`. A restart resumed its instruction to stop
 despite an active durable Runner session. This is a separate, unresolved
 recovery mismatch, not another path rejection and not defective PI science.
-See [the split record](harness-campaign-split.md) and the
-[current tracker](harness-experiment-log.md).
+See [the split record](../harness-campaign-split.md) and the
+[current tracker](../harness-experiment-log.md).
 
 ### 1. Project framing and authority boundaries
 
