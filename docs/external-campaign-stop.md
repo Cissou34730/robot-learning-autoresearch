@@ -38,9 +38,11 @@ For every launcher invocation, Hermes must:
 
 Use an unpackaged PowerShell executable for contained launches. The TUI skips
 Microsoft Store `WindowsApps` execution aliases: a native child launched through
-the installed alias was observed outside the owning job. It prefers unpackaged
-PowerShell 7 and otherwise uses Windows PowerShell. If neither is available,
-startup fails rather than running without containment. This does not change
+the installed package was observed outside the owning job, including when
+started by its full executable path. The TUI requires unpackaged PowerShell 7;
+Windows PowerShell 5.1 lacks .NET APIs used by the existing launcher. If the
+supported runtime is unavailable, command preflight fails before initialization,
+reset or launch rather than running without containment. This does not change
 which shell an operator uses for direct, unsupervised script invocations.
 
 The request path is inherited only by the supervised Runner or PI-adapter

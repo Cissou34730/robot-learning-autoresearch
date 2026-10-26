@@ -466,21 +466,18 @@ class JobHandle:
 
 
 def _launcher_executable() -> str:
-    """Use an unpackaged shell: Store execution aliases break job inheritance."""
-    for candidate in ("pwsh.exe", "pwsh", "powershell.exe", "powershell"):
-        found = shutil.which(candidate)
+    """The existing launcher's .NET APIs require unpackaged PowerShell 7."""
+    for directory in os.get_exec_path():
+        found = shutil.which("pwsh.exe", path=directory)
         if found and "windowsapps" not in str(found).lower().replace("/", "\\").split(
             "\\"
         ):
             return found
-    fallback = (
-        Path(os.environ.get("SystemRoot", r"C:\Windows"))
-        / "System32/WindowsPowerShell/v1.0/powershell.exe"
-    )
-    if fallback.is_file():
-        return str(fallback)
     raise RuntimeError(
-        "No unpackaged PowerShell was found; process containment is required."
+        "The campaign console requires unpackaged PowerShell 7 (pwsh.exe) on PATH. "
+        "Microsoft Store PowerShell is not supported for Job Object containment, "
+        "and Windows PowerShell 5.1 lacks the launcher's required .NET APIs. "
+        "No campaign was initialized, reset or started."
     )
 
 
@@ -624,6 +621,9 @@ class LauncherMachinery:
             stop_request_path = Path(arguments[index + 1])
             return stop_request_path.parent, arguments
         return new_control_directory(control_root()), arguments
+
+    def preflight(self) -> None:
+        _launcher_executable()
 
     def _launch_environment(self) -> dict[str, str]:
         environment = dict(os.environ)

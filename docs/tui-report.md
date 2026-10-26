@@ -58,6 +58,12 @@ a Commands tab and one tab per installed campaign folder
 tabs). Launching the console starts nothing; campaigns run only when a
 command is submitted.
 
+Controlled execution requires unpackaged PowerShell 7 on PATH. Store-packaged
+PowerShell does not preserve the tested Job Object boundary, while Windows
+PowerShell 5.1 lacks the launcher's required .NET APIs. The controller refuses
+an unsupported runtime before any initialization, reset or launch. This check
+does not prevent opening the interface or reading existing campaigns.
+
 - Commands tab: a command line (`run 3`, `reset campaign-2`,
   `start campaign-2`, `stop all`) plus shared launch-parameter fields
   (Model, Provider, Reasoning, Timesteps, MaxTimesteps, MaxInquiries,
@@ -105,6 +111,26 @@ instance lock, per-run control directories with captured console logs) and
 orchestration); both are terminal-free and tested with fake executors in
 `tests/autoresearch/test_campaign_controller.py` and
 `tests/autoresearch/test_campaign_console.py`.
+
+### Controller validation status (26 October 2026)
+
+- 140 targeted controller, headless console, report/projection/timeline and
+  stop-control tests pass. Windows boundary checks exercise native descendants,
+  failed assignment and owner-process exit; their dummy scripts use native
+  Windows PowerShell 5.1, not the production campaign launcher.
+- The real headless TUI `run 1` attempt reset campaign-1 successfully, but the
+  Windows PowerShell fallback failed in the existing launcher's `.ArgumentList`
+  API before scientific work. That fallback has been removed. Campaign-1 is
+  fresh (`67aa58af-b0c9-4a10-a422-5b077171df2e`), scientific model pending, with
+  no pending operation. Campaign-2 and campaign-3 retained their state hashes,
+  modification times, Git HEADs and clean Git status.
+- The corrected runtime preflight was exercised through the real headless UI:
+  `run 1` reports the missing unpackaged PowerShell 7 in a popup and persistent
+  details, with no child launched and all three campaigns unchanged.
+- Acceptance is not complete: the real reset → stop → resume → Ctrl+Q sequence
+  requires unpackaged PowerShell 7 on PATH. Physical Windows Terminal Ctrl+Tab
+  delivery and terminal restoration also need an interactive check. Headless
+  tests do not establish those physical-terminal behaviors.
 
 Reference size is 160x45; the layout adapts down to an 80x24 and 60-column
 fallback and below 48x16 shows a `Terminal too small - need 48x16` message.

@@ -520,6 +520,16 @@ class CampaignController:
             for target in targets:
                 self._stop_one(outcome, target)
             return outcome
+        check_runtime = getattr(self._machinery, "preflight", None)
+        if check_runtime is not None:
+            try:
+                check_runtime()
+            except (OSError, RuntimeError) as error:
+                for target in targets:
+                    target.stage = "failed"
+                    target.detail = str(error)
+                    outcome.record("preflight", target.label, FAILED, str(error))
+                return outcome
         if verb in {"start", "run"}:
             try:
                 self._preflight.check()
@@ -660,7 +670,7 @@ class CampaignController:
                     *reset.arguments(),
                 ]
             )
-        except FileNotFoundError as error:
+        except (OSError, RuntimeError) as error:
             target.stage = "failed"
             target.detail = str(error)
             self._record(outcome, "reset", target.label, FAILED, str(error))

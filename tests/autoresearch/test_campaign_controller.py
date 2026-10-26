@@ -524,6 +524,22 @@ def test_preflight_reports_dirty_harness_and_skips_batch(tmp_path):
     assert machinery.started == []
 
 
+def test_unavailable_contained_runtime_refuses_before_any_reset(tmp_path):
+    controller, machinery, _layout, runner = _controller(tmp_path)
+
+    def missing():
+        raise RuntimeError("unpackaged PowerShell 7 required")
+
+    machinery.preflight = missing
+    outcome = controller.execute("run", [1, 2], settings=control.LaunchSettings())
+    assert not outcome.ok
+    assert all(
+        s.action == "preflight" and s.status == control.FAILED for s in outcome.steps
+    )
+    assert runner.calls == []
+    assert machinery.started == []
+
+
 def test_stop_without_target_requires_selection(tmp_path):
     controller, *_ = _controller(tmp_path)
     with pytest.raises(control.CommandError):
@@ -537,8 +553,25 @@ requires_windows = pytest.mark.skipif(
 )
 
 
+@pytest.fixture
+def native_shell(monkeypatch):
+    """Dummy scripts use native PS 5.1; production campaign scripts require PS 7.
+
+    This tests Windows Job mechanics without assuming a supported production
+    PowerShell installation or launching any campaign runtime.
+    """
+    from tui import process
+
+    executable = str(
+        Path(os.environ["SystemRoot"])
+        / "System32/WindowsPowerShell/v1.0/powershell.exe"
+    )
+    monkeypatch.setattr(process, "_launcher_executable", lambda: executable)
+    return executable
+
+
 @requires_windows
-def test_supervised_launcher_captures_output_and_reports_exit(tmp_path):
+def test_supervised_launcher_captures_output_and_reports_exit(tmp_path, native_shell):
     from tui.process import LauncherBuilder
 
     script = tmp_path / "dummy.ps1"
@@ -558,7 +591,9 @@ def test_supervised_launcher_captures_output_and_reports_exit(tmp_path):
 
 
 @requires_windows
-def test_assignment_failure_does_not_run_the_suspended_child(tmp_path, monkeypatch):
+def test_assignment_failure_does_not_run_the_suspended_child(
+    tmp_path, monkeypatch, native_shell
+):
     from tui.process import LauncherBuilder, kernel32
 
     marker = tmp_path / "should-not-run"
@@ -576,7 +611,7 @@ def test_assignment_failure_does_not_run_the_suspended_child(tmp_path, monkeypat
 
 
 @requires_windows
-def test_force_stop_terminates_the_whole_contained_tree(tmp_path):
+def test_force_stop_terminates_the_whole_contained_tree(tmp_path, native_shell):
     from tui.process import LauncherBuilder
 
     script = tmp_path / "spawner.ps1"
@@ -603,7 +638,9 @@ def test_force_stop_terminates_the_whole_contained_tree(tmp_path):
 
 
 @requires_windows
-def test_kill_on_close_contains_native_descendants_after_owner_crash(tmp_path):
+def test_kill_on_close_contains_native_descendants_after_owner_crash(
+    tmp_path, native_shell
+):
     import ctypes
     import sys
 
@@ -617,7 +654,9 @@ def test_kill_on_close_contains_native_descendants_after_owner_crash(tmp_path):
         encoding="utf-8",
     )
     owner_code = (
-        "import os,time; from pathlib import Path; from tui.process import LauncherBuilder; "
+        "import os,time; from pathlib import Path; import tui.process as process; "
+        f"process._launcher_executable=lambda: {native_shell!r}; "
+        "from tui.process import LauncherBuilder; "
         f"child=LauncherBuilder(Path({str(tmp_path)!r})).start(Path({str(script)!r}),[],Path({str(tmp_path / 'control')!r})); "
         "print(child.pid,flush=True); input(); os._exit(0)"
     )

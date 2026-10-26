@@ -1145,7 +1145,8 @@
                 measurements/logs may be deleted without a backup. All batch resets precede launch, and reset failure
                 blocks every batch launch. Stop is cooperative (180 seconds by default, plus five seconds controller
                 allowance); Ctrl+Q stops owned campaigns before exit. Job Objects provide crash cleanup, using
-                unpackaged PowerShell rather than Store execution aliases. Ctrl+C copies only.
+                unpackaged PowerShell 7 rather than Store execution aliases. An unsupported runtime fails preflight
+                before initialization/reset. Windows PowerShell 5.1 cannot run the existing launcher. Ctrl+C copies only.
                 Read-only monitoring remains available, subject to the same one-TUI-per-harness lock.
                 Report tabs read campaign state, results and usage, and follow
                 <code>reports/tui_observations/&lt;campaign-id&gt;.jsonl</code>, which Runner and the launcher append
