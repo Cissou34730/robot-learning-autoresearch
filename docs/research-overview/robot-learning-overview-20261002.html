@@ -1151,7 +1151,8 @@
                 blocks every batch launch. Stop is cooperative (180 seconds by default, plus five seconds controller
                 allowance); Ctrl+Q stops owned campaigns before exit. Job Objects provide crash cleanup, using
                 the existing PowerShell 7, including Store/MSIX installations, with an inherited Windows desktop-app
-                creation policy that keeps native descendants contained. No reinstall or manual shell instance is needed.
+                creation policy that keeps native descendants contained. No reinstall or manual shell instance is
+                needed.
                 Missing PowerShell 7 fails preflight before initialization/reset.
                 Windows PowerShell 5.1 cannot run the existing launcher. Ctrl+C copies only.
                 Read-only monitoring remains available, subject to the same one-TUI-per-harness lock.
@@ -1159,7 +1160,7 @@
                 <code>reports/tui_observations/&lt;campaign-id&gt;.jsonl</code>, which Runner and the launcher append
                 to. Feed failures are swallowed and cannot change operation acceptance or execution.
               </td>
-              <td><code>tui/</code>, <code>runner/observation_feed.py</code>, <code>tools/run-report.ps1</code>,
+              <td><code>tui/</code>, <code>runner/observation_feed.py</code>, <code>campaign_tui.ps1</code>,
                 <a href="../tui-report.md">TUI report notes</a>
               </td>
             </tr>

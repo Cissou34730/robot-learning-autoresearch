@@ -245,6 +245,7 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     later = root / "robot_learning/scenario/later_extension.py"
     later.write_text("LATER_EXTENSION = True\n", encoding="utf-8")
     _bind_paths(monkeypatch, root)
+    (root / ".git").mkdir()
     plan = {
         "parent": source,
         "restore": list(recipe),
@@ -453,6 +454,7 @@ def test_baseline_reset_restores_its_local_evaluation_without_a_backup(
     monkeypatch, tmp_path
 ):
     _bind_paths(monkeypatch, tmp_path)
+    (tmp_path / ".git").mkdir()
     candidate = _candidate("f" * 64)
     state = _prepared_source_state(candidate)
     preserved = tmp_path / "campaigns/evaluations/source/panel.json"
@@ -548,3 +550,46 @@ def test_clean_reset_refuses_and_preserves_unrelated_untracked_files(monkeypatch
     with pytest.raises(RuntimeError, match="docs/inquiry-centered"):
         reset_campaign.clean_campaign_changes()
     assert not any(arguments[:2] == ("clean", "-fd") for arguments in calls)
+
+
+def test_reset_record_exists_only_once_campaign_changes_start(monkeypatch, tmp_path):
+    _bind_paths(monkeypatch, tmp_path)
+    (tmp_path / ".git").mkdir()
+    marker = paths.reset_marker_path(tmp_path)
+    monkeypatch.setattr(
+        reset_campaign,
+        "parse_args",
+        lambda: reset_campaign.argparse.Namespace(
+            mode="fresh", clean=False, recipe_ref=None, baseline_ref=None
+        ),
+    )
+    monkeypatch.setattr(reset_campaign, "ensure_clean_repository", lambda **_k: None)
+    monkeypatch.setattr(
+        reset_campaign,
+        "git",
+        lambda *arguments, **_kwargs: "" if arguments[0] == "status" else "head\n",
+    )
+    monkeypatch.setattr(reset_campaign, "publish_reset_changes", lambda *_args: None)
+
+    def refuse(_targets):
+        raise RuntimeError("campaign file is locked")
+
+    monkeypatch.setattr(reset_campaign, "preflight_targets", refuse)
+    assert reset_campaign.main() == 1
+    assert not marker.exists()
+
+    def interrupted(_source):
+        raise OSError("interrupted")
+
+    monkeypatch.setattr(reset_campaign, "preflight_targets", lambda _targets: None)
+    monkeypatch.setattr(reset_campaign, "write_fresh_campaign", interrupted)
+    assert reset_campaign.main() == 1
+    assert marker.exists()
+
+    monkeypatch.setattr(
+        reset_campaign,
+        "write_fresh_campaign",
+        lambda _source: {"campaign": {"id": "new"}},
+    )
+    assert reset_campaign.main() == 0
+    assert not marker.exists()

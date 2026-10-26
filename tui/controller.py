@@ -19,9 +19,10 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Protocol
+
+from runner.paths import reset_marker_path
 
 DEFAULT_RECIPE_REF = "baseline-distinct-episodes-v3-robot"
 DEFAULT_STOP_TIMEOUT = 180
@@ -394,17 +395,6 @@ def _run_git(arguments: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
-def reset_marker_path(folder: Path) -> Path:
-    """Administrative safety record, outside scientific state and Git publication."""
-    admin = folder / ".git"
-    if admin.is_file():
-        pointer = admin.read_text(encoding="utf-8").strip()
-        if not pointer.startswith("gitdir:"):
-            raise ControllerError(f"Cannot locate Git administration for {folder}.")
-        admin = (folder / pointer.split(":", 1)[1].strip()).resolve()
-    return admin / "tui-reset-incomplete.json"
-
-
 def _unfinished_reset(folder: Path) -> str:
     marker = reset_marker_path(folder)
     return (
@@ -471,7 +461,7 @@ class CampaignController:
             )
             try:
                 interrupted = _unfinished_reset(folder.folder)
-            except (OSError, ControllerError) as error:
+            except (OSError, RuntimeError) as error:
                 interrupted = str(error)
             if interrupted:
                 folder.stage = "failed"
@@ -703,20 +693,6 @@ class CampaignController:
         target.stage = "resetting"
         target.detail = ""
         try:
-            marker = reset_marker_path(target.folder)
-            operation_id = uuid.uuid4().hex
-            record = {
-                "operation_id": operation_id,
-                "started_at": datetime.now(UTC).isoformat(),
-                "arguments": reset.arguments(),
-                "status": "incomplete",
-            }
-            temporary = marker.with_suffix(".tmp")
-            with temporary.open("w", encoding="utf-8") as stream:
-                json.dump(record, stream)
-                stream.flush()
-                os.fsync(stream.fileno())
-            os.replace(temporary, marker)
             completed = self._runner(
                 [
                     "pwsh",
@@ -744,18 +720,6 @@ class CampaignController:
             )
             self._record(outcome, "reset", target.label, FAILED, target.detail)
             return
-        # A later reset from another harness must not have its record removed.
-        try:
-            if (
-                json.loads(marker.read_text(encoding="utf-8"))["operation_id"]
-                == operation_id
-            ):
-                marker.unlink()
-        except (OSError, ValueError, KeyError) as error:
-            target.stage = "failed"
-            target.detail = f"Reset returned successfully, but its safety record could not be completed: {error}"
-            self._record(outcome, "reset", target.label, FAILED, target.detail)
-            return
         target.stage = "stopped"
         target.detail = ""
         target.campaign_id = self._campaign_id_reader(target.folder)
@@ -780,7 +744,7 @@ class CampaignController:
         try:
             interrupted = _unfinished_reset(target.folder)
             terminal = _recorded_terminal(target.folder)
-        except (OSError, ValueError, ControllerError) as error:
+        except (OSError, ValueError, RuntimeError) as error:
             interrupted = f"Cannot establish campaign readiness: {error}"
             terminal = None
         if interrupted:

@@ -364,28 +364,16 @@ def test_normal_exit_classifies_recorded_completion_immediately(tmp_path, status
 
 
 @pytest.mark.parametrize("git_file", [False, True])
-def test_interrupted_reset_blocks_start_in_a_new_controller_until_explicit_reset(
-    tmp_path, git_file
-):
-    controller, machinery, layout, _ = _controller(tmp_path)
+def test_unfinished_reset_record_blocks_start_in_a_new_controller(tmp_path, git_file):
+    _, machinery, layout, _ = _controller(tmp_path)
     if git_file:
         admin = tmp_path / "git-admin"
         admin.mkdir()
         git_path = layout.folder(1) / ".git"
         git_path.rmdir()
         git_path.write_text(f"gitdir: {admin.as_posix()}\n", encoding="utf-8")
-
-    def interrupted(arguments):
-        raise KeyboardInterrupt
-
-    controller._runner = interrupted
-    with pytest.raises(KeyboardInterrupt):
-        controller.execute("reset", [1], settings=control.LaunchSettings())
     marker = control.reset_marker_path(layout.folder(1))
-    record = json.loads(marker.read_text(encoding="utf-8"))
-    assert record["status"] == "incomplete"
-    assert record["arguments"] == control.ResetConfig().arguments()
-    assert not machinery.started
+    marker.write_text("{}", encoding="utf-8")
 
     fresh = control.CampaignController(
         layout,
@@ -395,9 +383,18 @@ def test_interrupted_reset_blocks_start_in_a_new_controller_until_explicit_reset
     assert fresh.state("campaign-1").stage == "failed"
     refused = fresh.execute("start", [1], settings=control.LaunchSettings())
     assert not refused.ok and not machinery.started
-    assert fresh.execute("reset", [1], settings=control.LaunchSettings()).ok
-    assert not marker.exists()
+    marker.unlink()
     assert fresh.execute("start", [1], settings=control.LaunchSettings()).ok
+    assert len(machinery.started) == 1
+
+
+def test_refused_reset_without_a_record_does_not_block_start(tmp_path):
+    controller, machinery, *_ = _controller(tmp_path)
+    controller._runner = lambda args: subprocess.CompletedProcess(
+        args, 1, stdout="", stderr="another loop or reset is already running"
+    )
+    assert not controller.execute("reset", [1], settings=control.LaunchSettings()).ok
+    assert controller.execute("start", [1], settings=control.LaunchSettings()).ok
     assert len(machinery.started) == 1
 
 

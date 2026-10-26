@@ -173,16 +173,14 @@ def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
     asyncio.run(scenario())
 
 
-def test_shutdown_interrupts_reset_with_separate_grace_and_persistent_guard(
-    tmp_path, monkeypatch
-):
+def test_shutdown_interrupts_reset_with_separate_grace(tmp_path, monkeypatch):
     from tests.autoresearch.test_campaign_controller import FakeMachinery
     from tui import console
 
     machinery = FakeMachinery()
     entered, release = threading.Event(), threading.Event()
     stopped = []
-    app, layout = _console(tmp_path, machinery)
+    app, _ = _console(tmp_path, machinery)
     monkeypatch.setattr(console, "HELPER_SHUTDOWN_GRACE_SECONDS", 0)
     app._last_stop_timeout = 3600
 
@@ -213,7 +211,6 @@ def test_shutdown_interrupts_reset_with_separate_grace_and_persistent_guard(
                 assert not app.is_running
                 assert stopped == [True]
                 assert not machinery.started
-                assert control.reset_marker_path(layout.folder(2)).exists()
                 assert app._controller.state("campaign-2").stage == "failed"
             finally:
                 release.set()

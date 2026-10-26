@@ -91,6 +91,25 @@ def resolve_commit(reference: str, description: str) -> str:
     ).strip()
 
 
+def mark_reset_started() -> None:
+    """Record that campaign files are about to change; only success removes it."""
+    marker = paths.reset_marker_path(paths.ROOT)
+    if marker.exists():
+        return
+    temporary = marker.with_suffix(".tmp")
+    with temporary.open("w", encoding="utf-8") as stream:
+        json.dump(
+            {
+                "started_at": datetime.now(UTC).isoformat(),
+                "arguments": sys.argv[1:],
+            },
+            stream,
+        )
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, marker)
+
+
 def canonical_import_path(relative: str, description: str) -> str:
     try:
         normalized = repository.canonical_repo_path(relative)
@@ -223,6 +242,8 @@ def clean_campaign_changes(*, recipe_ref: str | None = None) -> None:
             "clean reset refuses changes outside campaign paths: "
             + ", ".join(unrelated)
         )
+    if changed or untracked:
+        mark_reset_started()
     if changed:
         git(
             "restore", "--source=HEAD", "--staged", "--worktree", "--", *sorted(changed)
@@ -701,6 +722,7 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None]:
     )
     preflight_targets(targets)
     original_head = str(git("rev-parse", "HEAD")).strip()
+    mark_reset_started()
     try:
         if plan:
             repository.apply_recipe_restore(plan)
@@ -729,6 +751,7 @@ def reset_baseline(reference: str) -> tuple[str, str]:
     )
     preflight_targets(targets)
     original_head = str(git("rev-parse", "HEAD")).strip()
+    mark_reset_started()
     # Baseline measurement files are ignored by Git, so carry them across the
     # campaign cleanup in a temporary folder that is discarded afterwards.
     with tempfile.TemporaryDirectory(prefix="research-reset-") as staging:
@@ -817,6 +840,7 @@ def main() -> int:
             raise RuntimeError(
                 "reset completed with an unexpectedly dirty working tree"
             )
+        paths.reset_marker_path(paths.ROOT).unlink(missing_ok=True)
         print("No training was launched.")
         return 0
     except (

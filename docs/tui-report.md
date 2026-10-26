@@ -17,7 +17,7 @@ execution.
     JSONL feed (see below), plus the synthetic feed used by `--demo`.
   - `tui/report.py` - the single-screen report application.
   - `tui/demo.py` - synthetic campaign material for `--demo` and tests.
-- `tools/run-report.ps1` - launcher helper.
+- `campaign_tui.ps1` - launcher helper in the harness root.
 - `tests/autoresearch/test_report_projector.py` and
   `tests/autoresearch/test_report_app.py` - projection and headless
   rendering tests.
@@ -34,9 +34,9 @@ next section). The single-campaign report stays unchanged:
 
 ```powershell
 uv run python -m tui --report                      # legacy report
-.\tools\run-report.ps1 -CampaignRoot <path>        # legacy report
-.\tools\run-report.ps1 -Demo                       # legacy report, synthetic
-.\tools\run-report.ps1                             # console (campaigns + commands)
+.\campaign_tui.ps1 -CampaignRoot <path>            # legacy report
+.\campaign_tui.ps1 -Demo                           # legacy report, synthetic
+.\campaign_tui.ps1                                 # console (campaigns + commands)
 ```
 
 For parallel campaigns, use the console tabs. To monitor one campaign without
@@ -52,7 +52,7 @@ Directly: `uv run python -m tui --help` (options: `--report`, `--read-only`, `--
 ## Operator console (multi-campaign control)
 
 Issue #68 implementation. `uv run python -m tui` (or
-`.\tools\run-report.ps1` with no arguments) opens one Textual console with
+`.\campaign_tui.ps1` with no arguments) opens one Textual console with
 one report tab per installed campaign folder, initially showing the first
 installed campaign (normally campaign-1). Command entry is alongside the report,
 not on a separate Commands tab, following the maintainer's updated UX direction
@@ -134,11 +134,13 @@ orchestration); both are terminal-free and tested with fake executors in
 ### Controller validation status (26 October 2026)
 
 Review follow-up: stop requests are accepted during another batch. Reset helpers
-have a separate 15-second shutdown grace, not the scientific stop timeout. Before
-reset, the TUI writes `.git/tui-reset-incomplete.json` (or the worktree's Git
-administration directory); only a successful matching reset clears it. A new
-TUI session displays incomplete resets as failed and blocks start until an
-explicit reset/run succeeds. This administrative record is not scientific
+have a separate 15-second shutdown grace, not the scientific stop timeout. The
+reset itself, after it holds the campaign mutex and passes its checks, writes
+`.git/reset-incomplete.json` (or the worktree's Git administration directory)
+before its first campaign change; only a successful reset, from the TUI or the
+console, removes it. A refused reset leaves no record. The TUI displays a
+folder with this record as failed and blocks start until a reset succeeds.
+This administrative record is not scientific
 evidence or a reset backup. A failure stopping one owned process does not skip
 cleanup attempts for the others.
 

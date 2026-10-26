@@ -19,6 +19,9 @@ or failure, so it can be followed by a relative launcher command:
 not bypass ownership checks. Do not use it just to resume a stopped campaign.
 The semicolon separates commands; it is not a success-only condition. If reset
 fails, inspect that failure before authorizing launch.
+A reset that fails or is interrupted after its first campaign change leaves
+`reset-incomplete.json` in the campaign's Git administration directory; the
+next successful reset removes it. Refusals before any change leave no record.
 
 The maintainer TUI provides the success-dependent batch form: `run 1-3` completes
 all selected resets before launching any selected campaign. Its default is

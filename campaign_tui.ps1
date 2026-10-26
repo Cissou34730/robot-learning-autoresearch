@@ -9,11 +9,11 @@
 # campaign and only reads durable state, results and usage.
 #
 # Usage:
-#   .\tools\run-report.ps1                     # console (commands + campaigns)
-#   .\tools\run-report.ps1 -Console            # console explicitly
-#   .\tools\run-report.ps1 -CampaignRoot D:\path\to\campaign   # legacy report
-#   .\tools\run-report.ps1 -EventsPath D:\path\to\tui_observations.jsonl
-#   .\tools\run-report.ps1 -Demo
+#   .\campaign_tui.ps1                     # console (commands + campaigns)
+#   .\campaign_tui.ps1 -Console            # console explicitly
+#   .\campaign_tui.ps1 -CampaignRoot D:\path\to\campaign   # legacy report
+#   .\campaign_tui.ps1 -EventsPath D:\path\to\tui_observations.jsonl
+#   .\campaign_tui.ps1 -Demo
 [CmdletBinding()]
 param(
     [string]$CampaignRoot = "",
@@ -24,7 +24,7 @@ param(
     [switch]$Light
 )
 
-$productRoot = Split-Path -Parent $PSScriptRoot
+$productRoot = $PSScriptRoot
 
 $arguments = @()
 if ($Console -or (-not $CampaignRoot -and -not $EventsPath -and -not $Demo -and -not $ReadOnly)) {

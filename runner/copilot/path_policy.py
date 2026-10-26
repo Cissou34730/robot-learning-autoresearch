@@ -51,6 +51,7 @@ RESERVED_SCRIPT_NAMES = (
     "reset_campaign.py",
     "run_research.ps1",
     "reset_research.ps1",
+    "campaign_tui.ps1",
 )
 
 

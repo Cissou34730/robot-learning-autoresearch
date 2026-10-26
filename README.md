@@ -70,7 +70,7 @@ The monitor stops a campaign cooperatively at `-MaxHours` of active time
 (default 6) or `-MaxAiu` (default 120); campaign agents never see these caps.
 Transcripts, the monitor log and one report per campaign go to
 `%TEMP%\robot-learning\parallel-<UTC time>`. Watch one campaign with
-`.\tools\run-report.ps1 -CampaignRoot <campaign folder>`.
+`.\campaign_tui.ps1 -CampaignRoot <campaign folder>`.
 
 ### Operator console
 
@@ -81,7 +81,7 @@ No separate installation or manually started shell is needed. Windows PowerShell
 5.1 cannot run the existing launcher. Missing PowerShell 7 fails preflight before
 initialization/reset; opening the interface still starts nothing.
 
-`uv run python -m tui` opens the first installed campaign report (normally
+`.\campaign_tui.ps1` (or `uv run python -m tui`) opens the first installed campaign report (normally
 campaign-1), with a visible **Command / Execute / Settings** row below it.
 There is no separate Commands tab. Other installed campaigns have their own
 report tabs. Campaigns only run when a
@@ -113,8 +113,8 @@ The footer remains visible so commands can always be reopened.
 normally. F6/Shift+F6 move focus between report controls; Ctrl+L toggles commands.
 Ctrl+Tab remains an optional alias when the terminal passes it through.
 Stop commands remain available while another batch is preparing/resetting.
-An interrupted or failed TUI reset leaves a Git-administration safety record;
-`start` is blocked until an explicit TUI reset/run completes successfully.
+A reset that stops after it starts changing the campaign leaves a
+Git-administration record; TUI `start` is blocked until a reset succeeds.
 
 Reset controls retain Fresh/Baseline, Clean and recipe/baseline references.
 The default is Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force;
