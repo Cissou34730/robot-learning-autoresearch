@@ -10,8 +10,10 @@ stop-request contract in ``docs/external-campaign-stop.md``.
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
+import threading
 import time
 import uuid
 from collections.abc import Callable
@@ -30,7 +32,6 @@ SKIPPED = "skipped"
 # Terminal-durable campaign outcomes (from research_state.json), kept apart
 # from process outcomes such as launcher exit codes.
 TERMINAL_OUTCOMES = (
-    "official_assessment_requested",
     "official_assessment_passed",
     "official_assessment_failed",
     "no_credible_route",
@@ -76,6 +77,30 @@ class LaunchSettings:
     stop_timeout_seconds: int | None = None
 
     def launcher_arguments(self) -> list[str]:
+        if self.provider is not None and self.provider not in {
+            "github-copilot",
+            "opencode",
+            "opencode-go",
+        }:
+            raise CommandError(
+                "Provider must be github-copilot, opencode or opencode-go."
+            )
+        if self.reasoning is not None and self.reasoning not in {
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+        }:
+            raise CommandError("Reasoning must be low, medium, high, xhigh or max.")
+        for name, value, maximum in (
+            ("Timesteps", self.timesteps, 2147483647),
+            ("MaxTimesteps", self.max_timesteps, 2147483647),
+            ("MaxInquiries", self.max_inquiries, 2147483647),
+            ("StopTimeoutSeconds", self.stop_timeout_seconds, 3600),
+        ):
+            if value is not None and not 1 <= value <= maximum:
+                raise CommandError(f"{name} must be between 1 and {maximum}.")
         arguments: list[str] = []
         if self.model:
             arguments += ["-Model", self.model]
@@ -104,6 +129,10 @@ class ResetConfig:
     baseline_ref: str | None = None
 
     def arguments(self) -> list[str]:
+        if self.mode not in {"Fresh", "Baseline"}:
+            raise CommandError("Reset mode must be Fresh or Baseline.")
+        if self.mode == "Fresh" and self.baseline_ref:
+            raise CommandError("Fresh reset does not accept a baseline ref.")
         arguments = ["-Mode", self.mode]
         if self.mode == "Baseline":
             if not self.baseline_ref:
@@ -169,12 +198,16 @@ def parse_command(text: str) -> tuple[str, list[int]]:
     if not tokens:
         raise CommandError("Empty command.")
     verb = tokens[0].lower()
-    if verb not in {"run", "start", "reset", "stop", "help"}:
+    if verb not in {"run", "start", "reset", "stop", "help", "models", "diagnostics"}:
         raise CommandError(f"Unknown command: {tokens[0]!r}")
     if len(tokens) == 1:
         return verb, []
     selection = tokens[1:]
     if selection == ["all"]:
+        if verb != "stop":
+            raise CommandError(
+                "Use a count or explicit campaign folders; all is stop-only."
+            )
         return verb, list(range(1, MAX_SLOTS + 1))
     if len(selection) == 1 and selection[0].isdigit():
         count = int(selection[0])
@@ -229,7 +262,7 @@ class WorkspaceLayout:
         return slot
 
     def is_installed(self, slot: int) -> bool:
-        return (self.folder(slot) / ".git").is_dir()
+        return (self.folder(slot) / ".git").exists()
 
     def installed(self) -> list[str]:
         return [
@@ -252,6 +285,10 @@ class CampaignFolderState:
     stop_requested: bool = False
     campaign_id: str | None = None
     exit_code: int | None = None
+    stop_timeout: float = DEFAULT_STOP_TIMEOUT
+    stop_started: float | None = None
+    control_directory: Path | None = None
+    cleanup_lock: object = field(default_factory=threading.RLock, repr=False)
 
     @property
     def busy(self) -> bool:
@@ -278,6 +315,8 @@ class ProcessMachinery(Protocol):
     def request_stop(self, child: object) -> bool: ...
 
     def force_stop(self, child: object, timeout: float | None = None) -> None: ...
+
+    def finish(self, child: object) -> None: ...
 
 
 class ResetError(RuntimeError):
@@ -345,7 +384,9 @@ class HarnessPreflight:
 
 
 def _run_git(arguments: list[str]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(arguments, capture_output=True, text=True, shell=False, check=False)
+    return subprocess.run(
+        arguments, capture_output=True, text=True, shell=False, check=False
+    )
 
 
 class CampaignController:
@@ -362,14 +403,15 @@ class CampaignController:
     ) -> None:
         self._layout = layout
         self._machinery = machinery
-        self._runner = runner or _run_git
+        self._runner = runner or getattr(machinery, "run", _run_git)
         self._control_directory_factory = (
             control_directory_factory or _default_control_directory
         )
         self._campaign_id_reader = campaign_id_reader or _read_campaign_id
-        self._preflight = HarnessPreflight(layout.harness_root, self._runner)
+        self._preflight = HarnessPreflight(layout.harness_root, runner)
         self._folders: dict[str, CampaignFolderState] = {}
         self._shutdown: bool = False
+        self._launch_lock = threading.Lock()
         self._outcomes: list[BatchOutcome] = []
 
     # -- Application view --------------------------------------------------
@@ -425,7 +467,7 @@ class CampaignController:
     def _refuse_busy(self, target: CampaignFolderState, action: str) -> None:
         if self._shutdown:
             raise ControllerError("The console is shutting down; no new actions.")
-        if target.busy:
+        if target.busy or target.owned:
             raise ControllerError(
                 f"{target.label} is {target.stage}; {action} refused."
             )
@@ -439,7 +481,6 @@ class CampaignController:
         detail: str = "",
     ) -> StepRecord:
         record = outcome.record(action, target, status, detail)
-        self._outcomes.append(outcome)
         return record
 
     # -- Command surface ---------------------------------------------------
@@ -457,9 +498,18 @@ class CampaignController:
         if external_target is not None:
             slot = self._layout.slot_for(external_target)
             slots = [slot]
-        if verb != "stop" and not slots:
+        if not slots:
             raise CommandError(f"{verb} requires a campaign target or count.")
+        if len(set(slots)) != len(slots):
+            raise CommandError("Duplicate campaign targets.")
+        if verb not in {"start", "stop", "reset", "run"}:
+            raise CommandError(f"Unknown command: {verb!r}")
+        settings.launcher_arguments()
+        reset = reset or ResetConfig()
+        if verb in {"run", "reset"}:
+            reset.arguments()
         outcome = BatchOutcome(action=verb)
+        self._outcomes.append(outcome)
         targets = self._targets(slots, allow_missing=verb in {"run", "stop"})
         if verb != "stop":
             # Stopping a busy campaign is the point of `stop`; every other
@@ -470,33 +520,27 @@ class CampaignController:
             for target in targets:
                 self._stop_one(outcome, target)
             return outcome
-        if verb in {"reset", "start"}:
-            # Cheap launcher refusals (dirty harness tree) stay per-step.
-            for target in targets:
-                if verb == "start":
-                    try:
-                        self._preflight.check()
-                    except ControllerError as error:
-                        outcome.record("launch", target.label, FAILED, str(error))
-                        self._outcomes.append(outcome)
-                        return outcome
-                    self._launch_one(outcome, target, settings)
-                else:
-                    self._reset_one(outcome, target, reset or ResetConfig())
-                self._outcomes.append(outcome)
-            return outcome
-        if verb == "run":
-            # Preflight once; one failure stops every step that has not run.
+        if verb in {"start", "run"}:
             try:
                 self._preflight.check()
             except ControllerError as error:
                 for target in targets:
-                    outcome.record("launch", target.label, SKIPPED, str(error))
-                self._outcomes.append(outcome)
+                    target.stage = "failed"
+                    target.detail = str(error)
+                    outcome.record("preflight", target.label, FAILED, str(error))
                 return outcome
+        if verb == "run":
             for target in targets:
+                if not outcome.ok or self._shutdown:
+                    outcome.record(
+                        "initialize",
+                        target.label,
+                        SKIPPED,
+                        "blocked by an earlier failure or shutdown",
+                    )
+                    continue
                 if not self._layout.is_installed(target.slot):
-                    self._initialize_one(outcome, target)
+                    self._initialize_one(outcome, target, reset)
                 else:
                     outcome.record(
                         "initialize",
@@ -504,56 +548,35 @@ class CampaignController:
                         SKIPPED,
                         "campaign repository already exists",
                     )
-                    self._outcomes.append(outcome)
-            if not outcome.ok:
-                for target in targets:
-                    if target.stage == "idle":
-                        outcome.record(
-                            "launch",
-                            target.label,
-                            SKIPPED,
-                            "blocked by a failed earlier step",
-                        )
-                self._outcomes.append(outcome)
-                return outcome
+        if verb in {"reset", "run"}:
             for target in targets:
-                if target.stage != "idle":
+                if not outcome.ok or self._shutdown:
                     outcome.record(
                         "reset",
                         target.label,
                         SKIPPED,
                         "blocked by a failed earlier step",
                     )
-                    self._outcomes.append(outcome)
                     continue
-                self._reset_one(outcome, target, reset or ResetConfig())
-                self._outcomes.append(outcome)
-            if not outcome.ok:
-                for target in targets:
-                    if target.child is None and target.stage in {
-                        "idle",
-                        "stopped",
-                        "failed",
-                    }:
-                        outcome.record(
-                            "launch",
-                            target.label,
-                            SKIPPED,
-                            "blocked by a failed earlier step",
-                        )
-                self._outcomes.append(outcome)
-                return outcome
+                self._reset_one(outcome, target, reset)
+        if verb in {"run", "start"}:
+            preparation_failed = not outcome.ok
             for target in targets:
-                if target.child is not None:
+                if preparation_failed:
+                    outcome.record(
+                        "launch",
+                        target.label,
+                        SKIPPED,
+                        "blocked by a failed earlier step",
+                    )
                     continue
-                self._launch_one(outcome, target, settings)
-                self._outcomes.append(outcome)
-            return outcome
-        raise CommandError(f"Unknown command: {verb!r}")
+                with self._launch_lock:
+                    self._launch_one(outcome, target, settings)
+        return outcome
 
     # -- Steps -------------------------------------------------------------
     def _initialize_one(
-        self, outcome: BatchOutcome, target: CampaignFolderState
+        self, outcome: BatchOutcome, target: CampaignFolderState, reset: ResetConfig
     ) -> None:
         """Create a missing standard folder with the existing initializer."""
         if target.busy or self._shutdown:
@@ -563,6 +586,8 @@ class CampaignController:
             return
         source = self._first_installed()
         if source is None:
+            target.stage = "failed"
+            target.detail = "no existing campaign repository to copy the recipe from"
             self._record(
                 outcome,
                 "initialize",
@@ -585,7 +610,9 @@ class CampaignController:
                 "--source-repository",
                 str(self._layout.folder(self._layout.slot_for(source))),
                 "--recipe-ref",
-                DEFAULT_RECIPE_REF,
+                reset.baseline_ref
+                if reset.mode == "Baseline"
+                else (reset.recipe_ref or DEFAULT_RECIPE_REF),
             ]
         )
         if completed.returncode != 0:
@@ -668,7 +695,31 @@ class CampaignController:
                 outcome, "launch", target.label, SKIPPED, f"campaign is {target.stage}"
             )
             return
+        state_file = target.folder / "runner/state/research_state.json"
+        if state_file.is_file():
+            try:
+                durable = json.loads(state_file.read_text(encoding="utf-8-sig"))
+            except (OSError, ValueError) as error:
+                target.stage = "failed"
+                target.detail = f"Cannot read campaign state: {error}"
+                self._record(outcome, "launch", target.label, FAILED, target.detail)
+                return
+            terminal = durable.get("terminal_state") or {}
+            if terminal.get("status") in TERMINAL_OUTCOMES:
+                target.stage = "completed"
+                target.detail = terminal["status"]
+                self._record(
+                    outcome,
+                    "launch",
+                    target.label,
+                    SKIPPED,
+                    f"Recorded outcome: {target.detail}; use reset or run for a new campaign.",
+                )
+                return
         control_directory = self._control_directory_factory()
+        target.control_directory = control_directory
+        target.stop_timeout = settings.stop_timeout_seconds or DEFAULT_STOP_TIMEOUT
+        target.stop_started = None
         arguments = [
             "-CampaignRoot",
             str(target.folder),
@@ -698,37 +749,45 @@ class CampaignController:
                 outcome, "stop", target.label, SKIPPED, f"campaign is {target.stage}"
             )
             return
-        if not self._machinery.request_stop(target.child):
-            self._record(
-                outcome, "stop", target.label, SKIPPED, "a stop request already exists"
-            )
-            return
+        created = self._machinery.request_stop(target.child)
         target.stop_requested = True
+        target.stop_started = time.monotonic()
         target.stage = "stopping"
-        self._record(outcome, "stop", target.label, SUCCESS)
+        self._record(
+            outcome,
+            "stop",
+            target.label,
+            SUCCESS if created else SKIPPED,
+            "" if created else "a stop request already exists",
+        )
 
     # -- Shutdown ----------------------------------------------------------
     def latch_shutdown(self) -> None:
         """Stop accepting new actions; send stop requests everywhere."""
-        self._shutdown = True
+        with self._launch_lock:
+            self._shutdown = True
         for label in self._layout.installed():
             target = self._folders.get(label)
             if target is None or not target.busy:
                 continue
-            if (
-                target.child is not None
-                and target.stage == "running"
-                and self._machinery.request_stop(target.child)
-            ):
-                target.stop_requested = True
-                target.stage = "stopping"
+            if target.child is not None and target.stage == "running":
+                self._stop_one(BatchOutcome("shutdown"), target)
 
     def reap(self, label: str) -> CampaignFolderState:
         """Poll one child; classify its exit and end its state machine."""
+        with self.state(label).cleanup_lock:
+            return self._reap(label)
+
+    def _reap(self, label: str) -> CampaignFolderState:
         target = self._folders[label]
         if target.child is None:
             return target
         if not self._machinery.poll(target.child):
+            if (
+                target.stop_started is not None
+                and time.monotonic() >= target.stop_started + target.stop_timeout + 5
+            ):
+                return self.settle(label, 0)
             return target
         code = self._machinery.exit_code(target.child)
         if code == 124:
@@ -748,6 +807,7 @@ class CampaignController:
         else:
             target.stage = "failed"
             target.detail = f"launcher exited with code {code}"
+        self._machinery.finish(target.child)
         target.exit_code = code
         target.child = None
         return target
@@ -759,12 +819,17 @@ class CampaignController:
 
     def settle(self, label: str, timeout: float) -> CampaignFolderState:
         """Wait for one stopping launcher; escalate if it misses the bound."""
+        with self.state(label).cleanup_lock:
+            return self._settle(label, timeout)
+
+    def _settle(self, label: str, timeout: float) -> CampaignFolderState:
         target = self._folders[label]
         if target.child is None:
             return target
         code = self._machinery.wait(target.child, timeout)
         if code is None:
             self._machinery.force_stop(target.child)
+            self._machinery.finish(target.child)
             target.stage = "failed"
             target.detail = (
                 "cooperative stop timed out; the process tree was terminated"
@@ -776,11 +841,19 @@ class CampaignController:
     def force_all(self, timeout: float | None = None) -> None:
         for label in self._layout.installed():
             target = self._folders.get(label)
-            if target is not None and target.child is not None:
-                self._machinery.force_stop(target.child, timeout)
-                target.stage = "failed"
-                target.detail = "forced termination (console shutdown)"
-                target.child = None
+            if target is not None:
+                with target.cleanup_lock:
+                    if target.child is not None:
+                        self._machinery.force_stop(target.child, timeout)
+                        self._machinery.finish(target.child)
+                        target.stage = "failed"
+                        target.detail = "forced termination (console shutdown)"
+                        target.child = None
+
+    def stop_helpers(self) -> None:
+        stop = getattr(self._machinery, "stop_helpers", None)
+        if stop is not None:
+            stop()
 
 
 def _default_control_directory() -> Path:

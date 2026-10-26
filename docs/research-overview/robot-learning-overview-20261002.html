@@ -1137,8 +1137,17 @@
               <td><code>contracts/program.md</code></td>
             </tr>
             <tr>
-              <td>TUI report and observation feed</td>
-              <td>A read-only Textual screen for the maintainer. It reads campaign state, results and usage, and follows
+              <td>Campaign console, report tabs and observation feed</td>
+              <td>The maintainer console opens Commands and one report tab per installed campaign (up to five),
+                without starting work. Explicit <code>run N</code>, <code>reset N</code>, <code>start N</code> and
+                <code>stop N</code>/<code>stop all</code> reuse the existing scripts with shared launch settings.
+                Default reset is Fresh + Clean + <code>baseline-distinct-episodes-v3-robot</code> + Force;
+                measurements/logs may be deleted without a backup. All batch resets precede launch, and reset failure
+                blocks every batch launch. Stop is cooperative (180 seconds by default, plus five seconds controller
+                allowance); Ctrl+Q stops owned campaigns before exit. Job Objects provide crash cleanup, using
+                unpackaged PowerShell rather than Store execution aliases. Ctrl+C copies only.
+                Read-only monitoring remains available, subject to the same one-TUI-per-harness lock.
+                Report tabs read campaign state, results and usage, and follow
                 <code>reports/tui_observations/&lt;campaign-id&gt;.jsonl</code>, which Runner and the launcher append
                 to. Feed failures are swallowed and cannot change operation acceptance or execution.
               </td>

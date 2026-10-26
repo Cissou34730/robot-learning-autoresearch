@@ -48,16 +48,29 @@ def main() -> None:
         help="Force the legacy single-campaign report instead of the console.",
     )
     parser.add_argument(
+        "--read-only",
+        action="store_true",
+        help="Monitor only; never launch, reset or stop campaigns.",
+    )
+    parser.add_argument(
         "--light",
         action="store_true",
         help="Use the light theme (the terminal's NO_COLOR setting is honored).",
     )
     arguments = parser.parse_args()
 
-    if arguments.report or arguments.demo or arguments.events:
+    if (
+        arguments.report
+        or arguments.read_only
+        or arguments.demo
+        or arguments.events
+        or arguments.campaign_root
+    ):
         # Legacy behaviour: one read-only report for one campaign root.
         if arguments.campaign_root is not None:
             os.environ["ROBOT_LEARNING_CAMPAIGN_ROOT"] = str(arguments.campaign_root)
+        from runner import paths
+        from tui.process import acquire_instance_lock
         from tui.report import CampaignReport
 
         app = CampaignReport(
@@ -66,7 +79,17 @@ def main() -> None:
         )
         if arguments.light:
             app.theme = "textual-light"
-        app.run()
+        lock = acquire_instance_lock(paths.HARNESS_ROOT)
+        if lock is None:
+            print(
+                "Another TUI is already running for this harness directory.",
+                file=sys.stderr,
+            )
+            raise SystemExit(2)
+        try:
+            app.run()
+        finally:
+            lock.release()
         return
 
     from tui.console import run_console

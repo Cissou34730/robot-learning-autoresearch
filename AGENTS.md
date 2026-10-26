@@ -60,7 +60,9 @@ protected although they are stored with the campaign.
 
 Campaign repositories live under the sibling folder `robot-learning-campaigns`,
 one per slot (`campaign-1` to `campaign-5`). `tools/run_parallel.ps1 -Count N`
-is the standard way to run campaigns. The launch and reset scripts accept
+is the standard direct batch launcher. `uv run python -m tui` opens the
+interactive campaign console without starting work; its explicit commands
+reuse the existing initialization, reset and launch scripts. The launch and reset scripts accept
 `-CampaignRoot` and default to `campaign-1`. Direct maintainer Python commands select a campaign
 with `ROBOT_LEARNING_CAMPAIGN_ROOT` and use the harness Python environment.
 Campaign Git operations run only in the campaign repository and never push.

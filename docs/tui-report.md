@@ -1,4 +1,4 @@
-# Autoresearch terminal report (single-screen TUI)
+# Autoresearch campaign console and terminal report
 
 Implementation of `docs/autoresearch-terminal-report-spec.md`: one read-only
 Textual screen for Windows Terminal that shows campaign context, PI-selected
@@ -39,13 +39,14 @@ uv run python -m tui --report                      # legacy report
 .\tools\run-report.ps1                             # console (campaigns + commands)
 ```
 
-For parallel campaigns, open one report per campaign slot, for example
-`.\tools\run-report.ps1 -CampaignRoot ..\robot-learning-campaigns\campaign-2`.
-Each report follows only that repository's campaign state and event feed.
+For parallel campaigns, use the console tabs. To monitor one campaign without
+control, use `uv run python -m tui --read-only --campaign-root <path>`.
+Only one TUI, including a read-only report, may use a canonical harness directory.
+Each campaign panel follows only that repository's campaign state and event feed.
 The parallel launcher clears inherited observation-file overrides so its
 campaign processes use their own per-campaign feed paths.
 
-Directly: `uv run python -m tui --help` (options: `--report`, `--campaign-root`,
+Directly: `uv run python -m tui --help` (options: `--report`, `--read-only`, `--campaign-root`,
 `--events`, `--demo`, `--light`).
 
 ## Operator console (multi-campaign control)
@@ -63,21 +64,35 @@ command is submitted.
   StopTimeoutSeconds). A field left empty uses the launcher's own default
   exactly as the launcher would. Every campaign in one batch receives the
   same parameters.
+- The command bar stays accessible in campaign tabs (`Ctrl+L` focuses it).
+  An untargeted campaign action there selects that folder only; Commands
+  requires an explicit count or folder list. `models` lists available models
+  through the existing launcher. `diagnostics campaign-1` shows the last 64 KiB
+  of each run-private console log, separately from scientific observations.
+- Reset controls select Fresh/Baseline, Clean and RecipeRef/BaselineRef. The
+  default remains Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force.
+  Targets and options are logged before execution. Measurements/logs may be
+  deleted; ignored measurements have no reset backup.
 - `run` initializes a missing standard folder from the recipe (same as
   `tools\run_parallel.ps1`), resets it (`-Mode Fresh -Clean -RecipeRef
   baseline-distinct-episodes-v3-robot -Force`) and launches it. `start`
   launches without resetting; `reset` resets without launching; `stop`
-  sends the cooperative stop request. A failed step stops the rest of the
-  batch; earlier successes are never rolled back, and a failed campaign
-  never launches.
+  sends the cooperative stop request. All selected resets complete before
+  any batch launcher starts. An initialization/reset failure stops further
+  preparation and all launches in that batch, with a popup and persistent
+  details. Earlier successes are not rolled back. A launch failure does not
+  stop other successfully launched campaigns.
+- `start` leaves recorded final outcomes untouched. An official assessment
+  request without a recorded result remains resumable through the launcher.
 - The launcher refuses to run while the harness worktree is dirty, so the
   console reports that refusal and skips the batch.
 - Campaign tabs are the single-campaign report (above) bound to that
   folder explicitly.
 - `Ctrl+C` copies the current text selection or does nothing; it never
   stops campaigns. `Ctrl+Q` sends the cooperative stop request to every
-  console-owned launcher, waits up to the stop timeout (default 180 s),
-  escalates to the guarded forced stop, and then exits. Closing the
+  console-owned launcher, waits up to its stop timeout (default 180 s) plus
+  five seconds from request creation, and exits promptly when cleanup finishes.
+  Only failed/timed-out cleanup requires forced termination. Closing the
   console process triggers the kill-on-close Job Object directly.
 - One console per harness directory: a second console instance refuses to
   start. Campaign processes owned by the console run in separate job
@@ -100,9 +115,9 @@ capability are respected; `--light` selects the light theme.
 Reading keys: Up/Down or `j`/`k` move, `Enter`/`Space` expand or collapse,
 `Left`/`Right` collapse or expand, `/` searches, `f` filters by kind, `r`
 opens the raw event payload, `End` returns to live follow, mouse wheel scrolls,
-Tab/Shift+Tab move between the event log and the model table; Ctrl+C copies
-selected output text, and Ctrl+Q or Ctrl+C without a selection closes the
-report (presentation only, never the campaign).
+Tab/Shift+Tab move focus; Ctrl+C copies selected output text or does nothing.
+Ctrl+Q closes a read-only report without affecting external campaigns; in
+the console it first stops all owned campaigns.
 
 The durable snapshot and the elapsed clock refresh every 15 seconds. Campaign
 age and stage elapsed freeze at the campaign's recorded stop time. The

@@ -3,8 +3,7 @@
 Owns the parts of the external-stop contract that must run inside the
 controller process (see ``docs/external-campaign-stop.md``):
 
-- a kill-on-close Job Object per launcher invocation, so a TUI crash can
-  never leave campaign descendants behind;
+- a kill-on-close Job Object per launcher invocation;
 - suspended child creation before Job assignment, new process groups, so a
   terminal Ctrl+C used for copying cannot reach the campaign;
 - per-run private control directories (stop request + diagnostic logs) kept
@@ -22,6 +21,7 @@ import hashlib
 import os
 import shutil
 import subprocess
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -43,7 +43,9 @@ _CREATE_UNICODE_ENVIRONMENT = 0x00000400
 # Job limits
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
 _JobObjectExtendedLimitInformation = 9
-_JobObjectBasicProcessIdList = 25
+# JobObjectBasicProcessIdList per QueryInformationJobObject docs (winnt.h
+# list struct: two DWORD counters, then pointer-sized ids).
+_JobObjectBasicProcessIdList = 3
 
 _WAIT_OBJECT_0 = 0x00000000
 _WAIT_TIMEOUT = 0x00000102
@@ -52,6 +54,7 @@ _STILL_ACTIVE = 259
 _ERROR_ALREADY_EXISTS = 183
 _HANDLE_FLAG_INHERIT = 0x00000001
 _GENERIC_WRITE = 0x40000000
+_GENERIC_READ = 0x80000000
 _OPEN_EXISTING = 3
 _FILE_SHARE_READ = 1
 _NUL_PATH = "\\\\.\\NUL"
@@ -263,8 +266,12 @@ class ConsoleLog:
         self.stderr_path = control_directory / "console.err.log"
         self.stop_request_path = control_directory / "stop.request"
         self._handles: list[int] = []
-        self._stdout = self._open_append(self.stdout_path)
-        self._stderr = self._open_append(self.stderr_path)
+        try:
+            self._stdout = self._open_append(self.stdout_path)
+            self._stderr = self._open_append(self.stderr_path)
+        except OSError:
+            self.close()
+            raise
 
     def _open_append(self, path: Path) -> wintypes.HANDLE:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -283,6 +290,7 @@ class ConsoleLog:
         if not kernel32.SetHandleInformation(
             handle, _HANDLE_FLAG_INHERIT, _HANDLE_FLAG_INHERIT
         ):
+            kernel32.CloseHandle(handle)
             _raise_winerror(f"making {path} inheritable")
         self._handles.append(handle)
         return handle
@@ -290,9 +298,9 @@ class ConsoleLog:
     @property
     def stdin_path(self) -> wintypes.HANDLE:
         handle = kernel32.CreateFileW(
-            _NUL_PATH, _GENERIC_WRITE, _FILE_SHARE_READ, None, _OPEN_EXISTING, 0, None
+            _NUL_PATH, _GENERIC_READ, _FILE_SHARE_READ, None, _OPEN_EXISTING, 0, None
         )
-        if not handle:
+        if not handle or handle == INVALID_HANDLE_VALUE:
             _raise_winerror("opening NUL for child stdin")
         # The stdin handle must be inheritable: a non-inheritable std handle
         # reaches the child as a value that its own handle table does not
@@ -302,6 +310,7 @@ class ConsoleLog:
         if not kernel32.SetHandleInformation(
             handle, _HANDLE_FLAG_INHERIT, _HANDLE_FLAG_INHERIT
         ):
+            kernel32.CloseHandle(handle)
             _raise_winerror("making the child stdin inheritable")
         self._handles.append(handle)
         return handle
@@ -354,13 +363,12 @@ class SupervisedLauncher:
 
     def wait(self, seconds: float) -> int:
         """Block until the launcher exits or ``seconds`` elapse."""
-        while self._exit_code is None:
-            if self.poll():
-                return self._exit_code
-            if seconds <= 0.0:
+        deadline = time.monotonic() + max(0.0, seconds)
+        while not self.poll():
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
                 break
-            time.sleep(min(0.1, seconds))
-            seconds -= 0.1
+            time.sleep(min(0.05, remaining))
         return self._exit_code if self._exit_code is not None else _STILL_ACTIVE
 
     # -- Control -----------------------------------------------------------
@@ -368,66 +376,68 @@ class SupervisedLauncher:
         """Cooperative stop; ``False`` when a request already exists."""
         if self.stop_requested:
             return False
-        self.stop_requested = not create_stop_request(self._log.stop_request_path)
-        return self.stop_requested
+        created = create_stop_request(self._log.stop_request_path)
+        self.stop_requested = True
+        return created
 
     def force_stop(self, timeout: float = 15.0) -> None:
-        """Terminate everything contained in the job, then wait for empty."""
-        if self._exit_code is None:
-            if not kernel32.TerminateJobObject(self.job, 1):
-                _raise_winerror("terminating the campaign job object")
-            self.wait(timeout)
-        if self.poll():
-            code = wintypes.DWORD()
-            kernel32.GetExitCodeProcess(self._process, ctypes.byref(code))
-            self._exit_code = code.value
-        deadline = time.monotonic() + max(1.0, timeout)
-        while time.monotonic() < deadline:
-            pids = self.job_process_ids()
-            if not pids:
+        """Emergency cleanup only: terminate the job and confirm it empties."""
+        if not kernel32.TerminateJobObject(self.job, 1):
+            _raise_winerror("terminating the campaign job object")
+        deadline = time.monotonic() + max(0.0, timeout)
+        while True:
+            if self.poll() and not self.job_process_ids():
                 return
+            if time.monotonic() >= deadline:
+                raise TimeoutError("The campaign job did not empty after termination.")
             time.sleep(0.05)
 
     def job_process_ids(self) -> list[int]:
-        size = wintypes.DWORD(0)
-        kernel32.QueryInformationJobObject(
-            self.job,
-            _JobObjectBasicProcessIdList,
-            None,
-            0,
-            ctypes.byref(size),
-        )
-        if size.value == 0:
-            return []
-        buffer = ctypes.create_string_buffer(size.value)
-        if not kernel32.QueryInformationJobObject(
-            self.job,
-            _JobObjectBasicProcessIdList,
-            buffer,
-            size.value,
-            ctypes.byref(size),
-        ):
-            return []
-        count, remainder = divmod(
-            size.value - ctypes.sizeof(ctypes.c_size_t) * 2,
-            ctypes.sizeof(wintypes.DWORD),
-        )
-        if remainder or count <= 0:
-            return []
-        start = ctypes.sizeof(ctypes.c_size_t) * 2
-        return [
-            int.from_bytes(
-                buffer.raw[start + index * 4 : start + index * 4 + 4], "little"
+        """Processes currently assigned to the containment job."""
+        # JOBOBJECT_BASIC_PROCESS_ID_LIST: two DWORD counters followed by
+        # pointer-sized process ids. A too-small buffer fails with
+        # ERROR_MORE_DATA; the process count can grow between queries.
+        attempted = 8 + 64 * ctypes.sizeof(ctypes.c_size_t)
+        for _ in range(8):
+            buffer = ctypes.create_string_buffer(attempted)
+            returned = wintypes.DWORD(0)
+            if kernel32.QueryInformationJobObject(
+                self.job,
+                _JobObjectBasicProcessIdList,
+                buffer,
+                attempted,
+                ctypes.byref(returned),
+            ):
+                break
+            if ctypes.get_last_error() != 234:  # ERROR_MORE_DATA
+                _raise_winerror("querying the campaign job processes")
+            attempted = max(attempted * 2, returned.value)
+        else:
+            raise RuntimeError("The campaign job process list kept growing.")
+        listed = int.from_bytes(buffer.raw[4:8], "little")
+        ids: list[int] = []
+        for index in range(listed):
+            offset = 8 + index * ctypes.sizeof(ctypes.c_size_t)
+            if offset + ctypes.sizeof(ctypes.c_size_t) > returned.value:
+                raise RuntimeError(
+                    "The campaign job returned a truncated process list."
+                )
+            ids.append(
+                int.from_bytes(
+                    buffer.raw[offset : offset + ctypes.sizeof(ctypes.c_size_t)],
+                    "little",
+                )
             )
-            for index in range(count)
-        ]
+        return ids
 
     def close(self) -> None:
-        """Release child handles; the job may outlive this call via handle."""
-        kernel32.CloseHandle(self._thread)
-        kernel32.CloseHandle(self._process)
-        self._thread = None
-        self._process = None
+        """Release all owned handles. Closing the job kills any remaining member."""
+        for name in ("job", "_thread", "_process"):
+            handle = getattr(self, name)
+            if handle:
+                kernel32.CloseHandle(handle)
+                setattr(self, name, None)
+        self._log.close()
 
 
 class JobHandle:
@@ -446,6 +456,7 @@ class JobHandle:
             ctypes.byref(limits),
             ctypes.sizeof(limits),
         ):
+            kernel32.CloseHandle(self.handle)
             _raise_winerror("configuring kill-on-close job limits")
 
     def close(self) -> None:
@@ -455,11 +466,22 @@ class JobHandle:
 
 
 def _launcher_executable() -> str:
+    """Use an unpackaged shell: Store execution aliases break job inheritance."""
     for candidate in ("pwsh.exe", "pwsh", "powershell.exe", "powershell"):
         found = shutil.which(candidate)
-        if found:
+        if found and "windowsapps" not in str(found).lower().replace("/", "\\").split(
+            "\\"
+        ):
             return found
-    raise RuntimeError("Neither pwsh nor powershell was found on PATH.")
+    fallback = (
+        Path(os.environ.get("SystemRoot", r"C:\Windows"))
+        / "System32/WindowsPowerShell/v1.0/powershell.exe"
+    )
+    if fallback.is_file():
+        return str(fallback)
+    raise RuntimeError(
+        "No unpackaged PowerShell was found; process containment is required."
+    )
 
 
 class LauncherBuilder:
@@ -478,10 +500,8 @@ class LauncherBuilder:
         script_path = script_path.resolve()
         if not script_path.is_file():
             raise RuntimeError(f"Launcher script is missing: {script_path}")
-        control_directory.mkdir(parents=True, exist_ok=True)
-        environment = dict(env if env is not None else os.environ)
         executable = _launcher_executable()
-        command_line = subprocess.list2cmdline(
+        return self.start_command(
             [
                 executable,
                 "-NoProfile",
@@ -490,11 +510,26 @@ class LauncherBuilder:
                 "-File",
                 str(script_path),
                 *arguments,
-            ]
+            ],
+            control_directory,
+            env=env,
         )
+
+    def start_command(
+        self,
+        command: list[str],
+        control_directory: Path,
+        env: dict[str, str] | None = None,
+    ) -> SupervisedLauncher:
+        """The same contained boundary for initializer/reset helpers."""
+        control_directory.mkdir(parents=True, exist_ok=True)
+        environment = dict(env if env is not None else os.environ)
+        command_line = subprocess.list2cmdline(command)
         log = ConsoleLog(control_directory)
-        job = JobHandle()
+        job = None
+        process_information = _PROCESS_INFORMATION()
         try:
+            job = JobHandle()
             startup = _STARTUPINFOW()
             ctypes.memset(ctypes.byref(startup), 0, ctypes.sizeof(startup))
             startup.cb = ctypes.sizeof(startup)
@@ -502,7 +537,6 @@ class LauncherBuilder:
             startup.hStdInput = log.stdin_path
             startup.hStdOutput = log._stdout
             startup.hStdError = log._stderr
-            process_information = _PROCESS_INFORMATION()
             ctypes.memset(
                 ctypes.byref(process_information), 0, ctypes.sizeof(process_information)
             )
@@ -529,9 +563,12 @@ class LauncherBuilder:
             if not kernel32.AssignProcessToJobObject(
                 job.handle, process_information.hProcess
             ):
-                kernel32.TerminateProcess(process_information.hProcess, 1)
                 _raise_winerror("assigning the launcher to the containment job")
-            kernel32.ResumeThread(process_information.hThread)
+            if kernel32.ResumeThread(process_information.hThread) == 0xFFFFFFFF:
+                _raise_winerror("resuming the contained launcher")
+            # The child now owns its inherited copies. Do not leave inheritable
+            # log handles around for a subsequent campaign to inherit.
+            log.close()
             return SupervisedLauncher(
                 pid=process_information.dwProcessId,
                 job=job.handle,
@@ -540,7 +577,14 @@ class LauncherBuilder:
                 _log=log,
             )
         except Exception:
-            job.close()
+            if process_information.hProcess:
+                kernel32.TerminateProcess(process_information.hProcess, 1)
+                kernel32.WaitForSingleObject(process_information.hProcess, 5000)
+                kernel32.CloseHandle(process_information.hProcess)
+            if process_information.hThread:
+                kernel32.CloseHandle(process_information.hThread)
+            if job is not None:
+                job.close()
             log.close()
             raise
 
@@ -570,6 +614,9 @@ class LauncherMachinery:
         self._harness_root = Path(harness_root)
         self._builder = LauncherBuilder(self._harness_root)
         self._children: dict[Path, SupervisedLauncher] = {}
+        self._helper_lock = threading.Lock()
+        self._helpers: list[SupervisedLauncher] = []
+        self._closing = False
 
     def _control_directory(self, arguments: list[str]) -> tuple[Path, list[str]]:
         if "-StopRequestPath" in arguments:
@@ -616,6 +663,57 @@ class LauncherMachinery:
         self, child: SupervisedLauncher, timeout: float | None = None
     ) -> None:
         child.force_stop(timeout if timeout is not None else 15.0)
+
+    def finish(self, child: SupervisedLauncher) -> None:
+        """Verify no descendant remains before releasing a folder for reuse."""
+        if child.job_process_ids():
+            child.force_stop()
+        child.close()
+        for folder, owned in list(self._children.items()):
+            if owned is child:
+                del self._children[folder]
+
+    def run(self, arguments: list[str]) -> subprocess.CompletedProcess[str]:
+        """Execute command helpers without orphaning them on console exit."""
+        if Path(arguments[0]).stem.lower() in {"pwsh", "powershell"}:
+            arguments = [_launcher_executable(), *arguments[1:]]
+        with self._helper_lock:
+            if self._closing:
+                raise RuntimeError("The console is shutting down; helper refused.")
+            try:
+                child = self._builder.start_command(
+                    arguments,
+                    new_control_directory(),
+                    env=self._launch_environment(),
+                )
+            except (OSError, RuntimeError) as error:
+                return subprocess.CompletedProcess(
+                    arguments, 1, stdout="", stderr=str(error)
+                )
+            self._helpers.append(child)
+        try:
+            while not child.poll():
+                time.sleep(0.05)
+            return subprocess.CompletedProcess(
+                arguments,
+                child.exit_code,
+                stdout=child._log.stdout_path.read_text(
+                    encoding="utf-8-sig", errors="replace"
+                ),
+                stderr=child._log.stderr_path.read_text(
+                    encoding="utf-8-sig", errors="replace"
+                ),
+            )
+        finally:
+            with self._helper_lock:
+                self.finish(child)
+                self._helpers.remove(child)
+
+    def stop_helpers(self) -> None:
+        with self._helper_lock:
+            self._closing = True
+            for child in self._helpers:
+                child.force_stop()
 
 
 __all__ = [

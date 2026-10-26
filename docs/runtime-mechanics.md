@@ -39,6 +39,15 @@ functions, and typed output does not depend on the legacy sink succeeding.
 This separation does not add campaign controls, change transport or change
 agent authority. See [the report documentation](tui-report.md) for validation.
 
+The maintainer console orchestrates explicit initialize/reset/start/stop commands
+through `tui/controller.py`; it does not add scientific execution or recovery
+logic. Each tab has an explicit campaign root and independent readers.
+`tui/process.py` contains launchers and command helpers in Windows kill-on-close
+jobs, using an unpackaged PowerShell executable. Normal stopping uses the
+existing private request file; timeout/failure cleanup is separate. See
+[the stop contract](external-campaign-stop.md) for deadlines and persistence
+limits. Direct PowerShell/console use remains available during issue #69.
+
 ## Coding handoff
 
 `scientific_coding` dispatches a native coding subagent. Its readable and

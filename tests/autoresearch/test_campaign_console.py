@@ -12,8 +12,10 @@ import subprocess
 import time
 from pathlib import Path
 
+import pytest
+
 from tui import controller as control
-from tui.console import CampaignConsole
+from tui.console import CampaignConsole, ConsoleDetail
 from tui.report import CampaignPanel
 
 
@@ -92,7 +94,6 @@ def test_console_shows_commands_tab_and_campaign_tabs_with_panels(tmp_path):
             assert app.is_running
             assert not app._shutting_down
 
-
     asyncio.run(scenario())
 
 
@@ -118,7 +119,6 @@ def test_console_start_command_launches_and_stop_command_stops(tmp_path):
             child = machinery.children[layout.folder(1)]
             assert child.stop_requests == 1
             assert app._controller.state("campaign-1").stage == "stopping"
-
 
     asyncio.run(scenario())
 
@@ -152,5 +152,101 @@ def test_console_ctrl_q_stops_everything_then_exits(tmp_path):
                 child = machinery.children[layout.folder(slot)]
                 assert child.stop_requests == 1
 
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize("size", [(80, 24), (60, 24)])
+def test_compact_console_contextual_command_and_copy_only(tmp_path, size):
+    from textual.widgets import Input, TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            assert not machinery.started
+            command = app.query_one("#commands-input", Input)
+            assert command.region.bottom <= size[1]
+            await pilot.press("ctrl+tab")
+            assert app.query_one(TabbedContent).active == "campaign-1"
+            await _run_batch(app, pilot, "start")
+            assert machinery.started[0][0] == layout.folder(1)
+            app.query_one("#cmd-max-inquiries", Input).value = "invalid"
+            await _run_batch(app, pilot, "stop")
+            assert app._controller.state("campaign-1").stage == "stopping"
+            await pilot.press("ctrl+c")
+            assert app.is_running and not app._shutting_down
+            assert machinery.forced == []
+
+    asyncio.run(scenario())
+
+
+def test_reset_options_failure_popup_and_persistent_details(tmp_path):
+    from textual.widgets import Checkbox, Input, Select
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, _layout = _console(tmp_path, machinery)
+    calls = []
+
+    def fail(arguments):
+        calls.append(arguments)
+        return subprocess.CompletedProcess(
+            arguments, 7, stdout="", stderr="synthetic reset failure"
+        )
+
+    app._controller._runner = fail
+
+    async def scenario():
+        async with app.run_test(size=(120, 45)) as pilot:
+            app.query_one("#reset-mode", Select).value = "Baseline"
+            app.query_one("#reset-baseline", Input).value = "selected-baseline"
+            app.query_one("#reset-clean", Checkbox).value = False
+            await _run_batch(app, pilot, "run 2")
+            assert len(calls) == 1
+            assert "Baseline" in calls[0] and "selected-baseline" in calls[0]
+            assert "-RecipeRef" not in calls[0] and "-Clean" not in calls[0]
+            assert "-Force" in calls[0]
+            assert machinery.started == []
+            assert isinstance(app.screen, ConsoleDetail)
+            assert "synthetic reset failure" in app.screen.body_text
+            await pilot.press("escape")
+            state = app._controller.state("campaign-1")
+            assert state.stage == "failed"
+            assert "synthetic reset failure" in state.detail
+
+    asyncio.run(scenario())
+
+
+def test_initialized_campaign_gets_one_real_tab(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    def run(arguments):
+        if "tools.initialize_campaign" in arguments:
+            (layout.folder(3) / ".git").mkdir(parents=True)
+        return subprocess.CompletedProcess(arguments, 0, stdout="", stderr="")
+
+    app._controller._runner = run
+
+    async def scenario():
+        async with app.run_test(size=(120, 45)) as pilot:
+            await _run_batch(app, pilot, "run 3")
+            panes = [p.id for p in app.query_one(TabbedContent).query("TabPane")]
+            assert panes == ["commands", "campaign-1", "campaign-2", "campaign-3"]
+            assert len(machinery.started) == 3
+            assert all(
+                panel._campaign_root == layout.folder(slot)
+                for slot in (1, 2, 3)
+                for panel in [app.query_one(f"#panel-campaign-{slot}", CampaignPanel)]
+            )
 
     asyncio.run(scenario())

@@ -24,6 +24,7 @@ from typing import ClassVar
 
 from rich.text import Text
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.geometry import Size
 from textual.widget import Widget
 from textual.widgets import DataTable, Input, Static
@@ -1694,7 +1695,7 @@ class CampaignReport(App):
     AUTO_FOCUS = "#output"
 
     BINDINGS: ClassVar[list] = [
-        ("ctrl+c", "quit", "Close report"),
+        Binding("ctrl+c", "copy_selection", "Copy", priority=True),
         ("ctrl+q", "quit", "Close report"),
         ("/", "search_log", "Search events"),
         ("f", "filter_log", "Filter events"),
@@ -1721,6 +1722,11 @@ class CampaignReport(App):
 
     def compose(self) -> ComposeResult:
         yield self._panel
+
+    def action_copy_selection(self) -> None:
+        text = self.screen.get_selected_text()
+        if text:
+            self.copy_to_clipboard(text)
 
     def watch_theme(self, old_theme: str, new_theme: str) -> None:
         if self.is_running:

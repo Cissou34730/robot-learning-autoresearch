@@ -4,7 +4,11 @@ Date: 2026-10-23
 
 Audience: harness maintainers and a future implementation agent
 
-Status: implementation handoff specification. This change contains no implementation.
+Status: report-view specification, implemented in `tui/report.py`. Issue #68
+extends the application shell with explicit multi-campaign controls. Its
+approved specification and `docs/tui-report.md` govern the controller; the
+read-only data, scientific meaning and layout rules below still govern each
+campaign report panel and standalone read-only monitoring.
 
 ## 1. Product contract
 
@@ -31,10 +35,12 @@ Small layouts are compatibility fallbacks, not the primary design or visual styl
 
 ### Explicit exclusions
 
-- No tabs, additional application screens, detail screens, modal dialogs, or command palette.
-- No campaign command input, approval gates, or manual operation submission.
-- No start, stop, pause, resume, retry, repair, reset, or model-selection controls.
-- No user-facing distinction between supervision and observation modes.
+- Report facts remain on one campaign panel; the application shell may add the
+  Commands tab, campaign tabs and error/diagnostic dialogs defined by issue #68.
+- Campaign commands and shared launch/reset settings belong to that controller,
+  never to scrolling, copying, searching or selecting scientific report content.
+- No agent-operation approval gates, manual operation submissions or custom
+  replay/repair workflow. Standalone `--read-only` monitoring owns no campaign.
 - No monetary amounts, currency, prices, or conversions from usage to money.
 - No automatic leaderboard or model-role assignment.
 - No campaign completion percentage or predicted scientific completion time.
@@ -524,7 +530,9 @@ Do not turn this feature into a general telemetry platform.
 
 Only the Textual report may render into its active terminal screen.
 Launcher, Runner, and PI output must not write around Textual's renderer.
-The report must not become the owner or controller of campaign execution.
+The report panel must not become the owner or controller of campaign execution.
+The issue #68 application controller separately owns its explicit launches,
+using the existing scripts and external-stop contract.
 
 Do not embed Textual in a Runner child whose stdout or stderr is redirected.
 Do not force `isatty()` or add a pseudo-terminal to repair that arrangement.
@@ -554,9 +562,10 @@ Use framework-managed cleanup for raw mode, cursor state, mouse reporting, and t
 Keep file reads and process/event ingestion outside blocking UI handlers.
 Restore the terminal after report exit or failure.
 
-Do not add a campaign stop binding or stop-request write to the report.
-An explicit report-local exit closes presentation only.
-Do not turn a report exit into an SDK abort, reset, or retry.
+Standalone read-only report exit closes presentation only. It never writes a
+stop request or stops external campaigns. In the controller, Ctrl+Q requests
+cooperative stop for all owned campaigns and exits after cleanup.
+Ctrl+C copies selection only, with no stop or exit fallback.
 Do not reinterpret Ctrl+C as a new cooperative-stop protocol.
 Preserve the existing launcher and external-controller shutdown contracts.
 Do not claim that closing Windows Terminal leaves its processes alive.

@@ -88,6 +88,15 @@ launcher's dirty-worktree refusal applies. See
 [console details](docs/tui-report.md#operator-console-multi-campaign-control)
 and the [stop contract](docs/external-campaign-stop.md).
 
+Reset controls retain Fresh/Baseline, Clean and recipe/baseline references.
+The default is Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force;
+measurements and logs may be deleted without a reset backup. `start` resumes
+without resetting and leaves completed scientific outcomes unchanged. `stop`
+is cooperative; the invocation's 180-second default timeout plus five seconds
+is a maximum wait, not a delay before every stop. `diagnostics campaign-1`
+opens raw launcher logs. `--read-only --campaign-root <path>` monitors without
+owning or stopping external campaigns; the same-directory instance lock applies.
+
 ### Initialize a campaign repository once
 
 `tools\run_parallel.ps1` creates missing slots itself. To create one by hand,

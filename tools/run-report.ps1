@@ -20,13 +20,14 @@ param(
     [string]$EventsPath = "",
     [switch]$Demo,
     [switch]$Console,
+    [switch]$ReadOnly,
     [switch]$Light
 )
 
 $productRoot = Split-Path -Parent $PSScriptRoot
 
 $arguments = @()
-if ($Console -or (-not $CampaignRoot -and -not $EventsPath -and -not $Demo)) {
+if ($Console -or (-not $CampaignRoot -and -not $EventsPath -and -not $Demo -and -not $ReadOnly)) {
     # Console mode discovers every installed campaign folder beside the harness.
     if ($Light) { $arguments += "--light" }
     Push-Location $productRoot
@@ -39,21 +40,23 @@ if ($Console -or (-not $CampaignRoot -and -not $EventsPath -and -not $Demo)) {
     return
 }
 
-if (-not $CampaignRoot) {
+if (-not $CampaignRoot -and -not $Demo) {
     $sibling = Join-Path (Split-Path -Parent $productRoot) "robot-learning-campaigns\campaign-1"
     if (Test-Path $sibling) { $CampaignRoot = $sibling }
 }
 
-if (-not $CampaignRoot) {
+if (-not $CampaignRoot -and -not $Demo) {
     throw "No campaign root found. Pass -CampaignRoot or create robot-learning-campaigns\campaign-1 beside the harness."
 }
-if (-not (Test-Path -LiteralPath $CampaignRoot)) {
+if ($CampaignRoot -and -not (Test-Path -LiteralPath $CampaignRoot)) {
     throw "Campaign root does not exist: $CampaignRoot"
 }
 
 Write-Host "Campaign root: $CampaignRoot"
 
 if ($EventsPath) { $arguments += @("--events", $EventsPath) }
+if ($CampaignRoot) { $arguments += @("--campaign-root", $CampaignRoot) }
+if ($ReadOnly -or (-not $Demo -and -not $EventsPath)) { $arguments += "--read-only" }
 if ($Demo) { $arguments += "--demo" }
 if ($Light) { $arguments += "--light" }
 

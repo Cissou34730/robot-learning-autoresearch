@@ -36,6 +36,13 @@ For every launcher invocation, Hermes must:
        -StopTimeoutSeconds 180
    ```
 
+Use an unpackaged PowerShell executable for contained launches. The TUI skips
+Microsoft Store `WindowsApps` execution aliases: a native child launched through
+the installed alias was observed outside the owning job. It prefers unpackaged
+PowerShell 7 and otherwise uses Windows PowerShell. If neither is available,
+startup fails rather than running without containment. This does not change
+which shell an operator uses for direct, unsupervised script invocations.
+
 The request path is inherited only by the supervised Runner or PI-adapter
 process as `ROBOT_RESEARCH_STOP_REQUEST`. It is not a repository or campaign
 state file.
@@ -128,6 +135,9 @@ external controller that implements this contract directly:
   new process group, assignment to a `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` job,
   per-run private control directory under `%TEMP%\robot-learning\tui` with
   captured launcher stdout/stderr and the `stop.request` file;
+- initializer and reset helpers use the same contained boundary. An unfinished
+  helper may finish during console shutdown, but no later reset or launch starts;
+  a helper that misses the shutdown bound is terminated and reported as interrupted;
 - `run`, `reset`, `start` and `stop` commands delegate to the existing
   `run_research.ps1` / `reset_research.ps1` entry points with the launcher's
   own options; launch batches carry `-StopRequestPath` and stop with a
@@ -137,12 +147,19 @@ external controller that implements this contract directly:
   stop, 0 is a normal return that requires inspecting durable state, 124 and
   any other exit are failures; a missed cooperative deadline escalates to
   `TerminateJobObject` and is reported as a failed campaign;
+- ordinary `stop` reports stopping immediately and shows elapsed/remaining wait.
+  The deadline belongs to the invocation: changing shared settings does not
+  change an existing campaign's deadline. A successful cooperative stop does
+  not call forced termination;
 - closing the console or pressing `Ctrl+Q` asks every owned launcher to stop
-  concurrently, waits up to the stop timeout, escalates to the forced
-  fallback and only then exits, so the console process cannot outlive a
-  campaign it owns (the kill-on-close job handle is the backstop);
+  concurrently, waits up to its stop timeout plus five seconds from request
+  creation, escalates only when needed to the forced
+  fallback and only then exits, so an owned campaign cannot outlive the
+  console (the kill-on-close job handle is the backstop);
 - `Ctrl+C` copies the current text selection or does nothing; it never
   reaches the campaign processes because the launchers are in their own
   process group with redirected input;
 - one named-mutex instance lock (`Local\RobotLearningTui-<hash>`) refuses a
-  second console against the same canonical harness directory.
+  second TUI (including read-only reports) against the same canonical harness
+  directory. The owner releases job, process, thread and diagnostic handles
+  after verifying cleanup, before the campaign folder is available for reuse.

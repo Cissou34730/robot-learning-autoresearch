@@ -8,10 +8,12 @@ no scientific code or state changes.
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -86,6 +88,9 @@ class FakeMachinery:
 
     def wait(self, child: FakeChild, seconds: float) -> int | None:
         child.wait_calls.append(seconds)
+        if self.wait_exit_code is not None:
+            self.next_exit_code = self.wait_exit_code
+            child.pending_stop = False
         return self.wait_exit_code
 
     def request_stop(self, child: FakeChild) -> bool:
@@ -99,6 +104,9 @@ class FakeMachinery:
         child.forced = True
         self.forced.append(child)
         self.force_timeout = timeout
+
+    def finish(self, child: FakeChild) -> None:
+        pass
 
 
 def _machine(tmp_path: Path) -> FakeMachinery:
@@ -222,7 +230,8 @@ def test_run_without_any_repository_reports_setup_error(tmp_path):
         layout.harness_root, layout.campaigns_root / "empty"
     )
     outcome = controller.execute("run", [1], settings=control.LaunchSettings())
-    assert [step.action for step in outcome.steps] == ["initialize"]
+    assert outcome.steps[0].action == "initialize"
+    assert all(s.status == control.SKIPPED for s in outcome.steps[1:])
     assert outcome.steps[0].status == control.FAILED
     assert "no existing campaign repository" in outcome.steps[0].detail
     assert machinery.started == []
@@ -248,6 +257,65 @@ def test_run_executes_reset_then_launch(tmp_path):
     joined = " ".join(started_arguments)
     assert "-CampaignRoot" in joined
     assert "-StopRequestPath" in joined
+    assert outcome.ok
+
+
+def test_run_resets_stopped_campaign_before_launching_again(tmp_path):
+    controller, machinery, *_ = _controller(tmp_path)
+    controller.execute("run", [1], settings=control.LaunchSettings())
+    controller.execute("stop", [1], settings=control.LaunchSettings())
+    controller.settle("campaign-1", 1)
+    outcome = controller.execute("run", [1], settings=control.LaunchSettings())
+    assert [(s.action, s.status) for s in outcome.steps] == [
+        ("initialize", control.SKIPPED),
+        ("reset", control.SUCCESS),
+        ("launch", control.SUCCESS),
+    ]
+    assert len(machinery.started) == 2
+
+
+def test_batch_reset_failure_stops_later_resets_and_all_launches(tmp_path):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    original = controller._runner
+
+    def run(arguments):
+        if str(layout.folder(2)) in arguments and "-Mode" in arguments:
+            return subprocess.CompletedProcess(
+                arguments, 1, stdout="", stderr="reset failed"
+            )
+        return original(arguments)
+
+    controller._runner = run
+    outcome = controller.execute("run", [1, 2, 3], settings=control.LaunchSettings())
+    assert [(s.target, s.status) for s in outcome.steps if s.action == "reset"] == [
+        ("campaign-1", control.SUCCESS),
+        ("campaign-2", control.FAILED),
+        ("campaign-3", control.SKIPPED),
+    ]
+    assert controller.state("campaign-2").stage == "failed"
+    assert machinery.started == []
+
+
+@pytest.mark.parametrize(
+    "status,launch",
+    [
+        ("official_assessment_requested", True),
+        ("official_assessment_passed", False),
+        ("official_assessment_failed", False),
+        ("no_credible_route", False),
+    ],
+)
+def test_start_preserves_terminal_outcomes_but_resumes_pending_assessment(
+    tmp_path, status, launch
+):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    path = layout.folder(1) / "runner/state/research_state.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        json.dumps({"terminal_state": {"status": status}}), encoding="utf-8"
+    )
+    outcome = controller.execute("start", [1], settings=control.LaunchSettings())
+    assert bool(machinery.started) is launch
     assert outcome.ok
 
 
@@ -312,6 +380,32 @@ def test_stop_sends_request_and_marks_stopping(tmp_path):
     assert child.stop_requests == 1  # never a second overwrite
 
 
+@pytest.mark.parametrize("existing", [False, True])
+def test_launcher_stop_request_acknowledges_creation_without_overwriting(
+    tmp_path, existing
+):
+    from tui.process import SupervisedLauncher
+
+    request = tmp_path / "stop.request"
+    if existing:
+        request.write_text("existing request", encoding="utf-8")
+    child = SupervisedLauncher(
+        pid=0,
+        job=None,
+        _process=None,
+        _thread=None,
+        _log=SimpleNamespace(stop_request_path=request),
+    )
+    assert child.request_stop() is (not existing)
+    assert child.stop_requested
+    assert request.read_text(encoding="utf-8") == (
+        "existing request" if existing else ""
+    )
+    request.write_text("do not overwrite", encoding="utf-8")
+    assert child.request_stop() is False
+    assert request.read_text(encoding="utf-8") == "do not overwrite"
+
+
 def test_reap_classifies_exit_codes(tmp_path):
     controller, machinery, *_ = _controller(tmp_path)
     controller.execute("run", [1], settings=control.LaunchSettings())
@@ -354,6 +448,39 @@ def test_settle_escalates_to_forced_stop(tmp_path):
     assert state.stage == "failed"
 
 
+def test_stop_returns_cooperatively_without_forced_termination(tmp_path):
+    controller, machinery, *_ = _controller(tmp_path)
+    controller.execute("start", [1], settings=control.LaunchSettings())
+    controller.execute("stop", [1], settings=control.LaunchSettings())
+    state = controller.settle("campaign-1", 185)
+    assert state.stage == "stopped"
+    assert state.exit_code == 130
+    assert machinery.forced == []
+
+
+def test_ordinary_stop_uses_invocation_deadline_plus_five_seconds(
+    tmp_path, monkeypatch
+):
+    controller, machinery, *_ = _controller(tmp_path)
+    clock = [100.0]
+    monkeypatch.setattr(control.time, "monotonic", lambda: clock[0])
+    machinery.wait_exit_code = None
+    controller.execute(
+        "start", [1], settings=control.LaunchSettings(stop_timeout_seconds=7)
+    )
+    controller.execute(
+        "stop", [1], settings=control.LaunchSettings(stop_timeout_seconds=1)
+    )
+    child = machinery.started and next(iter(machinery.children.values()))
+    child.pending_stop = True
+    clock[0] = 111.9
+    assert controller.reap("campaign-1").stage == "stopping"
+    assert machinery.forced == []
+    clock[0] = 112.0
+    assert controller.reap("campaign-1").stage == "failed"
+    assert machinery.forced == [child]
+
+
 def test_shutdown_latch_blocks_new_actions_and_stops_all(tmp_path):
     controller, machinery, *_ = _controller(tmp_path)
     controller.execute("start", [1], settings=control.LaunchSettings())
@@ -370,13 +497,29 @@ def test_shutdown_latch_blocks_new_actions_and_stops_all(tmp_path):
         assert state.stage == "stopped"
 
 
-def test_preflight_reports_dirty_harness_and_skips_batch(tmp_path):
-    controller, machinery, *_ = _controller(
-        tmp_path, harness_dirty=["M  main.py"]
+def test_shutdown_during_reset_never_launches_the_batch(tmp_path):
+    controller, machinery, *_ = _controller(tmp_path)
+    calls = []
+
+    def run(arguments):
+        calls.append(arguments)
+        controller.latch_shutdown()
+        return subprocess.CompletedProcess(arguments, 0, stdout="", stderr="")
+
+    controller._runner = run
+    outcome = controller.execute("run", [1, 2], settings=control.LaunchSettings())
+    assert len(calls) == 1
+    assert machinery.started == []
+    assert all(
+        s.status == control.SKIPPED for s in outcome.steps if s.action == "launch"
     )
+
+
+def test_preflight_reports_dirty_harness_and_skips_batch(tmp_path):
+    controller, machinery, *_ = _controller(tmp_path, harness_dirty=["M  main.py"])
     outcome = controller.execute("run", [1], settings=control.LaunchSettings())
-    assert outcome.steps[0].action == "launch"
-    assert outcome.steps[0].status == control.SKIPPED
+    assert outcome.steps[0].action == "preflight"
+    assert outcome.steps[0].status == control.FAILED
     assert "uncommitted" in outcome.steps[0].detail
     assert machinery.started == []
 
@@ -415,25 +558,99 @@ def test_supervised_launcher_captures_output_and_reports_exit(tmp_path):
 
 
 @requires_windows
+def test_assignment_failure_does_not_run_the_suspended_child(tmp_path, monkeypatch):
+    from tui.process import LauncherBuilder, kernel32
+
+    marker = tmp_path / "should-not-run"
+    script = tmp_path / "dummy.ps1"
+    script.write_text(
+        f"Set-Content -LiteralPath '{marker}' -Value 'ran'", encoding="utf-8"
+    )
+    monkeypatch.setattr(kernel32, "AssignProcessToJobObject", lambda *_: False)
+    with pytest.raises(OSError, match="assigning"):
+        LauncherBuilder(tmp_path).start(script, [], tmp_path / "control")
+    assert not marker.exists()
+    # Cleanup also releases every diagnostic handle on partial startup failure.
+    (tmp_path / "control/console.out.log").unlink()
+    (tmp_path / "control/console.err.log").unlink()
+
+
+@requires_windows
 def test_force_stop_terminates_the_whole_contained_tree(tmp_path):
     from tui.process import LauncherBuilder
 
     script = tmp_path / "spawner.ps1"
-    grandchild = tmp_path / "grandchild.ps1"
-    grandchild.write_text("Start-Sleep -Seconds 60\n", encoding="utf-8")
+    pidfile = tmp_path / "child.pid"
     script.write_text(
-        "Start-Process pwsh -ArgumentList '-NoProfile','-File','"
-        + str(grandchild)
-        + "'\nStart-Sleep -Seconds 60\n",
+        "$p = Start-Process ping.exe -ArgumentList '-n','60','127.0.0.1' -PassThru\n"
+        f"$p.Id | Set-Content -LiteralPath '{pidfile}'\nStart-Sleep -Seconds 60\n",
         encoding="utf-8",
     )
     builder = LauncherBuilder(tmp_path)
     launcher = builder.start(script, [], tmp_path / "control")
-    time.sleep(0.5)  # allow the grandchild to spawn
-    launcher.force_stop(timeout=10.0)
-    assert launcher.poll() is True
-    assert launcher.job_process_ids() == []
-    assert launcher.exit_code != 0
+    try:
+        deadline = time.monotonic() + 15
+        while not pidfile.exists() and time.monotonic() < deadline:
+            time.sleep(0.05)
+        descendant = int(pidfile.read_text(encoding="utf-8-sig").strip())
+        assert {launcher.pid, descendant}.issubset(launcher.job_process_ids())
+        launcher.force_stop(timeout=10.0)
+        assert launcher.poll() is True
+        assert launcher.job_process_ids() == []
+        assert launcher.exit_code != 0
+    finally:
+        launcher.close()
+
+
+@requires_windows
+def test_kill_on_close_contains_native_descendants_after_owner_crash(tmp_path):
+    import ctypes
+    import sys
+
+    from tui.process import _WAIT_OBJECT_0, kernel32
+
+    script = tmp_path / "spawner.ps1"
+    pidfile = tmp_path / "child.pid"
+    script.write_text(
+        "$p = Start-Process ping.exe -ArgumentList '-n','60','127.0.0.1' -PassThru\n"
+        f"$p.Id | Set-Content -LiteralPath '{pidfile}'\nStart-Sleep 60\n",
+        encoding="utf-8",
+    )
+    owner_code = (
+        "import os,time; from pathlib import Path; from tui.process import LauncherBuilder; "
+        f"child=LauncherBuilder(Path({str(tmp_path)!r})).start(Path({str(script)!r}),[],Path({str(tmp_path / 'control')!r})); "
+        "print(child.pid,flush=True); input(); os._exit(0)"
+    )
+    owner = subprocess.Popen(
+        [sys.executable, "-c", owner_code],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    kernel32.OpenProcess.restype = ctypes.c_void_p
+    kernel32.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+    handles = []
+    try:
+        launcher_pid = int(owner.stdout.readline())
+        deadline = time.monotonic() + 15
+        while not pidfile.exists() and time.monotonic() < deadline:
+            time.sleep(0.05)
+        descendant = int(pidfile.read_text(encoding="utf-8-sig").strip())
+        for pid in (launcher_pid, descendant):
+            handle = kernel32.OpenProcess(0x100000, False, pid)  # SYNCHRONIZE
+            assert handle
+            handles.append(handle)
+        owner.communicate("crash\n", timeout=10)
+        assert owner.returncode == 0
+        for handle in handles:
+            assert kernel32.WaitForSingleObject(handle, 10000) == _WAIT_OBJECT_0
+    finally:
+        if owner.poll() is None:
+            owner.kill()
+            owner.communicate(timeout=10)
+        for handle in handles:
+            kernel32.CloseHandle(handle)
 
 
 @requires_windows
