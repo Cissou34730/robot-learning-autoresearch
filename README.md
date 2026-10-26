@@ -74,10 +74,12 @@ Transcripts, the monitor log and one report per campaign go to
 
 ### Operator console
 
-The controller requires an unpackaged PowerShell 7 `pwsh.exe` on PATH.
-Microsoft Store PowerShell is refused for containment, and Windows PowerShell
-5.1 cannot run the existing launcher. Missing runtime fails preflight before
-any initialization/reset; opening the interface still starts nothing.
+The controller uses the existing PowerShell 7 `pwsh.exe` on PATH, including
+Microsoft Store/MSIX installations. It sets the Windows desktop-app child
+policy when launching owned processes so native descendants remain contained.
+No separate installation or manually started shell is needed. Windows PowerShell
+5.1 cannot run the existing launcher. Missing PowerShell 7 fails preflight before
+initialization/reset; opening the interface still starts nothing.
 
 `uv run python -m tui` opens the multi-campaign console: a Commands tab plus
 one report tab per installed campaign folder. Campaigns only run when a

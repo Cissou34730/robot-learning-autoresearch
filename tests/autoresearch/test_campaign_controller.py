@@ -528,7 +528,7 @@ def test_unavailable_contained_runtime_refuses_before_any_reset(tmp_path):
     controller, machinery, _layout, runner = _controller(tmp_path)
 
     def missing():
-        raise RuntimeError("unpackaged PowerShell 7 required")
+        raise RuntimeError("PowerShell 7 required")
 
     machinery.preflight = missing
     outcome = controller.execute("run", [1, 2], settings=control.LaunchSettings())
@@ -553,19 +553,25 @@ requires_windows = pytest.mark.skipif(
 )
 
 
-@pytest.fixture
-def native_shell(monkeypatch):
-    """Dummy scripts use native PS 5.1; production campaign scripts require PS 7.
+@pytest.fixture(params=["installed", "windows-powershell"])
+def native_shell(monkeypatch, request):
+    """Exercise the installed PS 7 (including MSIX) and unpackaged PS 5.1.
 
-    This tests Windows Job mechanics without assuming a supported production
-    PowerShell installation or launching any campaign runtime.
+    PS 5.1 is only a dummy-script regression for the Windows creation policy;
+    production campaign scripts still require PS 7.
     """
     from tui import process
 
-    executable = str(
-        Path(os.environ["SystemRoot"])
-        / "System32/WindowsPowerShell/v1.0/powershell.exe"
-    )
+    if request.param == "installed":
+        try:
+            executable = process._launcher_executable()
+        except RuntimeError as error:
+            pytest.skip(str(error))
+    else:
+        executable = str(
+            Path(os.environ["SystemRoot"])
+            / "System32/WindowsPowerShell/v1.0/powershell.exe"
+        )
     monkeypatch.setattr(process, "_launcher_executable", lambda: executable)
     return executable
 
@@ -608,6 +614,61 @@ def test_assignment_failure_does_not_run_the_suspended_child(
     # Cleanup also releases every diagnostic handle on partial startup failure.
     (tmp_path / "control/console.out.log").unlink()
     (tmp_path / "control/console.err.log").unlink()
+
+
+@requires_windows
+def test_packaged_creation_policy_failure_never_runs_the_child(
+    tmp_path, monkeypatch, native_shell
+):
+    from tui.process import LauncherBuilder, kernel32
+
+    marker = tmp_path / "should-not-run"
+    script = tmp_path / "dummy.ps1"
+    script.write_text(
+        f"Set-Content -LiteralPath '{marker}' -Value 'ran'", encoding="utf-8"
+    )
+    monkeypatch.setattr(kernel32, "UpdateProcThreadAttribute", lambda *_: False)
+    with pytest.raises(OSError, match="disabling packaged process-tree breakaway"):
+        LauncherBuilder(tmp_path).start(script, [], tmp_path / "control")
+    assert not marker.exists()
+    (tmp_path / "control/console.out.log").unlink()
+    (tmp_path / "control/console.err.log").unlink()
+
+
+@requires_windows
+def test_installed_powershell_uv_python_chain_stops_cooperatively(tmp_path):
+    from tui.process import LauncherBuilder
+
+    harness = Path(__file__).resolve().parents[2]
+    pidfile = tmp_path / "worker.pid"
+    request = tmp_path / "control/stop.request"
+    worker = tmp_path / "worker.py"
+    worker.write_text(
+        "import os, sys, time\nfrom pathlib import Path\n"
+        "Path(sys.argv[1]).write_text(str(os.getpid()), encoding='utf-8')\n"
+        "while not Path(sys.argv[2]).exists(): time.sleep(.05)\n"
+        "raise SystemExit(130)\n",
+        encoding="utf-8",
+    )
+    script = tmp_path / "dummy.ps1"
+    script.write_text(
+        f"& uv run --no-sync --project '{harness}' python '{worker}' '{pidfile}' '{request}'\n"
+        "exit $LASTEXITCODE\n",
+        encoding="utf-8",
+    )
+    child = LauncherBuilder(harness).start(script, [], request.parent)
+    try:
+        deadline = time.monotonic() + 20
+        while not pidfile.exists() and not child.poll() and time.monotonic() < deadline:
+            time.sleep(0.05)
+        worker_pid = int(pidfile.read_text(encoding="utf-8"))
+        assert {child.pid, worker_pid}.issubset(child.job_process_ids())
+        assert len(child.job_process_ids()) >= 3  # launcher, uv and Python
+        assert child.request_stop()
+        assert child.wait(20) == 130
+        assert child.job_process_ids() == []
+    finally:
+        child.close()
 
 
 @requires_windows

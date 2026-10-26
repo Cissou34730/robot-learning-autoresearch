@@ -36,14 +36,20 @@ For every launcher invocation, Hermes must:
        -StopTimeoutSeconds 180
    ```
 
-Use an unpackaged PowerShell executable for contained launches. The TUI skips
-Microsoft Store `WindowsApps` execution aliases: a native child launched through
-the installed package was observed outside the owning job, including when
-started by its full executable path. The TUI requires unpackaged PowerShell 7;
-Windows PowerShell 5.1 lacks .NET APIs used by the existing launcher. If the
-supported runtime is unavailable, command preflight fails before initialization,
-reset or launch rather than running without containment. This does not change
-which shell an operator uses for direct, unsupervised script invocations.
+The TUI uses the existing PowerShell 7 executable on PATH, including Store/MSIX
+installations. Its `STARTUPINFOEXW` specifies `PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY`
+with `PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE` (0x02), via
+`EXTENDED_STARTUPINFO_PRESENT`. This inherited, documented Windows creation
+policy keeps native descendants of packaged PowerShell in its runtime and the
+owning job. Without this policy, a native child of the installed packaged build
+was observed outside the job. No installation or machine-wide policy changes
+are needed. Attribute initialization/update failure aborts before the child runs;
+there is no uncontained fallback. The existing suspended assignment sequence
+and kill-on-close limit remain unchanged.
+
+Windows PowerShell 5.1 lacks .NET APIs used by the existing campaign launcher.
+If PowerShell 7 is unavailable, command preflight fails before initialization,
+reset or launch. Direct script invocations remain unchanged.
 
 The request path is inherited only by the supervised Runner or PI-adapter
 process as `ROBOT_RESEARCH_STOP_REQUEST`. It is not a repository or campaign

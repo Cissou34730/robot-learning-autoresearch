@@ -23,6 +23,7 @@ import shutil
 import subprocess
 import threading
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,6 +40,9 @@ kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
 _CREATE_SUSPENDED = 0x00000004
 _CREATE_NEW_PROCESS_GROUP = 0x00000200
 _CREATE_UNICODE_ENVIRONMENT = 0x00000400
+_EXTENDED_STARTUPINFO_PRESENT = 0x00080000
+_PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY = 0x00020012
+_PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE = 0x02
 
 # Job limits
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
@@ -114,6 +118,13 @@ class _STARTUPINFOW(ctypes.Structure):
 
 
 _STARTF_USESTDHANDLES = 0x00000100
+
+
+class _STARTUPINFOEXW(ctypes.Structure):
+    _fields_ = [
+        ("StartupInfo", _STARTUPINFOW),
+        ("lpAttributeList", ctypes.c_void_p),
+    ]
 
 
 class _PROCESS_INFORMATION(ctypes.Structure):
@@ -206,6 +217,30 @@ for _name, _restype, _argtypes in (
         [ctypes.c_void_p, wintypes.BOOL, wintypes.LPCWSTR],
     ),
     ("GetLastError", wintypes.DWORD, []),
+    (
+        "InitializeProcThreadAttributeList",
+        wintypes.BOOL,
+        [
+            ctypes.c_void_p,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            ctypes.POINTER(ctypes.c_size_t),
+        ],
+    ),
+    (
+        "UpdateProcThreadAttribute",
+        wintypes.BOOL,
+        [
+            ctypes.c_void_p,
+            wintypes.DWORD,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+        ],
+    ),
+    ("DeleteProcThreadAttributeList", None, [ctypes.c_void_p]),
 ):
     function = getattr(kernel32, _name)
     function.restype = _restype
@@ -220,6 +255,42 @@ def _raise_winerror(context: str) -> None:
 def _environment_block(env: dict[str, str]) -> bytes:
     entries = [f"{key}={value}" for key, value in env.items()]
     return ("".join(entry + "\0" for entry in entries) + "\0").encode("utf-16-le")
+
+
+@contextmanager
+def _desktop_app_attributes():
+    """Keep packaged PowerShell descendants inside its runtime and owning job.
+
+    Desktop Bridge defaults to child breakaway. This documented Windows
+    creation policy is inherited by descendants; it also works for unpackaged
+    executables. It changes only this owned process tree, not the installation.
+    """
+    size = ctypes.c_size_t()
+    kernel32.InitializeProcThreadAttributeList(None, 1, 0, ctypes.byref(size))
+    if not size.value:
+        _raise_winerror("sizing the process creation attributes")
+    attributes = ctypes.create_string_buffer(size.value)
+    if not kernel32.InitializeProcThreadAttributeList(
+        attributes, 1, 0, ctypes.byref(size)
+    ):
+        _raise_winerror("initializing the process creation attributes")
+    policy = wintypes.DWORD(
+        _PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE
+    )
+    try:
+        if not kernel32.UpdateProcThreadAttribute(
+            attributes,
+            0,
+            _PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY,
+            ctypes.byref(policy),
+            ctypes.sizeof(policy),
+            None,
+            None,
+        ):
+            _raise_winerror("disabling packaged process-tree breakaway")
+        yield ctypes.cast(attributes, ctypes.c_void_p)
+    finally:
+        kernel32.DeleteProcThreadAttributeList(attributes)
 
 
 def _canonical(path: Path) -> str:
@@ -466,17 +537,14 @@ class JobHandle:
 
 
 def _launcher_executable() -> str:
-    """The existing launcher's .NET APIs require unpackaged PowerShell 7."""
+    """Find the existing PowerShell 7, including Microsoft Store installations."""
     for directory in os.get_exec_path():
         found = shutil.which("pwsh.exe", path=directory)
-        if found and "windowsapps" not in str(found).lower().replace("/", "\\").split(
-            "\\"
-        ):
+        if found:
             return found
     raise RuntimeError(
-        "The campaign console requires unpackaged PowerShell 7 (pwsh.exe) on PATH. "
-        "Microsoft Store PowerShell is not supported for Job Object containment, "
-        "and Windows PowerShell 5.1 lacks the launcher's required .NET APIs. "
+        "The campaign console requires PowerShell 7 (pwsh.exe) on PATH. "
+        "Windows PowerShell 5.1 lacks the launcher's required .NET APIs. "
         "No campaign was initialized, reset or started."
     )
 
@@ -527,9 +595,9 @@ class LauncherBuilder:
         process_information = _PROCESS_INFORMATION()
         try:
             job = JobHandle()
-            startup = _STARTUPINFOW()
-            ctypes.memset(ctypes.byref(startup), 0, ctypes.sizeof(startup))
-            startup.cb = ctypes.sizeof(startup)
+            extended_startup = _STARTUPINFOEXW()
+            startup = extended_startup.StartupInfo
+            startup.cb = ctypes.sizeof(extended_startup)
             startup.dwFlags = _STARTF_USESTDHANDLES
             startup.hStdInput = log.stdin_path
             startup.hStdOutput = log._stdout
@@ -538,25 +606,30 @@ class LauncherBuilder:
                 ctypes.byref(process_information), 0, ctypes.sizeof(process_information)
             )
             command_buffer = ctypes.create_unicode_buffer(command_line)
-            created = kernel32.CreateProcessW(
-                None,
-                command_buffer,
-                None,
-                None,
-                True,
-                _CREATE_SUSPENDED
-                | _CREATE_NEW_PROCESS_GROUP
-                | _CREATE_UNICODE_ENVIRONMENT,
-                ctypes.cast(
-                    ctypes.create_string_buffer(_environment_block(environment)),
-                    ctypes.c_void_p,
-                ),
-                str(self.harness_root),
-                ctypes.byref(startup),
-                ctypes.byref(process_information),
-            )
-            if not created:
-                _raise_winerror("creating the suspended launcher process")
+            with _desktop_app_attributes() as attributes:
+                extended_startup.lpAttributeList = attributes
+                created = kernel32.CreateProcessW(
+                    None,
+                    command_buffer,
+                    None,
+                    None,
+                    True,
+                    _CREATE_SUSPENDED
+                    | _CREATE_NEW_PROCESS_GROUP
+                    | _CREATE_UNICODE_ENVIRONMENT
+                    | _EXTENDED_STARTUPINFO_PRESENT,
+                    ctypes.cast(
+                        ctypes.create_string_buffer(_environment_block(environment)),
+                        ctypes.c_void_p,
+                    ),
+                    str(self.harness_root),
+                    ctypes.cast(
+                        ctypes.byref(extended_startup), ctypes.POINTER(_STARTUPINFOW)
+                    ),
+                    ctypes.byref(process_information),
+                )
+                if not created:
+                    _raise_winerror("creating the suspended launcher process")
             if not kernel32.AssignProcessToJobObject(
                 job.handle, process_information.hProcess
             ):

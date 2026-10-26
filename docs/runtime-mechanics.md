@@ -43,7 +43,9 @@ The maintainer console orchestrates explicit initialize/reset/start/stop command
 through `tui/controller.py`; it does not add scientific execution or recovery
 logic. Each tab has an explicit campaign root and independent readers.
 `tui/process.py` contains launchers and command helpers in Windows kill-on-close
-jobs, using an unpackaged PowerShell executable. Normal stopping uses the
+jobs, using the existing PowerShell 7 executable. A Windows desktop-app creation
+policy keeps Store/MSIX PowerShell's native descendants in the same boundary;
+no runtime reinstall or machine-wide policy changes are required. Normal stopping uses the
 existing private request file; timeout/failure cleanup is separate. See
 [the stop contract](external-campaign-stop.md) for deadlines and persistence
 limits. Direct PowerShell/console use remains available during issue #69.
