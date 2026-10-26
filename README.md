@@ -4,7 +4,7 @@ Read the [Robot-learning research process](docs/research-overview/robot-learning
 
 ## Documentation map
 
-Current operating guidance, reviewed 19 October 2026:
+Current operating guidance, reviewed 26 October 2026:
 
 - [HTML overview](docs/research-overview/robot-learning-overview-20261002.html):
   architecture, lifecycle, status and links to historical evidence. Its filename
@@ -20,10 +20,15 @@ Current operating guidance, reviewed 19 October 2026:
 - [Authority](contracts/authority.md), [scientific program](contracts/program.md)
   and [instruments](contracts/instruments.md): PI-facing role boundaries,
   lifecycle and operation contracts.
-- [Change tracker](docs/harness-experiment-log.md): issue status and maintenance history.
+- [Change tracker](docs/harness-experiment-log.md): current state, campaign results,
+  issue register and change ledger.
+- `tools\run_parallel.ps1`: runs several campaign folders at once with
+  maintainer-only time and AIU caps (see the tracker's current state).
 
-Dated RCAs, campaign HTML reports, implementation proposals and
-[old integration notes](docs/archive/INTEGRATION_NOTES.md) describe the revisions and
+Dated RCAs, plans and reviews are in [docs/archive](docs/archive/), program
+proposals in [docs/proposals](docs/proposals/), campaign HTML reports in
+[docs/research-overview](docs/research-overview/). They, and the
+[old integration notes](docs/archive/INTEGRATION_NOTES.md), describe the revisions and
 campaigns named in them, not the current repository layout or current campaign.
 [Protocol decisions](docs/protocol-decisions.md) retain superseded decisions
 as history; the latest dated entry identifies the current storage design.
