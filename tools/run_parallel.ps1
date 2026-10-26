@@ -187,7 +187,7 @@ $monitorCommand = (
     "-CampaignRoots '$($roots -join "','")' -MaxHours $MaxHours -MaxAiu $MaxAiu " +
     "-PollSeconds $PollSeconds"
 )
-$monitor = Start-Process pwsh -WindowStyle Minimized -WorkingDirectory $harness -PassThru `
+$monitorProcess = Start-Process pwsh -WindowStyle Minimized -WorkingDirectory $harness -PassThru `
     -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", $monitorCommand)
-Write-Host "Monitor pid $($monitor.Id). Control folder: $ControlDirectory"
+Write-Host "Monitor pid $($monitorProcess.Id). Control folder: $ControlDirectory"
 Write-Host "Caps per campaign: $MaxHours h active time, $MaxAiu AIU."
