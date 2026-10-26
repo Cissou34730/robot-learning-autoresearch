@@ -294,6 +294,15 @@ class ConsoleLog:
         )
         if not handle:
             _raise_winerror("opening NUL for child stdin")
+        # The stdin handle must be inheritable: a non-inheritable std handle
+        # reaches the child as a value that its own handle table does not
+        # contain, and the child then furthers that dangling value to its own
+        # spawns. `uv run` fails with "The handle is invalid" in that case
+        # because Rust std forwards GetStdHandle results to CreateProcess.
+        if not kernel32.SetHandleInformation(
+            handle, _HANDLE_FLAG_INHERIT, _HANDLE_FLAG_INHERIT
+        ):
+            _raise_winerror("making the child stdin inheritable")
         self._handles.append(handle)
         return handle
 
