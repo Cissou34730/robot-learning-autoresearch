@@ -37,6 +37,21 @@ def source_git(root: Path, *args: str) -> bytes:
     return result.stdout
 
 
+def trust_folder(root: Path) -> None:
+    # Git refuses folders it considers owned by another account unless listed here.
+    safe = root.as_posix()
+    listed = subprocess.run(
+        ["git", "config", "--global", "--get-all", "safe.directory"],
+        capture_output=True,
+        text=True,
+        check=False,
+    ).stdout.splitlines()
+    if safe not in listed:
+        subprocess.run(
+            ["git", "config", "--global", "--add", "safe.directory", safe], check=True
+        )
+
+
 def initialize(root: Path, source: Path, reference: str) -> None:
     root = root.resolve()
     source = source.resolve()
@@ -92,6 +107,7 @@ def initialize(root: Path, source: Path, reference: str) -> None:
     metadata.parent.mkdir(parents=True)
     metadata.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
     (root / ".gitignore").write_text(CAMPAIGN_GITIGNORE, encoding="utf-8")
+    trust_folder(root)
     source_git(root, "init", "-b", "campaign")
     source_git(root, "add", "--", ".")
     source_git(

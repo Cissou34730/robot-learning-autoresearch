@@ -221,18 +221,6 @@ def standard_roots(arguments: argparse.Namespace) -> list[Path]:
 
 
 def initialize(folder: Path, source: Path, recipe_ref: str) -> None:
-    # Git refuses folders it considers owned by another account unless listed here.
-    safe = str(folder).replace("\\", "/")
-    listed = subprocess.run(
-        ["git", "config", "--global", "--get-all", "safe.directory"],
-        capture_output=True,
-        text=True,
-        check=False,
-    ).stdout.splitlines()
-    if safe not in listed:
-        subprocess.run(
-            ["git", "config", "--global", "--add", "safe.directory", safe], check=True
-        )
     completed = subprocess.run(
         _python(
             "-m",
