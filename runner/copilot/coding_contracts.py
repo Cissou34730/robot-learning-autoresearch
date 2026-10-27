@@ -64,28 +64,28 @@ class ScientificCodingParams(BaseModel):
         max_length=16_000,
         description=(
             "State the expected output precisely. "
-            "The coder chooses how to implement it."
+            "The coder chooses how to write the code."
         ),
     )
     allowed_paths: list[str] | None = Field(
         default=None,
         min_length=1,
         max_length=64,
-        description="Exact writable files for a new child; omit for a correction.",
+        description="The exact files that a new coder can write. Omit for a correction.",
     )
     read_paths: list[str] | None = Field(
         default=None,
         max_length=64,
-        description="Additional readable files; omit to reuse correction scope.",
+        description="Other files that the coder can read. Omit to keep the scope of a correction.",
     )
     source_context: str = Field(
         default="",
         max_length=32_000,
         description=(
-            "Supporting facts, caller context and observed errors. "
-            "The child does not receive the PI conversation. "
-            "Current scenario, authority and operation-contract excerpts are supplied "
-            "by the harness; select additional source files in read_paths."
+            "Supporting facts, caller context and errors. "
+            "The coder does not receive your conversation. "
+            "The harness gives the glossary, contracts/scenario.md and parts of the "
+            "authority and operation contracts. Select other source files in read_paths."
         ),
     )
     session_handle: str | None = Field(default=None, min_length=1)
@@ -94,10 +94,10 @@ class ScientificCodingParams(BaseModel):
         min_length=1,
         max_length=10,
         description=(
-            "New calls only: recorded evidence the change will read. A measurement "
-            "artifact {operation_id, artifact_index} gives its recorded structure "
-            "(JSON paths and field names, no values); a candidate {candidate} gives "
-            "its archive file names and artifact.json metadata."
+            "New calls only: the recorded evidence that the change will read. A "
+            "measurement artifact {operation_id, artifact_index} gives its recorded "
+            "structure (JSON paths and field names, no values). A candidate "
+            "{candidate} gives its archive file names and artifact.json metadata."
         ),
     )
 
@@ -149,60 +149,59 @@ REVIEW_INSTRUCTIONS = (_PROMPT_DIRECTORY / "scientific-reviewer.md").read_text(
 )
 
 CODING_TOOL_DESCRIPTION = (
-    "Use scientific_coding for scientific source changes.\n\n"
+    "Use scientific_coding for changes of scientific source code.\n\n"
     "In intent, state the expected output precisely. "
-    "The coder chooses how to implement it, not what the output means.\n\n"
-    "Select exact writable files in allowed_paths and additional "
-    "readable source and caller files in read_paths.\n\n"
-    "Put supporting facts, caller context and observed errors "
-    "in source_context. The child "
-    "does not receive your conversation. The harness supplies current "
-    "scenario, authority and operation-contract text to both authors "
-    "and reviewers, without expanding their file permissions. "
-    "When the change reads recorded measurement artifacts, list them in "
-    "evidence_inputs so the coder sees their recorded field structure.\n\n"
-    "An independent reviewer examines the initial delivery. "
-    "A failed review goes unchanged to the same coder. "
+    "The coder chooses how to write the code, not what the output means.\n\n"
+    "Select the exact files that the coder can write in allowed_paths, and "
+    "other source and caller files that it can read in read_paths.\n\n"
+    "Put the supporting facts, the caller context and the errors in "
+    "source_context. The coder does not receive your conversation. The harness "
+    "gives the glossary, contracts/scenario.md and parts of the authority and "
+    "operation contracts to the coder and the reviewer. This does not add files "
+    "to their permissions. When the change reads recorded measurement artifacts, "
+    "list them in evidence_inputs. The coder then sees their recorded field "
+    "structure.\n\n"
+    "An independent reviewer checks the first delivery. "
+    "A failed review goes without change to the same coder. "
     "The same reviewer checks the correction. "
-    "You receive the final source, review, repair history "
-    "or a needs_pi reason. A passed review can still report concerns or "
+    "You receive the final source code, the review and the repair history, "
+    "or a needs_pi reason. A review that passed can still report concerns or "
     "scientific choices for you. Scientific choices and operation requests "
-    "remain yours. Only Runner executes scientific operations.\n\n"
-    "Continue the same change using session_handle; its file "
-    "permissions remain unchanged."
+    "stay with you. Only the Runner executes operations.\n\n"
+    "To continue the same change, use session_handle. Its file "
+    "permissions do not change."
 )
 
 CODER_START_CONTEXT = (
-    "Installed scientific APIs: native MuJoCo 3.12.0, NOT mujoco-py; "
-    "Gymnasium 1.3.0; Stable-Baselines3 2.9.0. Dependencies and manifests "
-    "are fixed and human-owned. Author only the requested "
-    "scoped source; execute nothing. Read the supplied task_context "
-    "and relevant authorized source and callers before editing. "
-    "Use scientific_api_reference for unfamiliar installed APIs. "
-    "Report missing or unclear requirements in summary and "
-    "unchecked_scope instead of guessing. "
-    "The reviewer checks implementation errors and logic. "
-    "The parent PI must review actual diffs. "
-    "No engineering handoff certifies science or Runner acceptance.\n"
+    "Installed scientific libraries: native MuJoCo 3.12.0, NOT mujoco-py, "
+    "Gymnasium 1.3.0 and Stable-Baselines3 2.9.0. The dependencies and the "
+    "manifests are fixed and human-owned. Write only the requested source code in "
+    "the permitted files. Execute nothing. Before you change a file, read the "
+    "supplied task_context and the relevant permitted source and callers. Use "
+    "scientific_api_reference for installed libraries that you do not know. "
+    "Report missing or unclear requirements in summary and unchecked_scope. Do "
+    "not guess them. The reviewer checks code errors and logic. The PI must read "
+    "the actual diffs. No engineering handoff certifies the science or the "
+    "acceptance by the Runner.\n"
 )
 
 REVIEWER_START_CONTEXT = (
-    "Installed APIs: native MuJoCo 3.12.0, Gymnasium 1.3.0, "
-    "Stable-Baselines3 2.9.0. Dependencies are fixed. "
-    "Review only the supplied change and exact readable files. "
-    "All writes, execution, delegation and operations are denied. "
-    "Do not trust coder-authored expectations without checking them. "
-    "Request complete engineering repair batches through your handoff. "
-    "Set validation false only for defects the coder can repair within "
-    "the request. Report confounds, unclear requirements or scientific "
-    "choices for the PI in the explanation fields with validation true. "
-    "No review certifies science.\n"
+    "Installed libraries: native MuJoCo 3.12.0, Gymnasium 1.3.0 and "
+    "Stable-Baselines3 2.9.0. The dependencies are fixed. "
+    "Review only the supplied change and the exact readable files. "
+    "You cannot write, execute, give work to another agent or submit operations. "
+    "Check each expectation that the coder wrote before you trust it. "
+    "Request all engineering repairs together in your handoff. "
+    "Set validation to false only for defects that the coder can repair within "
+    "the request. Report mixed factors, unclear requirements or scientific "
+    "choices for the PI in the explanation fields, with validation true. "
+    "No review certifies the science.\n"
 )
 
 REPAIR_INTENT = (
-    "Correct the problems described by the reviewer in source_context. "
-    "Preserve the PI's requested output and authorized file scope. "
-    "Report unclear requirements instead of guessing."
+    "Correct the problems that the reviewer describes in source_context. "
+    "Keep the output that the PI requested and the permitted files. "
+    "Report unclear requirements. Do not guess them."
 )
 
 
@@ -223,6 +222,7 @@ def load_task_context(root: Path) -> dict[str, str]:
     coding = (parts / "coding.md").read_text(encoding="utf-8")
     measurement = (parts / "measurement.md").read_text(encoding="utf-8")
     return {
+        "glossary": (root / "contracts" / "glossary.md").read_text(encoding="utf-8"),
         "authority": _excerpt(
             authority, "## Installed scientific stack", "## PI sessions"
         ),
@@ -243,8 +243,8 @@ class OperationSubmissionParams(BaseModel):
 
     request: dict[str, object] | None = Field(
         description=(
-            "One operation envelope defined in contracts/instruments.md. "
-            "Use null only to reaccept a failed pending operation after repair."
+            "One operation envelope that contracts/instruments.md defines. "
+            "Use null only to accept a failed pending operation again after a repair."
         ),
         json_schema_extra={
             "anyOf": [protocol.operation_envelope_schema(), {"type": "null"}],

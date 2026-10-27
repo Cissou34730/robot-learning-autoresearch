@@ -14,69 +14,75 @@ from runner.copilot.path_policy import ROOT, file_read_denial, reference_read_de
 from runner.copilot.tool_policy import scoped_tool_hook
 
 ARTIFACT_EVIDENCE_DESCRIPTION = (
-    "Read JSON evidence by operation_id, not by file path; use it instead of view "
-    "for measurement artifacts. operations lists the "
-    "operation index. metadata returns one operation's record, artifact references, "
-    "checkpoints or accepted pending request without opening artifact contents. "
-    "discover shows an artifact's structure. query and batch select, filter, project "
-    "or aggregate fields. read returns the complete original artifact in pages. "
-    "You choose complete content or any subsets. A page is partial until "
-    "next_offset is null. Pending metadata is execution metadata, not completed evidence."
+    "Read JSON evidence by operation_id, not by file path. Use this tool, not "
+    "view, for measurement artifacts. operations lists the operation index. "
+    "metadata returns the record, the artifact references, the session records or "
+    "the accepted pending request of one operation, without the artifact contents. "
+    "discover shows the structure of an artifact. query and batch select, filter, "
+    "project or aggregate fields. read returns the complete original artifact in "
+    "pages. You choose the complete content or any subsets. A page is partial "
+    "until next_offset is null. Pending metadata is execution metadata, not "
+    "completed evidence."
 )
 
 TRAINING_LOG_DESCRIPTION = (
-    "Read preserved training logs of one training operation by operation_id. "
-    "discover lists attempts, timestep range and metric names. records returns "
-    "selected metrics over a timestep window in row pages. raw returns the original "
-    "log text in byte pages. A page is partial until next_offset is null. "
-    "Failed-operation logs are execution history, not scientific evidence."
+    "Read the kept training logs of one training operation by operation_id. "
+    "discover lists the attempts, the timestep range and the metric names. "
+    "records returns selected metrics over a timestep window, in pages of rows. "
+    "raw returns the original log text in pages of bytes. A page is partial until "
+    "next_offset is null. The logs of a failed operation are execution history, "
+    "not scientific evidence."
 )
 
 TRAINING_SERIES_DESCRIPTION = (
     "Summarize one metric of one training log over a timestep window: rows, first, "
-    "last, min, max, mean and standard deviation, with steps. Optional checks compare "
-    "a statistic with a threshold you choose and return whether it holds; min and "
-    "max checks also return the rows that fail. Failed-operation logs are execution "
-    "history, not scientific evidence."
+    "last, min, max, mean and standard deviation, with steps. Optional checks "
+    "compare a statistic with a threshold that you choose and return whether the "
+    "comparison is true. min and max checks also return the rows that fail. The "
+    "logs of a failed operation are execution history, not scientific evidence."
 )
 
 PASS_PROBABILITY_DESCRIPTION = (
-    "How likely is a candidate to reach a success-rate target? Give the target panel "
-    "(trials and required successes, from the scenario) and evidence entries: either "
-    "recorded measurements to pool, as {operation_id, candidate, optional label}, "
-    "which Runner reads from the records, or typed counts. Returns, per entry, the "
-    "probability that a new target panel reaches the target, an interval at your "
-    "confidence level, the pass probability if the true rate sits at either interval "
-    "bound, and whether the interval lies above, below or across the target rate; "
-    "plus the true success rate needed for a 50%, 80% or 95% pass probability. "
-    "Recorded entries also list their sources and shared episodes. Assumes "
-    "independent episodes representative of the target panel."
+    "Estimate how likely a candidate is to reach a target success rate. Give the "
+    "target panel (trials and required successes, from contracts/scenario.md) and "
+    "evidence entries. Each entry is either recorded measurements to combine, as "
+    "{operation_id, candidate, optional label}, which the Runner reads from the "
+    "records, or typed counts. For each entry, the result gives: the probability "
+    "that a new target panel reaches the target, an interval at your confidence "
+    "level, the pass probability if the true rate is at one limit of the interval, "
+    "and whether the interval is above, below or across the target rate. It also "
+    "gives the true success rate that a pass probability of 50%, 80% or 95% needs. "
+    "Recorded entries also list their sources and shared episodes. The tool "
+    "assumes independent episodes that represent the target panel."
 )
 
 EPISODE_OUTCOME_DESCRIPTION = (
-    "Episode-level outcomes of recorded research_evaluation or task_reference "
-    "measurements, as {operation_id, candidate, optional label}. With one measurement: "
-    "successes and an interval at your confidence level. With two measurements of the "
-    "same episodes: paired counts (both, first only, second only, neither), an exact "
-    "sign test and the first measurement's share of discordant episodes. Optional "
-    "strata split every result into bins of a numeric per-episode field (rows path, "
-    "field and edges you choose), such as a target radius."
+    "Read the episode outcomes of recorded research_evaluation or task_reference "
+    "measurements, given as {operation_id, candidate, optional label}. With one "
+    "measurement: the successes and an interval at your confidence level. With two "
+    "measurements of the same episodes: the paired counts (both, first only, "
+    "second only, none), an exact sign test and the share of the first "
+    "measurement in the episodes where only one succeeds. Optional strata divide "
+    "each result into bins of a numeric field of the episode rows (rows path, field "
+    "and edges that you choose), for example the target radius."
 )
 
 API_REFERENCE_DESCRIPTION = (
-    "Read installed definitions from mujoco, gymnasium or stable_baselines3. Select "
-    "library and a public dotted symbol relative to it; omit symbol for the library "
-    "root. action=members lists public names (filter with contains; page with "
-    "offset/limit). action=definition returns signature, documentation, Python source "
-    "and native MuJoCo declaration (page with offset/max_bytes). Missing symbols are "
-    "reported, not guessed. A definition does not show that an integration runs."
+    "Read installed definitions from mujoco, gymnasium or stable_baselines3. "
+    "Select the library and a public dotted symbol relative to it. Omit symbol for "
+    "the root of the library. action=members lists public names (filter with "
+    "contains, page with offset and limit). action=definition returns the "
+    "signature, the documentation, the Python source and the native MuJoCo "
+    "declaration (page with offset and max_bytes). The tool reports a missing "
+    "symbol. It does not guess a replacement. A definition does not show that a "
+    "call works at execution."
 )
 
 READ_DESCRIPTION = (
     "Read UTF-8 text from an exact permitted file. "
-    "Use optional view_range for line pages. "
+    "Use the optional view_range for pages of lines. "
     "The same file scopes apply as for view. "
-    "Use native view for images."
+    "Use the native view for images."
 )
 
 

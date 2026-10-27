@@ -1,6 +1,7 @@
-# Scientific instruments: inquiry and conclusion
+# Scientific instruments: inquiry and official assessment
 
-Part of the instrument contract indexed in `contracts/instruments.md`.
+This file is a part of the instrument contract. `contracts/instruments.md` lists
+all parts.
 
 ## Inquiry operations
 
@@ -18,10 +19,10 @@ Use this interface to open or reframe an inquiry:
 }
 ```
 
-Set `action` to `open` or `reframe`.
-All other fields are required and must be non-empty.
-The Runner accepts `open` only during goal review when no inquiry is active.
-The Runner accepts `reframe` only during the active inquiry session.
+Set `action` to `open` or `reframe`. All other fields are required and must not
+be empty. The Runner accepts `open` only in a goal-review session when no
+inquiry is active. The Runner accepts `reframe` only in the inquiry session of
+the active inquiry.
 
 Use this interface to close an inquiry:
 
@@ -35,12 +36,11 @@ Use this interface to close an inquiry:
 }
 ```
 
-Set `action` to `close`.
-The `outcome` and `reason` fields are required and must be non-empty.
-The Runner accepts `close` only during the active inquiry session.
-Inquiry operations do not allocate a training identity.
+Set `action` to `close`. The `outcome` and `reason` fields are required and must
+not be empty. The Runner accepts `close` only in the inquiry session of the
+active inquiry. Inquiry operations do not use a training identity.
 
-## Campaign conclusion
+## Request for the official assessment
 
 ```json
 {
@@ -51,9 +51,8 @@ Inquiry operations do not allocate a training identity.
 }
 ```
 
-Set `action` to `request_official_assessment`.
-The `reason` field is required and must be non-empty.
-The Runner accepts the request only during goal review when no inquiry is active.
-The request also requires an explicit best-known candidate.
-The Runner executes the protected official assessment and records its result.
-No other campaign-conclusion action is supported.
+Set `action` to `request_official_assessment`. The `reason` field is required
+and must not be empty. The Runner accepts the request only in a goal-review
+session when no inquiry is active. The request also needs a best-known
+candidate. The Runner executes the protected official assessment and records
+its result. No other action is available for `campaign_conclusion`.

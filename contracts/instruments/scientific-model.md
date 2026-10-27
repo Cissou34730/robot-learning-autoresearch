@@ -1,24 +1,28 @@
 # Scientific instruments: scientific model
 
-Part of the instrument contract indexed in `contracts/instruments.md`.
+This file is a part of the instrument contract. `contracts/instruments.md` lists
+all parts.
 
 ## Scientific-model publication
 
 Before other campaign work, `pi_workspace/scientific_model.md` must contain
-substantive `Established facts`, `Physical consequences`, `Unknowns`, and
-`Decision-relevant synthesis` registers.
-Each register is a level-two heading (`##`) with its content under it. Topics
-inside a register use level-three headings (`###`).
-The preliminary analyst writes the model. The model states physical
-consequences and the evidence that discriminates between them. It selects no
-intervention.
-The synthesis is the final register. It selects the consequences and unknowns
-most likely to change the first campaign decisions. For each selected item, it
-keeps the decision relevance, the assumptions, the source references, and the
-discriminating evidence. Startup receives this register as the handoff. The PI
-also reads the whole model at startup and selects the initial direction.
-After acceptance, the model remains fixed for the campaign.
-Later checkpoints preserve or revise its consequential conclusions.
-The Runner checks only that the file exists and that each required register
-section is present and non-empty. It does not check scientific adequacy; the
-PI judges the model's soundness when using it.
+four registers with content: `Established facts`, `Physical consequences`,
+`Unknowns` and `Decision-relevant synthesis`. Each register is a level-two
+heading (`##`) with its content under it. Topics in a register use level-three
+headings (`###`).
+
+The analyst writes the scientific model. The scientific model states physical
+consequences and the evidence that separates them. It does not choose changes.
+
+The synthesis is the last register. It selects the consequences and the
+unknowns that are most likely to change the first decisions of the campaign.
+For each selected item, it keeps the effect on decisions, the assumptions, the
+source references and the evidence that separates the possibilities. The
+startup session receives this register as the handoff. The PI also reads the
+full scientific model at startup and selects the first direction.
+
+After acceptance, the scientific model does not change for the campaign. Later
+session records keep or change its important conclusions. The Runner checks
+only that the file exists and that each required register is present and not
+empty. It does not check the scientific quality. The PI judges the quality when
+it uses the scientific model.

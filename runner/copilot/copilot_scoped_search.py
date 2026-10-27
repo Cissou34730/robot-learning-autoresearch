@@ -25,7 +25,7 @@ class GlobParams(BaseModel):
     paths: str | list[str] | None = Field(
         default=None,
         description=(
-            "Readable search roots. Use paths, not path. Omit for the repository root."
+            "Readable folders to search. Use paths, not path. Omit for the repository root."
         ),
     )
 
@@ -369,12 +369,13 @@ class ScopedSearch:
             define_tool(
                 "rg",
                 description=(
-                    "Search readable repository files with ripgrep. Reserved descendants "
-                    "and linked paths are pruned BEFORE content is read. Root/default, "
-                    "subdirectory and multiple paths are supported. Choose content, "
-                    "matching filenames or counts, with glob/type/context selectors. "
-                    "Output reports transport/traversal limits; narrow or repeat distinct "
-                    "subsets when truncated. Coding children cannot use search."
+                    "Search readable repository files with ripgrep. The tool removes "
+                    "reserved files and linked paths BEFORE it reads content. It accepts "
+                    "the default root, a subfolder or several paths. Choose content, "
+                    "matching file names or counts, with glob, type and context "
+                    "selectors. The output reports its limits. When the output is "
+                    "truncated, narrow the search or search other subsets. Coders cannot "
+                    "use search."
                 ),
                 handler=self.rg,
                 params_type=RgParams,
@@ -385,12 +386,11 @@ class ScopedSearch:
                 "glob",
                 description=(
                     "Find readable repository files by glob, including ** and brace "
-                    "alternatives. Parameters are pattern and paths, not path. "
-                    "Directory discovery uses this tool, not view. "
-                    "Reserved descendants and linked paths are pruned "
-                    "BEFORE filenames enter the result. paths accepts root/default, "
-                    "subdirectory or several directories. Explicit truncation is not "
-                    "a claim of complete retrieval. Coding children cannot use search."
+                    "alternatives. The parameters are pattern and paths, not path. Use "
+                    "this tool, not view, to find folders. The tool removes reserved "
+                    "files and linked paths BEFORE file names enter the result. paths "
+                    "accepts the default root, a subfolder or several folders. A "
+                    "truncated result is not complete. Coders cannot use search."
                 ),
                 handler=self.glob,
                 params_type=GlobParams,

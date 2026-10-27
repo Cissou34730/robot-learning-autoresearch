@@ -583,13 +583,13 @@ or mutated by this review; the evidence-fidelity RCA remains deferred.
 
 **Status and description review: 27 October 2026.**
 
-Five issues require work. Six changes need more evidence. Thirty-five issues
-are closed. Twelve entries are inactive. All 58 issue IDs remain.
+Five issues require work. Seven changes need more evidence. Thirty-five issues
+are closed. Twelve entries are inactive. All 59 issue IDs remain.
 
 On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and
 OI-052 to OI-056 were added from the parallel rounds. On 27 October the
-maintainer withdrew OI-054 after round 4, and OI-057 and OI-058 were added
-from round 5.
+maintainer withdrew OI-054 after round 4, OI-057 and OI-058 were added
+from round 5, and OI-059 was added from the wording analysis.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
 The maintainer also closed OI-033 and OI-037 without a verified recovery claim,
@@ -611,7 +611,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
 | OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. |
 
-### Changes that need more evidence — 6
+### Changes that need more evidence — 7
 
 Each change exists. Campaign evidence is missing or does not yet isolate its
 effect.
@@ -624,6 +624,7 @@ effect.
 | OI-055 | The PI's first experiment can change several parts of the recipe at once and anchor the campaign on an untested base. In `38ad68c6`, T1 widened the radius range and switched to fixed-gain joint targets together (60%); the campaign never tested direct torque (about 94% elsewhere) and ended at about 85%. | **Implemented** | `4ce2fdb1` (26 October), `contracts/program.md`: the inherited recipe is the first reference, and a first experiment that changes several parts at once cannot attribute its result; the assumptions checked before a costly experiment include the choice of method, not only the correctness of its implementation. Round 5: all 4 PIs trained the recipe unchanged first and then changed one factor (training radius). Round 4 also ran with it (0 of 3). |
 | OI-056 | At a plateau the PI explains failures without the contrast with comparable successes, repeats the same mechanism question, and abandons or repeats methods after one inconclusive result. | **Implemented** | `a93baf4b` and `2f22d98d` (25-26 October), `contracts/program.md`: a mechanism test accounts for where behavior fails and where comparable conditions succeed, and the scientific model states what the definitions make equal; an intervention can supply the evidence for an explanation; check the assumptions of a costly experiment; name the limitation the next implementation addresses; an inconclusive result alone does not justify another attempt or abandonment. Changes 1-3 come from [the preserve-lifecycle proposal](proposals/program-revision-proposal-preserve-lifecycle-20261026.md). Round 3 ran with all of them; their effect cannot be separated from OI-053. |
 | OI-058 | The PI and the analyst treat task physics as a cause of failure, separate from the policy. The task is fixed and only sets how demanding each situation is; every measured outcome is the policy's behavior under it. Round 5: `923f335d` wrote that its labels "do not identify its physical cause" and "not proving a specific physical or policy cause"; the `0c12d136` model listed "branch/joint-limit difficulty" among failure classes and the PI explained its failures by the shoulder limit. The analyst objective asked for constraints "that create qualitatively different classes of behavior or failure" and the PI system prompt asked for "competing mechanistic explanations" from physical consequences. | **Implemented** | 27 October. Analyst objective (`runner/launcher/prompts.py`): constraints "that make some situations more demanding than others, and what a controller must do to succeed in each". PI system prompt (`runner/copilot/system_prompt.py`): the task is fixed and defines what success requires and how demanding each situation is, whatever policy is tested; every measured outcome is the behavior of the policy under that task; explanations state how the policy's behavior produces the observed outcomes. Round 6 is the first round with it. |
+| OI-059 | The campaign texts named one concept with several words (for example artifact, candidate, checkpoint and model for a saved policy) and used one word with several meanings (model, checkpoint, development, reference, goal review). About 115 negative statements and coined terms ("decision frontier", "causal research map", "consequential") added ambiguity. | **Implemented** | 27 October. `contracts/glossary.md` and a rewrite of all campaign-facing text in Simplified Technical English (ledger, 27 October). Before: 12,205 words, 107 semicolons, 36 sentences over 25 words. After: 15,595 words including the glossary, no semicolons, 11 long sentences, mostly in joined prompt pieces. Round 6 is the first round with it. |
 
 ### Closed issues — 35
 
@@ -695,7 +696,8 @@ The historical evidence remains valid.
 
 1. Round 5 was invalidated by a maintainer edit and commit during the run.
    The protections and the TUI isolation are in place (ledger, 27 October).
-   Round 6 repeats round 5's conditions plus OI-058 (task and policy framing). Check, for each campaign: whether the
+   Round 6 repeats round 5's conditions plus OI-058 (task and policy framing)
+   and OI-059 (controlled wording). Check, for each campaign: whether the
    PI attributes failures to the task or to the policy (OI-058); whether the
    scientific model states the invariances, with what conditions, and when the
    PI uses them (OI-053, OI-057); the development success rate at each
@@ -723,6 +725,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-27 | Controlled wording of all campaign-facing text (OI-059) | New `contracts/glossary.md` (one term per concept, the session kinds, the operations by session, the session record fields), embedded first in the PI and analyst system messages and given to coders and reviewers. Contracts, system prompts, session prompts, tool descriptions and coder and reviewer instructions rewritten in Simplified Technical English; the PI is "you". Agreed clarifications: the session records carry what the campaign learns; the inherited recipe is the reference for the first comparison; a result on reused episodes can be higher than on new episodes; a request for the official assessment needs a best-known candidate; the review checks engineering, not conclusions; the stated PI session limit corrected from 30 minutes to 6 hours. STE skill copied to `agents/skills/simplified-technical-english/`; its checker gained `--glossary`. Two independent comparisons of old and new texts; the prompt comparison found five meaning losses, which were restored. Runner rejection and error messages are not rewritten yet. Full suite: 755 pass. |
 | 2026-10-27 | Task and policy framing (OI-058) | Analyst objective and PI system prompt reworded: the task sets what success requires and how demanding each situation is; every measured outcome is the policy's behavior under it. Full suite: 755 pass. |
 | 2026-10-27 | Campaign protection without maintainer collisions | The trust gate compares only the harness files a campaign loads and no longer the harness HEAD; the Runner's clean-worktree check uses the same scope (`runner.paths.is_harness_runtime`). `runner/pi_code_guard.py`: training, research evaluation, task-reference assessment and lab modules run under a Python audit hook that refuses file changes outside the PI-owned and Runner-written paths. `tools/commit_guard.py` with `.githooks/pre-commit` refuses commits of runtime code while a campaign holds its lock. The PI can no longer read `reports/` (`101b1fa1`). TUI: a failed step blocks only its own campaign in `run`, `reset` and `start`. Targeted tests; guarded training and evaluation smoke-run on a scratch campaign. |
 | 2026-10-27 | Parallel round 5 (invalid) | Four campaigns from the TUI. A maintainer edit of this tracker during the run failed Runner request checks, and its commit ended the PI sessions of `927b3b57`, `0c12d136` and `923f335d`; the maintainer stopped `f84166f2`. Two campaigns reached 400/400 with reflection I/O by transfer. OI-057 added; the no-edit rule added to the operating rules; test rounds table added. See [Round 5](#parallel-round-5-27-october). |

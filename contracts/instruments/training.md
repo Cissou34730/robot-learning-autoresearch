@@ -1,6 +1,7 @@
 # Scientific instruments: training and candidates
 
-Part of the instrument contract indexed in `contracts/instruments.md`.
+This file is a part of the instrument contract. `contracts/instruments.md` lists
+all parts.
 
 ## Training operation
 
@@ -17,36 +18,36 @@ Part of the instrument contract indexed in `contracts/instruments.md`.
 }
 ```
 
-Set `initialization` to `fresh` or `transfer`.
-The `seed`, `steps`, `description`, and `rationale` fields are required.
-The seed must be non-negative.
-The `description` and `rationale` strings must be non-empty.
-The `steps` value must be a positive integer.
+Set `initialization` to `fresh` or `transfer`. The `seed`, `steps`,
+`description` and `rationale` fields are required. The seed must not be
+negative. The `description` and `rationale` strings must not be empty. The
+`steps` value must be a positive integer.
 
-The session context states the training allocation and the longest permitted
-run. During startup, `steps` can be any positive value up to the allocation.
-During an inquiry, `steps` lies between the allocation and the longest run. The
-PI cannot change either value. Runner rejects other values during validation,
-acceptance and training dispatch.
+The session prompt gives the training allocation and the longest permitted run.
+In a startup session, `steps` can be any positive value up to the allocation.
+In an inquiry session, `steps` is between the allocation and the longest run.
+You cannot change these values. The Runner rejects other values during
+validation, acceptance and the start of training.
 
 A standard run uses the allocation. A longer run takes proportionally more
-time. Each run adds to the campaign's time and AI usage.
+time. Each run adds time and AI usage to the campaign.
 
-For transfer training, `parent` is required and must be non-empty.
-For fresh training, omit `parent`.
+For `transfer` training, `parent` is required and must not be empty. For
+`fresh` training, do not give `parent`.
 
-The Runner validates changed PI-owned sources and active parameters.
-It executes the accepted seed and step count.
-It archives all produced candidates.
-It records the parent, scientific recipe, and learning-dynamics facts.
-Completion does not assign working, best-known, or retained roles.
+The Runner validates the changed PI-owned source files and the active
+parameters. It executes the accepted seed and step count. It archives all
+candidates that the run makes. It records the parent, the recipe and the facts
+of the training process. A completed training run does not give the working,
+best-known or retained role.
 
-Candidate archival also records versioned SHA-256 fingerprints for identifiable
-serialized learned-state components. For the supported Stable-Baselines3 ZIP
-format these components are the policy, optimizer, additional tensor state and
-normalization file. The executable policy runtime is fingerprinted separately.
-Unsupported formats and unavailable optional components remain explicit; they
-do not prevent normal candidate archival.
+The candidate archive also records versioned SHA-256 fingerprints of the
+serialized parts of the trained state that it can identify. For the supported
+Stable-Baselines3 ZIP format, these parts are the policy, the optimizer, the
+additional tensor state and the normalization file. The executable saved
+runtime has a separate fingerprint. The archive states each format that it does
+not support and each optional part that is not available. These do not stop the
+normal archive of the candidate.
 
 The completed training result contains an optional
 `saved_component_comparisons` object with these field types:
@@ -70,18 +71,20 @@ The completed training result contains an optional
 | `comparisons[].runtime` | object |
 | `comparisons[].exact_component_matches` | array |
 
-Component and runtime entries contain integer `compared` and `equal` counts.
-Exact-match entries contain integer `training_steps` and string `candidate` and
-`prior_candidate` identities. Comparisons use corresponding saved training-step
-counts from earlier completed candidates in the same campaign. They report
-exact serialized-component equality only. They do not declare semantic policy
-equivalence, intervention activation, scientific independence, or candidate
-adequacy. The complete-artifact integrity fingerprint remains unchanged.
+Component and runtime entries contain the integer counts `compared` and
+`equal`. Exact-match entries contain the integer `training_steps` and the
+string identities `candidate` and `prior_candidate`. The comparisons use the
+same saved step counts of earlier completed candidates in the same campaign.
 
-The learning algorithm can round actual completed steps up to its rollout
-boundary. This does not authorize a different allocation.
+They report only exact equality of the serialized parts. They do not show that
+two policies behave the same or that a change was active. They do not show that
+results are scientifically independent or that a candidate is adequate. The
+integrity fingerprint of the complete artifact does not change.
 
-## Model-role operation
+The learning algorithm can round the completed steps up to the end of its
+rollout. This rounding does not permit a different allocation.
+
+## Role operation
 
 ```json
 {
@@ -98,21 +101,19 @@ boundary. This does not authorize a different allocation.
 }
 ```
 
-Set `action` to `set_working`, `set_best_known`, or `retain`.
-The `candidate`, `reason`, and `evidence` fields are required.
-The evidence array must be non-empty.
-Each evidence item must identify a completed operation.
+Set `action` to `set_working`, `set_best_known` or `retain`. The `candidate`,
+`reason` and `evidence` fields are required. The evidence array must not be
+empty. Each evidence item must identify a completed operation.
 
-The `label` field is required only for retention.
-The label must be non-empty and unique.
-It must differ from the fixed role names.
+The `label` field is required only for `retain`. The label must not be empty
+and must be unique. It must be different from the fixed role names.
 
-Every action copies the candidate's complete artifact to
-`campaigns/checkpoints/retained/`, in a folder named by its origin operation and
-fingerprint. The candidate's recorded artifact path then points to that copy;
-the fingerprint stays its identity. The `retain` action also records the
-candidate under the requested label.
-Each action updates only the requested role.
+Each action copies the complete artifact of the candidate to
+`campaigns/checkpoints/retained/`, into a folder that has the name of its
+origin operation and fingerprint. The recorded artifact path of the candidate
+then points to this copy. The fingerprint stays its identity. The `retain`
+action also records the candidate under the requested label. Each action
+changes only the requested role.
 
 ## Recipe restoration
 
@@ -126,15 +127,17 @@ Each action updates only the requested role.
 }
 ```
 
-All fields are required. Candidate and reason must be non-empty. `paths` is a
-non-empty list of distinct exact repository-relative scientific files, including
-`robot_learning/training/current_params.json` for the recorded parameters.
-The operation restores only those files from the candidate's recorded recipe.
-It removes a selected file when absent from that recipe.
-Unselected source files remain unchanged; campaign laboratory tools cannot
-be selected. Directory and wildcard scopes are refused.
-The Runner does not infer which code implements learning versus measurement.
-When one source file contains both, restoring the whole file also restores both.
-There is no automatic whole-recipe rollback.
-It verifies the result.
-It does not assign a model role.
+All fields are required. The candidate and the reason must not be empty.
+`paths` is a list of exact, different scientific files, relative to the
+repository. It must not be empty. To restore the recorded parameters, include
+`robot_learning/training/current_params.json`.
+
+The operation restores only these files from the recorded recipe of the
+candidate. When a selected file is not in that recipe, the operation removes
+it. Source files that you did not select do not change. You cannot select the
+laboratory tools of the campaign. The Runner refuses folders and wildcards.
+
+The Runner does not decide which code belongs to training and which code
+belongs to measurement. When one source file contains both, the restoration of the
+file restores both. No operation restores a complete recipe automatically. The
+operation verifies the result. It does not give a role.

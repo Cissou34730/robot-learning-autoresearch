@@ -1,87 +1,101 @@
 # Scientific instruments: coding
 
-Part of the instrument contract indexed in `contracts/instruments.md`.
+This file is a part of the instrument contract. `contracts/instruments.md` lists
+all parts.
 
 ## Saved controller execution
 
-Saved candidates include policy weights, normalization state when used, and the
-executable runtime defined in `contracts/policy_runtime.py`.
+A saved candidate contains the policy weights, the normalization state when the
+policy uses one, and the executable saved runtime that
+`contracts/policy_runtime.py` defines.
 
-Task-reference and official evaluations use protected environments, not the
-PI-owned research environment. The protected environment calls the saved
-`io.observe(data)` to construct each policy observation. The saved runtime
-performs policy inference with its normalization state. The environment calls
-`io.action(policy_action)`, then validates and clips the result before applying
-it to the robot. It calls the optional `io.reset()` callback at each episode reset.
+The task-reference evaluation and the official assessment use protected
+environments, not the PI-owned research environment. The protected environment
+calls the saved `io.observe(data)` to build each observation. The saved runtime
+computes the network output with its normalization state. The environment calls
+`io.action(policy_action)`. Then it validates the result and clips it before it
+applies it to the robot. At each episode start, it calls the optional
+`io.reset()` function.
 
-Controller logic affects protected evaluation only if the saved runtime executes
-it. A runtime marker alone does not cause the protected environment to call
-research-environment code. Research evaluation uses the PI-owned environment,
-which can apply additional control logic outside the saved runtime. Identical
-artifact fingerprints do not establish identical applied commands across these
-environments.
+Control logic has an effect in protected evaluation only when the saved runtime
+executes it. A runtime marker alone does not make the protected environment
+call code of the research environment. Research evaluation uses the PI-owned
+environment, which can apply additional control logic outside the saved
+runtime. Two artifacts with the same fingerprint can apply different motor
+commands in these two environments.
 
-Only a training operation creates a candidate. Training and its checkpoint
-export use `make_policy_io()` in `robot_learning/scenario/policy_io.py`, so
-each candidate carries the runtime that this source defined when it was
-trained. A runtime change becomes part of a candidate only when that source
-contains it and a training run uses it, with `fresh` or `transfer`
-initialization. A `python_module` measurement that runs an existing
-candidate's weights with another runtime is a diagnostic: it can justify a
-training run, but it does not create, modify or replace a candidate.
-Measurement artifacts never become candidates.
+Only a training operation makes a candidate. Training and the export of its
+training checkpoints use `make_policy_io()` in
+`robot_learning/scenario/policy_io.py`. Thus each candidate contains the saved
+runtime that this source file defined when the candidate was trained. A runtime change becomes part of a candidate only when two conditions are true:
+this source file contains the change, and a training run uses it. The training
+run can use `fresh` or `transfer` initialization.
+
+A `python_module` measurement that runs the weights of an existing candidate
+with another runtime is a diagnostic. It can justify a training run. It does
+not make, change or replace a candidate. Measurement artifacts never become
+candidates.
 
 ## Scientific coding interface
 
-`scientific_coding` delegates a bounded change to PI-owned source: a new
-method, a measurement or analysis tool, or a repair. The coder and the
-reviewer roles are defined in `contracts/authority.md`.
+`scientific_coding` gives a limited change of PI-owned source code to the
+coder: a new method, a measurement or analysis tool, or a repair.
+`contracts/authority.md` defines the roles of the coder and the reviewer.
 
-The PI session deadline is 30 minutes of active session time by default.
-Coding and review count toward it. Waiting for Runner execution does not.
+A PI session ends after 6 hours of active session time. The time of the coder
+and the reviewer counts. The time that you wait for the Runner does not count.
 
-`scientific_coding` accepts:
+`scientific_coding` accepts these fields:
 
-- `intent`: the precise expected output of the bounded change;
-- `allowed_paths`: exact repository-relative writable scientific files;
-- `read_paths`: optional additional relevant scientific sources, contracts or
-  the frozen `pi_workspace/scientific_model.md`;
-- `source_context`: optional PI-selected requirements, caller context and errors;
-- `session_handle`: optional returned native child identity for same-change
-  corrections within this bounded context;
-- `evidence_inputs`: optional, new calls only; up to 10 recorded inputs that the
-  changed code will read. A measurement artifact is given as `operation_id` and
-  `artifact_index`; the coder and the reviewer receive its recorded structure
-  inventory: JSON paths and field names, without values. A model candidate is
-  given as `candidate` (ID or role); they receive its archive path, file names
-  and `artifact.json` metadata.
+- `intent`: the precise expected output of the change
+- `allowed_paths`: the exact scientific files that the coder can write,
+  relative to the repository
+- `read_paths`: optional. Other relevant scientific sources, contracts or the
+  scientific model `pi_workspace/scientific_model.md`.
+- `source_context`: optional. The requirements, the caller context and the
+  errors that you select.
+- `session_handle`: optional. The returned identity of the coder, for
+  corrections of the same change in this session.
+- `evidence_inputs`: optional, for new calls only. Up to 10 recorded inputs that
+  the changed code will read. Give a measurement artifact as `operation_id` and
+  `artifact_index`. The coder and the reviewer then receive its recorded
+  structure inventory: the JSON paths and the field names, without values. Give
+  a candidate as `candidate` (identity or role). They then receive its archive
+  path, its file names and its `artifact.json` metadata.
 
-New calls require `intent` and `allowed_paths`. A correction supplies
-`session_handle` and `intent`, with optional `source_context`. Omitted scope
-fields reuse the stored binding; resubmitted scope fields must match it, and a
-changed field is rejected with its name. A new scope requires a new call
-without a handle. A handle is valid only within the current session.
+A new call requires `intent` and `allowed_paths`. A correction gives
+`session_handle` and `intent`, and optionally `source_context`.
 
-Writes are limited to PI-owned files. Protected paths, directories, wildcard
-scopes, operation requests and paths outside the repository are refused; the
-rejection names the path and the reason. A new writable file does not require
-an existing parent directory. Reads are limited to the selected files; the
-frozen scientific model is read-only. A rejected read binding does not mean
-that new-file creation is unavailable.
+When you do not
+give a scope field, the coder keeps the stored scope. A scope field that you
+give again must be the same as the stored one. The Runner rejects a changed
+field and gives its name. For a new scope, make a new call without a handle. A
+handle is valid only in the current session.
 
-The coder and the reviewer receive the scenario and fixed excerpts of the
-authority and instrument contracts. They do not receive the PI conversation:
-state the relevant requirements in `intent` and `source_context`. The coder
-reports missing or unclear requirements in its summary and unchecked scope.
+The coder can write only PI-owned files. The tool refuses protected paths,
+folders, wildcards, operation requests and paths outside the repository. The
+rejection gives the path and the reason. A new file does not need an existing
+parent folder.
+
+The coder can read only the selected files. The scientific model
+is read-only. When the tool rejects a read path, you can still create new
+files.
+
+The coder and the reviewer receive `contracts/scenario.md` and fixed parts of
+the authority and instrument contracts. They do not receive your conversation.
+Give the relevant requirements in `intent` and `source_context`. The coder
+reports missing or unclear requirements in its summary and in its unchecked
+scope.
 
 ### Review
 
-After the coder's first handoff, an independent reviewer with high reasoning
-receives the original request, the task context, the changed files and the
-diff. The review checks coding defects and the equations, units, physical
-assumptions, timing and measurement meaning of the changed code. It checks
-whether the protocol and the reported quantities can answer the PI's stated
-question. An untested scientific hypothesis is not a defect.
+After the first delivery of the coder, an independent reviewer with high
+reasoning starts. It receives the original request, the task context, the
+changed files and the diff. The review checks coding defects. It also checks the equations,
+the units, the physical assumptions, the timing and the meaning of the
+measurements in the changed code. It checks if the protocol and the reported
+quantities can answer your stated question. An explanation that nobody tested
+is not a defect.
 
 The reviewer returns exactly four fields:
 
@@ -94,32 +108,36 @@ The reviewer returns exactly four fields:
 }
 ```
 
-The three explanation fields contain plain text, not nested finding records.
+The three explanation fields contain plain text, not nested records.
 `validation` is false only for defects that the coder can repair within the
-request; all three fields then explain the defect. A failed review goes
-unchanged to the same coder, and the same reviewer checks the repair. A
-correction review covers only the reported problems and errors introduced by
-the repair. This repair loop does not return to the PI. A repair with no source
-change followed by another failed review returns `needs_pi` with the reason and
-the current changes. When `validation` is true, the explanation fields can
-carry concerns, confounds or scientific choices for the PI.
+request. All three fields then explain the defect. A failed review goes without
+change to the same coder, and the same reviewer checks the repair. A correction
+review checks only the reported problems and the errors that the repair added.
+
+This repair loop does not come back to you. When a repair changes no source
+code and the next review fails again, the tool returns `needs_pi` with the
+reason and the current changes. When `validation` is true, the explanation
+fields can contain concerns, mixed factors or scientific choices for you.
 
 ### Coding result
 
 The result contains:
 
-- the session handle;
-- the changed-file manifest and diff for the invocation, including repairs;
-- the coder summary and unchecked scope;
-- `review`: the four-field report, its `mode` (`initial` or `correction`),
-  status, reviewer handle, models, reasoning and usage;
-- `repair_history`: each forwarded review, the coder status and summary, and
-  the follow-up review.
+- the session handle
+- the list of changed files and the diff for the call, with the repairs
+- the summary of the coder and its unchecked scope
+- `review`: the report with four fields, its `mode` (`initial` or
+  `correction`), the status, the reviewer handle, the models, the reasoning and
+  the usage
+- `repair_history`: each review that the tool sent, the status and summary of
+  the coder, and the next review
 
-Large review output is stored in a file and returned as a path. Errors and
-timeouts return partial changes when available. An unavailable or failed
-review is reported as such, not as a completed review.
+When the review output is large, the tool stores it in a file and returns the
+path. Errors and timeouts return the partial changes when they are available. A
+review that was not available or that failed is reported as such, not as a
+completed review.
 
-Review checks engineering and does not certify scientific validity. Inspect
-the actual changes and the reported limitations before relying on them. The
-coder executes nothing; measurements and analyses are separate operations.
+The review checks the engineering: the code, the equations, the units and the
+measurement meaning. It does not certify that your scientific conclusions are
+valid. Read the actual changes and the reported limits before you use them.
+The coder executes nothing. Measurements and analyses are separate operations.

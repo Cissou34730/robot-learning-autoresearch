@@ -30,6 +30,7 @@ PROTECTED_MEASUREMENT_PATHS = {"benchmark/paired_evidence.py"}
 PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
     "contracts/authority.md",
+    "contracts/glossary.md",
     "contracts/instruments.md",
     "contracts/instruments/coding.md",
     "contracts/instruments/inquiry.md",

@@ -31,7 +31,11 @@ Keep three audiences separate:
 
 Text that campaign agents receive states the current rules only. Keep
 maintainer reasoning, change history, incident references and launcher
-guardrails out of it. The unattended inquiry cap (`--max-inquiries`) is a
+guardrails out of it. It uses the terms of `contracts/glossary.md` and
+Simplified Technical English, addresses the PI as "you" and keeps "the PI" in
+coder and reviewer text. Check each changed file with
+`agents/skills/simplified-technical-english/scripts/ste_check.py --no-vocab
+--mode descriptive --glossary contracts/glossary.md`. The unattended inquiry cap (`--max-inquiries`) is a
 maintainer guardrail: never expose it, its value or its remaining count to
 campaign agents.
 

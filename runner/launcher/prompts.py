@@ -10,52 +10,54 @@ from runner.launcher.pstext import field, items, text
 from runner.launcher.summaries import completed_events, latest_session_result
 
 STARTUP_OBJECTIVE = (
-    "Establish the initial scientific direction as contracts/program.md "
-    "'Campaign startup' defines."
+    "Choose the first scientific direction, as the section 'Campaign start' of "
+    "contracts/program.md defines."
 )
 GOAL_REVIEW_OBJECTIVE = (
-    "Use the completed evidence to update the scientific direction toward the human "
-    "goal. Correct inherited interpretations, constraints or proposed questions when "
-    "existing evidence warrants it. Request measurements when they resolve an "
-    "uncertainty or develop the method. Compare the two outcomes as contracts/"
-    "program.md 'Goal review' defines and choose one: request the official "
-    "assessment, whose pass or fail result ends this campaign, or open one bounded "
-    "goal-linked inquiry."
+    "Use the completed evidence to update the scientific direction toward the "
+    "goal. When the evidence supports it, correct earlier conclusions, limits or "
+    "proposed questions. Request measurements when they remove an uncertainty or "
+    "develop the method. Compare the two actions that the section 'Goal-review "
+    "session' of contracts/program.md defines, and choose one: request the "
+    "official assessment, whose pass or fail result ends this campaign, or open "
+    "one inquiry about the gap to the goal."
 )
 # The PowerShell here-string carried the checkout's CRLF line endings; keep them.
-SCIENTIFIC_MODEL_OBJECTIVE = """Construct the physical and scientific model of the robot and the task. The model exists before any training or campaign evidence.
+SCIENTIFIC_MODEL_OBJECTIVE = """Write the scientific model of the robot and of the task. The scientific model exists before any training or campaign evidence.
 
-Work from first principles and from the human-owned definitions of the robot, the simulator, and the task. Explain the robot as an embodied dynamical system. Show how its morphology, actuation, sensing, control loop, simulator, and task geometry together determine the behaviors that are possible, constrained, or scientifically uncertain.
+Work from first principles and from the human-owned definitions of the robot, the simulator and the task. Explain the robot as an embodied dynamical system. Show how its morphology, actuation, sensors, control loop, simulator and task geometry together determine the behaviors that are possible, limited or scientifically uncertain.
 
-Build a scientific model of the system. The model explains mechanisms. It gives the reasons behind the behavior, and it goes beyond a list of components or a summary of the repository.
+The scientific model explains causes. It gives the reasons for the behavior. It is more than a list of components or a summary of the repository.
 
-Analyze, from first principles and from the human-owned definitions:
+Analyze these items from first principles and from the human-owned definitions:
 
-* the robot morphology, degrees of freedom, geometry, reachable workspace, joint constraints, and relevant kinematic structure.
-* the actuation model, and how commanded actions produce physical motion over time.
-* the dynamic properties of the simulated robot that materially affect behavior, including timing, damping, inertia, and control authority.
-* the initial physical state, and how it shapes the task that the controller must solve.
-* the geometry and physical requirements of the task.
-* the coupled physical capabilities that success requires, including reaching, trajectory control, convergence, and stabilization, together with the physically justified interactions between them.
-* the sensing and observation model: which physical state is observable, which is derived, which is ambiguous, and which is unavailable.
-* the relation between observation, control action, robot motion, and task outcome.
-* alternative physical configurations or solutions available to the robot, such as multiple kinematic solutions.
-* the invariances of the definitions, such as symmetries and conserved quantities, and what each makes equal or different across configurations, targets, and behavior.
-* the physical, kinematic, dynamic, control, and observability constraints that make some situations more demanding than others, and what a controller must do to succeed in each.
-* the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
+* the morphology, the degrees of freedom, the geometry, the reachable workspace, the joint limits and the relevant kinematic structure of the robot.
+* the actuation, and how commanded actions make physical motion over time.
+* the dynamic properties of the simulated robot that have an effect on behavior, for example timing, damping, inertia and control authority.
+* the initial physical state, and how it changes the problem that the controller must solve.
+* the geometry and the physical requirements of the task.
+* the coupled physical capabilities that success requires, for example reach, trajectory control, convergence and stabilization, and the physical interactions between them.
+* the sensors and the observation: which physical state is observable, which is derived, which is ambiguous and which is not available.
+* the relation between observation, control action, robot motion and episode outcome.
+* the alternative physical configurations or solutions of the robot, for example several kinematic solutions.
+* the invariances of the definitions, for example symmetries and conserved quantities, and what each makes equal or different across configurations, targets and behavior.
+* the constraints (physical, kinematic, dynamic, control and observability) that make some situations more demanding than others, and what a controller must do to succeed in each.
+* the physical quantities, over the complete behavior, that are scientifically useful to understand the robot.
 
-For each consequential physical implication and each unknown, state:
+For each important physical consequence and each unknown, state:
 
-1. The research decisions that it could change.
-2. The assumptions on which that relevance depends.
-3. The source references in the implementation or the contracts.
-4. The observation or evidence that would support, weaken, or revise it.
+1. The research decisions that it can change.
+2. The assumptions on which this effect depends.
+3. The source references in the source code or in the contracts.
+4. The fact or the evidence that can support it, weaken it or change it.
 
-The model states physical consequences and the evidence that discriminates between them. The principal investigator selects the interventions.
+The scientific model states physical consequences and the evidence that separates them. The PI selects the changes.
 
-Finish with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and unknowns that are most likely to change the first campaign decisions. For each selected item, keep these four points in compact form: its decision relevance, its assumptions, its source references, and its discriminating evidence. The principal investigator receives this section as the handoff into startup. The section states consequences and discriminating evidence. The principal investigator selects the interventions.
+End with a section that has content and the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign. For each selected item, give these four points in short form: its effect on decisions, its assumptions, its source references and the evidence that separates the possibilities.
 
-The final output is a compact and substantive scientific model. It explains how the complete coupled system works physically and scientifically.""".replace(
+The PI receives this section as the handoff into the startup session. The section states consequences and the evidence that separates them. The PI selects the changes.
+
+The final result is a short scientific model with content. It explains how the complete coupled system works, physically and scientifically.""".replace(
     "\n", "\r\n"
 )
 
@@ -73,9 +75,9 @@ _CONTRACT_FILES = {
 
 def inquiry_objective(inquiry_id: object) -> str:
     return (
-        f"Advance {text(inquiry_id)} with a session-sized deliverable, "
-        "not necessarily a complete answer to the inquiry. Choose the deliverable "
-        "from completed evidence and the remaining scientific question."
+        f"Move {text(inquiry_id)} forward with the work for one session. This work "
+        "does not need to answer the full inquiry. Choose this work from the "
+        "completed evidence and the open scientific question."
     )
 
 
@@ -92,7 +94,7 @@ def required_transition(availability: dict) -> Transition | None:
         return None
     reason = text(availability.get("checkpoint_reason"))
     return Transition(
-        objective=f"Save the scientific session record. {reason}",
+        objective=f"Save the session record. {reason}",
         inquiry=reason,
     )
 
@@ -135,22 +137,19 @@ def _best_evidence(state: dict, checkpoint: object) -> str:
         return text(field(field(state, "official_assessment"), "summary"))
     references = field(checkpoint, "evidence_references")
     if pstext.truthy(checkpoint) and pstext.count(references) > 0:
-        return (
-            "The latest scientific session record cites: "
-            f"{pstext.join(references, ', ')}."
-        )
+        return f"The last session record cites: {pstext.join(references, ', ')}."
     best_known = field(field(state, "model_roles"), "best_known")
     if pstext.truthy(best_known):
         return (
-            f"The explicit best-known model is {text(best_known)}; inspect its "
-            "referenced measurements in campaigns/brief.md."
+            f"The best-known candidate is {text(best_known)}. Read its "
+            "measurements in campaigns/brief.md."
         )
     if completed_events(state):
         return (
-            "Completed operation evidence exists in campaigns/brief.md, but no "
-            "best-known model has been assigned."
+            "campaigns/brief.md contains the evidence of completed operations. No "
+            "candidate has the best-known role."
         )
-    return "No development operation has completed in this campaign."
+    return "No measurement or training has completed in this campaign."
 
 
 def _checkpoint_text(checkpoint: object, name: str, missing: str) -> str:
@@ -167,14 +166,17 @@ def _inquiry_line(state: dict, transition: Transition | None) -> str:
     if pstext.truthy(inquiry):
         return (
             f"{text(field(inquiry, 'id'))}: {text(field(inquiry, 'question'))} "
-            f"Goal relevance: {text(field(inquiry, 'goal_connection'))} "
+            f"Connection to the goal: {text(field(inquiry, 'goal_connection'))} "
             f"Closure condition: {text(field(inquiry, 'closure_condition'))}"
         )
     if pstext.same(field(field(state, "scientific_session"), "kind"), "inquiry"):
-        return "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
+        return (
+            "The inquiry is closed. Record its result and the campaign decision that "
+            "follows."
+        )
     return (
-        "None. Measurements and evidence-backed model-role assignments are available "
-        "before choosing official assessment or one bounded goal-linked inquiry."
+        "None. Before you choose the official assessment or one inquiry, you can "
+        "measure and give roles that the evidence supports."
     )
 
 
@@ -185,20 +187,21 @@ def _handoff_context(
     if pstext.same(kind, "goal_review") and pstext.truthy(checkpoint):
         return [
             (
-                "Restored scientific handoff from the same PI's previous session. This is "
-                "current scientific state, not another PI's opinion. The current scientific "
-                "understanding below is that session's synthesis, verbatim."
+                "This is the handoff from your previous session. It is the current "
+                "scientific state, not the opinion of another PI. The current "
+                "scientific understanding below is the synthesis of that session, "
+                "word for word."
             ),
             (
-                "Proposed question for this goal review, verbatim:\n"
+                "Proposed question for this goal-review session, word for word:\n"
                 f"{text(field(checkpoint, 'next_question'))}"
             ),
             (
-                "Continue from the completed evidence, but treat inherited interpretations, "
-                "research constraints, priorities and proposed next actions as revisable "
-                "scientific judgments. Correct an unsupported interpretation or a question "
-                "already settled by available evidence, and record the correction and its "
-                "basis."
+                "Continue from the completed evidence. Earlier conclusions, research "
+                "limits, priorities and proposed next actions are scientific judgments "
+                "that you can change. Correct a conclusion that the evidence does not "
+                "support, or a question that the available evidence already answers. "
+                "Record the correction and its reason."
             ),
         ]
     if pstext.same(kind, "inquiry") and pstext.truthy(inquiry):
@@ -206,10 +209,10 @@ def _handoff_context(
         lines = []
         if not pstext.same(conclusion, synthesis):
             lines.append(
-                "Synthesis from the goal review that opened the active inquiry, "
-                f"verbatim:\n{conclusion}"
+                "Synthesis of the goal-review session that opened the active inquiry, "
+                f"word for word:\n{conclusion}"
             )
-        lines.append("Continue the bounded work from completed evidence.")
+        lines.append("Continue the work from the completed evidence.")
         return lines
     return []
 
@@ -217,53 +220,57 @@ def _handoff_context(
 def _decision_guidance(state: dict, kind: object) -> list[str]:
     goal_review = pstext.same(kind, "goal_review")
     lines = [
-        "Compare the strongest candidate's prospects on the official panel with the "
-        "prospects of further bounded work. Use completed evidence and its limits for "
-        "both choices. Explain why the chosen action is preferable now."
+        "Compare the chances of the strongest candidate on the official panel with "
+        "the chances of one more inquiry. Use the completed evidence and its limits "
+        "for both actions. Explain why the chosen action is better now."
         if goal_review
-        else "State the unresolved distinction or the development step the operation "
-        "addresses, and how its outcome could produce or select a better candidate.",
+        else "State the open question that the operation addresses, or the step that "
+        "it adds to the method. State how its result can make or select a better "
+        "candidate.",
         (
-            "Review completed evidence, the relevant learning trajectory, and unmeasured "
-            "candidate artifacts."
+            "Examine the completed evidence, the relevant training curves and the "
+            "candidates that you did not measure."
         ),
         (
-            "Choose the artifact and operation whose result would most improve the next "
-            "decision toward the human goal."
+            "Choose the candidate and the operation whose result best improves your "
+            "next decision toward the goal."
         ),
     ]
     if goal_review:
         lines += [
             (
-                "For a measurement, explain how its possible outcomes would affect the "
-                "campaign-level choice."
-            ),
-            "Record the chosen assessment or inquiry and its evidence-based reason.",
-            (
-                "Preserve relevant residual failures, counterevidence and uncertainty in the "
-                "chosen operation's reason."
+                "For a measurement, explain how its possible results change your "
+                "choice between the two actions."
             ),
             (
-                "In goal review, next_question must exactly match the question of the "
-                "inquiry opened in this session."
+                "Record the chosen action, the official assessment or the inquiry, and "
+                "its reason from the evidence."
+            ),
+            (
+                "In the reason of the chosen operation, keep the relevant remaining "
+                "failures, the evidence against your choice and the uncertainty."
+            ),
+            (
+                "In a goal-review session, next_question must be exactly the question "
+                "of the inquiry that you opened in this session."
             ),
         ]
     else:
         lines.append(
-            "Explain how the decision-relevant possible outcomes of the selected "
-            "operation would affect the direction."
+            "Explain how the possible results of the selected operation can change "
+            "the direction."
         )
         if pstext.same(kind, "inquiry") and pstext.truthy(
             field(state, "active_inquiry")
         ):
             lines.append(
-                "While the inquiry remains active, next_question must exactly match its "
+                "While the inquiry is active, next_question must be exactly its "
                 "current question."
             )
     if not pstext.same(kind, "startup"):
         lines.append(
-            "When evidence resolves or redirects the active inquiry, record that "
-            "decision explicitly rather than drifting to another question."
+            "When evidence answers the active inquiry or changes its direction, "
+            "record this decision. Do not move to another question without a record."
         )
     return lines
 
@@ -274,45 +281,43 @@ def _legal_operations(
     if transition is None:
         return [
             (
-                "Currently permitted operation kinds: "
+                "Operation kinds that you can submit now: "
                 f"{pstext.join(availability.get('allowed_operations') or [], ', ')}. "
-                "Request and evidence checks still apply."
+                "The request and evidence checks still apply."
             )
         ]
     kind = field(session, "kind")
     lines = [
         (
-            "The sole legal next action is the checkpoint operation that saves the "
-            "scientific session record."
+            "The only next action that you can submit is the checkpoint operation. "
+            "It saves the session record."
         ),
         (
-            f"The current scientific session is {text(field(session, 'id'))}. It remains "
-            "active until the Runner accepts this checkpoint."
+            f"The current session is {text(field(session, 'id'))}. It stays active "
+            "until the Runner accepts this checkpoint operation."
         ),
-        "Opening, reframing or closing an inquiry does not end this scientific session.",
+        "When you open, reframe or close an inquiry, this session does not end.",
         (
-            "Set completed_operations exactly to: "
+            "Set completed_operations to exactly: "
             f"{pstext.to_json(items(field(session, 'operation_ids')))}"
         ),
         (
-            "Do not request training, measurement, model-role changes, restoration, another "
-            "inquiry change, or a campaign conclusion in this session."
+            "In this session, do not request training, measurement, role changes, "
+            "recipe restoration, another inquiry change or the official assessment."
         ),
     ]
     if pstext.same(kind, "goal_review"):
         lines.append(
-            "Set next_question exactly to the question of the inquiry opened in this "
-            "session."
+            "Set next_question to exactly the question of the inquiry that you "
+            "opened in this session."
         )
     elif pstext.same(kind, "inquiry") and pstext.truthy(field(state, "active_inquiry")):
-        lines.append(
-            "Set next_question exactly to the current active inquiry question."
-        )
+        lines.append("Set next_question to exactly the question of the active inquiry.")
     elif pstext.same(kind, "inquiry"):
         lines.append(
-            "Set next_question to the proposed scientific question for the next goal "
-            "review. Goal review may revise or decline it using completed evidence "
-            "already available."
+            "Set next_question to the scientific question that you propose for the "
+            "next goal-review session. In that session, you can change or refuse it "
+            "with the completed evidence."
         )
     return lines
 
@@ -327,7 +332,7 @@ def _training_allocation(
             f"Training allocation: up to {context.timesteps} requested steps per run."
         )
     return (
-        f"Training allocation: {context.timesteps} steps per run; a run may extend to "
+        f"Training allocation: {context.timesteps} steps per run. A run can extend to "
         f"{context.max_timesteps} steps."
     )
 
@@ -335,9 +340,9 @@ def _training_allocation(
 def _submission_guidance(availability: dict, transition: Transition | None) -> str:
     if transition is not None:
         return (
-            "Use the scientific session record contract in contracts/instruments.md in "
-            "the campaign reference and preserve the transition decision, evidence, "
-            "remaining goal gap, and next direction."
+            "Use the session record format in contracts/instruments.md in the "
+            "campaign reference. Keep the decision of this transition, the evidence, "
+            "the remaining gap to the goal and the next direction."
         )
     contracts = "; ".join(
         f"{text(kind)} in {_CONTRACT_FILES[text(kind).lower()]}"
@@ -345,9 +350,9 @@ def _submission_guidance(availability: dict, transition: Transition | None) -> s
         if text(kind).lower() in _CONTRACT_FILES
     )
     return (
-        "When ready to act, use the request envelope in contracts/instruments.md and the "
-        f"contract for the operation you choose: {contracts}. Both are in the campaign "
-        "reference. Submit one scientific action."
+        "When you are ready, use the request envelope in contracts/instruments.md "
+        f"and the format of the operation that you choose: {contracts}. Both are in "
+        "the campaign reference. Submit one scientific action."
     )
 
 
@@ -365,17 +370,17 @@ def scientific_session_prompt(
     synthesis = _checkpoint_text(
         checkpoint,
         "current_synthesis",
-        "No durable PI synthesis has been recorded yet.",
+        "No session record contains a synthesis yet.",
     )
     gap = _checkpoint_text(
         checkpoint,
         "current_goal_gap",
-        "No PI-interpreted goal gap has been recorded yet.",
+        "No session record contains a goal gap yet.",
     )
     frontier = (
         text(field(checkpoint, "decision_frontier"))
         if pstext.truthy(checkpoint)
-        else "No scientific decision frontier has been recorded yet."
+        else "No session record contains open questions yet."
     )
     objective = (
         transition.objective if transition else text(field(session, "objective"))
@@ -395,12 +400,12 @@ def scientific_session_prompt(
         harness_root=context.harness_root,
         campaign_root=context.campaign_root,
     )
-    role_line = "You are the Principal Investigator described in your system prompt."
+    role_line = "You are the PI that your system prompt describes."
     if model_file:
-        role_line += " The scientific model of the system you study follows."
+        role_line += " The scientific model of the system that you study follows."
     source_guidance = (
-        "Begin with campaigns/brief.md and the latest scientific session record. "
-        "Consult other evidence as the scientific question requires."
+        "Start with campaigns/brief.md and the last session record. Read other "
+        "evidence when the scientific question needs it."
     )
     context_note = None
     if included:
@@ -410,9 +415,10 @@ def scientific_session_prompt(
             f"{', '.join(context_files)} ({(characters + 500) // 1000}k chars)"
         )
         source_guidance = (
-            "The scientific model is included at the start of this message and "
-            "campaigns/brief.md at the end; the latest scientific session record is "
-            "summarized above. Consult other evidence as the scientific question requires."
+            "The scientific model is at the start of this message, and "
+            "campaigns/brief.md is at the end. The summary of the last session "
+            "record is above. Read other evidence when the scientific question "
+            "needs it."
         )
     sections = [
         role_line,
@@ -420,32 +426,34 @@ def scientific_session_prompt(
         *_handoff_context(state, kind, checkpoint, synthesis),
         (
             "From the decision-relevant synthesis of the scientific model, select the "
-            "scientific distinction or capability question that should determine the "
-            "initial direction. State which findings would change that decision, and how "
-            "the first action follows. Treat the model as revisable in light of evidence. "
-            "Do not require a measurement only to restate the model."
+            "scientific distinction or the capability question that decides the first "
+            "direction. State which results "
+            "can change that decision, and how the first action follows from it. "
+            "Evidence can change the conclusions of the scientific model. Do not "
+            "request a measurement only to repeat what the scientific model states."
             if pstext.same(kind, "startup")
             else ""
         ),
         f"Current scientific understanding: {synthesis}",
         (
-            "Completed evidence relative to the goal and its recorded interpretive limits: "
+            "Completed evidence for the goal, and the recorded limits of your "
+            "conclusions: "
             f"{_best_evidence(state, checkpoint)} {latest_session_result(state)}"
         ),
         f"Current goal gap: {gap}",
-        f"Scientific decision frontier: {frontier}",
+        f"Open questions (decision_frontier): {frontier}",
         (
             f"Active inquiry: {_inquiry_line(state, transition)}"
             if not pstext.same(kind, "startup")
             else ""
         ),
-        f"Current objective: {objective}",
+        f"Session objective: {objective}",
         *([] if transition else _decision_guidance(state, kind)),
         *_legal_operations(state, session, availability, transition),
         _training_allocation(kind, transition, context),
         (
-            f"The proposed action could not be accepted: {validation_error} Correct it "
-            "without discarding valid scientific work."
+            f"The Runner did not accept the proposed action: {validation_error} "
+            "Correct it, and keep the valid scientific work."
             if validation_error
             else ""
         ),
@@ -467,10 +475,10 @@ def repair_prompt(session_prompt: str, pending: dict) -> str:
                 f"{text(field(pending, 'failure'))}"
             ),
             (
-                "This is execution history, not scientific evidence. Diagnose and correct the "
-                "scientific implementation or choose another action. Call submit_operation "
-                "with request=null to reaccept the corrected pending action, or supply a "
-                "replacement request."
+                "This failure is execution history, not scientific evidence. Find the "
+                "cause and correct the scientific source code, or choose another "
+                "action. Call submit_operation with request=null to accept the "
+                "corrected pending action again, or give a replacement request."
             ),
         ]
     )
@@ -479,29 +487,35 @@ def repair_prompt(session_prompt: str, pending: dict) -> str:
 def scientific_model_prompt(goal: str) -> str:
     return "\n\n".join(
         [
-            "You are the robotics and simulation analyst described in your system prompt.",
-            f"Human goal: {goal}",
-            f"Current objective: {SCIENTIFIC_MODEL_OBJECTIVE}",
             (
-                "Base the model on contracts/scenario.md and on the human-owned definitions of "
-                "the robot, the simulator, and the task in the campaign reference."
+                "You are the robotics and simulation analyst that your system prompt "
+                "describes."
+            ),
+            f"Goal: {goal}",
+            f"Session objective: {SCIENTIFIC_MODEL_OBJECTIVE}",
+            (
+                "Base the scientific model on contracts/scenario.md and on the "
+                "human-owned definitions of the robot, the simulator and the task in "
+                "the campaign reference."
             ),
             (
-                "Code under robot_learning/ is the current recipe. Its rewards, training "
-                "environments and observation construction are design choices, not properties "
-                "of the robot; label any statement drawn from them as such."
+                "The code in robot_learning/ is the inherited recipe. Its rewards, "
+                "training environments and observation construction are design "
+                "choices, not properties of the robot. Mark each statement that comes "
+                "from them as a design choice."
             ),
             (
-                "The document has four registers, with these headings: Established facts, "
-                "Physical consequences, Unknowns, and Decision-relevant synthesis. Write each "
-                "register as a level-two heading (##). Put all its content under that heading. "
-                "Use level-three headings (###) for topics inside a register. Mark each "
-                "statement as a repository fact, a reasoned implication, or an unresolved "
-                "quantity. Keep source references for later verification."
+                "The document has four registers, with these headings: Established "
+                "facts, Physical consequences, Unknowns, and Decision-relevant "
+                "synthesis. Write each register as a level-two heading (##). Put all "
+                "its content under that heading. Use level-three headings (###) for "
+                "topics in a register. Mark each statement as a repository fact, a "
+                "reasoned implication or an unresolved quantity. Keep the source "
+                "references so that the PI can verify them later."
             ),
             (
-                "Include only what is justified before campaign evidence exists. Write the "
-                "result to pi_workspace/scientific_model.md."
+                "Include only what the definitions justify before campaign evidence "
+                "exists. Write the result to pi_workspace/scientific_model.md."
             ),
         ]
     )
@@ -510,14 +524,16 @@ def scientific_model_prompt(goal: str) -> str:
 def scientific_model_retry_prompt(goal: str, feedback: str) -> str:
     return "\n\n".join(
         [
-            f"Human goal: {goal}",
-            f"The scientific model could not be accepted: {feedback}",
+            f"Goal: {goal}",
+            f"The Runner did not accept the scientific model: {feedback}",
             (
-                "Correct pi_workspace/scientific_model.md. Keep the valid content. Make all "
-                "four required registers substantive and source-recoverable. Make the "
-                "synthesis decision-relevant. Each register is a level-two heading (##) with "
-                "its content directly under it. Move topic sections inside a register and "
-                "change their headings to level three (###)."
+                "Correct pi_workspace/scientific_model.md. Keep the valid content. Make "
+                "all four required registers substantial, with source references that "
+                "the PI can find. Make sure that the synthesis selects the items that can "
+                "change decisions. Each "
+                "register is a level-two heading (##) with its content directly under it. "
+                "Move topic sections into a register and change their headings to level "
+                "three (###)."
             ),
         ]
     )

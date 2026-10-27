@@ -1,6 +1,7 @@
 # Scientific instruments: measurement
 
-Part of the instrument contract indexed in `contracts/instruments.md`.
+This file is a part of the instrument contract. `contracts/instruments.md` lists
+all parts.
 
 ## Measurement operation
 
@@ -15,10 +16,9 @@ Part of the instrument contract indexed in `contracts/instruments.md`.
 }
 ```
 
-The `description`, `rationale`, and `measurements` fields are required.
-The `description` and `rationale` strings must be non-empty.
-The `measurements` array must be non-empty.
-The `paired_comparisons` field is optional.
+The `description`, `rationale` and `measurements` fields are required. The
+`description` and `rationale` strings must not be empty. The `measurements`
+array must not be empty. The `paired_comparisons` field is optional.
 
 A `research_evaluation` entry uses this interface:
 
@@ -32,15 +32,14 @@ A `research_evaluation` entry uses this interface:
 }
 ```
 
-Set `instrument` to `research_evaluation`.
-The `candidate`, `episodes`, and `seed` fields are required.
-The `label` field is optional.
-The candidate value must be non-empty.
-The episode count must be positive.
-The seed must be non-negative.
+Set `instrument` to `research_evaluation`. The `candidate`, `episodes` and
+`seed` fields are required. The `label` field is optional. The candidate value
+must not be empty. The episode count must be positive. The seed must not be
+negative.
 
-The episode panel starts at `seed` and contains `episodes` consecutive episode seeds.
-The Runner rejects overlap with protected benchmark evidence.
+The episode panel starts at `seed` and contains `episodes` consecutive episode
+seeds. The Runner rejects a panel that overlaps the protected benchmark
+evidence.
 
 A `task_reference` entry uses this interface:
 
@@ -52,19 +51,19 @@ A `task_reference` entry uses this interface:
 }
 ```
 
-Set `instrument` to `task_reference`.
-The `candidate` field is required and must be non-empty.
-The `label` field is optional.
-This instrument uses its protected fixed panel.
-Its episodes are deterministic: measuring the same saved artifact again
-reproduces the recorded result and supplies no additional sample.
-Its controller execution follows the saved-runtime contract under
-[Saved controller execution](coding.md#saved-controller-execution), not the PI-owned
-research environment.
+Set `instrument` to `task_reference`. The `candidate` field is required and
+must not be empty. The `label` field is optional.
+
+This instrument uses its
+protected fixed panel. Its episodes are deterministic. A second measurement of
+the same saved artifact gives the recorded result again and adds no sample. Its
+execution follows the saved runtime under
+[Saved controller execution](coding.md#saved-controller-execution), not the
+PI-owned research environment.
 
 A `python_module` entry runs one PI-owned Python module as a measurement.
-It can characterize the embodied system, simulation, learning process, or
-another scientific quantity. It does not require a learned candidate.
+It can measure the robot, the simulation, the training process, or another
+scientific quantity. It does not need a candidate.
 
 Use this interface:
 
@@ -100,40 +99,45 @@ Use this interface:
 }
 ```
 
-Set `instrument` to `python_module`.
-The `module`, `args`, and `artifact` fields are required.
-The `label` and `inputs` fields are optional.
-Each `args` element is one literal module argument, not a full launch command.
-Do not include the module name or launcher in `args`.
-Pass a concrete output path in the arguments when the module requires it.
-`artifact` declares the expected output. It does not substitute an argument.
-Unresolved `{artifact}` tokens are rejected before acceptance.
-The module must be under `robot_learning.lab`, `robot_learning.scenario`, or
-`robot_learning.training`.
-The artifact must be a campaign JSON path under
-`campaigns/evaluations/<current-campaign-id>/`.
-`campaigns/brief.md` gives the exact evaluation root for the current campaign.
+Set `instrument` to `python_module`. The `module`, `args` and `artifact` fields
+are required. The `label` and `inputs` fields are optional.
 
-`inputs` binds PI-selected names to recorded JSON artifacts from completed
-measurements in the current campaign, or to a model candidate. Names must be
-identifiers. A candidate input names a candidate ID or role and resolves to the
-`model.zip` file in that candidate's verified archive; the saved runtime and
-normalization files are beside it.
-Each argument placeholder `{input:NAME}` uses a declared name.
-Every declared input must appear in the arguments.
-The output artifact cannot overwrite a named input.
-The Runner resolves the selected operation and artifact index, verifies the
-recorded fingerprint, and replaces the placeholder with its canonical path.
-Acceptance freezes the resolved identities. Execution checks them again before
-the module runs. Results retain the input identities in their compact metadata.
-Missing, changed, or unavailable inputs are errors. The Runner never chooses
-another artifact, changes the module, or decides how the PI repairs the request.
-Arguments without input placeholders remain unchanged.
-Execution errors identify the accepted module arguments and declared output.
-A successful module exit without that output is an operation failure.
-Runner reports these facts without diagnosing the source or selecting a repair.
-When a module runs episodes, its artifact can list their seeds in a top-level
-`episode_seeds` array; Runner then reports overlap with other measurements.
+Each `args` element is one literal argument of the module, not a full launch
+command. Do not put the module name or a launcher in `args`. When the module
+needs an output path, give a specific output path in the arguments. `artifact`
+declares the expected output. It does not replace an argument. The Runner
+rejects `{artifact}` tokens that it cannot resolve before acceptance.
+
+The module must be in `robot_learning.lab`, `robot_learning.scenario` or
+`robot_learning.training`. The artifact must be a campaign JSON path in
+`campaigns/evaluations/<current-campaign-id>/`. `campaigns/brief.md` gives the
+exact evaluation folder of the current campaign.
+
+`inputs` connects names that the PI selects to recorded JSON artifacts of
+completed measurements in the current campaign, or to a candidate. Names must
+be identifiers. A candidate input names a candidate identity or a role. It
+resolves to the `model.zip` file in the verified archive of this candidate. The
+saved runtime and the normalization files are in the same folder.
+
+Each argument placeholder `{input:NAME}` uses a declared name. Each declared
+input must occur in the arguments. The output artifact cannot replace a named
+input. The Runner finds the selected operation and artifact index, verifies the
+recorded fingerprint and replaces the placeholder with the canonical path.
+
+Acceptance freezes the resolved identities. Before the module runs, the
+execution checks them again. The results keep the input identities in their
+short metadata. Missing, changed or unavailable inputs are errors.
+
+The Runner
+never chooses another artifact or changes the module. It does not decide how to
+repair the request. Arguments without input placeholders do not change.
+
+Execution errors give the accepted module arguments and the declared output.
+When a module ends with success but does not write that output, the operation
+fails. The Runner reports these facts. It does not diagnose the source code or
+select a repair. When a module runs episodes, its artifact can list their seeds
+in a top-level `episode_seeds` array. The Runner then reports the overlap with
+other measurements.
 
 A paired-comparison entry uses this interface:
 
@@ -144,46 +148,60 @@ A paired-comparison entry uses this interface:
 }
 ```
 
-Both fields are required and must be non-empty.
-The candidate must appear in a planned `research_evaluation` measurement. The
-reference either appears in a planned `research_evaluation` measurement on the
-same episode seeds, or has an earlier completed `research_evaluation` of the
-same saved artifact on those seeds under the current evaluation semantics. In
-the second case Runner pairs the candidate with the recorded reference outcomes
-instead of running the reference again; deterministic episodes reproduce them
-exactly.
+Both fields are required and must not be empty. The candidate must occur in a
+planned `research_evaluation` measurement. The reference must agree with one of
+these two conditions:
+
+- it occurs in a planned `research_evaluation` measurement on the same episode
+  seeds
+- it has an earlier completed `research_evaluation` of the same saved artifact
+  on these seeds, under the current evaluation rules
+
+In the second case, the Runner pairs the candidate with the recorded episode
+outcomes of the reference. It does not run the reference again. Deterministic
+episodes give exactly the same episode outcomes.
 
 The development panel is the `research_evaluation` with seed 100000 and 400
 episodes.
 
-The result keeps the accepted candidate artifacts, evaluator semantics, module
-sources, PI-owned scientific changes, and effective parameters.
-It also keeps reused-panel identities and paired-comparison integrity facts.
+The result keeps the accepted candidate artifacts, the evaluation rules, the
+module sources, the PI-owned scientific changes and the active parameters. It
+also keeps the identities of reused panels and the integrity facts of the
+paired comparisons.
 
-Under the same evaluation semantics or task-reference panel, an episode seed
-identifies a deterministic episode for a saved artifact. When a
-`research_evaluation` or `task_reference` measurement shares episodes with an
-earlier completed measurement of the same saved artifact and instrument, its
-result lists `repeats_earlier_measurements` with the earlier operation ID,
-label and number of shared episodes. Shared episodes reproduce recorded
-outcomes; they are not independent confirmation.
+### Shared episodes
 
-An episode seed also identifies the same situation for other candidates. When a
-`research_evaluation` measurement shares episode seeds with any other earlier
-completed measurement, its result lists `episodes_seen_in_earlier_measurements`
-with each earlier operation ID, label, instrument, candidate and number of
-shared episodes. A `python_module` artifact can declare the episode seeds it
-used as a top-level `episode_seeds` list of non-negative integers. Its result
+Under the same evaluation rules or the same task-reference panel, an episode
+seed identifies one deterministic episode for a saved artifact. A
+`research_evaluation` or `task_reference` measurement can share episodes with
+an earlier completed measurement of the same saved artifact and instrument.
+Then its result lists `repeats_earlier_measurements`, with the earlier
+operation identity, the label and the number of shared episodes. Shared
+episodes give the recorded episode outcomes again. They are not an independent
+confirmation.
+
+An episode seed also identifies the same situation for other candidates. When
+a `research_evaluation` measurement shares episode seeds with any earlier
+completed measurement, its result lists `episodes_seen_in_earlier_measurements`.
+This list gives each earlier operation identity, label, instrument, candidate
+and number of shared episodes.
+
+A `python_module` artifact can declare the episode seeds that it used, as a
+top-level `episode_seeds` list of integers that are not negative. Its result
 then records them as `declared_episode_seed_ranges` and lists the same overlap
-with earlier measurements. A malformed declaration fails the measurement.
-Earlier exposure does not change a result; the PI decides whether the
-situations are fresh enough for the intended use.
+with earlier measurements. A declaration with an incorrect format makes the
+measurement fail.
+
+Earlier use of the episodes does not change the recorded result. But a result
+on episodes that you already used to select or change a candidate can be higher
+than the result on new episodes. You decide if the situations are new enough
+for your purpose.
 
 ### Artifact contents metadata
 
-A completed measurement record keeps compact result facts, the artifact path,
-and the immutable artifact fingerprint.
-`evaluation_artifact_contents` adds navigation metadata from the JSON artifact:
+A completed measurement record keeps the short result facts, the artifact path
+and the fixed fingerprint of the artifact. `evaluation_artifact_contents` adds
+navigation metadata from the JSON artifact:
 
 ```json
 {
@@ -206,26 +224,23 @@ and the immutable artifact fingerprint.
 }
 ```
 
-The scope is `structure_only`.
-The inventory contains no measurement values or scientific interpretation.
-Paths use JSON Pointer syntax.
-The empty pointer identifies the root.
-Escaped tokens identify object members.
-Object and array sections include their entry counts.
+The scope is `structure_only`. The inventory contains no measured values and no
+scientific conclusions. Paths use the JSON Pointer syntax. The empty pointer
+identifies the root. Escaped tokens identify object members. Object sections
+and array sections include their entry counts.
 
-The inventory traverses object members breadth-first.
-It does not expand array elements into individual paths.
-When present, `field_names` contains the union of keys in actual object rows of
-an array. It is not a schema inferred from one sample row.
+The inventory reads the object members level by level. It does not show array
+elements as separate paths. When `field_names` is present, it contains all the
+keys of the object rows of an array. It is not a schema from one sample row.
 
-The inventory has a bounded metadata size.
-`truncated` identifies omitted sections or field names.
-`fields_omitted` and `field_count` identify an array whose field list did not fit.
-An untruncated inventory still describes structure, not the full evidence.
-The full artifact remains unchanged at its recorded path in the local archive
+The inventory has a limited metadata size. `truncated` shows that sections or
+field names are missing. `fields_omitted` and `field_count` identify an array
+whose field list did not fit. An inventory that is not truncated still shows
+the structure, not the full evidence. The full artifact does not change. It
+stays at its recorded path in the local archive
 `campaigns/evaluations/<current-campaign-id>/`.
 
-This metadata applies to all measurement instruments.
-It does not require a scenario-specific section or field.
-Live feedback and the brief distinguish the reduced result summary from the
-artifact contents. They also identify results with no recorded inventory.
+This metadata applies to all measurement instruments. It does not require a
+special section or field. The live feedback and the brief keep the short result
+summary apart from the artifact contents. They also identify the results that
+have no recorded inventory.

@@ -1,26 +1,30 @@
 # Scientific instruments: readers
 
-Part of the instrument contract indexed in `contracts/instruments.md`.
+This file is a part of the instrument contract. `contracts/instruments.md` lists
+all parts.
 
 ## Source readers
 
 `view` reads one exact permitted file. `glob` lists files by pattern. `rg`
-searches content and returns matching lines, matching files or counts, with
-pattern, glob, type, context and result-limit selectors. Both search tools
-accept default, subdirectory or multiple `paths`. Searches skip reserved files
-below a readable directory, and reject a reserved search root. Linked paths and
-paths outside the repository are unavailable.
+searches content. It returns matching lines, matching files or counts, with
+selectors for the pattern, the glob, the type, the context and the result
+limit.
 
-Results report output or traversal limits. A truncated result does not
-establish that unreturned matches are absent. Use an exact-file read for
-content beyond search-preview limits.
+Both search tools accept the default path, a subfolder or several
+`paths`. Searches skip the reserved files in a readable folder and reject a
+reserved search root. Linked paths and paths outside the repository are not
+available.
+
+The results report output limits and search limits. A truncated result does not
+show that the matches that it did not return are absent. To read content after
+the limit of a search preview, read the exact file.
 
 ## Installed scientific API reference
 
 `scientific_api_reference` reads definitions from the installed `mujoco`,
-`gymnasium` and `stable_baselines3` libraries. It loads only those fixed library
-roots. It does not call scientific functions or constructors, run supplied
-code, inspect arbitrary paths or expose private attributes.
+`gymnasium` and `stable_baselines3` libraries. It loads only these fixed
+libraries. It does not call scientific functions or constructors. It does not
+run supplied code, read other paths or show private attributes.
 
 ```json
 {
@@ -35,211 +39,248 @@ code, inspect arbitrary paths or expose private attributes.
 ```
 
 `library` selects one of the three installed libraries. `symbol` selects a
-public dotted name relative to that library. An omitted symbol selects the
-library root. Names imported from another library are not definition targets.
+public dotted name, relative to this library. When you do not give a symbol,
+the tool selects the root of the library. A name that the library imports from
+another library is not a definition target.
 
-`action=members` returns public member names and their kinds. `contains`
-filters names by a case-insensitive substring. `offset` and `limit` select
-member rows. The result reports the matching count and `next_offset`.
+`action=members` returns the public member names and their kinds. `contains`
+filters the names by a substring, without case. `offset` and `limit` select
+member rows. The result gives the number of matches and `next_offset`.
 
-`action=definition` returns the installed signature, documentation, available
-Python source and native MuJoCo declaration. `offset` and `max_bytes` select
-UTF-8 definition bytes. The result reports version, content fingerprint,
-complete byte count and `next_offset`. Unavailable signatures and source are
-explicit. A missing symbol returns `symbol_not_found`, not a guessed substitute.
-Rejected lookups return a failed tool result with the library, symbol and reason.
-Definition availability does not establish execution compatibility.
+`action=definition` returns the installed signature, the documentation, the
+available Python source and the native MuJoCo declaration. `offset` and
+`max_bytes` select UTF-8 bytes of the definition. The result gives the
+version, the content fingerprint, the complete byte count and `next_offset`.
 
-The PI, the coder and the reviewer can use this reader. It does not widen file
-scopes or grant execution.
+The result states when a signature or a source is not available. A missing
+symbol returns `symbol_not_found`, not a guessed replacement. A rejected lookup
+returns a failed tool result with the library, the symbol and the reason. An
+available definition does not show that the call is compatible at execution.
+
+The PI, the coder and the reviewer can use this reader. It does not add files
+to their scopes and it does not permit execution.
 
 ## JSON evidence interface
 
-`artifact_evidence_query` reads JSON evidence. It resolves a
-recorded artifact from a completed measurement operation in the active
-campaign and verifies its recorded fingerprint. The PI supplies operation
-identity, not an arbitrary filesystem path.
+`artifact_evidence_query` reads JSON evidence. It finds a recorded artifact of
+a completed measurement operation in the active campaign and verifies its
+recorded fingerprint. You give the operation identity, not a file path.
 
-The interface supports:
+The interface has these actions:
 
-- `discover`: inspect the structure under an optional prefix;
-- `query`: select one path, with optional filtering, projection or aggregation;
-- `batch`: apply related query specifications to the same verified artifact;
-- `read`: retrieve the artifact's complete content through successive pages.
-- `operations`: query compact operation metadata without opening artifacts;
-- `metadata`: query one operation's record, artifact references, checkpoints,
-  or accepted pending request.
+- `discover`: show the structure under an optional prefix
+- `query`: select one path, with optional filters, projection or aggregation
+- `batch`: apply related query specifications to the same verified artifact
+- `read`: read the complete content of the artifact, page by page
+- `operations`: query short operation metadata without opening artifacts
+- `metadata`: query the record, the artifact references, the session records
+  or the accepted pending request of one operation
 
 `operations` does not take `operation_id`. Its default path selects operation
-rows. `metadata` requires `operation_id`. Its paths are `/operation`, `/record`,
-`/artifacts`, `/checkpoints`, and `/pending`. Its default path selects the operation summary.
-The operation index includes an accepted pending operation.
-Its status is `pending` or `failed_pending`, not completed evidence.
-For that operation, `/pending/request` returns the exact wrapped accepted request.
-`/pending/measurements` returns resolved invocations and declared outputs.
-`/pending` also includes progress, failure, request fingerprint and completed-measurement count.
-These fields remain available after an execution failure or context replacement.
-They do not authorize artifact-content access to incomplete measurements.
-Both actions support the query filters, selection, aggregates and pages.
-They report `artifact_contents_inspected` as false. Recorded metadata is not
-an inspection of measurement contents.
+rows. `metadata` requires `operation_id`. Its paths are `/operation`,
+`/record`, `/artifacts`, `/checkpoints` and `/pending`. Its default path
+selects the operation summary.
 
-The PI selects the requested scope. A complete artifact is permitted;
-selected fields, summaries and repeated requests for different subsets are
-also permitted. Query output is selected before it enters the conversation.
-The tool does not execute Python query expressions or interpret the science.
+The operation index includes an accepted pending operation. Its status is
+`pending` or `failed_pending`. It is not completed evidence. For this
+operation, `/pending/request` returns the exact accepted request with its
+wrapper. `/pending/measurements` returns the resolved invocations and the
+declared outputs. `/pending` also includes the progress, the failure, the
+request fingerprint and the number of completed measurements.
 
-Discovery and query output report truncation and exhausted limits explicitly.
-Read and query pages identify their offsets and continuation. Content identity
-must remain stable across a continuation; a mismatched identity is an error,
-not a page from a different artifact. Partial output is not complete evidence
-and does not establish that unreturned fields or records are absent.
+These fields
+stay available after an execution failure or after a new session starts. They
+do not permit you to read the artifact contents of incomplete measurements.
 
-For `query` and each `batch` specification, `offset` counts selected records
-after filtering and projection, or distinct values for `value_counts`.
-`limit` controls the page size. The returned `next_offset` retrieves the
-remaining selection. Oversized individual objects remain available through
-`read` even when they cannot fit in a query page.
+`operations` and `metadata` support the query filters, the selection, the
+aggregates and the pages. They report `artifact_contents_inspected` as false.
+Recorded metadata does not show the contents of a measurement.
 
-The tool validates the complete JSON syntax of an artifact before it selects
-evidence. Query output and decoded values have explicit limits; an exhausted
-limit is reported, not silently truncated.
+You select the scope of the request. You can read a complete artifact. You can
+also read selected fields, summaries or different subsets in different
+requests. The tool selects the query output before it enters the conversation.
+The tool does not execute Python query expressions and does not draw
+scientific conclusions.
 
-Filtering uses a typed object with required `path` and `equals` fields.
-`path` is relative to each selected row; `equals` can be null.
-An array selected for filtering, projection or aggregation is expanded into
-rows, with the expansion reported in the response. An explicit wildcard also
-selects rows. A missing filter field is reported as `filter_field_absent`, not
-as a valid zero-match result. Missing selected fields include bounded direct-field
-hints. These hints are not a complete inventory.
+The output of `discover` and `query` reports truncation and exhausted limits.
+Pages of `read` and `query` give their offsets and the continuation. The
+content identity must stay the same through a continuation. A different
+identity is an error, not a page of a different artifact. Partial output is not
+complete evidence. It does not show that the fields or records that it did not
+return are absent.
 
-Ordinary query pages default to small row and byte limits. `limit` selects the
-row page size. Set `max_bytes` on the request, not inside `queries`.
-All batch items share that byte limit for selected values.
-Unsupported fields are rejected, not silently ignored.
-Omit `select` for complete rows. A supplied pointer cannot be empty.
-Artifact-content requests show the operation and artifact index in the console.
-Explicit larger pages and complete original reads remain available.
+For `query` and for each `batch` specification, `offset` counts the selected
+records after the filter and the projection, or the different values for
+`value_counts`. `limit` sets the page size. The returned `next_offset` reads
+the rest of the selection. When one object is too large for a query page,
+`read` can still return it.
 
-For `read`, `offset` and `max_bytes` refer to original file bytes.
-`encoding` selects readable UTF-8 or base64 for other byte encodings.
-UTF-8 pages preserve line endings and do not split a character. The returned
-`next_offset` and verified fingerprint identify continuation;
-`expected_fingerprint` is required for a nonzero read offset. Joining pages
-in offset order reconstructs the complete original content. Full retrieval
-does not require parsing the entire artifact within the query limits.
+Before it selects evidence, the tool validates the complete JSON syntax of the
+artifact. The query output and the decoded values have explicit limits. The
+tool reports an exhausted limit. It does not truncate without a report.
+
+A filter is a typed object with the required fields `path` and `equals`.
+`path` is relative to each selected row. `equals` can be null. When you select
+an array for a filter, a projection or an aggregation, the tool expands it into
+rows and reports this expansion. An explicit wildcard also selects rows.
+
+A
+missing filter field gives `filter_field_absent`, not a valid result with zero
+matches. For missing selected fields, the tool gives a short list of direct
+field names. This list is not a complete inventory.
+
+Normal query pages have small default limits for rows and bytes. `limit` sets
+the number of rows on a page. Set `max_bytes` on the request, not in `queries`.
+All batch items share this byte limit for the selected values.
+
+The tool rejects
+fields that it does not support. It does not ignore them. Do not give `select`
+when you want complete rows. A supplied pointer cannot be empty.
+
+The console
+shows the operation and the artifact index of each request for artifact
+content. Larger explicit pages and complete reads of the original file stay
+available.
+
+For `read`, `offset` and `max_bytes` refer to bytes of the original file.
+`encoding` selects readable UTF-8, or base64 for other byte encodings. UTF-8
+pages keep the line endings and do not split a character.
+
+The returned
+`next_offset` and the verified fingerprint identify the continuation.
+`expected_fingerprint` is required for an offset that is not zero. When you
+join the pages in offset order, you get the complete original content. A full
+read does not need to parse the complete artifact within the query limits.
 
 ## Training-log interface
 
-`training_log_query` reads preserved training logs. It resolves them from the
-active campaign and the training operation identity, not from a filesystem
-path or command.
+`training_log_query` reads the kept training logs. It finds them from the
+active campaign and the identity of the training operation, not from a file
+path or a command.
 
-`discover` returns attempt identities, timestep coverage and available metric
-names without metric record values. Omitting `action` selects this metadata mode.
-`records` requests select attempts, timestep bounds and metric fields.
-`raw` requests return preserved log text, including content outside parsed
-training records. Complete logs and successive pages are supported. The PI
-may request different subsets in separate calls without rerunning training.
-The tool reports missing logs, empty selections, available continuation and
-content identities explicitly.
+`discover` returns the attempt identities, the covered timesteps and the
+available metric names, without metric values. When you do not give `action`,
+the tool uses this metadata mode. A `records` request selects attempts,
+timestep limits and metric fields. A `raw` request returns the kept log text,
+which includes the content outside the parsed training records.
 
-`attempts` selects preserved attempt numbers. `records` uses optional
-`from_step` and `to_step`, with `offset` and `limit` for selected
-row pages. Nonzero row offsets require `expected_log_fingerprints` from the
-previous response. Missing metrics are identified separately from zero.
-The operation's status does not establish each attempt's outcome.
-Record requests require either explicit `metrics` or `all_metrics: true`, not
-both. Default row and byte pages are small. `max_bytes` bounds selected record
-values as well as raw pages; the PI can explicitly increase it and continue.
-Console output identifies operation, action and supplied selectors.
+You can read
+complete logs and successive pages. You can request different subsets in
+separate calls without a new training run. The tool reports missing logs, empty
+selections, the available continuation and the content identities.
 
-`raw` selects one attempt when multiple logs exist. Its `offset`, `max_bytes`,
-`encoding` and `expected_fingerprint` use the same original-byte continuation
-semantics as JSON `read`. Raw retrieval includes lines the metric parser
-does not recognize and does not require parsing the complete log.
+`attempts` selects the kept attempt numbers. `records` uses the optional
+`from_step` and `to_step`, with `offset` and `limit` for pages of selected rows.
+An offset that is not zero requires `expected_log_fingerprints` from the
+previous response. The tool reports missing metrics separately from the value
+zero. The status of the operation does not give the result of each attempt.
 
-Preserved failure logs describe execution history, not scientific evidence.
-Neither parsed metrics nor raw-log retrieval certifies development
-performance or chooses a candidate. The PI interprets the returned data.
+A records request requires `metrics` or `all_metrics: true`, but not both. The
+default pages of rows and bytes are small. `max_bytes` limits the selected
+record values and the raw pages. You can increase it and continue. The console
+shows the operation, the action and the selectors that you gave.
+
+When there are several logs, `raw` selects one attempt. Its `offset`,
+`max_bytes`, `encoding` and `expected_fingerprint` follow the same rules for
+original bytes as the JSON `read` action. A raw read includes the lines that
+the metric parser does not recognize. It does not need to parse the complete
+log.
+
+Kept failure logs describe execution history, not scientific evidence. Parsed
+metrics and raw logs do not certify development results or choose a candidate.
+You draw the conclusions from the returned data.
 
 ## Numeric summary tools
 
-`training_series_statistics` computes a summary of one metric in one
-preserved training log. It uses the same operation identity, attempt selection
-and log fingerprint as `training_log_query`. The PI supplies:
+`training_series_statistics` computes a summary of one metric in one kept
+training log. It uses the same operation identity, attempt selection and log
+fingerprint as `training_log_query`. You give:
 
-- `operation_id` and the exact `metric` name;
-- `attempt`, required when the operation has more than one log;
-- optional inclusive `from_step` and `to_step` bounds;
-- optional `checks`, at most 20.
+- `operation_id` and the exact `metric` name
+- `attempt`, required when the operation has more than one log
+- optional `from_step` and `to_step` limits, which are included
+- optional `checks`, at most 20
 
-The result gives the row count, the first and last values with their steps,
-the minimum and maximum with their first step and the number of rows at that
-value, the mean and the sample standard deviation. Rows without a finite value
-are excluded and counted. A missing metric returns the available metric names.
+The result gives these values:
+
+- the number of rows
+- the first and the last values, with their steps
+- the minimum and the maximum, with their first step and the number of rows at
+  that value
+- the mean and the sample standard deviation
+
+The tool excludes and counts the rows without a finite value. A missing metric
+returns the available metric names.
 
 Each check names a statistic (`min`, `max`, `mean`, `first` or `last`), a
-comparison (`>=` or `<=`) and a threshold that the PI chooses. The result gives
-the computed value and whether the comparison holds. A `min` or `max` check
-also gives the number of rows that do not meet the comparison and the first and
-last of their steps. Checks are optional.
+comparison (`>=` or `<=`) and a threshold that you choose. The result gives the
+computed value and whether the comparison is true. A `min` or `max` check also
+gives the number of rows that do not meet the comparison. It also gives the
+first and the last step of these rows. Checks are optional.
 
-`success_rate_pass_probability` relates measured success counts to a
-success-rate target. The PI supplies:
+`success_rate_pass_probability` compares measured success counts with a target
+success rate. You give:
 
-- `target`, the `trials` of the panel that decides the goal and the
-  `successes` it requires;
-- `evidence`, up to 20 entries, each with a `label` and either:
-  - `recorded`, a list of completed `research_evaluation` or `task_reference`
-    measurements to pool, each as `operation_id`, `candidate` (ID or role) and
-    an optional measurement `label` when the candidate appears twice; Runner
-    reads successes and episodes from the records, or
-  - typed `successes` and `trials`;
-  the PI decides which measurements an entry pools;
-- `confidence`, the two-sided interval level, from 0.5 to 0.999.
+- `target`: the `trials` of the panel that decides the goal, and the
+  `successes` that it requires
+- `evidence`: up to 20 entries. Each entry has a `label` and one of these:
+  - `recorded`: a list of completed `research_evaluation` or `task_reference`
+    measurements to combine. Give each as `operation_id`, `candidate`
+    (identity or role) and an optional measurement `label` when the candidate
+    occurs two times. The Runner reads the successes and the episodes from the
+    records.
+  - typed `successes` and `trials`
+- `confidence`: the level of the two-sided interval, from 0.5 to 0.999
 
-A recorded reference that matches no single measurement is rejected with the
-candidate measurements that operation recorded. A recorded entry also lists its
-sources and the number of episodes they share; shared episodes are not
+You decide which measurements an entry combines. When a recorded reference
+matches no single measurement, the tool rejects it and lists the measurements
+of candidates that this operation recorded. A recorded entry also lists its
+sources and the number of episodes that they share. Shared episodes are not
 independent samples.
 
-For each entry the result gives the proportion, its Wilson interval, whether
-the interval is `above`, `below` or `includes` the target rate, and the
-probability that a new target panel reaches the required successes. That
-probability uses a uniform prior and the beta-binomial predictive distribution.
-The result also gives the pass probability when the true rate equals the
-interval's lower or upper bound, and the true success rate at which the target
-panel passes with probability 0.5, 0.8 and 0.95. Typed counts are not verified. The tool
-assumes independent episodes with one common success probability,
-representative of the target panel. Counts of a candidate selected as the best
-of several are optimistic.
+For each entry, the result gives the proportion, its Wilson interval, and
+whether the interval is `above`, `below` or `includes` the target rate. It also
+gives the probability that a new target panel reaches the required successes.
+This probability uses a uniform prior and the beta-binomial predictive
+distribution. The result also gives the pass probability when the true rate is
+at the lower or the upper limit of the interval. It gives the true success rate
+at which the target panel passes with the probability 0.5, 0.8 and 0.95.
+
+The tool does not verify typed counts. It assumes independent episodes with one
+common success probability that represents the target panel. The counts of a
+candidate that you selected as the best of several are optimistic.
 
 `episode_outcome_breakdown` reads the episode results of recorded
-`research_evaluation` or `task_reference` measurements. The PI supplies:
+`research_evaluation` or `task_reference` measurements. You give:
 
-- `measurements`, one or two references, each as `operation_id`, `candidate`
-  (ID or role) and an optional measurement `label`;
-- optional `strata`: `rows`, a JSON Pointer to per-episode rows that carry
-  `episode_seed` (default `/episode_results`), the numeric `field` of those
-  rows, and increasing `edges`, from 2 to 21; the last bin includes its upper
-  edge;
-- `confidence`, the two-sided interval level, from 0.5 to 0.999.
+- `measurements`: one or two references, each as `operation_id`, `candidate`
+  (identity or role) and an optional measurement `label`
+- optional `strata`, with three fields:
+  - `rows`: a JSON Pointer to the episode rows that contain `episode_seed`
+    (default `/episode_results`)
+  - `field`: the numeric field of these rows
+  - `edges`: from 2 to 21 increasing edges. The last bin includes its upper
+    edge.
+- `confidence`: the level of the two-sided interval, from 0.5 to 0.999
 
-Runner verifies each artifact fingerprint and checks its episode results
-against the recorded episode and success counts. For each measurement the
-result gives successes, trials and a Wilson interval. Two measurements must
-cover the same episode seeds under the same instrument and evaluation
-semantics or task-reference panel. Their result adds paired counts: both
-succeed, only the first, only the second, neither; the exact two-sided sign
-test over the episodes where exactly one succeeds; and the Wilson interval of
-the first measurement's share of those episodes. Strata repeat these results
-for each bin, using the field values of the first measurement, and count
-episodes outside the edges or without a value. Research-evaluation rows that
-carry fields such as target radius can lie in another section of the
-artifact; `artifact_evidence_query` with `action=discover` shows them.
-Edges chosen after seeing the outcomes make stratum differences optimistic.
+The Runner verifies the fingerprint of each artifact. It checks its episode
+results against the recorded episode and success counts. For each measurement,
+the result gives the successes, the trials and a Wilson interval.
+
+Two measurements must cover the same episode seeds, with the same instrument
+and the same evaluation rules or task-reference panel. Their result adds the
+paired counts: both succeed, only the first, only the second, none. It adds the
+exact two-sided sign test over the episodes in which exactly one succeeds. It
+also adds the Wilson interval of the share of these episodes that the first
+measurement has.
+
+Strata repeat these results for each bin. They use the field values of the
+first measurement. They count the episodes outside the edges or without a
+value. Rows of a research evaluation that contain fields such as the target
+radius can be in another section of the artifact. `artifact_evidence_query`
+with `action=discover` shows them. Edges that you choose after you see the
+episode outcomes make the differences between strata optimistic.
 
 These tools compute numbers from the supplied data. They do not judge claims,
-decide significance, certify development performance or choose a candidate.
-The PI interprets the results.
+decide significance, certify development results or choose a candidate. You
+draw the conclusions from the results.

@@ -136,7 +136,7 @@ class ScientificCoding:
     def agent(self) -> dict:
         agent = {
             "name": CODER,
-            "description": "Bounded scientific source author.",
+            "description": "Coder of scientific source code in permitted files.",
             "prompt": CODING_INSTRUCTIONS,
             "tools": CODING_TOOLS,
             "infer": False,
@@ -151,7 +151,7 @@ class ScientificCoding:
         return {
             "name": REVIEWER,
             "display_name": "Scientific rubber duck",
-            "description": "Read-only implementation and logic reviewer.",
+            "description": "Read-only reviewer of code and logic.",
             "prompt": REVIEW_INSTRUCTIONS,
             "tools": REVIEW_TOOLS,
             "model": self.reviewer_model,
@@ -781,9 +781,9 @@ class ScientificCoding:
                     agent_type=agent,
                     name=agent,
                     description=(
-                        "Independent implementation and logic review"
+                        "Independent review of code and logic"
                         if agent == REVIEWER
-                        else "Scoped source authoring"
+                        else "Source change in permitted files"
                     ),
                     prompt=prompt,
                 )

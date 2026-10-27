@@ -1,45 +1,46 @@
-# Current scenario: two-joint arm reach-and-hold
+# Task: two-joint arm, reach and hold
 
-This file defines the official scientific task, what counts as success, and the
-immutable task boundary. It does not define the research process or describe
-research instruments.
+This file defines the task: the official situations, the success criterion, the
+official assessment and the fixed limits of the task. It does not define the
+research process or the instruments.
 
 ## Official task
 
-A learned policy controls the repository's two-joint arm. Official situations
-sample a target uniformly from 6–20 cm from the robot base over the full angular
-range. The end effector must enter a 1 cm tolerance around the target and remain
-continuously within it for 2 seconds. Duration is authoritative; under the
-current official control timing this corresponds to 100 consecutive control
-steps.
+A policy controls the two-joint arm of the repository. Each official situation
+samples one target uniformly at a distance of 6–20 cm from the robot base, over
+the full angular range. The end effector must enter a tolerance of 1 cm around
+the target. Then it must stay in this tolerance without interruption for
+2 seconds. The duration is the requirement. With the current official control
+timing, 2 seconds are 100 consecutive control steps.
 
-A learned policy is a trained neural network that decides the motor command at
-every control step. The saved runtime may construct the network's observation
-freely, but it turns the network's output into the motor command at that step
-through a fixed transformation. That transformation may include fixed-gain
-feedback towards a target the network outputs, but no planner, trajectory
-generator, inverse kinematics or model of the robot. This defines the policy
-that the official assessment evaluates.
+A policy is a trained neural network that decides the motor command at each
+control step. The saved runtime can build the observation of the network
+freely. The saved runtime turns the network output into the motor command of
+that step with a fixed transformation. This transformation can include
+fixed-gain feedback toward a target that the network gives. It cannot include a
+planner, a trajectory generator, inverse kinematics or a robot model. This
+definition gives the policy that the official assessment evaluates.
 
 ## Success criterion
 
-An episode succeeds only when the complete uninterrupted hold is achieved. The
-campaign objective is a learned policy that achieves at least 98% episode
-success under the official task distribution.
+An episode succeeds only when the complete hold occurs without interruption.
+The campaign must produce a policy that succeeds in at least 98% of the
+episodes of the official episode distribution.
 
-## Official final assessment
+## Official assessment
 
-The official final assessment evaluates one frozen policy over a fixed panel of
-200 episodes sampled from the official task distribution. Each episode has at
-most 500 control steps and contributes one success or failure under the success
+The official assessment evaluates one frozen policy on a fixed panel of 200
+episodes from the official episode distribution. Each episode has at most 500
+control steps. Each episode gives one success or one failure under the success
 criterion above.
 
 The official success percentage is the number of successful episodes divided by
-200. The objective is reached when at least 196 episodes succeed, corresponding
-to at least 98%. This panel is distinct from the task-reference development
-panel; development measurements are not combined with the official result.
+200. The campaign reaches the goal when at least 196 episodes succeed, that is
+at least 98%. This panel is different from the task-reference panel. The
+official result does not include development measurements.
 
-## Immutable task boundary
+## Fixed task limits
 
-The official robot, physics, task distribution, interaction semantics, and
-success definition are fixed by the human-authored robot and benchmark contracts.
+The human-authored robot and benchmark contracts fix the official robot, the
+physics, the episode distribution, the interaction rules and the definition of
+success.
