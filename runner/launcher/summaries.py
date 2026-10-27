@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import json
-import math
 import re
-from datetime import datetime
 from pathlib import Path
 
 from runner.launcher import pstext
@@ -20,7 +18,6 @@ _MEASUREMENT_HIDDEN_METRICS = frozenset(
         "model_fingerprint",
     }
 )
-_CODING_ROLES = frozenset({"scientific_coder", "scientific_reviewer"})
 
 
 def load_state(campaign_root: Path) -> dict:
@@ -152,38 +149,7 @@ def latest_session_result(state: dict) -> str:
     return f"Operation {identifier} ({text(kind)}) recorded factual result: {fact}."
 
 
-def _elapsed(started_at: object, now: datetime) -> str:
-    started = datetime.fromisoformat(str(started_at)).astimezone()
-    seconds = (now - started).total_seconds()
-    return f"elapsed {math.floor(seconds / 3600)}h{int(seconds // 60) % 60:02d}m"
-
-
-def _usage(campaign_root: Path, campaign_id: str) -> tuple[float, float] | None:
-    path = campaign_root / "reports" / "session_usage" / f"{campaign_id}.jsonl"
-    if not path.exists():
-        return None
-    pi = coding = 0.0
-    for line in path.read_text(encoding="utf-8-sig").splitlines():
-        if not line.strip():
-            continue
-        try:
-            row = json.loads(line)
-        except ValueError:
-            continue
-        aiu = field(row, "aiu")
-        if aiu is None:
-            continue
-        role = field(row, "role")
-        if isinstance(role, str) and role.casefold() in _CODING_ROLES:
-            coding += float(aiu)
-        else:
-            pi += float(aiu)
-    return pi, coding
-
-
-def campaign_resource_summary(
-    state: dict, campaign_root: Path, *, now: datetime | None = None
-) -> str:
+def campaign_resource_summary(state: dict) -> str:
     completed = completed_events(state)
     measurements = sum(
         1 for event in completed if pstext.same(field(event, "kind"), "measurement")
@@ -191,30 +157,14 @@ def campaign_resource_summary(
     training = sum(
         1 for event in completed if pstext.same(field(event, "kind"), "training")
     )
-    campaign = field(state, "campaign")
-    parts = []
-    if pstext.truthy(field(campaign, "started_at")):
-        parts.append(
-            _elapsed(field(campaign, "started_at"), now or datetime.now().astimezone())
-        )
-    usage = _usage(campaign_root, text(field(campaign, "id")))
-    if usage is not None:
-        pi, coding = usage
-        parts.append(
-            "AI usage of completed sessions "
-            f"{pstext.invariant_fixed_one(pi + coding)} AIU "
-            f"(PI {pstext.invariant_fixed_one(pi)}, coding and review "
-            f"{pstext.invariant_fixed_one(coding)})"
-        )
     counters = field(state, "counters")
     candidates = field(state, "candidates")
     candidate_count = len(candidates) if isinstance(candidates, dict) else 1
-    parts.append(
+    return (
         f"inquiries {_integer(field(counters, 'inquiry'))} | "
         f"sessions {_integer(field(counters, 'session'))} | measurements {measurements} | "
         f"training {training} | candidates {candidate_count}"
     )
-    return " | ".join(parts)
 
 
 def _integer(value: object) -> int:

@@ -41,7 +41,7 @@ def prepare(phases: Phases) -> None:
     )
     phases.events.status(
         f"{'START' if fresh else 'RESUME'} | goal-centered research | "
-        f"{campaign_resource_summary(state, options.campaign_root)} | "
+        f"{campaign_resource_summary(state)} | "
         f"inquiry cap {int((state.get('campaign') or {}).get('max_inquiries') or 0)}",
         scope="info",
     )

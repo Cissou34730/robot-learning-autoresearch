@@ -53,7 +53,7 @@ def operation_state(state: dict, campaign_root: Path) -> dict:
             else None
         ),
         "terminal": state.get("terminal_state"),
-        "resources": campaign_resource_summary(state, campaign_root),
+        "resources": campaign_resource_summary(state),
         "brief": "campaigns/brief.md",
     }
 

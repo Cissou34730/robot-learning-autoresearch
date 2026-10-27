@@ -563,39 +563,3 @@ def test_launcher_operation_state_matches_runner_availability(monkeypatch, tmp_p
     assert reported["next_question"] == "Current question"
     assert required_transition(availability) is not None
     assert state == before
-
-
-def test_campaign_resources_report_elapsed_time_and_usage_by_role(tmp_path):
-    import json
-    from datetime import datetime, timedelta
-
-    from runner.launcher.summaries import campaign_resource_summary
-
-    usage = tmp_path / "reports" / "session_usage" / "campaign.jsonl"
-    usage.parent.mkdir(parents=True)
-    usage.write_text(
-        "\n".join(
-            json.dumps(row)
-            for row in (
-                {"role": "pi", "aiu": 2.5},
-                {"role": "scientific_coder", "aiu": 1.25},
-                {"role": "scientific_reviewer", "aiu": 0.5},
-                {"role": "pi", "aiu": None},
-            )
-        ),
-        encoding="utf-8",
-    )
-    now = datetime.now().astimezone()
-    state = {
-        "campaign": {
-            "id": "campaign",
-            "started_at": (now - timedelta(minutes=125)).isoformat(),
-        },
-        "counters": {"inquiry": 1, "session": 3},
-        "operation_events": [],
-        "candidates": {},
-    }
-    assert campaign_resource_summary(state, tmp_path, now=now).startswith(
-        "elapsed 2h05m | AI usage of completed sessions 4.3 AIU "
-        "(PI 2.5, coding and review 1.8) | inquiries 1 | sessions 3"
-    )

@@ -639,7 +639,8 @@
           contracts are unchanged. Launches write no console output; the TUI follows the campaign's typed event feed
           and can stop any running campaign. Changes since 24 October: duplicate panels refused, mechanism tests
           account for the contrast with comparable successes, the analyst models invariances, operations wait in
-          25-minute slices, the PI sees elapsed time and AI usage, and several campaigns can run at once.</p>
+          25-minute slices, and several campaigns can run at once. Elapsed time and AI usage were shown to the PI in
+          round 4 only and removed on 27 October.</p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
@@ -686,10 +687,9 @@
           <h3 style="margin-top: 12px">35 closed issues; four open investigations</h3>
           <ul>
             <li>All 56 issue IDs remain visible. Four are open (OI-024, OI-025, OI-039, OI-040).</li>
-            <li>Six changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
-              (invariances in the scientific model), OI-054 (time and AI usage shown to the PI), OI-055
-              (first-experiment
-              reference) and OI-056 (contrast in mechanism tests).</li>
+            <li>Five changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
+              (invariances in the scientific model), OI-055 (first-experiment reference) and OI-056 (contrast in
+              mechanism tests). OI-054 (time and AI usage shown to the PI) was withdrawn on 27 October.</li>
             <li>On 26 October OI-041 (system prompt), OI-049 (analyst prompt) and OI-052 (duplicate panels) closed.</li>
             <li>OI-033 and OI-037 were closed by maintainer decision, not verified recovery. OI-021, OI-026, OI-038
               and OI-046 were closed by maintainer decision on 22 October.</li>
@@ -1943,8 +1943,9 @@
           <ul>
             <li>Every diagnostic module is written by the coder and checked by the reviewer. In <code>38ad68c6</code>
               they used 54 of 123 AIU (44%), against about 20% elsewhere.</li>
-            <li>The PI now sees elapsed time and AI usage by role (OI-054). Earlier cost guidance was removed on
-              20 October because it pushed the PI toward early assessment; the next round checks for that.</li>
+            <li>Round 4 showed the PI its elapsed time and AI usage by role (OI-054). Its PIs repeated the figures in
+              almost every record, one requested the assessment after 1 h 47 at an estimated 41% pass chance, and none
+              passed. The line was removed on 27 October, as earlier cost guidance had been on 20 October.</li>
           </ul>
         </article>
       </div>
@@ -1970,7 +1971,7 @@
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">6</p>
+          <p class="metric">5</p>
           <p class="metric-label">Changes that need more evidence</p>
         </article>
         <article class="card metric-card">
@@ -1978,7 +1979,7 @@
           <p class="metric-label">Closed issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">11</p>
+          <p class="metric">12</p>
           <p class="metric-label">Inactive entries</p>
         </article>
       </div>
@@ -2130,7 +2131,7 @@
           </tbody>
         </table>
       </div>
-      <h3 id="observed-issues">Changes that need more evidence — 6</h3>
+      <h3 id="observed-issues">Changes that need more evidence — 5</h3>
       <p>Each change exists. Campaign evidence is missing or does not yet isolate its effect.</p>
       <div class="card table-wrap wide">
         <table>
@@ -2184,17 +2185,6 @@
                 (<code>6b13d5f4</code>) passed in 52 min; <code>fecc7566</code> found it by a mirror-pair experiment;
                 the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See <a
                   href="../harness-experiment-log.md#parallel-rounds-25-26-october">parallel rounds</a>.</td>
-            </tr>
-            <tr>
-              <td>OI-054</td>
-              <td>The PI is told the campaign is judged on time and AI usage, but sees neither number. In
-                <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.
-              </td>
-              <td><span class="tag">Implemented</span></td>
-              <td><code>4ce2fdb1</code> (26 October): the campaign resource line shows elapsed time and AI usage of
-                completed sessions by role (PI; coding and review). Caps stay hidden. Watch for earlier
-                official-assessment requests: on 20 October cost guidance was removed from PI decisions for that reason.
-                No campaign has run with it.</td>
             </tr>
             <tr>
               <td>OI-055</td>
@@ -2540,7 +2530,7 @@
           </div>
         </div>
       </details>
-      <h3 id="inactive-issues">Inactive entries — 11</h3>
+      <h3 id="inactive-issues">Inactive entries — 12</h3>
       <p>These entries do not authorize implementation. The historical evidence remains valid.</p>
       <details>
         <summary>Show the retired, paused, proposed, and withdrawn entries</summary>
@@ -2678,6 +2668,19 @@
                     <code>robot-learning-campaigns-minimal</code> no longer exist; this entry is its record.
                   </td>
                 </tr>
+                <tr>
+                  <td>OI-054</td>
+                  <td>The PI is told the campaign is judged on time and AI usage, but sees neither number. In
+                    <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.</td>
+                  <td><span class="tag">Withdrawn</span></td>
+                  <td>Withdrawn by the maintainer on 27 October and removed from the PI's resource line. It was added in
+                    <code>4ce2fdb1</code> (elapsed time and AI usage of completed sessions by role). Round 4, the only
+                    round with it, passed 0 of 3; its PIs repeated the line in their records 36 to 55 times per
+                    campaign, mostly as bookkeeping, and <code>c7be4376</code> requested the assessment after 1 h 47 at
+                    an estimated 41% pass chance. Three campaigns cannot attribute the result to the line. On
+                    20 October cost guidance had already been removed from PI decisions for the same risk of early
+                    assessment.</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -2728,11 +2731,11 @@
       <h3>Next maintainer actions</h3>
       <ol>
         <li>Round 4 ran on the Python launcher and passed 0 of 3; no campaign used the reflection symmetry in the
-          policy. Decide whether that calls for a change, then run the next round with
-          <code>uv run python -m tools.run_parallel --count 3</code>.
+          policy. The maintainer withdrew OI-054 in response. Run round 5 with
+          <code>uv run python -m tools.run_parallel --count 3</code>; it repeats round 3's conditions plus OI-055.
           Check, for each campaign: whether the scientific model states the invariances and when the PI uses them
           (OI-053); the development success rate at each official-assessment request, against the earlier failed
-          requests at 40%, 41% and 64% estimated pass chance (OI-054); whether the first experiment changes one part of the
+          requests at 40%, 41% and 64% estimated pass chance; whether the first experiment changes one part of the
           recipe or several (OI-055); the share of AIU spent by the coder and reviewer.</li>
         <li>Classify OI-024 reruns by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
@@ -3058,6 +3061,14 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">27 October: round 4 passes 0 of 3; time and AI usage removed from the PI's view</h3>
+        <p>The first round on the Python launcher showed the PI its elapsed time and AI usage. No campaign used the
+          reflection symmetry in the policy although every scientific model stated it; <code>c7be4376</code> requested
+          the assessment at an estimated 41% pass chance and failed at 195/200, and the maintainer stopped the other two
+          after about 5 h. The maintainer then removed time and AI usage from the PI's resource line (OI-054
+          withdrawn), so round 5 repeats round 3's conditions plus OI-055.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: documentation housekeeping</h3>
         <p>Historical plans, root-cause analyses and reviews moved to <code>docs/archive/</code>, the program proposals
