@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
+import shutil
 import stat
 import subprocess
 import sys
@@ -35,6 +37,11 @@ def source_git(root: Path, *args: str) -> bytes:
     if result.returncode:
         raise RuntimeError(result.stderr.decode("utf-8", errors="replace").strip())
     return result.stdout
+
+
+def _make_writable_and_retry(function, path, _error) -> None:
+    os.chmod(path, stat.S_IWRITE)
+    function(path)
 
 
 def trust_folder(root: Path) -> None:
@@ -102,18 +109,26 @@ def initialize(root: Path, source: Path, reference: str) -> None:
             ):
                 raise ValueError(f"Unsafe recipe archive member: {member.filename}")
         root.mkdir(parents=True)
-        contents.extractall(root)
-    metadata = root / TASK_CONTRACT_PATH
-    metadata.parent.mkdir(parents=True)
-    metadata.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
-    (root / ".gitignore").write_text(CAMPAIGN_GITIGNORE, encoding="utf-8")
-    trust_folder(root)
-    source_git(root, "init", "-b", "campaign")
-    source_git(root, "add", "--", ".")
-    source_git(
-        root, "commit", "-m", f"Import scientific recipe from {reference} ({revision})"
-    )
-    source_git(root, "tag", reference)
+        try:
+            contents.extractall(root)
+            metadata = root / TASK_CONTRACT_PATH
+            metadata.parent.mkdir(parents=True)
+            metadata.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+            (root / ".gitignore").write_text(CAMPAIGN_GITIGNORE, encoding="utf-8")
+            trust_folder(root)
+            source_git(root, "init", "-b", "campaign")
+            source_git(root, "add", "--", ".")
+            source_git(
+                root,
+                "commit",
+                "-m",
+                f"Import scientific recipe from {reference} ({revision})",
+            )
+            source_git(root, "tag", reference)
+        except BaseException:
+            # A partial folder with .git would count as installed and block a retry.
+            shutil.rmtree(root, onexc=_make_writable_and_retry)
+            raise
     result = subprocess.run(
         [
             sys.executable,
