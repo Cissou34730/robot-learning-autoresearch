@@ -147,7 +147,7 @@ def test_training_progress_keeps_timestamp_and_interval():
     reducer.ingest(
         Observation(
             kind="training_progress",
-            ts=start + timedelta(seconds=15),
+            ts=start + timedelta(seconds=30),
             fields={
                 "operation_id": "T9",
                 "steps": 2000,
@@ -164,8 +164,8 @@ def test_training_progress_keeps_timestamp_and_interval():
         child for child in operation.children if child.kind == "training_progress"
     ]
     assert len(progress) == 2
-    assert progress[1].ts == start + timedelta(seconds=15)
-    assert "+15s" in progress[1].title
+    assert progress[1].ts == start + timedelta(seconds=30)
+    assert "+30s" in progress[1].title
     assert "reward 11.0" in progress[1].title
     assert "success 60%" in progress[1].title
     assert "Elapsed 20s" in progress[1].title
@@ -258,6 +258,46 @@ def test_typed_feed_parses_envelope_and_rejects_schema(tmp_path):
 
 def _event(kind, ts, fields=None, **identity):
     return Observation(kind=kind, ts=ts, fields=fields or {}, **identity)
+
+
+def test_frequent_progress_samples_share_one_row_per_interval():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    for seconds in range(0, 61, 2):
+        reducer.ingest(
+            Observation(
+                kind="training_progress",
+                ts=start + timedelta(seconds=seconds),
+                fields={"operation_id": "T9", "steps": 1000 + seconds, "target": 9999},
+            )
+        )
+    for seconds in range(0, 31, 2):
+        reducer.ingest(
+            Observation(
+                kind="eval_progress",
+                ts=start + timedelta(seconds=seconds),
+                fields={
+                    "operation_id": "M9",
+                    "episodes": seconds,
+                    "episodes_total": 99,
+                },
+            )
+        )
+    roots, _ = reducer.view()
+    items = {item.item_id: item for item in _walk(roots)}
+    training = [
+        c for c in items["operation:T9"].children if c.kind == "training_progress"
+    ]
+    evaluation = [
+        c for c in items["operation:M9"].children if c.kind == "eval_progress"
+    ]
+    assert [row.ts for row in training] == [
+        start,
+        start + timedelta(seconds=30),
+        start + timedelta(seconds=60),
+    ]
+    assert [row.ts for row in evaluation] == [start, start + timedelta(seconds=16)]
+    assert "1,060" in training[-1].title
 
 
 def test_liveness_keeps_the_timeline_quiet():

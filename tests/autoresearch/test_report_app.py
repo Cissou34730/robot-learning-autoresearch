@@ -80,6 +80,42 @@ def test_model_table_shows_all_assigned_rows():
     _run(_model_table_shows_all_rows())
 
 
+async def _unchanged_data_redraws_nothing():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        for _ in range(10):
+            await pilot.pause()
+        table = app.query_one("#models")
+        rebuilds = 0
+        original_clear = table.clear
+
+        def counted_clear(*args, **kwargs):
+            nonlocal rebuilds
+            rebuilds += 1
+            return original_clear(*args, **kwargs)
+
+        table.clear = counted_clear
+        updates = []
+        for widget_id in ("#models-heading", "#reading", "#progress", "#training"):
+            widget = app.query_one(widget_id)
+            original_update = widget.update
+
+            def counted_update(*args, _id=widget_id, _original=original_update, **kw):
+                updates.append(_id)
+                return _original(*args, **kw)
+
+            widget.update = counted_update
+        for _ in range(3):
+            app.refresh_snapshot()
+            await pilot.pause()
+        assert rebuilds == 0
+        assert updates == []
+
+
+def test_unchanged_durable_data_redraws_nothing():
+    _run(_unchanged_data_redraws_nothing())
+
+
 async def _initial():
     app = _demo_app()
     async with app.run_test(size=(160, 45)) as pilot:

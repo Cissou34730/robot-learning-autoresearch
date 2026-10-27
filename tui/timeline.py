@@ -90,7 +90,7 @@ def _now() -> datetime:
 
 
 _ARRIVAL = itertools.count()
-PROGRESS_ROW_SECONDS = 15.0
+PROGRESS_ROW_SECONDS = {"training_progress": 30.0, "eval_progress": 15.0}
 
 
 def _lower_ts(item: TimelineItem, ts: datetime | None) -> None:
@@ -758,7 +758,7 @@ class TimelineReducer:
             current_row is not None
             and ts is not None
             and previous_ts is not None
-            and (ts - previous_ts).total_seconds() < PROGRESS_ROW_SECONDS
+            and (ts - previous_ts).total_seconds() < PROGRESS_ROW_SECONDS[kind]
         ):
             # Samples arrive every second or so; one row per interval keeps
             # the history readable while the newest row stays current.

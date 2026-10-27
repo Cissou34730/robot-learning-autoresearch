@@ -23,6 +23,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import ClassVar
 
+from rich.cells import cell_len
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -484,6 +485,7 @@ class CampaignPanel(Widget):
         self._progress_rows = 0
         self._training_rows = 0
         self._models_layout_key = ""
+        self._models_key: tuple | None = None
         self._output_hidden = False
         self._training: dict | None = None
         self._evaluation: dict | None = None
@@ -667,6 +669,7 @@ class CampaignPanel(Widget):
         self._now_rows = 0
         self._shown_text.clear()
         self._layout_key = None
+        self._models_key = None
         self.query_one("#now", Static).update("")
         self._attached = False
         self._context_rows = 0
@@ -890,12 +893,22 @@ class CampaignPanel(Widget):
         self._set_text(self.query_one("#context", Static), rendered)
 
     def _set_text(self, widget: Static, content: Text) -> None:
-        """Repaint a Static only when its content changed, so ticks stay quiet."""
+        """Repaint a Static only when its content changed, and re-lay it out
+        only when its size can change, so quiet ticks cost nothing."""
         key = widget.id or ""
-        if self._shown_text.get(key) == content:
+        previous = self._shown_text.get(key)
+        if previous == content:
             return
         self._shown_text[key] = content
-        widget.update(content)
+        lines = content.plain.split("\n")
+        width = widget.size.width
+        same_shape = (
+            isinstance(previous, Text)
+            and width > 0
+            and len(previous.plain.split("\n")) == len(lines)
+            and max(cell_len(line) for line in lines) <= width
+        )
+        widget.update(content, layout=not same_shape)
 
     def _context_budget(self) -> int:
         width = self._view_size.width
@@ -1111,6 +1124,12 @@ class CampaignPanel(Widget):
         palette = self._palette
         table = self.query_one("#models", DataTable)
         layout = self._models_layout()
+        budget = self._models_budget_rows()
+        key = (rows, layout, palette, self._attached, len(rows) > budget)
+        if key == self._models_key:
+            # The same rows in the same form: leave the table alone.
+            return
+        self._models_key = key
         self._ensure_model_columns(table, layout)
         table.clear()
         for row in rows:
@@ -1141,7 +1160,7 @@ class CampaignPanel(Widget):
         if not rows:
             heading.append("PI-assigned models", style=f"bold {palette.heading}")
             heading.append(" - none assigned", style=palette.muted)
-            self.query_one("#models-heading", Static).update(heading)
+            self._set_text(self.query_one("#models-heading", Static), heading)
             return
         heading.append("PI-assigned models", style=f"bold {palette.heading}")
         if self._attached:
@@ -1150,12 +1169,11 @@ class CampaignPanel(Widget):
             heading.append(
                 " - compact: steps and training metrics hidden", style=palette.muted
             )
-        budget = self._models_budget_rows()
         if len(rows) > budget:
             heading.append(
                 " - scroll inside the table for every role", style=palette.muted
             )
-        self.query_one("#models-heading", Static).update(heading)
+        self._set_text(self.query_one("#models-heading", Static), heading)
 
     def _models_budget_rows(self) -> int:
         height = self._view_size.height
@@ -1183,8 +1201,7 @@ class CampaignPanel(Widget):
         if training is None and evaluation is None:
             self._progress_rows = 0
             widget.display = False
-            self._shown_text.pop("progress", None)
-            widget.update("")
+            self._set_text(widget, Text(""))
             return
         width = max(24, self._view_size.width - 2)
         if training is not None:
@@ -1328,7 +1345,7 @@ class CampaignPanel(Widget):
         ):
             self._training_rows = 0
             widget.display = False
-            widget.update("")
+            self._set_text(widget, Text(""))
             return
         palette = self._palette
         proxy = snapshot.last_training
@@ -1350,7 +1367,7 @@ class CampaignPanel(Widget):
         line.append(proxy.success, style=palette.text)
         self._training_rows = 1
         widget.display = True
-        widget.update(_fit_text(line, max(20, self._view_size.width - 2)))
+        self._set_text(widget, _fit_text(line, max(20, self._view_size.width - 2)))
 
     def _render_log(self) -> None:
         event_log = self.query_one("#output", EventLog)
@@ -1774,11 +1791,12 @@ class CampaignPanel(Widget):
                 f"Reading history - {out.missed} newer entries | "
                 "End: live | / search | f filter | Ctrl+Q: close"
             )
-        widget.update(
+        self._set_text(
+            widget,
             Text(
                 text[: max(20, self._view_size.width - 2)],
                 style=self._palette.muted,
-            )
+            ),
         )
 
     # ------------------------------------------------------------------

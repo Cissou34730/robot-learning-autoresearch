@@ -257,7 +257,10 @@ each checkpoint appears once and its identifier is not repeated in the row.
 The Runner polls progress every second and publishes training and evaluation
 samples when their counters change, and at least every 15 seconds. PI text is
 published at most once per second. Timeline progress rows are kept one per
-15 seconds; the newest row updates in place. Each fact (an opened inquiry, an
+30 seconds for training and one per 15 seconds for evaluation; the newest row
+updates in place. A widget is redrawn only when its content changes: a header
+counter that ticks does not re-lay out the screen, and a refresh of unchanged
+durable data redraws nothing. Each fact (an opened inquiry, an
 operation lifecycle step) shows once, from the best source (live event, then
 durable record, then state snapshot). Siblings are shown in time order.
 
