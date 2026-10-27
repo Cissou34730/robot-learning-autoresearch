@@ -25,11 +25,12 @@ TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 # Candidates are ordinary cadence artifacts; none may mark the end of training.
 CANDIDATE_NAME_PATTERN = re.compile(r"checkpoint-\d+")
-# Progress sources are polled every second; a sample is published when the
-# observed counters change, and at least every STATUS_INTERVAL_SECONDS as a
-# heartbeat.
+# Evaluation progress is polled every second and published when its counters
+# change, and at least every STATUS_INTERVAL_SECONDS as a heartbeat.
 PROGRESS_POLL_SECONDS = 1.0
 STATUS_INTERVAL_SECONDS = 15
+# Training publishes one sample per interval, however often its log changes.
+TRAINING_STATUS_INTERVAL_SECONDS = 30
 INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
 EVALUATION_STALL_SECONDS = 30 * 60
@@ -213,13 +214,6 @@ def read_training_log(log_path: Path, after_offset: int = 0) -> str:
     with log_path.open(encoding="utf-8", errors="replace") as handle:
         handle.seek(after_offset)
         return handle.read()
-
-
-def _file_size(path: Path) -> int:
-    try:
-        return path.stat().st_size
-    except OSError:
-        return -1
 
 
 def latest_step_count(text: str) -> int | None:
@@ -418,60 +412,48 @@ def train_candidate(
         last_steps: int | None = None
         last_progress_at = started
         announced_checkpoints: set[str] = set()
-        last_log_size = -1
-        last_emitted_at = float("-inf")
         try:
             while process.poll() is None:
                 try:
-                    process.wait(timeout=PROGRESS_POLL_SECONDS)
+                    process.wait(timeout=TRAINING_STATUS_INTERVAL_SECONDS)
                 except subprocess.TimeoutExpired:
                     pass
-                now = time.monotonic()
-                elapsed = now - started
-                log_size = _file_size(train_log)
-                if (
-                    log_size != last_log_size
-                    or now - last_emitted_at >= STATUS_INTERVAL_SECONDS
-                ):
-                    last_log_size = log_size
-                    last_emitted_at = now
-                    log_text = read_training_log(train_log, progress_offset)
-                    record = latest_training_record(log_text)
-                    steps = latest_step_count(log_text)
-                    typed_events.emit("liveness", {}, scope="info")
-                    if steps is None:
-                        _emit_progress(
-                            training_progress_event(
-                                operation_id, None, None, elapsed, record
-                            )
+                elapsed = time.monotonic() - started
+                log_text = read_training_log(train_log, progress_offset)
+                record = latest_training_record(log_text)
+                steps = latest_step_count(log_text)
+                typed_events.emit("liveness", {}, scope="info")
+                if steps is None:
+                    _emit_progress(
+                        training_progress_event(
+                            operation_id, None, None, elapsed, record
                         )
-                    else:
-                        if steps != last_steps:
-                            last_steps = steps
-                            last_progress_at = time.monotonic()
-                        progress_target = target_timesteps or timesteps
-                        completed_this_run = (
-                            steps
-                            if not continue_timesteps
-                            else max(steps - (progress_target - timesteps), 0)
+                    )
+                else:
+                    if steps != last_steps:
+                        last_steps = steps
+                        last_progress_at = time.monotonic()
+                    progress_target = target_timesteps or timesteps
+                    completed_this_run = (
+                        steps
+                        if not continue_timesteps
+                        else max(steps - (progress_target - timesteps), 0)
+                    )
+                    eta = (
+                        elapsed * max(progress_target - steps, 0) / completed_this_run
+                        if completed_this_run
+                        else 0
+                    )
+                    _emit_progress(
+                        training_progress_event(
+                            operation_id,
+                            steps,
+                            progress_target,
+                            elapsed,
+                            record,
+                            eta_seconds=eta if completed_this_run else None,
                         )
-                        eta = (
-                            elapsed
-                            * max(progress_target - steps, 0)
-                            / completed_this_run
-                            if completed_this_run
-                            else 0
-                        )
-                        _emit_progress(
-                            training_progress_event(
-                                operation_id,
-                                steps,
-                                progress_target,
-                                elapsed,
-                                record,
-                                eta_seconds=eta if completed_this_run else None,
-                            )
-                        )
+                    )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
                     announce_training_checkpoints(
