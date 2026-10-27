@@ -25,6 +25,10 @@ TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
 # Candidates are ordinary cadence artifacts; none may mark the end of training.
 CANDIDATE_NAME_PATTERN = re.compile(r"checkpoint-\d+")
+# Progress sources are polled every second; a sample is published when the
+# observed counters change, and at least every STATUS_INTERVAL_SECONDS as a
+# heartbeat.
+PROGRESS_POLL_SECONDS = 1.0
 STATUS_INTERVAL_SECONDS = 15
 INTERRUPT_GRACE_SECONDS = 30
 EVALUATION_TIMEOUT_SECONDS = 12 * 60 * 60
@@ -209,6 +213,13 @@ def read_training_log(log_path: Path, after_offset: int = 0) -> str:
     with log_path.open(encoding="utf-8", errors="replace") as handle:
         handle.seek(after_offset)
         return handle.read()
+
+
+def _file_size(path: Path) -> int:
+    try:
+        return path.stat().st_size
+    except OSError:
+        return -1
 
 
 def latest_step_count(text: str) -> int | None:
@@ -407,48 +418,60 @@ def train_candidate(
         last_steps: int | None = None
         last_progress_at = started
         announced_checkpoints: set[str] = set()
+        last_log_size = -1
+        last_emitted_at = float("-inf")
         try:
             while process.poll() is None:
                 try:
-                    process.wait(timeout=STATUS_INTERVAL_SECONDS)
+                    process.wait(timeout=PROGRESS_POLL_SECONDS)
                 except subprocess.TimeoutExpired:
                     pass
-                elapsed = time.monotonic() - started
-                log_text = read_training_log(train_log, progress_offset)
-                record = latest_training_record(log_text)
-                steps = latest_step_count(log_text)
-                typed_events.emit("liveness", {}, scope="info")
-                if steps is None:
-                    _emit_progress(
-                        training_progress_event(
-                            operation_id, None, None, elapsed, record
+                now = time.monotonic()
+                elapsed = now - started
+                log_size = _file_size(train_log)
+                if (
+                    log_size != last_log_size
+                    or now - last_emitted_at >= STATUS_INTERVAL_SECONDS
+                ):
+                    last_log_size = log_size
+                    last_emitted_at = now
+                    log_text = read_training_log(train_log, progress_offset)
+                    record = latest_training_record(log_text)
+                    steps = latest_step_count(log_text)
+                    typed_events.emit("liveness", {}, scope="info")
+                    if steps is None:
+                        _emit_progress(
+                            training_progress_event(
+                                operation_id, None, None, elapsed, record
+                            )
                         )
-                    )
-                else:
-                    if steps != last_steps:
-                        last_steps = steps
-                        last_progress_at = time.monotonic()
-                    progress_target = target_timesteps or timesteps
-                    completed_this_run = (
-                        steps
-                        if not continue_timesteps
-                        else max(steps - (progress_target - timesteps), 0)
-                    )
-                    eta = (
-                        elapsed * max(progress_target - steps, 0) / completed_this_run
-                        if completed_this_run
-                        else 0
-                    )
-                    _emit_progress(
-                        training_progress_event(
-                            operation_id,
-                            steps,
-                            progress_target,
-                            elapsed,
-                            record,
-                            eta_seconds=eta if completed_this_run else None,
+                    else:
+                        if steps != last_steps:
+                            last_steps = steps
+                            last_progress_at = time.monotonic()
+                        progress_target = target_timesteps or timesteps
+                        completed_this_run = (
+                            steps
+                            if not continue_timesteps
+                            else max(steps - (progress_target - timesteps), 0)
                         )
-                    )
+                        eta = (
+                            elapsed
+                            * max(progress_target - steps, 0)
+                            / completed_this_run
+                            if completed_this_run
+                            else 0
+                        )
+                        _emit_progress(
+                            training_progress_event(
+                                operation_id,
+                                steps,
+                                progress_target,
+                                elapsed,
+                                record,
+                                eta_seconds=eta if completed_this_run else None,
+                            )
+                        )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
                     announce_training_checkpoints(
@@ -705,6 +728,8 @@ def evaluate_artifact(
     )
     last_progress_at = started
     completed_episodes = 0
+    reported_episodes = -1
+    last_emitted_at = float("-inf")
     # The evaluator can emit large episode-level diagnostics. File-backed streams
     # avoid filling a Windows pipe while this process waits and prints heartbeats.
     with (
@@ -725,7 +750,7 @@ def evaluate_artifact(
         try:
             while True:
                 try:
-                    process.wait(timeout=STATUS_INTERVAL_SECONDS)
+                    process.wait(timeout=PROGRESS_POLL_SECONDS)
                     break
                 except subprocess.TimeoutExpired:
                     try:
@@ -741,18 +766,25 @@ def evaluate_artifact(
                     if current_completed > completed_episodes:
                         completed_episodes = current_completed
                         last_progress_at = time.monotonic()
-                    _emit_progress(
-                        {
-                            "kind": "eval_progress",
-                            "operation_id": operation_id,
-                            "instrument": label,
-                            "official": bool(official_benchmark),
-                            "episodes": completed_episodes,
-                            "episodes_total": episodes,
-                            "elapsed_seconds": round(time.monotonic() - started, 1),
-                        }
-                    )
-                    typed_events.emit("liveness", {}, scope="info")
+                    now = time.monotonic()
+                    if (
+                        completed_episodes != reported_episodes
+                        or now - last_emitted_at >= STATUS_INTERVAL_SECONDS
+                    ):
+                        reported_episodes = completed_episodes
+                        last_emitted_at = now
+                        _emit_progress(
+                            {
+                                "kind": "eval_progress",
+                                "operation_id": operation_id,
+                                "instrument": label,
+                                "official": bool(official_benchmark),
+                                "episodes": completed_episodes,
+                                "episodes_total": episodes,
+                                "elapsed_seconds": round(now - started, 1),
+                            }
+                        )
+                        typed_events.emit("liveness", {}, scope="info")
                     if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
                         stop_process(process, graceful=False)
                         raise TimeoutError(

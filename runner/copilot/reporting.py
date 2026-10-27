@@ -28,7 +28,7 @@ MAX_CONSOLE_POINTER_LENGTH = 96
 
 
 # How often a growing PI message is published to the observation feed.
-PI_PARTIAL_SECONDS = 2.0
+PI_PARTIAL_SECONDS = 1.0
 
 
 CONTEXT_BAND_TOKENS = 50_000
