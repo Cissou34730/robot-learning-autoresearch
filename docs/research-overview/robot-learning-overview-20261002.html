@@ -640,7 +640,8 @@
           and can stop any running campaign. Changes since 24 October: duplicate panels refused, mechanism tests
           account for the contrast with comparable successes, the analyst models invariances, operations wait in
           25-minute slices, and several campaigns can run at once. Elapsed time and AI usage were shown to the PI in
-          round 4 only and removed on 27 October.</p>
+          round 4 only and removed on 27 October.
+        </p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
@@ -755,7 +756,8 @@
       </div>
       <div class="card" style="margin-top: 16px">
         <h3>Run campaigns from the harness folder</h3>
-        <p><strong>Standard: 1 to 5 campaigns at once.</strong> <code>uv run python -m tools.run_parallel --count 3</code> uses
+        <p><strong>Standard: 1 to 5 campaigns at once.</strong>
+          <code>uv run python -m tools.run_parallel --count 3</code> uses
           <code>campaign-1</code> to <code>campaign-3</code>, initializes missing slots from an existing one, resets
           each
           to the recipe, launches each campaign in the background without a window and starts a monitor that stops a
@@ -765,16 +767,19 @@
         </p>
         <p><strong>One campaign by hand.</strong> <code>.\run_research.ps1</code> (the Python launcher
           <code>runner.launcher</code>) launches or resumes the selected campaign without console output. It does not
-          reset it.</p>
+          reset it.
+        </p>
         <p>
           <code>uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force ; .\run_research.ps1</code>
         </p>
         <p>The second command deliberately resets before launch. Stop the campaign first. <code>--clean</code> discards
           eligible uncommitted changes. The semicolon is not success-only: inspect any reset failure before authorizing
           launch.</p>
-        <p>Both accept <code>--campaign-root &lt;path&gt;</code> and default to <code>campaign-1</code>. They run in their
+        <p>Both accept <code>--campaign-root &lt;path&gt;</code> and default to <code>campaign-1</code>. They run in
+          their
           own process, so the caller's folder never changes. A campaign stops cooperatively when its stop request
-          <code>.git\stop-request</code> appears.</p>
+          <code>.git\stop-request</code> appears.
+        </p>
         <p><strong>Baseline v3 is a recipe, not a trained model.</strong> Its Fresh reset keeps the current harness,
           restores scientific files and starts empty history with scientific-model preparation pending. It does not
           restore an old harness commit.</p>
@@ -910,7 +915,8 @@
         <div class="diagram loop" tabindex="0" aria-label="Scrollable agents and data flow diagram">
           <svg viewBox="0 0 1000 1030" role="img" aria-labelledby="arch-title arch-description">
             <title id="arch-title">Research lifecycle: agents, Runner and campaign records</title>
-            <desc id="arch-description">The maintainer starts the launcher, the Python module runner.launcher. The launcher first runs
+            <desc id="arch-description">The maintainer starts the launcher, the Python module runner.launcher. The
+              launcher first runs
               the preliminary analyst session, which writes the fixed scientific model in
               pi_workspace/scientific_model.md, then starts PI sessions one at a time. Each PI session receives a system
               prompt with persona, autonomy and campaign reference contracts, and a first message with the scientific
@@ -2477,7 +2483,8 @@
                   <td>Inquiry training requests must use the full 120,000-step allocation.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>Closed on 24 October by the harness change after <code>efd58acc</code>: an inquiry run now lies
-                    between the allocation (120k) and the maintainer maximum (<code>--max-timesteps</code>, default 360k).
+                    between the allocation (120k) and the maintainer maximum (<code>--max-timesteps</code>, default
+                    360k).
                     Startup stays at most the allocation.</td>
                 </tr>
                 <tr>
@@ -2671,7 +2678,8 @@
                 <tr>
                   <td>OI-054</td>
                   <td>The PI is told the campaign is judged on time and AI usage, but sees neither number. In
-                    <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.</td>
+                    <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.
+                  </td>
                   <td><span class="tag">Withdrawn</span></td>
                   <td>Withdrawn by the maintainer on 27 October and removed from the PI's resource line. It was added in
                     <code>4ce2fdb1</code> (elapsed time and AI usage of completed sessions by role). Round 4, the only
@@ -2679,7 +2687,8 @@
                     campaign, mostly as bookkeeping, and <code>c7be4376</code> requested the assessment after 1 h 47 at
                     an estimated 41% pass chance. Three campaigns cannot attribute the result to the line. On
                     20 October cost guidance had already been removed from PI decisions for the same risk of early
-                    assessment.</td>
+                    assessment.
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -2736,7 +2745,8 @@
           Check, for each campaign: whether the scientific model states the invariances and when the PI uses them
           (OI-053); the development success rate at each official-assessment request, against the earlier failed
           requests at 40%, 41% and 64% estimated pass chance; whether the first experiment changes one part of the
-          recipe or several (OI-055); the share of AIU spent by the coder and reviewer.</li>
+          recipe or several (OI-055); the share of AIU spent by the coder and reviewer.
+        </li>
         <li>Classify OI-024 reruns by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
         <li>Earlier check, still unanswered: whether frozen-weight runtime tests lead to a training run that carries
@@ -3084,7 +3094,8 @@
           prompts and system prompts are byte-identical; launches write no console output, and the TUI follows the
           typed event feed and can stop any campaign through its stop request. Round 4 then ran on it:
           <code>c7be4376</code> failed 195/200, and <code>a51fadff</code> and <code>5489d042</code> were stopped near
-          97.5%. All three scientific models stated the reflection symmetry; none used it in the policy.</p>
+          97.5%. All three scientific models stated the reflection symmetry; none used it in the policy.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: the PI sees time and AI usage; the recipe is the first reference</h3>
