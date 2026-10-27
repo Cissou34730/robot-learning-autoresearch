@@ -15,6 +15,9 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 - The assistant may inspect and edit approved maintainer-owned files, but must
   never launch, resume, reset, train, measure or evaluate a campaign without
   explicit maintainer authorization for that bounded task.
+- Never edit or commit any harness file, documentation included, while a
+  campaign runs. An uncommitted change fails the Runner's request checks; a
+  new harness commit ends every running PI session (round 5).
 - A harness implementation check is not evidence of scientific effectiveness.
 - A campaign observation does not prove causality unless the comparison
   isolates the claimed change.
@@ -66,8 +69,10 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 ## Current state
 
 **27 October 2026.** Branch `harness` at `375ca4fb` (Python launcher) plus
-documentation commits, pushed to `origin/harness`. Latest round: round 4,
-0 of 3 passed (see [Round 4](#parallel-round-4-27-october)).
+later fixes and documentation commits. Latest round: round 5, invalid: a
+maintainer edit and commit during the run stopped the campaigns; 2 of 4 had
+reached 400/400 on development panels (see
+[Round 5](#parallel-round-5-27-october)).
 
 - **Repositories.** The harness is published on GitHub branch `harness`. Campaigns
   live in local repositories under one plain folder beside the harness,
@@ -135,7 +140,7 @@ from the same recipe (`baseline-distinct-episodes-v3-robot`). Newest first.
 
 | Round | Date | Harness | Change under test | Passed | Decision |
 |---|---|---|---|---|---|
-| 5 | 27 Oct | `9591b56a` | Round 3 conditions plus OI-055 (recipe as first reference, method among the assumptions); OI-054 removed | Running (4 campaigns) | — |
+| 5 | 27 Oct | `9591b56a` | Round 3 conditions plus OI-055 (recipe as first reference, method among the assumptions); OI-054 removed | Invalid (4 campaigns): stopped at about 1 h 20 after a maintainer edit and commit; 2 at 400/400 development, none assessed | Repeat unchanged; OI-057 added |
 | 4 | 27 Oct | `375ca4fb` | Python launcher; OI-054 (elapsed time and AIU shown to the PI); OI-055 | 0 of 3 | OI-054 withdrawn; OI-055 kept |
 | 3 | 26 Oct | `3b288c83` | Contrast paragraph, program changes 1-3, analyst invariances (OI-053, OI-056) | 2 of 3 | Kept; led to OI-054 and OI-055 |
 | 2 | 25 Oct | `9224b15b` | Duplicate-panel refusal (OI-052) | 1 of 3 | Kept |
@@ -145,10 +150,10 @@ from the same recipe (`baseline-distinct-episodes-v3-robot`). Newest first.
 
 | Campaign | Date | Harness | Outcome | Time | AIU | Record |
 |---|---|---|---|---|---|---|
-| `927b3b57` | 27 Oct | round 5 (`9591b56a`) | Running | — | — | — |
-| `0c12d136` | 27 Oct | round 5 | Running | — | — | — |
-| `923f335d` | 27 Oct | round 5 | Running | — | — | — |
-| `f84166f2` | 27 Oct | round 5 | Running | — | — | — |
+| `927b3b57` | 27 Oct | round 5 (`9591b56a`) | Stopped by the harness commit in goal review; best T3:checkpoint-120832 400/400 (reflection I/O by transfer) | 1 h 12 | 28.6 | [Round 5](#parallel-round-5-27-october) |
+| `0c12d136` | 27 Oct | round 5 | Stopped by the harness commit in I3; best T2:checkpoint-90112 196/200 task reference, 194/200 fresh | 1 h 12 | 27.2 | [Round 5](#parallel-round-5-27-october) |
+| `923f335d` | 27 Oct | round 5 | Stopped by the harness commit in I4; best T2:checkpoint-120832 391/400 | 1 h 11 | 24.7 | [Round 5](#parallel-round-5-27-october) |
+| `f84166f2` | 27 Oct | round 5 | Stopped by the maintainer after I3; best T4:checkpoint-60416 400/400 (reflection I/O by transfer) | 1 h 18 | 27.9 | [Round 5](#parallel-round-5-27-october) |
 | `a51fadff` | 27 Oct | round 4 (`375ca4fb`, Python launcher) | Stopped by the maintainer after I13; best T6:checkpoint-120832 389-393/400 | 5 h 13 | 115.7 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-a51fadff-20261027.html) |
 | `5489d042` | 27 Oct | round 4 | Stopped by the maintainer during I10 (T15 pending, resumable); best T3:checkpoint-110592 about 97.5% | 5 h 14 | 100.2 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-5489d042-20261027.html) |
 | `c7be4376` | 27 Oct | round 4 | Failed 195/200 at an estimated 41% pass chance | 1 h 47 | 52.1 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-c7be4376-20261027.html) |
@@ -179,6 +184,34 @@ from the same recipe (`baseline-distinct-episodes-v3-robot`). Newest first.
 | `4a65a241` | 21 Oct | dirty worktree | Stopped after about 6 h; every protected evaluation rejected | about 6 h | 205.8 | Ledger 21 Oct |
 | `758843c0` | 20 Oct | `2b52e36a` | Failed 189/200 | — | 60.9 | Ledger 20 Oct |
 | `1c940d68` | 20 Oct | before `2b52e36a` | Failed 189/200 | — | — | [Report](research-overview/robot-campaign-1c940d68-20261020.html) |
+
+### Parallel round 5 (27 October)
+
+Four campaigns on `9591b56a`, launched from the TUI. The round is invalid: at
+about 07:35 UTC the maintainer session edited this tracker, and the Runner's
+request checks failed until it was committed at about 07:40; the commit moved
+the harness HEAD and the launchers of `927b3b57`, `0c12d136` and `923f335d`
+stopped ("PI work changed repository content outside the PI-owned paths:
+HEAD"). The maintainer stopped `f84166f2` at 07:47. No official assessment
+ran.
+
+All four PIs trained the inherited recipe unchanged first (292/400, 147/200 on
+the task reference) and then changed one factor, the training radius range
+to 6-20 cm (95-98%), with residual failures at negative target angles
+(OI-055 followed). `927b3b57` and `f84166f2` compared the failures with exact
+mirror pairs (`f84166f2`: 200/200 positive side, 182/200 negative), tested the
+reflection on frozen T2 weights (`927b3b57`: 212/216, zero discordant pairs;
+flipping only the commands gave 0/108) and transferred T2 with reflection I/O:
+400/400 on fresh panels at 67 and 77 minutes. In `f84166f2` the same I/O
+trained from scratch for 120k steps scored 208/400. Neither requested the
+assessment before confirmation; `927b3b57` noted its 99.6% pass estimate was
+optimistic because the checkpoint was selected on the same panel.
+`0c12d136` replayed its failures against their mirrors but attributed them to
+the shoulder limit (a limit penalty gave 195 against 194/200; then a fresh
+joint-target controller); its scientific model restricts the symmetry to
+"trajectories away from active joint stops" (OI-057). `923f335d` stratified
+only by radius and never compared failures with their mirrors. AIU at stop:
+24.7-28.6 per campaign, coder and reviewer 14-25%.
 
 ### Parallel round 4 (27 October)
 
@@ -549,12 +582,12 @@ or mutated by this review; the evidence-fidelity RCA remains deferred.
 
 **Status and description review: 27 October 2026.**
 
-Four issues require work. Five changes need more evidence. Thirty-five issues
-are closed. Twelve entries are inactive. All 56 issue IDs remain.
+Five issues require work. Five changes need more evidence. Thirty-five issues
+are closed. Twelve entries are inactive. All 57 issue IDs remain.
 
 On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and
 OI-052 to OI-056 were added from the parallel rounds. On 27 October the
-maintainer withdrew OI-054 after round 4.
+maintainer withdrew OI-054 after round 4, and OI-057 was added from round 5.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
 The maintainer also closed OI-033 and OI-037 without a verified recovery claim,
@@ -563,7 +596,7 @@ OI-040 to OI-047 replace the former follow-up items outside the register.
 OI-006 is retired because the training allocation remains a fixed constraint.
 Retirement does not claim that this allocation is optimal.
 
-### Open issues — 4
+### Open issues — 5
 
 These issues need investigation or design before a repair.
 This register does not authorize runtime changes or campaign operations.
@@ -573,6 +606,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-024 | The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern. | **Open** | Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse of prior results. Preserve PI judgment. No automatic duplicate gate is approved. |
 | OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool `training_series_statistics` (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence. |
 | OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": in `e7dbbece` the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. Use: 8 calls in `cfa88359`, 45 in `5d94bf8a`. |
+| OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. |
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
 
 ### Changes that need more evidence — 5
@@ -584,8 +618,8 @@ effect.
 |---|---|---|---|
 | OI-008 | Repeated context can increase cost and obscure current evidence. | **Observed** | Size reductions since 21 October: per-operation instrument files instead of one contract; first-message context files for PI sessions (effective from `e7dbbece`) and for the opening scientific-model session (2026-10-22); `campaigns/results.jsonl` read through `artifact_evidence_query`; context bands in the console. PI AIU per session: `49e58c12` 5.10, `e7dbbece` 2.88, `6882b9ec` 2.80, `cfa88359` 3.29. After startup the PI re-reads almost no contract files. The opening session's `contracts/scenario.md` re-reads fell from 21 to 0 in `cfa88359`; it still re-read `authority.md` (11) and `policy_runtime.py` (6), which are now included. Remaining check: context growth and cost across a campaign longer than about 15 sessions. Keep the complete history accessible. Do not infer a context repair from faster model responses. |
 | OI-051 | An operation that runs longer than 30 minutes ends the PI session. The SDK allows an external tool call at most 1,800 seconds, and `submit_operation` waited for the whole operation. | **Implemented** | `3135b37b` (26 October): `submit_operation` waits at most 25 minutes, then returns `running`; the operation continues, and `request=null` waits for its result. All other tools stay blocked meanwhile. The PI session activity limit is now 6 h; coder and reviewer time counts toward it, Runner waits do not. Observed 25 October in the minimal-recipe campaign `05229297` (M42, 3 × 2,400 episodes, about 35 minutes). No campaign has yet run an operation longer than 25 minutes, so the slice has not been exercised. |
-| OI-053 | Campaign outcomes depend on whether the scientific model states the arm's reflection symmetry. The analyst wrote it in 1 of 28 models before 26 October. | **Observed** | `2f22d98d` (26 October) adds to the analyst's model scope: the invariances of the definitions, such as symmetries and conserved quantities, and what each makes equal or different. Round 3 (26 October): all 3 models state the symmetry; 2 of 3 campaigns passed (`17e9764f` in 50 min, `de7af8af` in 3 h 21). Before: the only campaign whose model stated it (`6b13d5f4`) passed in 52 min; `fecc7566` found it by a mirror-pair experiment; the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See [parallel rounds](#parallel-rounds-25-26-october). |
-| OI-055 | The PI's first experiment can change several parts of the recipe at once and anchor the campaign on an untested base. In `38ad68c6`, T1 widened the radius range and switched to fixed-gain joint targets together (60%); the campaign never tested direct torque (about 94% elsewhere) and ended at about 85%. | **Implemented** | `4ce2fdb1` (26 October), `contracts/program.md`: the inherited recipe is the first reference, and a first experiment that changes several parts at once cannot attribute its result; the assumptions checked before a costly experiment include the choice of method, not only the correctness of its implementation. No campaign has run with it. |
+| OI-053 | Campaign outcomes depend on whether the scientific model states the arm's reflection symmetry. The analyst wrote it in 1 of 28 models before 26 October. | **Observed** | `2f22d98d` (26 October) adds to the analyst's model scope: the invariances of the definitions, such as symmetries and conserved quantities, and what each makes equal or different. Round 3 (26 October): all 3 models state the symmetry; 2 of 3 campaigns passed (`17e9764f` in 50 min, `de7af8af` in 3 h 21). Before: the only campaign whose model stated it (`6b13d5f4`) passed in 52 min; `fecc7566` found it by a mirror-pair experiment; the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See [parallel rounds](#parallel-rounds-25-26-october). Round 4: all 3 models stated it, no PI used it. Round 5 (invalid): all 4 models stated it; 2 PIs used it and reached 400/400 by about 77 min, 1 set it aside under a stated condition (OI-057), 1 never compared mirrored failures. |
+| OI-055 | The PI's first experiment can change several parts of the recipe at once and anchor the campaign on an untested base. In `38ad68c6`, T1 widened the radius range and switched to fixed-gain joint targets together (60%); the campaign never tested direct torque (about 94% elsewhere) and ended at about 85%. | **Implemented** | `4ce2fdb1` (26 October), `contracts/program.md`: the inherited recipe is the first reference, and a first experiment that changes several parts at once cannot attribute its result; the assumptions checked before a costly experiment include the choice of method, not only the correctness of its implementation. Round 5: all 4 PIs trained the recipe unchanged first and then changed one factor (training radius). Round 4 also ran with it (0 of 3). |
 | OI-056 | At a plateau the PI explains failures without the contrast with comparable successes, repeats the same mechanism question, and abandons or repeats methods after one inconclusive result. | **Implemented** | `a93baf4b` and `2f22d98d` (25-26 October), `contracts/program.md`: a mechanism test accounts for where behavior fails and where comparable conditions succeed, and the scientific model states what the definitions make equal; an intervention can supply the evidence for an explanation; check the assumptions of a costly experiment; name the limitation the next implementation addresses; an inconclusive result alone does not justify another attempt or abandonment. Changes 1-3 come from [the preserve-lifecycle proposal](proposals/program-revision-proposal-preserve-lifecycle-20261026.md). Round 3 ran with all of them; their effect cannot be separated from OI-053. |
 
 ### Closed issues — 35
@@ -656,16 +690,17 @@ The historical evidence remains valid.
 
 ### Next maintainer actions
 
-1. Round 4 (27 October, Python launcher) ran: 0 of 3 passed, and no campaign
-   used the reflection symmetry in the policy although every scientific model
-   stated it. The maintainer withdrew OI-054 in response. Run round 5 with
-   `uv run python -m tools.run_parallel --count 3`; it repeats round 3's
-   conditions plus OI-055. Check, for each campaign: whether the scientific
-   model states the invariances and when the PI uses them (OI-053); the
-   development success rate at each official-assessment request, against the
-   earlier failed requests at 40%, 41% and 64% estimated pass chance;
-   whether the first experiment changes one part of the recipe or several
-   (OI-055); the share of AIU spent by the coder and reviewer.
+1. Round 5 was invalidated by a maintainer edit and commit during the run.
+   Before round 6, implement the TUI corrections (per-campaign failure
+   isolation). Then repeat round 5's conditions unchanged, with no harness
+   edits until every campaign ends. Check, for each campaign: whether the
+   scientific model states the invariances, with what conditions, and when the
+   PI uses them (OI-053, OI-057); the development success rate at each
+   official-assessment request, against the earlier failed requests at 40%,
+   41% and 64% estimated pass chance; whether the first experiment changes one
+   part of the recipe or several (OI-055); whether reflection I/O is trained
+   from scratch or by transfer; the share of AIU spent by the coder and
+   reviewer.
 2. Classify OI-024 reruns by their actual information gain or corrected
    defect. Do not equate all repetition with waste.
 3. Earlier check, still unanswered: whether frozen-weight runtime tests lead to
@@ -685,6 +720,8 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-27 | Parallel round 5 (invalid) | Four campaigns from the TUI. A maintainer edit of this tracker during the run failed Runner request checks, and its commit ended the PI sessions of `927b3b57`, `0c12d136` and `923f335d`; the maintainer stopped `f84166f2`. Two campaigns reached 400/400 with reflection I/O by transfer. OI-057 added; the no-edit rule added to the operating rules; test rounds table added. See [Round 5](#parallel-round-5-27-october). |
+| 2026-10-27 | Campaign initializer fixes | `0bcf4884`: `tools/initialize_campaign.py` registers the Git `safe.directory` entry itself, so TUI initialization of a new slot works (it failed on `campaign-4` with "dubious ownership"); `tools/run_parallel.py` no longer duplicates it. `9591b56a`: a failed initialization removes its partial folder, which the TUI otherwise counts as installed. TUI and launcher tests: 96 pass. |
 | 2026-10-27 | Time and AI usage removed from the PI's resource line (OI-054 withdrawn) | Maintainer decision after round 4 (0 of 3). `runner/launcher/summaries.py`: the campaign resource line the PI receives keeps only counts; its test was removed. Round 5 repeats round 3's conditions plus OI-055. Full suite: 748 pass. |
 | 2026-10-27 | Stop between validation and execution | A stop that arrived after an operation was validated, during the trust scan, still started the Runner; the Runner, interrupted while loading state, exited `0xC000013A` and the unaccepted request stayed for resume (`a51fadff`). The Runner now exits 130 for a stop outside an operation, and the launcher re-checks the stop before writing and executing the request. Two regression tests. |
 | 2026-10-27 | Parallel round 4 (Python launcher) | `a51fadff` and `5489d042` stopped by the maintainer at about 5 h 13 (115.7 and 100.2 AIU, both near 97.5%); `c7be4376` failed 195/200 (1 h 47, 52.1 AIU). No campaign used the reflection symmetry in the policy. Reports copied into `docs/research-overview/`. See [Round 4](#parallel-round-4-27-october). |
