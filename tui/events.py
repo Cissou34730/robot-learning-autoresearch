@@ -180,8 +180,7 @@ def synthesize_history(
             _history_event(
                 "session_start",
                 event_id=f"history:session:{session.get('id')}",
-                ts=started,
-                scope="session",
+                ts=parse_timestamp(session.get("started_at")) or started,
                 session_id=str(session.get("id") or ""),
                 payload=dict(session),
             )
@@ -195,7 +194,6 @@ def synthesize_history(
                 _history_event(
                     "inquiry_opened",
                     event_id=f"history:inquiry:{inquiry_id}",
-                    ts=started,
                     scope="inquiry",
                     session_id=str(session.get("id") or "")
                     if isinstance(session, dict)

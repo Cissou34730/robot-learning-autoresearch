@@ -184,6 +184,7 @@ class EventLog(Tree[TimelineItem]):
         self._following = True
         self._missed = 0
         self._node_by_id: dict[str, TreeNode[TimelineItem]] = {}
+        self._sigs: dict[str, tuple] = {}
         self._items_by_id: dict[str, TimelineItem] = {}
         self._last_signature: tuple[tuple, ...] = ()
         self._last_active_ids: frozenset[str] = frozenset()
@@ -245,6 +246,7 @@ class EventLog(Tree[TimelineItem]):
         self._collapsed.clear()
         self._node_by_id.clear()
         self._items_by_id.clear()
+        self._sigs.clear()
         self._following = True
         self._missed = 0
         self._last_signature = ()
@@ -260,39 +262,128 @@ class EventLog(Tree[TimelineItem]):
         *,
         active_ids: set[str] | None = None,
     ) -> None:
+        """Bring the tree in line with ``roots`` by changing only what differs.
+
+        Nodes keep their identity, so the cursor, the scroll position and the
+        user's expansion choices survive each update.
+        """
         active_ids = active_ids or set()
         signature = tuple(self._flatten_ids(roots))
         active_key = frozenset(active_ids)
+        styles_changed = self._styles != self._last_styles
         if (
             signature == self._last_signature
             and active_key == self._last_active_ids
-            and self._styles == self._last_styles
+            and not styles_changed
         ):
             return
         new_items = bool(self._last_signature) and signature != self._last_signature
         was_following = self._following
         selected = self.selected_item()
-        scroll_y = self.scroll_offset.y
-        self.clear()
-        self._node_by_id.clear()
-        self._items_by_id.clear()
-        for item in roots:
-            self._add_item(self.root, item, active_ids)
+        if styles_changed:
+            self.clear()
+            self._sigs.clear()
+        self._node_by_id = {}
+        self._items_by_id = {}
+        self._reconcile(self.root, roots, active_ids)
+        self._invalidate()
         self._last_signature = signature
         self._last_active_ids = active_key
         self._last_styles = dict(self._styles)
         if selected is not None:
             node = self._node_by_id.get(selected.item_id)
             if node is not None:
-                self.move_cursor(node, animate=False)
+                self._tree_lines  # noqa: B018 - builds the line numbers
+                if node._line != self.cursor_line:
+                    self.cursor_line = node._line
         if was_following:
-            self.scroll_end(animate=False)
-        else:
-            self.scroll_to(y=scroll_y, animate=False)
-            if new_items:
-                self._missed += 1
+            self.call_after_refresh(self.scroll_end, animate=False)
+        elif new_items:
+            self._missed += 1
         if selected is None and roots:
             self.call_after_refresh(self._select_latest_visible)
+
+    @staticmethod
+    def _sig(item: TimelineItem) -> tuple:
+        return (
+            item.title,
+            item.summary,
+            item.kind,
+            item.ts,
+            item.end_ts,
+            item.status,
+            item.severity,
+            item.detail,
+        )
+
+    def _reconcile(
+        self,
+        parent: TreeNode[TimelineItem],
+        items: list[TimelineItem],
+        active_ids: set[str],
+    ) -> None:
+        wanted = [item.item_id for item in items]
+        wanted_set = set(wanted)
+        for node in list(parent.children):
+            if node.data is None or node.data.item_id not in wanted_set:
+                node._remove()
+        current = [node for node in parent.children if node.data is not None]
+        kept = {node.data.item_id for node in current}
+        if [node.data.item_id for node in current] != [
+            item_id for item_id in wanted if item_id in kept
+        ]:
+            # Order changed: rebuild only this level.
+            parent._remove_children()
+            current = []
+        by_id = {node.data.item_id: node for node in current}
+        for position, item in enumerate(items):
+            node = by_id.get(item.item_id)
+            if node is None:
+                self._add_item(parent, item, active_ids, before=position)
+            else:
+                self._update_item(node, item, active_ids)
+
+    def _update_item(
+        self,
+        node: TreeNode[TimelineItem],
+        item: TimelineItem,
+        active_ids: set[str],
+    ) -> None:
+        node.data = item
+        self._items_by_id[item.item_id] = item
+        self._node_by_id[item.item_id] = node
+        signature = self._sig(item)
+        if self._sigs.get(item.item_id) != signature:
+            self._sigs[item.item_id] = signature
+            node.set_label(self._label(item))
+            node.allow_expand = (
+                item.is_group or bool(item.detail) or self._is_flow(item)
+            )
+            if not item.is_group and node.is_expanded:
+                self._populate_details(node, item)
+        active = item.item_id in active_ids
+        if active != (item.item_id in self._last_active_ids):
+            keeps_open = item.item_id in self._expanded or item.default_expanded
+            if active and item.item_id not in self._collapsed:
+                self._set_expanded(node, item, True)
+            elif not active and not keeps_open:
+                self._set_expanded(node, item, False)
+        if item.is_group:
+            self._reconcile(node, item.children, active_ids)
+        elif node.is_expanded and not node.children and item.detail:
+            self._populate_details(node, item)
+
+    def _set_expanded(
+        self, node: TreeNode[TimelineItem], item: TimelineItem, expanded: bool
+    ) -> None:
+        # Not node.expand(): that would record an automatic change as the
+        # user's own choice.
+        if node.is_expanded == expanded:
+            return
+        node._expanded = expanded
+        node._updates += 1
+        if expanded and not item.is_group and not node.children:
+            self._populate_details(node, item)
 
     def _select_latest_visible(self) -> None:
         if self.cursor_node is not None:
@@ -330,6 +421,7 @@ class EventLog(Tree[TimelineItem]):
         parent: TreeNode[TimelineItem],
         item: TimelineItem,
         active_ids: set[str],
+        before: int | None = None,
     ) -> None:
         self._items_by_id[item.item_id] = item
         expanded = item.item_id not in self._collapsed and (
@@ -344,8 +436,10 @@ class EventLog(Tree[TimelineItem]):
             data=item,
             allow_expand=expandable,
             expand=expanded,
+            before=before,
         )
         self._node_by_id[item.item_id] = node
+        self._sigs[item.item_id] = self._sig(item)
         if item.is_group:
             for child in item.children:
                 self._add_item(node, child, active_ids)
@@ -599,6 +693,11 @@ class EventLog(Tree[TimelineItem]):
                 else "accent"
             )
             return styles.get(role, "")
+        scope = str(item.payload.get("scope") or "")
+        if scope in {"assessment", "validation"} and "failed" in str(
+            item.payload.get("status") or ""
+        ):
+            return f"bold {styles.get('error', '')}".strip()
         scope_role = {
             "session": "session",
             "campaign": "heading",

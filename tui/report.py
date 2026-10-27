@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import re
 import textwrap
+import time
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -43,13 +44,19 @@ from tui.timeline import TimelineReducer
 
 MIN_COLUMNS = 48
 MIN_ROWS = 16
-SNAPSHOT_SECONDS = 15.0
-TICK_SECONDS = 15.0
-FEED_SECONDS = 1.0
+# One master tick drives every time-based update, so the feed, the clocks and
+# the log always show the same moment.
+TICK_SECONDS = 1.0
+# Durable files are re-read only when they change. This interval covers
+# sources that cannot report a change.
+DURABLE_FALLBACK_SECONDS = 15.0
+# The Runner publishes progress when counters change and at least this often
+# (runner.execution.STATUS_INTERVAL_SECONDS). Staleness limits derive from it.
+RUNNER_HEARTBEAT_SECONDS = 15.0
 COMPACT_WIDTH = 100
 COMPACT_HEIGHT = 30
-LIVENESS_SECONDS = 300.0
-PROGRESS_STALE_SECONDS = 300.0
+LIVENESS_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
+PROGRESS_STALE_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
 
 
 # The log is display-only. These tokens are the single palette used by the
@@ -269,27 +276,47 @@ class CampaignSources:
 
     def __init__(self, campaign_root: Path | None = None) -> None:
         self._campaign_root = Path(campaign_root) if campaign_root else None
+        self._usage_path: Path | None = None
 
-    def read(self) -> tuple[dict | None, list[dict], list[dict]]:
-        from tui.sources import read_json, read_jsonl
-
+    def _locations(self) -> tuple[Path, Path, Path]:
         if self._campaign_root is not None:
             # Explicit per-campaign root (operator console tabs): frozen at
             # construction, never rebound through runner.paths globals.
             root = self._campaign_root
-            state_path = root / "runner" / "state" / "research_state.json"
-            results_path = root / "campaigns" / "results.jsonl"
-            usage_dir = root / "reports" / "session_usage"
-        else:
-            state_path = paths.STATE_PATH
-            results_path = paths.RESULTS_PATH
-            usage_dir = paths.ROOT / "reports" / "session_usage"
+            return (
+                root / "runner" / "state" / "research_state.json",
+                root / "campaigns" / "results.jsonl",
+                root / "reports" / "session_usage",
+            )
+        return (
+            paths.STATE_PATH,
+            paths.RESULTS_PATH,
+            paths.ROOT / "reports" / "session_usage",
+        )
+
+    def stamp(self) -> tuple:
+        """Changes whenever any durable source file is rewritten."""
+        from tui.sources import modified_ns
+
+        state_path, results_path, _ = self._locations()
+        return (
+            modified_ns(state_path),
+            modified_ns(results_path),
+            modified_ns(self._usage_path),
+        )
+
+    def read(self) -> tuple[dict | None, list[dict], list[dict]]:
+        from tui.sources import read_json, read_jsonl
+
+        state_path, results_path, usage_dir = self._locations()
         state = read_json(state_path)
         records = read_jsonl(results_path)
         usage_rows = []
         campaign_id = (state or {}).get("campaign", {}).get("id")
+        self._usage_path = None
         if campaign_id:
-            usage_rows = read_jsonl(usage_dir / f"{campaign_id}.jsonl")
+            self._usage_path = usage_dir / f"{campaign_id}.jsonl"
+            usage_rows = read_jsonl(self._usage_path)
         return state, records, usage_rows
 
 
@@ -478,6 +505,11 @@ class CampaignPanel(Widget):
         self._process_running: bool | None = None
         self._paused_at: datetime | None = None
         self._paused_intervals: list[tuple[datetime, datetime]] = []
+        self._hidden = False
+        self._durable_stamp: tuple | None = None
+        self._durable_read_at = float("-inf")
+        self._layout_key: tuple | None = None
+        self._shown_text: dict[str, Text | str] = {}
 
     @property
     def _view_size(self) -> Size:
@@ -533,9 +565,7 @@ class CampaignPanel(Widget):
         self._make_feed()
         self.refresh_snapshot()
         self.drain_feed()
-        self.set_interval(SNAPSHOT_SECONDS, self._on_snapshot_interval)
-        self.set_interval(TICK_SECONDS, self.tick_clock)
-        self.set_interval(FEED_SECONDS, self.drain_feed)
+        self.set_interval(TICK_SECONDS, self._master_tick)
         self._apply_layout()
 
     def _resolve_palette(self) -> Palette:
@@ -558,8 +588,32 @@ class CampaignPanel(Widget):
         event_log = self.query_one("#output", EventLog)
         event_log.styles.background = self._palette.log_bg
 
-    def _on_snapshot_interval(self) -> None:
-        self.refresh_snapshot()
+    def _is_shown(self) -> bool:
+        return all(widget.display for widget in self.ancestors_with_self)
+
+    def _master_tick(self) -> None:
+        """The one periodic update: feed, durable changes, then one render."""
+        if not self._is_shown():
+            # An inactive console tab does no work; it catches up when shown.
+            self._hidden = True
+            return
+        if self._hidden:
+            self._hidden = False
+            self.refresh_snapshot()
+        self.drain_feed(render=False)
+        self._refresh_durable_if_changed()
+        self.tick_clock()
+
+    def _refresh_durable_if_changed(self) -> None:
+        stamp_of = getattr(self._sources, "stamp", None)
+        if stamp_of is not None:
+            changed = stamp_of() != self._durable_stamp
+        else:
+            changed = (
+                time.monotonic() - self._durable_read_at >= DURABLE_FALLBACK_SECONDS
+            )
+        if changed:
+            self.refresh_snapshot()
 
     def _make_feed(self) -> None:
         if self._demo:
@@ -611,8 +665,9 @@ class CampaignPanel(Widget):
         self._log_categories = set()
         self._search_visible = False
         self._now_rows = 0
+        self._shown_text.clear()
+        self._layout_key = None
         self.query_one("#now", Static).update("")
-        self.snapshot = None
         self._attached = False
         self._context_rows = 0
         self._progress_rows = 0
@@ -650,6 +705,9 @@ class CampaignPanel(Widget):
     # ------------------------------------------------------------------
 
     def refresh_snapshot(self) -> None:
+        stamp_of = getattr(self._sources, "stamp", None)
+        self._durable_stamp = stamp_of() if stamp_of is not None else None
+        self._durable_read_at = time.monotonic()
         state, records, usage_rows = self._sources.read()
         if state is None and records:
             self._note_source(
@@ -745,20 +803,43 @@ class CampaignPanel(Widget):
         )
         return end - timedelta(seconds=paused)
 
+    def _advance(self, state: dict) -> float:
+        """Seconds the Runner has worked since its last sample.
+
+        The Runner publishes counters, not a clock; elapsed time and ETA run
+        locally between samples. Nothing advances while the process is paused
+        or the samples are stale.
+        """
+        last = state.get("last_ts")
+        if (
+            not isinstance(last, datetime)
+            or self._paused_at is not None
+            or self._progress_stale(state)
+        ):
+            return 0.0
+        return float(int(max(0.0, (self._clock_end(last) - last).total_seconds())))
+
     def _training_progress(self) -> projector.TrainingProgress | None:
         state = self._training
         if not state:
             return None
+        advance = self._advance(state)
+        elapsed = state.get("elapsed_seconds")
+        if isinstance(elapsed, (int, float)) and not isinstance(elapsed, bool):
+            elapsed += advance
+        eta = state.get("eta_seconds")
+        if isinstance(eta, (int, float)) and not isinstance(eta, bool):
+            eta = max(0.0, eta - advance)
         return projector.TrainingProgress(
             operation_id=state.get("operation_id") or "training",
             attempt=str(state.get("attempt") or "unknown"),
             steps=state.get("steps"),
             target=state.get("target"),
-            elapsed_seconds=state.get("elapsed_seconds"),
+            elapsed_seconds=elapsed,
             reward=state.get("reward"),
             success=state.get("success"),
             stale=self._progress_stale(state),
-            eta_seconds=state.get("eta_seconds")
+            eta_seconds=eta
             if self._paused_at is None and not self._progress_stale(state)
             else None,
         )
@@ -767,6 +848,9 @@ class CampaignPanel(Widget):
         state = self._evaluation
         if not state:
             return None
+        elapsed = state.get("elapsed_seconds")
+        if isinstance(elapsed, (int, float)) and not isinstance(elapsed, bool):
+            elapsed += self._advance(state)
         return projector.EvaluationProgress(
             operation_id=state.get("operation_id") or "evaluation",
             instrument=state.get("instrument") or "",
@@ -776,7 +860,7 @@ class CampaignPanel(Widget):
             completed_panels=state.get("completed_panels") or 0,
             episodes=state.get("episodes"),
             episodes_total=state.get("episodes_total"),
-            elapsed_seconds=state.get("elapsed_seconds"),
+            elapsed_seconds=elapsed,
             stale=self._progress_stale(state),
         )
 
@@ -803,7 +887,15 @@ class CampaignPanel(Widget):
                 rendered.append(line)
             else:
                 rendered.append(_clean_text(line))
-        self.query_one("#context", Static).update(rendered)
+        self._set_text(self.query_one("#context", Static), rendered)
+
+    def _set_text(self, widget: Static, content: Text) -> None:
+        """Repaint a Static only when its content changed, so ticks stay quiet."""
+        key = widget.id or ""
+        if self._shown_text.get(key) == content:
+            return
+        self._shown_text[key] = content
+        widget.update(content)
 
     def _context_budget(self) -> int:
         width = self._view_size.width
@@ -965,7 +1057,7 @@ class CampaignPanel(Widget):
             lines.append(
                 Text(
                     _clean_text(snapshot.official_text)[:width],
-                    style=f"bold {palette.success}",
+                    style=self._assessment_style(snapshot.official_status),
                 )
             )
         if self._last_error:
@@ -1091,6 +1183,7 @@ class CampaignPanel(Widget):
         if training is None and evaluation is None:
             self._progress_rows = 0
             widget.display = False
+            self._shown_text.pop("progress", None)
             widget.update("")
             return
         width = max(24, self._view_size.width - 2)
@@ -1108,7 +1201,7 @@ class CampaignPanel(Widget):
                 rendered.append_text(line)
             else:
                 rendered.append(_clean_text(line))
-        widget.update(rendered)
+        self._set_text(widget, rendered)
 
     def _progress_title(
         self, lead: str, lead_style: str, parts: list[str], stale: bool
@@ -1268,8 +1361,9 @@ class CampaignPanel(Widget):
         )
         event_log.set_view(roots, active_ids=self._timeline.active_ids())
         now = Text(self._timeline.now_text, style=self._palette.accent)
-        self.query_one("#now", Static).update(
-            _fit_text(now, max(20, self._view_size.width - 2))
+        self._set_text(
+            self.query_one("#now", Static),
+            _fit_text(now, max(20, self._view_size.width - 2)),
         )
         self._now_rows = 1
         heading = Text("Events", style=f"bold {self._palette.heading}")
@@ -1282,8 +1376,9 @@ class CampaignPanel(Widget):
                 " | filter: " + ", ".join(sorted(self._log_categories)),
                 style=self._palette.warning,
             )
-        self.query_one("#output-heading", Static).update(
-            _fit_text(heading, max(12, self._view_size.width - 2))
+        self._set_text(
+            self.query_one("#output-heading", Static),
+            _fit_text(heading, max(12, self._view_size.width - 2)),
         )
 
     # ------------------------------------------------------------------
@@ -1305,6 +1400,15 @@ class CampaignPanel(Widget):
     def _output(self) -> EventLog:
         return self.query_one("#output", EventLog)
 
+    def _assessment_style(self, status: str) -> str:
+        palette = self._palette
+        outcome = status.casefold()
+        if outcome == "passed":
+            return f"bold {palette.success}"
+        if outcome == "failed":
+            return f"bold {palette.error}"
+        return f"bold {palette.warning}"
+
     def _append(
         self,
         stamp: datetime | None,
@@ -1318,9 +1422,9 @@ class CampaignPanel(Widget):
         severity = "info"
         scope = "info"
         if style:
-            if "error" in style:
+            if "error" in style or self._palette.error in style:
                 severity = scope = "error"
-            elif "warning" in style:
+            elif "warning" in style or self._palette.warning in style:
                 severity = scope = "warning"
         event = Observation(
             kind="notice",
@@ -1447,7 +1551,11 @@ class CampaignPanel(Widget):
             self._append(now, "Model assignments changed:", style=palette.muted)
             self._append_block(now, signature[3].splitlines(), style=palette.muted)
         if signature[4] != previous[4] and signature[4]:
-            self._append(now, signature[4], style=f"bold {palette.success}")
+            self._append(
+                now,
+                signature[4],
+                style=self._assessment_style(snapshot.official_status),
+            )
         if not snapshot.terminal and previous[5] == snapshot.status:
             return
 
@@ -1455,7 +1563,7 @@ class CampaignPanel(Widget):
     # Observation feed
     # ------------------------------------------------------------------
 
-    def drain_feed(self) -> None:
+    def drain_feed(self, render: bool = True) -> None:
         feed = self._feed
         if feed is None:
             return
@@ -1463,7 +1571,7 @@ class CampaignPanel(Widget):
         rejected = getattr(feed, "rejected", None)
         if rejected:
             self._note_feed_error(rejected)
-        self._process_events(events)
+        self._process_events(events, render=render)
 
     def _note_feed_error(self, message: str) -> None:
         if self._last_error == message:
@@ -1475,15 +1583,16 @@ class CampaignPanel(Widget):
             style=f"bold {self._palette.error}",
         )
 
-    def _process_events(self, events: list[Observation]) -> None:
+    def _process_events(self, events: list[Observation], render: bool = True) -> None:
         for event in events:
             self._timeline.ingest(event)
             handler = getattr(self, f"_event_{event.kind}", None)
             if handler is None:
                 continue
             handler(event)
-        self._render_log()
-        self._apply_layout()
+        if render:
+            self._render_log()
+            self._apply_layout()
 
     def _event_liveness(self, event: Observation) -> None:
         self._last_liveness = event.ts or _now()
@@ -1678,6 +1787,21 @@ class CampaignPanel(Widget):
 
     def _apply_layout(self) -> None:
         size = self._view_size
+        key = (
+            size.width,
+            size.height,
+            self.app.size,
+            self._context_rows,
+            self._progress_rows,
+            self._training_rows,
+            self._search_visible,
+            len(self.query_one("#models", DataTable).rows),
+        )
+        if key == self._layout_key:
+            # Nothing that sizes the panels changed: leave them untouched.
+            self._render_reading()
+            return
+        self._layout_key = key
         too_small = size.width < MIN_COLUMNS or size.height < MIN_ROWS
         overlay = self.query_one("#too-small", Static)
         overlay.display = too_small

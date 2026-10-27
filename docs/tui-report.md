@@ -233,7 +233,10 @@ Ctrl+C copies selected output text or does nothing.
 Ctrl+Q closes a read-only report without affecting external campaigns; in
 the console it first stops all owned campaigns.
 
-The durable snapshot and elapsed clocks refresh every 15 seconds. Terminal
+One master tick runs every second. It drains the observation feed, advances the
+elapsed and ETA clocks locally between Runner samples, and draws everything once.
+The durable files (state, results, usage) are re-read only when they change. A
+console tab that is not shown does no work and catches up when it is shown. Terminal
 campaigns freeze at recorded completion. For a TUI-owned launcher, acknowledged
 stop/failure also freezes displayed campaign/stage elapsed clocks. Resume
 excludes the paused intervals observed in this TUI session; a new stage excludes
@@ -251,8 +254,12 @@ stale, stopped or non-advancing data does not produce a fabricated zero ETA.
 Live and reconstructed candidate announcements share a candidate identity, so
 each checkpoint appears once and its identifier is not repeated in the row.
 
-The observation feed is drained every second so PI messages and notices
-stay live; training progress events arrive every 15 seconds.
+The Runner polls progress every second and publishes training and evaluation
+samples when their counters change, and at least every 15 seconds. PI text is
+published at most once per second. Timeline progress rows are kept one per
+15 seconds; the newest row updates in place. Each fact (an opened inquiry, an
+operation lifecycle step) shows once, from the best source (live event, then
+durable record, then state snapshot). Siblings are shown in time order.
 
 ## Data the report reads now
 

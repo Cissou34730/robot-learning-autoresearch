@@ -250,6 +250,7 @@ class CampaignSnapshot:
     last_training: TrainingProxy | None = None
     evaluation: EvaluationProgress | None = None
     official_text: str = ""
+    official_status: str = ""
     terminal: bool = False
 
 
@@ -1115,6 +1116,7 @@ def build_snapshot(
         last_training=last_training,
         evaluation=evaluation,
         official_text=official_text,
+        official_status=str(assessment.get("status") or ""),
         terminal=terminal,
     )
 

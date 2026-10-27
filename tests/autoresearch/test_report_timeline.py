@@ -561,3 +561,75 @@ def test_usage_and_publication_events_render_structured_numbers():
     retry = next(item for item in items if item.kind == "warning")
     assert retry.title == "publication retry"
     assert "remote error" in retry.detail[0]
+
+
+def test_each_fact_shows_once_in_time_order_whatever_the_source_or_arrival():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    opened = {"question": "Does it reach?"}
+    identity = {"session_id": "S1", "inquiry_id": "I1"}
+    # Live copy first, then the durable record and the state snapshot.
+    reducer.ingest(
+        _event("inquiry_opened", start + timedelta(seconds=5), opened, **identity)
+    )
+    reducer.ingest(
+        Observation(
+            "inquiry_opened",
+            start,
+            opened,
+            event_id="history:record:I1",
+            **identity,
+        )
+    )
+    reducer.ingest(
+        Observation(
+            "inquiry_opened",
+            None,
+            opened,
+            event_id="history:inquiry:I1",
+            **identity,
+        )
+    )
+    # A later operation event arrives before an earlier one.
+    for kind, offset in (("operation_completed", 60), ("operation_started", 10)):
+        reducer.ingest(
+            _event(
+                kind,
+                start + timedelta(seconds=offset),
+                {"kind": "training"},
+                operation_id="T1",
+                **identity,
+            )
+        )
+    reducer.ingest(
+        Observation(
+            "operation_completed",
+            start + timedelta(seconds=61),
+            {"kind": "training"},
+            event_id="history:record:T1",
+            operation_id="T1",
+            **identity,
+        )
+    )
+    reducer.ingest(
+        _event(
+            "scientific_model_validated",
+            start + timedelta(seconds=90),
+            {"commit": "34159d3f", "path": "pi_workspace/scientific_model.md"},
+        )
+    )
+    roots, _ = reducer.view()
+    items = list(_walk(roots))
+    inquiry = next(item for item in items if item.item_id == "inquiry:I1")
+    opened_leaves = [c for c in inquiry.children if c.title == "inquiry opened"]
+    assert len(opened_leaves) == 1
+    assert opened_leaves[0].ts == start + timedelta(seconds=5)
+    assert inquiry.default_expanded
+    operation = next(item for item in items if item.item_id == "operation:T1")
+    assert [child.title for child in operation.children] == ["started", "completed"]
+    validated = next(
+        item for item in items if item.title.startswith("scientific model")
+    )
+    assert "34159d3f" not in validated.summary + "".join(validated.detail)
+    assert validated.payload["commit"] == "34159d3f"
+    assert validated in next(i for i in items if i.item_id == "session:S1").children

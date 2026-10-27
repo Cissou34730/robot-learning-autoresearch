@@ -7,6 +7,7 @@ user's expansion and selection state.
 
 from __future__ import annotations
 
+import itertools
 import json
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -86,6 +87,21 @@ FILTER_CATEGORIES = {
 
 def _now() -> datetime:
     return datetime.now(tz=UTC)
+
+
+_ARRIVAL = itertools.count()
+PROGRESS_ROW_SECONDS = 15.0
+
+
+def _lower_ts(item: TimelineItem, ts: datetime | None) -> None:
+    """A group starts at the earliest event it has seen, whatever the arrival order."""
+    if ts is not None and (item.ts is None or ts < item.ts):
+        item.ts = ts
+
+
+def _chronological(item: TimelineItem) -> tuple:
+    pinned = item.item_id != "campaign:root"
+    return (pinned, item.ts or item.seen_at, item.seq)
 
 
 def _clock(stamp: datetime | None) -> str:
@@ -193,6 +209,9 @@ class TimelineItem:
     payload: dict = field(default_factory=dict)
     status: str = ""
     role: str = ""
+    # Arrival order breaks ties; arrival time orders items that carry no timestamp.
+    seq: int = field(default_factory=lambda: next(_ARRIVAL))
+    seen_at: datetime = field(default_factory=_now)
 
     @property
     def glyph(self) -> str:
@@ -231,6 +250,9 @@ class TimelineReducer:
         self._last_completed = ""
         self._last_completed_kind = ""
         self._last_completed_ts: datetime | None = None
+        self._rank = 2
+        self._progress_rows: dict[str, TimelineItem] = {}
+        self._fact_leaves: dict[tuple, tuple[int, TimelineItem]] = {}
 
     # ------------------------------------------------------------------
     # Ingest
@@ -239,11 +261,40 @@ class TimelineReducer:
     def clear(self) -> None:
         self.__init__(self._campaign_root)
 
+    @staticmethod
+    def _source_rank(event_id: str) -> int:
+        """Live events outrank durable records, which outrank state snapshots."""
+        if not event_id.startswith("history:"):
+            return 2
+        return 1 if event_id.startswith("history:record:") else 0
+
+    def _keep_fact(self, key: tuple, leaf: TimelineItem) -> bool:
+        """True when ``leaf`` is the first display of this fact.
+
+        A fact seen again from a better source refreshes the shown leaf in
+        place; from an equal or worse source it is dropped.
+        """
+        known = self._fact_leaves.get(key)
+        if known is None:
+            self._fact_leaves[key] = (self._rank, leaf)
+            return True
+        rank, shown = known
+        if self._rank > rank:
+            shown.ts = leaf.ts or shown.ts
+            shown.title = leaf.title
+            shown.summary = leaf.summary
+            shown.detail = leaf.detail
+            shown.severity = leaf.severity
+            shown.payload = leaf.payload
+            self._fact_leaves[key] = (self._rank, shown)
+        return False
+
     def ingest(self, event: Observation) -> None:
         event_id = event.event_id or self._fallback_id(event)
         if event_id in self._seen:
             return
         self._seen.add(event_id)
+        self._rank = self._source_rank(event_id)
         kind = event.kind
         fields = event.fields or {}
         ts = event.ts
@@ -409,6 +460,7 @@ class TimelineReducer:
             self._sessions[session_id] = item
         if ts is not None:
             item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
+        _lower_ts(item, ts)
         self._current_session = session_id
         return item
 
@@ -433,7 +485,7 @@ class TimelineReducer:
                 title=title,
                 ts=ts,
                 is_group=True,
-                default_expanded=False,
+                default_expanded=True,
                 payload=dict(fields),
             )
             self._items[item.item_id] = item
@@ -445,6 +497,7 @@ class TimelineReducer:
             self._inquiries[inquiry_id] = item
         if ts is not None:
             item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
+        _lower_ts(item, ts)
         self._current_inquiry = inquiry_id
         return item
 
@@ -480,6 +533,7 @@ class TimelineReducer:
             self._operations[operation_id] = item
         if ts is not None:
             item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
+        _lower_ts(item, ts)
         return item
 
     # ------------------------------------------------------------------
@@ -528,8 +582,9 @@ class TimelineReducer:
             ),
             payload=dict(fields),
         )
-        item.children.append(leaf)
-        self._items[leaf.item_id] = leaf
+        if kind == "inquiry_reframed" or self._keep_fact((kind, inquiry_id), leaf):
+            item.children.append(leaf)
+            self._items[leaf.item_id] = leaf
 
     def _operation_event(
         self,
@@ -545,11 +600,12 @@ class TimelineReducer:
         if item is None:
             return
         status = str(fields.get("status") or "")
+        finished = item.status in {"completed", "failed", "interrupted"}
         if kind == "operation_requested":
-            item.status = "requested"
+            item.status = item.status if finished else "requested"
             summary = "requested"
         elif kind == "operation_started":
-            item.status = "running"
+            item.status = item.status if finished else "running"
             summary = "started"
         elif kind == "operation_failed" or status == "failed":
             item.status = "failed"
@@ -589,6 +645,7 @@ class TimelineReducer:
                 detail=detail,
                 payload=dict(fields),
             )
+            keep = self._keep_fact((kind, operation_id), leaf)
         else:
             text = _first_line(fields.get("text") or summary)
             leaf = TimelineItem(
@@ -599,8 +656,10 @@ class TimelineReducer:
                 severity=item.severity,
                 payload=dict(fields),
             )
-        item.children.append(leaf)
-        self._items[leaf.item_id] = leaf
+            keep = True
+        if keep:
+            item.children.append(leaf)
+            self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
         if item.status in {"running", "requested"}:
             self._active_operation = operation_id
@@ -619,8 +678,9 @@ class TimelineReducer:
         item = self._operation(operation_id, inquiry_id, session_id, ts, operation_kind)
         if item is None:
             return
-        item.status = "running"
-        self._active_operation = operation_id
+        if item.status not in {"completed", "failed", "interrupted"}:
+            item.status = "running"
+            self._active_operation = operation_id
         previous_ts, previous_steps = self._progress.get(operation_id, (None, None))
         steps = fields.get("steps")
         target = fields.get("target")
@@ -637,7 +697,6 @@ class TimelineReducer:
             elapsed = max((ts - previous_ts).total_seconds(), 1.0)
             step_delta = f"+{_number(steps - previous_steps)}"
             step_delta += f" ({max(0.0, (steps - previous_steps) / elapsed):,.0f}/s)"
-        self._progress[operation_id] = (ts, steps if isinstance(steps, int) else None)
         if kind == "training_progress":
             sample = {**fields, "operation_id": operation_id}
             eta = training_eta_seconds(sample, self._training_samples.get(operation_id))
@@ -694,6 +753,20 @@ class TimelineReducer:
             summary = "  ".join(part for part in parts if part)
             item.summary = summary
             title = summary
+        current_row = self._progress_rows.get(operation_id)
+        if (
+            current_row is not None
+            and ts is not None
+            and previous_ts is not None
+            and (ts - previous_ts).total_seconds() < PROGRESS_ROW_SECONDS
+        ):
+            # Samples arrive every second or so; one row per interval keeps
+            # the history readable while the newest row stays current.
+            current_row.title = title
+            current_row.payload = dict(fields)
+            item.end_ts = ts
+            return
+        self._progress[operation_id] = (ts, steps if isinstance(steps, int) else None)
         leaf = TimelineItem(
             item_id=f"leaf:{kind}:{operation_id}:{ts}",
             kind=kind,
@@ -701,6 +774,7 @@ class TimelineReducer:
             ts=ts,
             payload=dict(fields),
         )
+        self._progress_rows[operation_id] = leaf
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
@@ -1359,6 +1433,8 @@ class TimelineReducer:
             "scientific_model_validated": "scientific model validated",
             "run_state": f"run state {fields.get('state') or ''}".strip(),
         }.get(kind, kind.replace("_", " "))
+        # A commit identifier is noise on the timeline; the raw event keeps it.
+        shown = {key: value for key, value in fields.items() if key != "commit"}
         leaf = TimelineItem(
             item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
             kind="result"
@@ -1369,13 +1445,17 @@ class TimelineReducer:
                 fields.get("summary")
                 or fields.get("state")
                 or fields.get("reason")
-                or fields.get("commit")
+                or (fields.get("path") if kind == "scientific_model_validated" else "")
                 or ""
             ),
             ts=ts,
-            detail=tuple(f"{key}: {_short(value)}" for key, value in fields.items()),
+            detail=tuple(f"{key}: {_short(value)}" for key, value in shown.items()),
             payload=dict(fields),
         )
+        if kind == "scientific_model_validated":
+            # It closes the preparation session that produced the model.
+            self._attach(leaf, "", "", "")
+            return
         self._campaign_group().children.append(leaf)
         self._items[leaf.item_id] = leaf
 
@@ -1728,6 +1808,32 @@ class TimelineReducer:
             payload=item.payload,
             status=item.status,
             role=item.role,
+            seq=item.seq,
+            seen_at=item.seen_at,
+        )
+
+    def _live_tool(self, item: TimelineItem) -> TimelineItem:
+        """A running tool shows how long it has been running."""
+        if item.kind != "tool" or item.status != "started" or item.ts is None:
+            return item
+        seconds = max(0.0, (_now() - item.ts).total_seconds())
+        if seconds < 1:
+            return item
+        live = self._clone(item, item.children)
+        live.summary = _tool_summary(
+            item.payload, item.status, seconds, root=self._campaign_root
+        )
+        return live
+
+    def _deep_clone(self, item: TimelineItem) -> TimelineItem:
+        if not item.is_group:
+            return self._live_tool(item)
+        return self._clone(
+            item,
+            [
+                self._deep_clone(child)
+                for child in sorted(item.children, key=_chronological)
+            ],
         )
 
     def view(
@@ -1747,9 +1853,9 @@ class TimelineReducer:
                 keep = text_match and self._category_match(item.kind, categories)
                 if keep:
                     matches += 1
-                return keep, item if keep else None
+                return keep, self._live_tool(item) if keep else None
             child_items: list[TimelineItem] = []
-            for child in item.children:
+            for child in sorted(item.children, key=_chronological):
                 keep, filtered = include(child)
                 if keep and filtered is not None:
                     child_items.append(filtered)
@@ -1758,7 +1864,8 @@ class TimelineReducer:
                 query and text_match and not child_items
             ):
                 child_items = [
-                    self._clone(child, child.children) for child in item.children
+                    self._deep_clone(child)
+                    for child in sorted(item.children, key=_chronological)
                 ]
             keep = bool(child_items) or (
                 not query and group_category_match and not item.children
@@ -1768,7 +1875,7 @@ class TimelineReducer:
             return True, self._clone(item, child_items)
 
         roots: list[TimelineItem] = []
-        for root in self._roots:
+        for root in sorted(self._roots, key=_chronological):
             keep, filtered = include(root)
             if keep and filtered is not None:
                 roots.append(filtered)
