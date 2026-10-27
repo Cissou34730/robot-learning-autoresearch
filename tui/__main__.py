@@ -33,8 +33,8 @@ def main() -> None:
         "--events",
         type=Path,
         default=None,
-        help="Legacy single-campaign report: typed event file "
-        "(<campaign>.events.jsonl) to follow (read-only).",
+        help="Legacy single-campaign report: event journal "
+        "(<campaign>.events.v2.jsonl) to follow (read-only).",
     )
     parser.add_argument(
         "--demo",

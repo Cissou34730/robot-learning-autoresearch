@@ -1,8 +1,8 @@
 """Observation records shown by the report, and the synthetic demo feed.
 
-Live observations come only from the campaign's typed event file
-(``<campaign>.events.jsonl``, see ``tui.events``). The report stays fully
-readable from durable state when that file does not exist.
+Live observations come only from the campaign's event journal
+(``<campaign>.events.v2.jsonl``, see ``tui.journal``). The header band and the
+model table also read the durable state; the log never does.
 """
 
 from __future__ import annotations
@@ -15,6 +15,13 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class Observation:
+    """One event as the reducer sees it.
+
+    ``session_id`` is the durable session key (``S<n>`` or the constant
+    preparation key). ``attempt`` names the PI invocation and ``actor`` who spoke
+    (pi, coder, reviewer, runner, launcher); both only disambiguate rows.
+    """
+
     kind: str
     ts: datetime | None
     fields: dict = field(default_factory=dict)
@@ -25,6 +32,8 @@ class Observation:
     session_id: str = ""
     inquiry_id: str = ""
     campaign_id: str = ""
+    attempt: str = ""
+    actor: str = ""
 
 
 def feed_age_seconds(stamp: datetime | None, now: datetime) -> float | None:

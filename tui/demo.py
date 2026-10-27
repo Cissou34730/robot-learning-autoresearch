@@ -266,15 +266,121 @@ _PI_MESSAGE = (
 )
 
 
+def _past_events(started: datetime, now: datetime) -> list[Observation]:
+    """The demo campaign's earlier journal: preparation, a closed session S6 with
+    its inquiry and operations, and the open session S7 with a pending
+    measurement. It tells the same story as ``demo_state``."""
+    counter = iter(range(1, 1000))
+
+    def ago(minutes: float) -> datetime:
+        return now - timedelta(minutes=minutes)
+
+    def event(kind: str, stamp: datetime, /, **identity_and_fields) -> Observation:
+        identity = {
+            name: identity_and_fields.pop(name)
+            for name in ("session_id", "operation_id", "inquiry_id", "attempt", "actor")
+            if name in identity_and_fields
+        }
+        return Observation(
+            kind,
+            stamp,
+            identity_and_fields,
+            event_id=f"demo-past:{next(counter)}",
+            **identity,
+        )
+
+    long_ago = started + timedelta(minutes=1)
+    return [
+        event("campaign_started", started, summary="goal-centered research"),
+        event(
+            "session_start",
+            long_ago,
+            session_id="preparation",
+            attempt="prep-1",
+            stage="campaign preparation",
+        ),
+        event(
+            "scientific_model_validated",
+            long_ago + timedelta(minutes=9),
+            session_id="preparation",
+            path="pi_workspace/scientific_model.md",
+        ),
+        event("session_started", ago(170), session_id="S6", id="S6", kind="inquiry"),
+        event(
+            "inquiry_opened",
+            ago(169),
+            session_id="S6",
+            inquiry_id="I2",
+            question="Which candidate converges fastest?",
+        ),
+        event(
+            "operation_completed",
+            ago(152),
+            session_id="S6",
+            inquiry_id="I2",
+            operation_id="T4",
+            kind="training",
+            status="completed",
+        ),
+        event(
+            "operation_completed",
+            ago(96),
+            session_id="S6",
+            inquiry_id="I2",
+            operation_id="M5",
+            kind="measurement",
+            status="completed",
+        ),
+        event(
+            "role_assigned",
+            ago(94),
+            session_id="S6",
+            operation_id="E12",
+            candidate="T2:checkpoint-90000",
+            role="best known",
+        ),
+        event(
+            "checkpoint_saved",
+            ago(93),
+            session_id="S6",
+            inquiry_id="I2",
+            current_synthesis="The policy reaches the target; hold is unreliable.",
+        ),
+        event(
+            "session_ended", ago(92), session_id="S6", summary="Checkpointed after M5."
+        ),
+        event("session_started", ago(22), session_id="S7", id="S7", kind="inquiry"),
+        event(
+            "inquiry_opened",
+            ago(21),
+            session_id="S7",
+            inquiry_id="I3",
+            question=(
+                "Does longer settling improve hold stability, or do the remaining "
+                "failures require a different control intervention?"
+            ),
+        ),
+        event(
+            "operation_requested",
+            ago(20),
+            session_id="S7",
+            inquiry_id="I3",
+            operation_id="M6",
+            kind="measurement",
+            status="requested",
+        ),
+    ]
+
+
 def demo_schedule() -> list[tuple[float, Observation]]:
     """Scripted demo observations on relative seconds.
 
-    Times deliberately include a stream/final-style replay and a training
-    execution that ends before the measurement starts, so the demo exercises
-    deduplication, the training/evaluation progress switch and the
+    The earlier journal is replayed first, at second zero. Times deliberately
+    include a training execution that ends before the measurement starts, so
+    the demo exercises the training/evaluation progress switch and the
     operation-end removal of the progress area.
     """
-    _, stage_start, now = demo_clock()
+    started, stage_start, now = demo_clock()
     first_pi = stage_start + timedelta(seconds=0.5)
 
     def event(
@@ -292,9 +398,19 @@ def demo_schedule() -> list[tuple[float, Observation]]:
                 if event_kind == "liveness"
                 else stage_start + timedelta(seconds=seconds)
             )
-        return seconds, Observation(event_kind, stamp, fields)
+        # The envelope names the owners; the payload keeps its own copies, as
+        # the real emitters do.
+        identity = {
+            name: fields[name]
+            for name in ("session_id", "operation_id", "inquiry_id")
+            if name in fields
+        }
+        if event_kind not in {"liveness", "notice"}:
+            identity.setdefault("session_id", "S7")
+        return seconds, Observation(event_kind, stamp, fields, **identity)
 
     return [
+        *[(0.0, past) for past in _past_events(started, now)],
         event(0.0, "liveness"),
         event(
             0.1,

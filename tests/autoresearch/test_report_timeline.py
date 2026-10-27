@@ -1,25 +1,22 @@
-"""Reducer and typed-feed tests for the structured operator log."""
+"""Reducer and journal-feed tests for the structured operator log."""
 
 from __future__ import annotations
 
 import json
 from datetime import UTC, datetime, timedelta
 
-from tui.demo import demo_clock, demo_records, demo_state, demo_usage_rows
-from tui.events import TypedJsonlFeed, synthesize_history
+from runner.event_contract import rule_for
+from tui.demo import demo_schedule
+from tui.journal import JournalFeed
 from tui.observations import Observation
 from tui.timeline import TimelineReducer
 
 
 def _demo_reducer() -> TimelineReducer:
-    started, _, now = demo_clock()
     reducer = TimelineReducer()
-    for event in synthesize_history(
-        demo_state(now, started),
-        demo_records(now),
-        demo_usage_rows(now),
-    ):
-        reducer.ingest(event)
+    for seconds, event in demo_schedule():
+        if seconds == 0.0:
+            reducer.ingest(event)
     return reducer
 
 
@@ -44,6 +41,7 @@ def test_tool_path_shortening_is_per_campaign_and_survives_clear(tmp_path):
                         "name": "view",
                         "arguments": {"path": str(path)},
                     },
+                    session_id="S1",
                 )
             )
             item = next(
@@ -55,7 +53,7 @@ def test_tool_path_shortening_is_per_campaign_and_survives_clear(tmp_path):
             reducer.clear()
 
 
-def test_history_groups_sessions_inquiries_and_operations():
+def test_journal_groups_sessions_inquiries_and_operations():
     reducer = _demo_reducer()
     roots, _ = reducer.view()
     items = list(_walk(roots))
@@ -63,12 +61,13 @@ def test_history_groups_sessions_inquiries_and_operations():
     assert "campaign" in kinds
     assert "session" in kinds
     assert "inquiry" in kinds
-    assert "training" in kinds
     assert "measurement" in kinds
     session = next(item for item in items if item.item_id == "session:S7")
-    inquiry = next(item for item in items if item.item_id == "inquiry:I3")
+    inquiry = next(item for item in items if item.item_id == "inquiry:S7:I3")
     assert session.is_group and inquiry.is_group
     assert inquiry in session.children
+    closed = next(item for item in items if item.item_id == "session:S6")
+    assert "operation:T4" in {item.item_id for item in _walk(closed.children)}
 
 
 def test_default_collapse_is_the_active_chain_only():
@@ -119,6 +118,7 @@ def test_pi_partials_update_one_item():
                 kind="pi_message",
                 ts=now,
                 fields={"text": text, "final": final, "turn": 7},
+                session_id="S1",
             )
         )
     roots, _ = reducer.view()
@@ -142,6 +142,8 @@ def test_training_progress_keeps_timestamp_and_interval():
                 "ep_rew_mean": 10.0,
                 "training_success": 0.5,
             },
+            session_id="S1",
+            operation_id="T9",
         )
     )
     reducer.ingest(
@@ -156,6 +158,8 @@ def test_training_progress_keeps_timestamp_and_interval():
                 "ep_rew_mean": 11.0,
                 "training_success": 0.6,
             },
+            session_id="S1",
+            operation_id="T9",
         )
     )
     roots, _ = reducer.view()
@@ -172,7 +176,7 @@ def test_training_progress_keeps_timestamp_and_interval():
     assert "ETA 1m" in progress[1].title
 
 
-def test_live_and_durable_candidate_announcements_share_one_non_repeated_label():
+def test_candidate_announcements_share_one_non_repeated_label():
     reducer = TimelineReducer()
     candidate = "T1:checkpoint-65536"
     stamp = datetime(2026, 10, 26, 12, tzinfo=UTC)
@@ -181,7 +185,7 @@ def test_live_and_durable_candidate_announcements_share_one_non_repeated_label()
             "candidate_created",
             None,
             {"candidate": candidate, "artifact": "checkpoint.zip"},
-            event_id="history:candidate",
+            event_id="first:candidate",
         )
     )
     reducer.ingest(
@@ -189,7 +193,7 @@ def test_live_and_durable_candidate_announcements_share_one_non_repeated_label()
             "candidate_created",
             stamp,
             {"candidate": candidate, "training_steps": 65536},
-            event_id="live:candidate",
+            event_id="later:candidate",
         )
     )
     reducer.ingest(
@@ -197,7 +201,7 @@ def test_live_and_durable_candidate_announcements_share_one_non_repeated_label()
             "candidate_created",
             None,
             {"candidate": candidate},
-            event_id="history:again",
+            event_id="again:candidate",
         )
     )
     candidates = [
@@ -227,36 +231,65 @@ def test_unknown_event_renders_generically():
     assert any(item.kind == "log" and item.title == "custom fact" for item in items)
 
 
-def test_typed_feed_parses_envelope_and_rejects_schema(tmp_path):
-    path = tmp_path / "campaign.events.jsonl"
+def test_journal_feed_parses_the_v2_envelope_and_rejects_other_schemas(tmp_path):
+    path = tmp_path / "campaign.events.v2.jsonl"
     record = {
-        "schema_version": 1,
+        "schema_version": 2,
         "event_id": "evt-1",
         "campaign_id": "campaign-1",
         "ts": "2026-10-24T12:00:00+00:00",
         "kind": "training_progress",
         "scope": "training",
         "severity": "info",
+        "session_id": "S2",
         "operation_id": "T4",
+        "inquiry_id": "",
+        "attempt": "att-1",
+        "actor": "runner",
         "payload": {"steps": 10, "target": 20},
     }
     path.write_text(json.dumps(record) + "\n", encoding="utf-8")
-    feed = TypedJsonlFeed(path, campaign_id="campaign-1")
+    feed = JournalFeed(path, campaign_id="campaign-1")
     (event,) = feed.poll()
     assert event.kind == "training_progress"
     assert event.event_id == "evt-1"
-    assert event.operation_id == "T4"
+    assert (event.session_id, event.operation_id) == ("S2", "T4")
+    assert (event.attempt, event.actor) == ("att-1", "runner")
     assert event.fields == {"steps": 10, "target": 20}
 
     path.write_text(
-        json.dumps({**record, "schema_version": 99}) + "\n", encoding="utf-8"
+        json.dumps({**record, "schema_version": 1}) + "\n", encoding="utf-8"
     )
-    feed = TypedJsonlFeed(path, campaign_id="campaign-1")
+    feed = JournalFeed(path, campaign_id="campaign-1")
     assert feed.poll() == []
-    assert feed.rejected == "unsupported typed event schema"
+    assert feed.rejected == "unsupported journal schema"
+
+
+def test_journal_feed_keeps_a_partial_tail_and_reports_a_broken_complete_line(tmp_path):
+    path = tmp_path / "campaign.events.v2.jsonl"
+    good = {
+        "schema_version": 2,
+        "event_id": "a",
+        "campaign_id": "c",
+        "ts": "2026-10-24T12:00:00+00:00",
+        "kind": "notice",
+        "payload": {},
+    }
+    line = json.dumps(good)
+    path.write_text(line[:30], encoding="utf-8")
+    feed = JournalFeed(path)
+    assert feed.poll() == [] and feed.rejected is None
+    path.write_text(line + "\n{not json}\n", encoding="utf-8")
+    events = feed.poll()
+    assert [event.event_id for event in events] == ["a"]
+    assert feed.rejected == "a complete journal line could not be decoded"
 
 
 def _event(kind, ts, fields=None, **identity):
+    """An event as the journal carries it. A kind that must name a session gets
+    S1 unless the test names another."""
+    if "session_id" in rule_for(kind).requires:
+        identity.setdefault("session_id", "S1")
     return Observation(kind=kind, ts=ts, fields=fields or {}, **identity)
 
 
@@ -269,6 +302,8 @@ def test_frequent_progress_samples_share_one_row_per_interval():
                 kind="training_progress",
                 ts=start + timedelta(seconds=seconds),
                 fields={"operation_id": "T9", "steps": 1000 + seconds, "target": 9999},
+                session_id="S1",
+                operation_id="T9",
             )
         )
     for seconds in range(0, 31, 2):
@@ -281,6 +316,8 @@ def test_frequent_progress_samples_share_one_row_per_interval():
                     "episodes": seconds,
                     "episodes_total": 99,
                 },
+                session_id="S1",
+                operation_id="M9",
             )
         )
     roots, _ = reducer.view()
@@ -291,12 +328,16 @@ def test_frequent_progress_samples_share_one_row_per_interval():
     evaluation = [
         c for c in items["operation:M9"].children if c.kind == "eval_progress"
     ]
+    # Each row stands for its newest sample, so its time is that sample's time.
     assert [row.ts for row in training] == [
-        start,
-        start + timedelta(seconds=30),
+        start + timedelta(seconds=28),
+        start + timedelta(seconds=58),
         start + timedelta(seconds=60),
     ]
-    assert [row.ts for row in evaluation] == [start, start + timedelta(seconds=16)]
+    assert [row.ts for row in evaluation] == [
+        start + timedelta(seconds=14),
+        start + timedelta(seconds=30),
+    ]
     assert "1,060" in training[-1].title
 
 
@@ -311,13 +352,20 @@ def test_sliced_wait_is_informational_and_keeps_the_operation_active():
     reducer = TimelineReducer()
     start = datetime(2026, 10, 26, 12, 0, tzinfo=UTC)
     reducer.ingest(
-        _event("operation_started", start, {"kind": "training"}, operation_id="T9")
+        _event(
+            "operation_started",
+            start,
+            {"kind": "training"},
+            session_id="S1",
+            operation_id="T9",
+        )
     )
     reducer.ingest(
         _event(
             "operation_submitted",
             start + timedelta(minutes=25),
             {"status": "running", "error": ""},
+            session_id="S1",
             operation_id="T9",
         )
     )
@@ -333,6 +381,7 @@ def test_sliced_wait_is_informational_and_keeps_the_operation_active():
             "operation_completed",
             start + timedelta(minutes=30),
             {"kind": "training"},
+            session_id="S1",
             operation_id="T9",
         )
     )
@@ -442,10 +491,22 @@ def test_session_inquiry_and_checkpoint_domain_events_build_groups():
         )
     )
     reducer.ingest(
-        _event("inquiry_reframed", start, {"question": "Reframed?"}, inquiry_id="I4")
+        _event(
+            "inquiry_reframed",
+            start,
+            {"question": "Reframed?"},
+            session_id="S8",
+            inquiry_id="I4",
+        )
     )
     reducer.ingest(
-        _event("inquiry_closed", start, {"outcome": "Yes."}, inquiry_id="I4")
+        _event(
+            "inquiry_closed",
+            start,
+            {"outcome": "Yes."},
+            session_id="S8",
+            inquiry_id="I4",
+        )
     )
     reducer.ingest(
         _event(
@@ -466,7 +527,7 @@ def test_session_inquiry_and_checkpoint_domain_events_build_groups():
     roots, _ = reducer.view()
     items = list(_walk(roots))
     session = next(item for item in items if item.item_id == "session:S8")
-    inquiry = next(item for item in items if item.item_id == "inquiry:I4")
+    inquiry = next(item for item in items if item.item_id == "inquiry:S8:I4")
     assert session.status == "closed"
     assert inquiry in session.children
     titles = [item.title for item in items]
@@ -609,7 +670,10 @@ def test_phase_follows_the_active_work():
     assert reducer.phase() == "none"
     reducer.ingest(
         _event(
-            "session_start", start, {"stage": "campaign preparation"}, session_id="u1"
+            "session_start",
+            start,
+            {"stage": "campaign preparation"},
+            session_id="preparation",
         )
     )
     assert reducer.phase() == "preparing"
@@ -673,19 +737,27 @@ def test_phase_follows_the_active_work():
     assert reducer.phase() == "none"
 
 
-def test_backend_session_id_is_an_alias_of_the_scientific_session():
+def test_pi_attempts_are_rows_of_their_durable_session():
     reducer = TimelineReducer()
     start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
-    prep, backend = "70b0166d", "994f0144"
     reducer.ingest(
         _event(
             "session_start",
             start,
             {"stage": "campaign preparation"},
-            session_id=prep,
+            session_id="preparation",
+            attempt="a-prep",
         )
     )
-    reducer.ingest(_event("pi_message", start, {"text": "prep"}, session_id=prep))
+    reducer.ingest(
+        _event(
+            "pi_message",
+            start,
+            {"text": "prep"},
+            session_id="preparation",
+            attempt="a-prep",
+        )
+    )
     reducer.ingest(
         _event(
             "session_started",
@@ -699,7 +771,8 @@ def test_backend_session_id_is_an_alias_of_the_scientific_session():
             "session_start",
             start + timedelta(seconds=14),
             {"stage": "S1 startup"},
-            session_id=backend,
+            session_id="S1",
+            attempt="a-1",
         )
     )
     reducer.ingest(
@@ -707,7 +780,8 @@ def test_backend_session_id_is_an_alias_of_the_scientific_session():
             "pi_message",
             start + timedelta(seconds=20),
             {"text": "hi"},
-            session_id=backend,
+            session_id="S1",
+            attempt="a-1",
         )
     )
     reducer.ingest(
@@ -715,7 +789,8 @@ def test_backend_session_id_is_an_alias_of_the_scientific_session():
             "tool_call_started",
             start + timedelta(seconds=21),
             {"tool_call_id": "t", "name": "view", "arguments": {}},
-            session_id=backend,
+            session_id="S1",
+            attempt="a-1",
         )
     )
     reducer.ingest(
@@ -731,26 +806,9 @@ def test_backend_session_id_is_an_alias_of_the_scientific_session():
     sessions = [item for item in roots if item.kind == "session"]
     assert [item.title for item in sessions] == ["Campaign preparation", "S1 startup"]
     scientific = sessions[1]
-    kinds = {child.kind for child in scientific.children}
-    assert {"pi", "tool", "training"} <= kinds
-    assert not any(item.item_id.endswith(backend) for item in _walk(roots))
-
-
-def test_snapshot_ids_register_the_alias_before_the_pi_events():
-    reducer = TimelineReducer()
-    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
-    reducer.ingest(
-        Observation(
-            "session_start",
-            None,
-            {"id": "S2", "backend_session_id": "abc", "kind": "experiment"},
-            event_id="history:session:S2",
-            session_id="S2",
-        )
-    )
-    reducer.ingest(_event("pi_message", start, {"text": "hello"}, session_id="abc"))
-    roots, _ = reducer.view()
-    assert [item.item_id for item in roots if item.kind == "session"] == ["session:S2"]
+    assert {"pi", "tool", "training"} <= {child.kind for child in scientific.children}
+    attempts = [c for c in scientific.children if c.title == "PI started"]
+    assert [row.summary for row in attempts] == ["S1 startup"]
 
 
 def test_goal_review_and_publication_recovery_sit_in_their_session():
@@ -768,8 +826,11 @@ def test_goal_review_and_publication_recovery_sit_in_their_session():
             session_id="S1",
         )
     )
-    reducer.ingest(_event("publication_recovered", start, {"retry": 1}))
-    reducer.ingest(_event("run_state", start, {"state": "executing"}))
+    reducer.ingest(
+        _event("publication_recovered", start, {"retry": 1}, session_id="S2")
+    )
+    reducer.ingest(_event("publication_recovered", start, {"retry": 2}))
+    reducer.ingest(_event("run_state", start, {"state": "executing"}, session_id="S1"))
     reducer.ingest(_event("campaign_concluded", start, {"status": "done"}))
     roots, _ = reducer.view()
     items = {item.item_id: item for item in _walk(roots)}
@@ -777,9 +838,11 @@ def test_goal_review_and_publication_recovery_sit_in_their_session():
     campaign = items["campaign:root"]
     assert [c.title for c in first.children if c.title == "campaign goal review"]
     assert [c.title for c in second.children if c.title == "publication recovered"]
-    kept = {child.title for child in campaign.children}
-    assert {"run state executing", "campaign concluded"} <= kept
-    assert not kept & {"campaign goal review", "publication recovered"}
+    kept = [child.title for child in campaign.children]
+    # A recovery that names no session, and the campaign-level kinds, stay here.
+    assert kept.count("publication recovered") == 1
+    assert {"run state executing", "campaign concluded"} <= set(kept)
+    assert "campaign goal review" not in kept
 
 
 def test_closed_sessions_are_folded_until_opened():
@@ -851,67 +914,33 @@ def test_liveness_does_not_change_the_timeline_version():
     assert reducer.version != before
 
 
-def test_usage_record_updates_in_place_as_rows_change():
-    usage_rows = [{"role": "pi", "model": "m1"}]
-    state = {"campaign": {"id": "C1"}}
-    reducer = TimelineReducer()
-    first = synthesize_history(state, [], usage_rows)
-    second = synthesize_history(state, [], [*usage_rows, {"role": "pi", "model": "m2"}])
-    assert synthesize_history(state, [], usage_rows)[-1].event_id == first[-1].event_id
-    assert second[-1].event_id != first[-1].event_id
-    for event in (*first, *second):
-        reducer.ingest(event)
-    roots, _ = reducer.view()
-    records = [item for item in _walk(roots) if item.title == "usage recorded"]
-    assert len(records) == 1
-    assert records[0].summary == "2 accounting rows"
-    assert "m2" in records[0].detail[0]
-
-
-def test_each_fact_shows_once_in_time_order_whatever_the_source_or_arrival():
+def test_an_event_delivered_twice_shows_once_and_the_commit_stays_out_of_the_row():
     reducer = TimelineReducer()
     start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
-    opened = {"question": "Does it reach?"}
     identity = {"session_id": "S1", "inquiry_id": "I1"}
-    # Live copy first, then the durable record and the state snapshot.
-    reducer.ingest(
-        _event("inquiry_opened", start + timedelta(seconds=5), opened, **identity)
+    opened = Observation(
+        "inquiry_opened",
+        start + timedelta(seconds=5),
+        {"question": "Does it reach?"},
+        event_id="evt-1",
+        **identity,
     )
+    reducer.ingest(opened)
+    reducer.ingest(opened)
     reducer.ingest(
-        Observation(
-            "inquiry_opened",
-            start,
-            opened,
-            event_id="history:record:I1",
-            **identity,
-        )
-    )
-    reducer.ingest(
-        Observation(
-            "inquiry_opened",
-            None,
-            opened,
-            event_id="history:inquiry:I1",
-            **identity,
-        )
-    )
-    # A later operation event arrives before an earlier one.
-    for kind, offset in (("operation_completed", 60), ("operation_started", 10)):
-        reducer.ingest(
-            _event(
-                kind,
-                start + timedelta(seconds=offset),
-                {"kind": "training"},
-                operation_id="T1",
-                **identity,
-            )
-        )
-    reducer.ingest(
-        Observation(
-            "operation_completed",
-            start + timedelta(seconds=61),
+        _event(
+            "operation_started",
+            start + timedelta(seconds=10),
             {"kind": "training"},
-            event_id="history:record:T1",
+            operation_id="T1",
+            **identity,
+        )
+    )
+    reducer.ingest(
+        _event(
+            "operation_completed",
+            start + timedelta(seconds=60),
+            {"kind": "training"},
             operation_id="T1",
             **identity,
         )
@@ -925,10 +954,8 @@ def test_each_fact_shows_once_in_time_order_whatever_the_source_or_arrival():
     )
     roots, _ = reducer.view()
     items = list(_walk(roots))
-    inquiry = next(item for item in items if item.item_id == "inquiry:I1")
-    opened_leaves = [c for c in inquiry.children if c.title == "inquiry opened"]
-    assert len(opened_leaves) == 1
-    assert opened_leaves[0].ts == start + timedelta(seconds=5)
+    inquiry = next(item for item in items if item.item_id == "inquiry:S1:I1")
+    assert [c.title for c in inquiry.children].count("inquiry opened") == 1
     assert inquiry.default_expanded
     operation = next(item for item in items if item.item_id == "operation:T1")
     assert [child.title for child in operation.children] == ["started", "completed"]
@@ -938,3 +965,31 @@ def test_each_fact_shows_once_in_time_order_whatever_the_source_or_arrival():
     assert "34159d3f" not in validated.summary + "".join(validated.detail)
     assert validated.payload["commit"] == "34159d3f"
     assert validated in next(i for i in items if i.item_id == "session:S1").children
+
+
+def test_the_inquiry_question_is_known_to_every_session_that_continues_it():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    reducer.ingest(
+        _event(
+            "inquiry_opened",
+            start,
+            {"question": "Does it reach the target?"},
+            session_id="S2",
+            inquiry_id="I1",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "operation_started",
+            start + timedelta(seconds=9),
+            {"kind": "measurement"},
+            session_id="S3",
+            inquiry_id="I1",
+            operation_id="M1",
+        )
+    )
+    roots, _ = reducer.view()
+    titles = {item.item_id: item.title for item in _walk(roots)}
+    assert titles["inquiry:S2:I1"] == "I1 Does it reach the target?"
+    assert titles["inquiry:S3:I1"] == "I1 Does it reach the target?"

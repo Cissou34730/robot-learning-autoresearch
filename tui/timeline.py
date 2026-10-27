@@ -9,13 +9,13 @@ from __future__ import annotations
 
 import itertools
 import json
-import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
 from runner import reporting as console
 from runner.copilot.reporting import tool_detail, tool_result_lines
+from runner.event_contract import PREPARATION_SESSION, missing_identity
 from tui.observations import Observation
 from tui.projector import training_eta_seconds
 
@@ -90,28 +90,14 @@ def _now() -> datetime:
     return datetime.now(tz=UTC)
 
 
-_ARRIVAL = itertools.count()
 _VERSIONS = itertools.count()
-_STAGE_SESSION = re.compile(r"(S\d+)\b\s*(.*)")
-
-
-def _is_scientific_session(value: str) -> bool:
-    return value.startswith("S") and value[1:].isdigit()
-
-
-_USAGE_RECORD_ID = "leaf:usage_recorded"
 PROGRESS_ROW_SECONDS = {"training_progress": 30.0, "eval_progress": 15.0}
 
 
 def _lower_ts(item: TimelineItem, ts: datetime | None) -> None:
-    """A group starts at the earliest event it has seen, whatever the arrival order."""
+    """A group starts at the earliest event it has seen."""
     if ts is not None and (item.ts is None or ts < item.ts):
         item.ts = ts
-
-
-def _chronological(item: TimelineItem) -> tuple:
-    pinned = item.item_id != "campaign:root"
-    return (pinned, item.ts or item.seen_at, item.seq)
 
 
 def _clock(stamp: datetime | None) -> str:
@@ -219,9 +205,6 @@ class TimelineItem:
     payload: dict = field(default_factory=dict)
     status: str = ""
     role: str = ""
-    # Arrival order breaks ties; arrival time orders items that carry no timestamp.
-    seq: int = field(default_factory=lambda: next(_ARRIVAL))
-    seen_at: datetime = field(default_factory=_now)
     # Number of events hidden in a closed group that is shown folded.
     lazy: int = 0
 
@@ -248,27 +231,30 @@ class TimelineReducer:
         self._roots: list[TimelineItem] = []
         self._seen: set[str] = set()
         self._sessions: dict[str, TimelineItem] = {}
-        self._inquiries: dict[str, TimelineItem] = {}
+        self._inquiries: dict[tuple[str, str], TimelineItem] = {}
+        self._inquiry_question: dict[str, str] = {}
         self._operations: dict[str, TimelineItem] = {}
+        self._operation_session: dict[str, str] = {}
         self._progress: dict[str, tuple[datetime | None, int | None]] = {}
         self._training_samples: dict[str, dict] = {}
         self._pi_items: dict[str, TimelineItem] = {}
         self._pi_text: dict[str, str] = {}
         self._tools: dict[str, TimelineItem] = {}
+        # What is happening now. This is presentation state, derived from
+        # lifecycle events; it never decides where a row is attached.
         self._current_session = ""
-        self._current_inquiry = ""
+        self._current_inquiry: tuple[str, str] | None = None
         self._active_operation = ""
         self._run_state = ""
         self._last_completed = ""
         self._last_completed_kind = ""
         self._last_completed_ts: datetime | None = None
-        self._rank = 2
+        self._attempt = ""
+        self._actor = ""
         self.version = next(_VERSIONS)
         self._running_tools: set[str] = set()
         self._leaf_counts: dict[str, tuple[tuple, int]] = {}
         self._progress_rows: dict[str, TimelineItem] = {}
-        self._fact_leaves: dict[tuple, tuple[int, TimelineItem]] = {}
-        self._session_alias: dict[str, str] = {}
         self._coding_open = False
 
     # ------------------------------------------------------------------
@@ -278,68 +264,30 @@ class TimelineReducer:
     def clear(self) -> None:
         self.__init__(self._campaign_root)
 
-    @staticmethod
-    def _source_rank(event_id: str) -> int:
-        """Live events outrank durable records, which outrank state snapshots."""
-        if not event_id.startswith("history:"):
-            return 2
-        return 1 if event_id.startswith("history:record:") else 0
-
-    def _keep_fact(self, key: tuple, leaf: TimelineItem) -> bool:
-        """True when ``leaf`` is the first display of this fact.
-
-        A fact seen again from a better source refreshes the shown leaf in
-        place; from an equal or worse source it is dropped.
-        """
-        known = self._fact_leaves.get(key)
-        if known is None:
-            self._fact_leaves[key] = (self._rank, leaf)
-            return True
-        rank, shown = known
-        if self._rank > rank:
-            shown.ts = leaf.ts or shown.ts
-            shown.title = leaf.title
-            shown.summary = leaf.summary
-            shown.detail = leaf.detail
-            shown.severity = leaf.severity
-            shown.payload = leaf.payload
-            self._fact_leaves[key] = (self._rank, shown)
-        return False
-
-    def _canonical_session(self, event: Observation, fields: dict) -> str:
-        """The scientific session an event belongs to.
-
-        The Runner names a session ``S<n>``; the PI backend names the same
-        session with its own identifier and only mentions ``S<n>`` in the
-        stage of its start event. Both names must reach one group.
-        """
-        raw = event.session_id or str(fields.get("session_id") or "")
-        backend = str(fields.get("backend_session_id") or "")
-        scientific = str(fields.get("id") or fields.get("scientific_session_id") or "")
-        if backend and _is_scientific_session(scientific):
-            self._session_alias[backend] = scientific
-        if event.kind == "session_start" and raw:
-            match = _STAGE_SESSION.match(str(fields.get("stage") or ""))
-            if match:
-                self._session_alias[raw] = match.group(1)
-        return self._session_alias.get(raw, raw)
-
-    def _alias_stage(self, raw: str, session_id: str, fields: dict) -> dict:
-        """A start event named by its stage ("S1 startup") titles its group by
-        the part after the session name, so the name is not shown twice."""
-        if not raw or raw == session_id:
-            return fields
-        match = _STAGE_SESSION.match(str(fields.get("stage") or ""))
-        if match is None:
-            return fields
-        return {**fields, "kind": match.group(2) or fields.get("kind") or ""}
+    def _diagnostic(self, event: Observation, missing: tuple[str, ...]) -> None:
+        """An event that lacks a required identity is reported, never guessed."""
+        leaf = TimelineItem(
+            item_id=f"diagnostic:{event.event_id or len(self._seen)}",
+            kind="warning",
+            title="event without a required identity",
+            summary=f"{event.kind} lacks {', '.join(missing)}",
+            ts=event.ts,
+            severity="warning",
+            detail=(
+                f"event id: {event.event_id or '(none)'}",
+                f"kind: {event.kind}",
+                f"missing: {', '.join(missing)}",
+            ),
+            payload=dict(event.fields or {}),
+        )
+        self._items[leaf.item_id] = leaf
+        self._campaign_group().children.append(leaf)
 
     def ingest(self, event: Observation) -> None:
         event_id = event.event_id or self._fallback_id(event)
         if event_id in self._seen:
             return
         self._seen.add(event_id)
-        self._rank = self._source_rank(event_id)
         kind = event.kind
         fields = event.fields or {}
         ts = event.ts
@@ -347,14 +295,23 @@ class TimelineReducer:
             return
         # Any other new event may change the view; an idle tick must not.
         self.version = next(_VERSIONS)
-        session_id = self._canonical_session(event, fields)
-        inquiry_id = event.inquiry_id or str(fields.get("inquiry_id") or "")
-        operation_id = event.operation_id or str(
-            fields.get("operation_id") or fields.get("id") or ""
+        session_id = event.session_id
+        inquiry_id = event.inquiry_id
+        operation_id = event.operation_id
+        missing = missing_identity(
+            kind,
+            session_id=session_id,
+            operation_id=operation_id,
+            inquiry_id=inquiry_id,
         )
+        if missing:
+            self._diagnostic(event, missing)
+            return
+        # Who spoke and in which invocation, for the handler about to run.
+        self._attempt = event.attempt
+        self._actor = event.actor
         if kind == "session_start":
-            fields = self._alias_stage(event.session_id, session_id, fields)
-            self._session(session_id or str(fields.get("id") or ""), ts, fields)
+            self._attempt_event(ts, session_id, fields)
             return
         if kind in {"inquiry_opened", "inquiry_closed", "inquiry_reframed"}:
             self._inquiry_event(kind, inquiry_id, session_id, ts, fields)
@@ -476,29 +433,23 @@ class TimelineReducer:
             self._roots.insert(0, item)
         return item
 
+    def _session_title(self, session_id: str, fields: dict) -> str:
+        if session_id == PREPARATION_SESSION:
+            return "Campaign preparation"
+        kind = str(fields.get("kind") or "").replace("_", " ")
+        return f"{session_id} {kind}".strip()
+
     def _session(
         self, session_id: str, ts: datetime | None, fields: dict
-    ) -> TimelineItem | None:
-        if not session_id:
-            return None
+    ) -> TimelineItem:
+        """The group of one durable session, created by its first reference."""
         item = self._sessions.get(session_id)
         if item is None:
-            kind = str(fields.get("kind") or fields.get("stage") or "session").replace(
-                "_", " "
-            )
-            scientific_id = session_id.startswith("S") and session_id[1:].isdigit()
-            title = (
-                f"{session_id} {kind}".strip()
-                if scientific_id
-                else "PI session"
-                if kind == "session"
-                else kind.capitalize()
-            )
             item = self._add_root(
                 TimelineItem(
                     item_id=f"session:{session_id}",
                     kind="session",
-                    title=title,
+                    title=self._session_title(session_id, fields),
                     ts=ts,
                     is_group=True,
                     default_expanded=False,
@@ -506,10 +457,12 @@ class TimelineReducer:
                 )
             )
             self._sessions[session_id] = item
+        elif fields.get("kind"):
+            item.title = self._session_title(session_id, fields)
+            item.payload = {**item.payload, **fields}
         if ts is not None:
             item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
         _lower_ts(item, ts)
-        self._current_session = session_id
         return item
 
     def _inquiry(
@@ -518,35 +471,36 @@ class TimelineReducer:
         session_id: str,
         ts: datetime | None,
         fields: dict,
-    ) -> TimelineItem | None:
-        if not inquiry_id:
-            return None
-        item = self._inquiries.get(inquiry_id)
+    ) -> TimelineItem:
+        """An inquiry as seen from one session.
+
+        An inquiry spans sessions, so each session shows its own group for it;
+        the operations a session ran for the inquiry sit in that group.
+        """
+        question = _first_line(fields.get("question") or "", 90)
+        if question:
+            self._inquiry_question[inquiry_id] = question
+        key = (session_id, inquiry_id)
+        item = self._inquiries.get(key)
         if item is None:
-            question = _first_line(
-                fields.get("question") or fields.get("summary") or "", 90
-            )
-            title = f"{inquiry_id} {question}".strip()
             item = TimelineItem(
-                item_id=f"inquiry:{inquiry_id}",
+                item_id=f"inquiry:{session_id}:{inquiry_id}",
                 kind="inquiry",
-                title=title,
+                title=inquiry_id,
                 ts=ts,
                 is_group=True,
                 default_expanded=True,
                 payload=dict(fields),
             )
             self._items[item.item_id] = item
-            parent = self._session(session_id, ts, {})
-            if parent is not None:
-                parent.children.append(item)
-            else:
-                self._roots.append(item)
-            self._inquiries[inquiry_id] = item
+            self._session(session_id, ts, {}).children.append(item)
+            self._inquiries[key] = item
+        item.title = (
+            f"{inquiry_id} {self._inquiry_question.get(inquiry_id, '')}".strip()
+        )
         if ts is not None:
             item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
         _lower_ts(item, ts)
-        self._current_inquiry = inquiry_id
         return item
 
     def _operation(
@@ -556,11 +510,17 @@ class TimelineReducer:
         session_id: str,
         ts: datetime | None,
         kind: str,
-    ) -> TimelineItem | None:
-        if not operation_id:
-            return None
+    ) -> TimelineItem:
+        """The group of one operation: its session's, or the campaign's when it
+        has no session (the official assessment)."""
         item = self._operations.get(operation_id)
         if item is None:
+            if not session_id:
+                parent = self._campaign_group()
+            elif inquiry_id:
+                parent = self._inquiry(inquiry_id, session_id, ts, {})
+            else:
+                parent = self._session(session_id, ts, {})
             item = TimelineItem(
                 item_id=f"operation:{operation_id}",
                 kind=kind or "operation",
@@ -571,18 +531,34 @@ class TimelineReducer:
                 status="requested",
             )
             self._items[item.item_id] = item
-            parent = self._inquiry(inquiry_id, session_id, ts, {})
-            if parent is None:
-                parent = self._session(session_id, ts, {})
-            if parent is not None:
-                parent.children.append(item)
-            else:
-                self._roots.append(item)
+            parent.children.append(item)
             self._operations[operation_id] = item
+            self._operation_session[operation_id] = session_id
+        elif session_id != self._operation_session.get(operation_id, session_id):
+            self._report_conflict(operation_id, session_id, ts)
         if ts is not None:
             item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
         _lower_ts(item, ts)
         return item
+
+    def _report_conflict(
+        self, operation_id: str, session_id: str, ts: datetime | None
+    ) -> None:
+        """An operation named two sessions: keep the first owner, say so once."""
+        key = f"conflict:{operation_id}"
+        if key in self._items:
+            return
+        owner = self._operation_session.get(operation_id) or "the campaign"
+        leaf = TimelineItem(
+            item_id=key,
+            kind="warning",
+            title="operation named two owners",
+            summary=f"{operation_id}: first {owner}, now {session_id or 'none'}",
+            ts=ts,
+            severity="warning",
+        )
+        self._items[key] = leaf
+        self._campaign_group().children.append(leaf)
 
     # ------------------------------------------------------------------
     # Event handlers
@@ -597,15 +573,18 @@ class TimelineReducer:
         fields: dict,
     ) -> None:
         item = self._inquiry(inquiry_id, session_id, ts, fields)
-        if item is None:
-            return
         if kind == "inquiry_closed":
             item.status = "closed"
             item.end_ts = ts or item.end_ts
+            if self._current_inquiry == (session_id, inquiry_id):
+                self._current_inquiry = None
         elif kind == "inquiry_reframed":
             item.status = "reframed"
+            self._current_inquiry = (session_id, inquiry_id)
+        else:
+            self._current_inquiry = (session_id, inquiry_id)
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{inquiry_id}:{ts}",
+            item_id=f"leaf:{kind}:{session_id}:{inquiry_id}:{ts}",
             kind="inquiry",
             title=(
                 "inquiry opened"
@@ -630,9 +609,8 @@ class TimelineReducer:
             ),
             payload=dict(fields),
         )
-        if kind == "inquiry_reframed" or self._keep_fact((kind, inquiry_id), leaf):
-            item.children.append(leaf)
-            self._items[leaf.item_id] = leaf
+        item.children.append(leaf)
+        self._items[leaf.item_id] = leaf
 
     def _operation_event(
         self,
@@ -645,8 +623,6 @@ class TimelineReducer:
     ) -> None:
         operation_kind = str(fields.get("kind") or fields.get("scope") or "operation")
         item = self._operation(operation_id, inquiry_id, session_id, ts, operation_kind)
-        if item is None:
-            return
         status = str(fields.get("status") or "")
         finished = item.status in {"completed", "failed", "interrupted"}
         if kind == "operation_requested":
@@ -693,7 +669,6 @@ class TimelineReducer:
                 detail=detail,
                 payload=dict(fields),
             )
-            keep = self._keep_fact((kind, operation_id), leaf)
         else:
             text = _first_line(fields.get("text") or summary)
             leaf = TimelineItem(
@@ -704,10 +679,8 @@ class TimelineReducer:
                 severity=item.severity,
                 payload=dict(fields),
             )
-            keep = True
-        if keep:
-            item.children.append(leaf)
-            self._items[leaf.item_id] = leaf
+        item.children.append(leaf)
+        self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
         if item.status in {"running", "requested"}:
             self._active_operation = operation_id
@@ -724,8 +697,6 @@ class TimelineReducer:
     ) -> None:
         operation_kind = "training" if kind == "training_progress" else "measurement"
         item = self._operation(operation_id, inquiry_id, session_id, ts, operation_kind)
-        if item is None:
-            return
         if item.status not in {"completed", "failed", "interrupted"}:
             item.status = "running"
             self._active_operation = operation_id
@@ -804,14 +775,18 @@ class TimelineReducer:
         current_row = self._progress_rows.get(operation_id)
         if (
             current_row is not None
+            and item.children
+            and item.children[-1] is current_row
             and ts is not None
             and previous_ts is not None
             and (ts - previous_ts).total_seconds() < PROGRESS_ROW_SECONDS[kind]
         ):
-            # Samples arrive every second or so; one row per interval keeps
-            # the history readable while the newest row stays current.
+            # Samples can arrive every second. While no other row has followed
+            # it, the last progress row stands for its newest sample, values and
+            # time together, so the list stays in time order.
             current_row.title = title
             current_row.payload = dict(fields)
+            current_row.ts = ts
             item.end_ts = ts
             return
         self._progress[operation_id] = (ts, steps if isinstance(steps, int) else None)
@@ -827,15 +802,33 @@ class TimelineReducer:
         self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
 
+    def _attempt_event(
+        self, ts: datetime | None, session_id: str, fields: dict
+    ) -> None:
+        """One PI invocation starting in a session (an attempt)."""
+        item = self._session(session_id, ts, {})
+        self._current_session = session_id
+        stage = _first_line(fields.get("stage") or "")
+        resumed = " | resumed" if fields.get("resumed") else ""
+        leaf = TimelineItem(
+            item_id=f"leaf:attempt:{session_id}:{self._attempt}:{ts}",
+            kind="session",
+            title="PI started",
+            summary=f"{stage}{resumed}".strip(" |"),
+            ts=ts,
+            payload=dict(fields),
+        )
+        item.children.append(leaf)
+        self._items[leaf.item_id] = leaf
+
     def _session_event(
         self, kind: str, session_id: str, ts: datetime | None, fields: dict
     ) -> None:
-        sid = session_id or str(fields.get("id") or "")
+        sid = session_id
         item = self._session(sid, ts, fields)
-        if item is None:
-            return
         if kind == "session_started":
             item.status = "running"
+            self._current_session = sid
             title = "started"
             summary = _first_line(fields.get("objective") or fields.get("kind") or "")
             detail = tuple(
@@ -849,6 +842,8 @@ class TimelineReducer:
             )
         else:
             item.status = "closed"
+            if self._current_session == sid:
+                self._current_session = ""
             title = "ended"
             summary = _first_line(fields.get("summary") or "")
             detail = tuple(
@@ -890,7 +885,11 @@ class TimelineReducer:
     ) -> None:
         name = str(fields.get("name") or fields.get("tool") or "tool")
         call_id = str(fields.get("tool_call_id") or "")
-        key = call_id or f"{name}:{ts}"
+        key = (
+            f"{self._attempt}:{call_id}"
+            if call_id and self._attempt
+            else (call_id or f"{name}:{ts}")
+        )
         item = self._tools.get(key)
         status = str(fields.get("status") or "")
         if kind == "tool_call_started":
@@ -1217,7 +1216,8 @@ class TimelineReducer:
             return
         turn = fields.get("turn")
         final = bool(fields.get("final", True))
-        key = f"pi:{session_id}:{turn}" if turn is not None else f"pi:{session_id}:{ts}"
+        who = f"{session_id}:{self._attempt}:{self._actor}"
+        key = f"pi:{who}:{turn}" if turn is not None else f"pi:{who}:{ts}"
         existing = self._pi_items.get(key)
         if turn is not None and not final:
             text = self._pi_text.get(key, "") + text
@@ -1229,7 +1229,7 @@ class TimelineReducer:
             existing.payload = dict(fields)
             return
         leaf = TimelineItem(
-            item_id=f"leaf:pi:{session_id}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:pi:{who}:{ts}:{len(self._seen)}",
             kind="pi",
             title="PI",
             summary=_first_line(text),
@@ -1388,7 +1388,6 @@ class TimelineReducer:
     def _usage_event(
         self, kind: str, ts: datetime | None, session_id: str, fields: dict
     ) -> None:
-        rows = fields.get("rows")
         totals = fields.get("totals") if isinstance(fields.get("totals"), dict) else {}
         if kind in {"campaign_usage", "session_usage"}:
             title = "campaign usage" if kind == "campaign_usage" else "session usage"
@@ -1411,10 +1410,6 @@ class TimelineReducer:
                     if part
                 )
             detail = (_json_text(totals),) if totals else ()
-        elif isinstance(rows, list):
-            title = "usage recorded"
-            summary = f"{len(rows)} accounting rows"
-            detail = (_json_text(rows),)
         else:
             role = str(fields.get("role") or "usage")
             title = f"usage {role}"
@@ -1447,18 +1442,11 @@ class TimelineReducer:
             detail=detail,
             payload=dict(fields),
         )
-        if isinstance(rows, list) and kind not in {"campaign_usage", "session_usage"}:
-            # The accounting rows are one running record, not a stream of events.
-            known = self._items.get(_USAGE_RECORD_ID)
-            if known is not None:
-                known.summary = summary
-                known.detail = detail
-                known.payload = dict(fields)
-                return
-            leaf.item_id = _USAGE_RECORD_ID
-        self._attach(leaf, "", "", session_id)
+        # Campaign usage totals belong to the campaign, whatever session ran last.
+        owner = "" if kind == "campaign_usage" else session_id
+        self._attach(leaf, "", "", owner)
         if ts is not None:
-            self._touch_groups(ts, "", "", session_id)
+            self._touch_groups(ts, "", "", owner)
 
     def _warning_event(
         self,
@@ -1518,12 +1506,17 @@ class TimelineReducer:
             detail=tuple(f"{key}: {_short(value)}" for key, value in shown.items()),
             payload=dict(fields),
         )
-        if kind in {"scientific_model_validated", "publication_recovered"}:
-            # The current session is where these happened.
-            self._attach(leaf, "", "", "")
-            return
-        if kind == "campaign_goal_review" and session_id in self._sessions:
+        if kind in {
+            "scientific_model_validated",
+            "campaign_goal_review",
+            "publication_recovered",
+        }:
+            # They belong to the session that produced them when it is named.
             self._attach(leaf, "", "", session_id)
+            if kind == "scientific_model_validated" and (
+                self._current_session == session_id
+            ):
+                self._current_session = ""
             if ts is not None:
                 self._touch_groups(ts, "", "", session_id)
             return
@@ -1596,34 +1589,25 @@ class TimelineReducer:
         inquiry_id: str,
         session_id: str,
     ) -> None:
+        """Attach a row to the most specific owner its identities name.
+
+        An operation owns it, else the session (in its inquiry group when the
+        row names one), else the campaign. A named owner is created when this
+        is the first reference to it. Nothing is guessed from what happened
+        before.
+        """
         self._items[leaf.item_id] = leaf
-        parent = self._operations.get(operation_id) if operation_id else None
-        if parent is None and inquiry_id:
-            parent = self._inquiries.get(inquiry_id)
-        if parent is None and session_id:
-            parent = self._sessions.get(session_id)
-        if parent is None and self._current_session:
-            parent = self._sessions.get(self._current_session)
-        if parent is None and self._active_operation:
-            parent = self._operations.get(self._active_operation)
-        if parent is not None:
-            parent.children.append(leaf)
-        elif leaf.kind in {
-            "role",
-            "usage",
-            "campaign",
-            "log",
-            "pi",
-            "tool",
-            "coding",
-            "file",
-            "result",
-            "warning",
-            "error",
-        }:
-            self._campaign_group().children.append(leaf)
+        if operation_id:
+            parent = self._operation(
+                operation_id, inquiry_id, session_id, leaf.ts, "operation"
+            )
+        elif session_id and inquiry_id:
+            parent = self._inquiry(inquiry_id, session_id, leaf.ts, {})
+        elif session_id:
+            parent = self._session(session_id, leaf.ts, {})
         else:
-            self._roots.append(leaf)
+            parent = self._campaign_group()
+        parent.children.append(leaf)
 
     def _touch_groups(
         self,
@@ -1634,7 +1618,7 @@ class TimelineReducer:
     ) -> None:
         for item in (
             self._operations.get(operation_id) if operation_id else None,
-            self._inquiries.get(inquiry_id) if inquiry_id else None,
+            self._inquiries.get((session_id, inquiry_id)) if inquiry_id else None,
             self._sessions.get(session_id) if session_id else None,
         ):
             if item is not None:
@@ -1836,7 +1820,7 @@ class TimelineReducer:
             return "coding"
         session = self._sessions.get(self._current_session)
         if session is not None and session.status != "closed":
-            return "preparing" if session.title == "Campaign preparation" else "pi"
+            return "preparing" if self._current_session == PREPARATION_SESSION else "pi"
         return "none"
 
     @property
@@ -1846,7 +1830,7 @@ class TimelineReducer:
             if item is not None and item.status in {"running", "requested"}:
                 chain = []
                 if self._current_inquiry:
-                    chain.append(self._current_inquiry)
+                    chain.append(self._current_inquiry[1])
                 if self._current_session:
                     chain.append(self._current_session)
                 chain.append(item.title)
@@ -1870,9 +1854,13 @@ class TimelineReducer:
         if self._current_session:
             ids.add(f"session:{self._current_session}")
         if self._current_inquiry:
-            ids.add(f"inquiry:{self._current_inquiry}")
+            session, inquiry = self._current_inquiry
+            ids.add(f"inquiry:{session}:{inquiry}")
         if self._active_operation:
             ids.add(f"operation:{self._active_operation}")
+            owner = self._operation_session.get(self._active_operation)
+            if owner:
+                ids.add(f"session:{owner}")
         return ids
 
     @staticmethod
@@ -1901,8 +1889,6 @@ class TimelineReducer:
             payload=item.payload,
             status=item.status,
             role=item.role,
-            seq=item.seq,
-            seen_at=item.seen_at,
             lazy=item.lazy,
         )
 
@@ -1937,13 +1923,7 @@ class TimelineReducer:
     def _deep_clone(self, item: TimelineItem) -> TimelineItem:
         if not item.is_group:
             return self._live_tool(item)
-        return self._clone(
-            item,
-            [
-                self._deep_clone(child)
-                for child in sorted(item.children, key=_chronological)
-            ],
-        )
+        return self._clone(item, [self._deep_clone(child) for child in item.children])
 
     def _leaf_count(self, item: TimelineItem) -> int:
         """Events inside a group; cached until the group itself changes."""
@@ -1984,12 +1964,9 @@ class TimelineReducer:
                 folded.lazy = self._leaf_count(item)
                 matches += folded.lazy
                 return folded
-            return self._clone(
-                item,
-                [build(child) for child in sorted(item.children, key=_chronological)],
-            )
+            return self._clone(item, [build(child) for child in item.children])
 
-        roots = [build(root) for root in sorted(self._roots, key=_chronological)]
+        roots = [build(root) for root in self._roots]
         return roots, matches
 
     def view(
@@ -2014,7 +1991,7 @@ class TimelineReducer:
                     matches += 1
                 return keep, self._live_tool(item) if keep else None
             child_items: list[TimelineItem] = []
-            for child in sorted(item.children, key=_chronological):
+            for child in item.children:
                 keep, filtered = include(child)
                 if keep and filtered is not None:
                     child_items.append(filtered)
@@ -2022,10 +1999,7 @@ class TimelineReducer:
             if (not query and group_category_match) or (
                 query and text_match and not child_items
             ):
-                child_items = [
-                    self._deep_clone(child)
-                    for child in sorted(item.children, key=_chronological)
-                ]
+                child_items = [self._deep_clone(child) for child in item.children]
             keep = bool(child_items) or (
                 not query and group_category_match and not item.children
             )
@@ -2034,7 +2008,7 @@ class TimelineReducer:
             return True, self._clone(item, child_items)
 
         roots: list[TimelineItem] = []
-        for root in sorted(self._roots, key=_chronological):
+        for root in self._roots:
             keep, filtered = include(root)
             if keep and filtered is not None:
                 roots.append(filtered)

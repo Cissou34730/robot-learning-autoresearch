@@ -9,8 +9,31 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from tui.observations import Observation
+from runner.event_contract import rule_for
+from tui.observations import Observation as _Observation
 from tui.report import CampaignReport, DemoSources
+
+
+def Observation(kind, ts, fields=None, **identity):
+    """An event as the journal carries it: the identities its kind requires are
+    on the envelope (taken from the payload when the test put them there), and a
+    kind that must name a session gets S7 unless the test names another."""
+    fields = fields or {}
+    for name in rule_for(kind).requires:
+        value = identity.get(name) or fields.get(name)
+        if not value and name == "session_id":
+            value = "S7"
+        if value:
+            identity[name] = value
+    return _Observation(kind, ts, fields, **identity)
+
+
+def _say(app, text, ts=None):
+    """Put one row in the active session's log, the way the journal does."""
+    stamp = ts or datetime.now(tz=UTC)
+    app._process_events(
+        [Observation("notice", stamp, {"text": text, "scope": "info"}, session_id="S7")]
+    )
 
 
 def _run(coro):
@@ -195,10 +218,6 @@ def test_pi_partials_render_incrementally_without_duplicate():
 
 
 async def _pi_partials():
-    from datetime import UTC, datetime
-
-    from tui.observations import Observation
-
     app = _demo_app()
     async with app.run_test(size=(160, 45)) as pilot:
         await pilot.pause()
@@ -236,7 +255,9 @@ def test_report_follows_only_its_campaign_feed(monkeypatch, tmp_path):
     monkeypatch.setattr(paths, "ROOT", tmp_path)
     app = CampaignReport()
     app._ensure_feed("campaign-abc")
-    expected = tmp_path / "reports" / "tui_observations" / "campaign-abc.events.jsonl"
+    expected = (
+        tmp_path / "reports" / "tui_observations" / "campaign-abc.events.v2.jsonl"
+    )
     assert app._feed.path == expected
     current = app._feed
     app._ensure_feed("campaign-abc")
@@ -244,7 +265,7 @@ def test_report_follows_only_its_campaign_feed(monkeypatch, tmp_path):
     app._ensure_feed("campaign-other")
     assert (
         app._feed.path
-        == tmp_path / "reports" / "tui_observations" / "campaign-other.events.jsonl"
+        == tmp_path / "reports" / "tui_observations" / "campaign-other.events.v2.jsonl"
     )
 
 
@@ -332,8 +353,8 @@ async def _reading():
         out = app.query_one("#output")
         # Push enough rows below the viewport that up-scroll has somewhere to go.
         for index in range(200):
-            app._append(
-                datetime.now(tz=UTC),
+            _say(
+                app,
                 f"synthetic fill line {index} to force scrollable history",
             )
         await pilot.pause()
@@ -366,7 +387,7 @@ async def _too_small():
         assert "too small" in str(overlay.render()).lower()
 
 
-def test_context_change_appends_attributed_update():
+def test_durable_changes_update_the_header_but_never_write_into_the_log():
     _run(_context_change())
 
 
@@ -380,12 +401,12 @@ async def _context_change():
         await pilot.pause()
         app.drain_feed()
         await pilot.pause()
+        before = list(app.query_one("#output").text_lines())
         sources.synthesis_switch = "Synthesis replaced with a newer PI record text."
         app.refresh_snapshot()
         await pilot.pause()
-        rendered = "\n".join(app.query_one("#output").text_lines())
-        assert "PI synthesis updated (S6)" in rendered
-        assert "newer PI record text" in rendered
+        assert list(app.query_one("#output").text_lines()) == before
+        assert "newer PI record text" in str(app.query_one("#context").render())
 
 
 def test_stale_counter_is_labeled_not_claimed_live():
@@ -428,7 +449,7 @@ async def _fit_widths():
         async with app.run_test(size=(width, height)) as pilot:
             await pilot.pause()
             out = app.query_one("#output")
-            app._append(datetime.now(tz=UTC), "x" * 200)
+            _say(app, "x" * 200)
             await pilot.pause()
             content_width = out.scrollable_content_region.width
             rendered = out.render_lines(out.region)
@@ -754,9 +775,13 @@ async def _painted_semantic_colors(theme):
                     "warning",
                     stamp,
                     {"code": "color_warning", "message": "A useful warning"},
+                    session_id="S7",
                 ),
                 Observation(
-                    "error", stamp, {"code": "color_error", "message": "A useful error"}
+                    "error",
+                    stamp,
+                    {"code": "color_error", "message": "A useful error"},
+                    session_id="S7",
                 ),
                 Observation("operation_submitted", stamp, {"status": "completed"}),
                 Observation(
@@ -876,7 +901,7 @@ async def _campaign_switch():
     async with app.run_test(size=(160, 45)) as pilot:
         await pilot.pause()
         out = app.query_one("#output")
-        app._append(datetime.now(tz=UTC), "OLD CAMPAIGN OUTPUT")
+        _say(app, "OLD CAMPAIGN OUTPUT")
         await pilot.pause()
         assert "OLD CAMPAIGN OUTPUT" in "\n".join(strip.text for strip in out.lines)
         app.refresh_snapshot()
@@ -890,7 +915,6 @@ async def _campaign_switch():
         await pilot.pause()
         rendered = "\n".join(strip.text for strip in out.lines)
         assert "OLD CAMPAIGN OUTPUT" not in rendered
-        assert "new-campaign-id" in rendered
         assert app._campaign_id == "new-campaign-id"
         assert app._paused_at is None
         assert app._paused_intervals == []
@@ -1070,7 +1094,7 @@ async def _copy_output_selection(theme):
         await pilot.hover(out, offset=(20, 3))
         await pilot.mouse_up(out, offset=(20, 3))
         await pilot.pause()
-        assert app.screen.get_selected_text() == out.render_line(3).text[20:46]
+        assert app.screen.get_selected_text() == out.render_line(3).text[20:46].rstrip()
         assert (
             app.screen.get_style_at(
                 out.content_region.x + 25, out.content_region.y + 3
@@ -1156,8 +1180,12 @@ async def _readable_messages_and_patches():
                 Observation(
                     "pi_message",
                     stamp,
-                    {"text": message, "turn": "readable", "final": True},
-                    session_id="opaque-backend-uuid",
+                    {
+                        "text": message,
+                        "turn": "readable",
+                        "final": True,
+                        "backend_session_id": "opaque-backend-uuid",
+                    },
                 ),
                 Observation(
                     "tool_call_started",

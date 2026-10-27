@@ -437,9 +437,14 @@ class EventLog(Tree[TimelineItem]):
                 self.move_cursor(line.node, animate=False)
                 return
 
-    def _flatten_ids(self, roots: list[TimelineItem]) -> Iterable[tuple]:
+    def _flatten_ids(
+        self, roots: list[TimelineItem], parent: str = ""
+    ) -> Iterable[tuple]:
+        """The tree as a flat signature that includes who owns each row, so a
+        row that moves to another parent changes the signature."""
         for item in roots:
             yield (
+                parent,
                 item.item_id,
                 item.title,
                 item.summary,
@@ -450,7 +455,7 @@ class EventLog(Tree[TimelineItem]):
                 item.detail,
                 item.lazy,
             )
-            yield from self._flatten_ids(item.children)
+            yield from self._flatten_ids(item.children, item.item_id)
 
     def _add_item(
         self,

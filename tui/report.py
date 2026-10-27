@@ -35,11 +35,7 @@ from runner import paths
 from runner import reporting as console
 from tui import projector
 from tui.event_log import EventLog, FilterScreen, RawEventScreen
-from tui.events import (
-    TypedJsonlFeed,
-    synthesize_history,
-    typed_path_for,
-)
+from tui.journal import JournalFeed, journal_path_for
 from tui.observations import Observation
 from tui.timeline import TimelineReducer
 
@@ -493,13 +489,10 @@ class CampaignPanel(Widget):
         self._last_activity: str = ""
         self._last_session: str = ""
         self._last_liveness: datetime | None = None
-        self._observed_signature: tuple | None = None
         self._last_error: str = ""
-        self._source_note_sent: bool = False
         self._feed_campaign: str | None = None
         self._campaign_id: str | None = None
         self._timeline = TimelineReducer(self._campaign_root)
-        self._history_events: list[Observation] = []
         self._log_query = ""
         self._log_categories: set[str] = set()
         self._search_visible = False
@@ -629,7 +622,7 @@ class CampaignPanel(Widget):
             self._feed = SyntheticFeed(demo_schedule())
             return
         if self._events_path is not None:
-            self._feed = TypedJsonlFeed(self._events_path)
+            self._feed = JournalFeed(self._events_path)
             return
         # The per-campaign file is known only once the campaign identity is read.
         self._feed = None
@@ -666,7 +659,6 @@ class CampaignPanel(Widget):
     def _reset_campaign_view(self) -> None:
         self.query_one("#output", EventLog).reset_campaign()
         self._timeline.clear()
-        self._history_events = []
         self._log_query = ""
         self._log_categories = set()
         self._search_visible = False
@@ -686,9 +678,7 @@ class CampaignPanel(Widget):
         self._last_activity = ""
         self._last_session = ""
         self._last_liveness = None
-        self._observed_signature = None
         self._last_error = ""
-        self._source_note_sent = False
         self._process_running = None
         self._paused_at = None
         self._paused_intervals = []
@@ -697,14 +687,14 @@ class CampaignPanel(Widget):
             self._feed_campaign = None
 
     def _ensure_feed(self, campaign_id: str | None) -> None:
-        """Follow this campaign's own file; a reset cannot surface old events."""
+        """Follow this campaign's own journal; a reset cannot surface old events."""
         if self._demo or self._events_path is not None or not campaign_id:
             return
         campaign = str(campaign_id)
-        if isinstance(self._feed, TypedJsonlFeed) and self._feed_campaign == campaign:
+        if isinstance(self._feed, JournalFeed) and self._feed_campaign == campaign:
             return
-        self._feed = TypedJsonlFeed(
-            typed_path_for(campaign, self._campaign_root), campaign_id=campaign
+        self._feed = JournalFeed(
+            journal_path_for(campaign, self._campaign_root), campaign_id=campaign
         )
         self._feed_campaign = campaign
 
@@ -713,22 +703,21 @@ class CampaignPanel(Widget):
     # ------------------------------------------------------------------
 
     def refresh_snapshot(self) -> None:
+        """Re-read the durable files for the header band and the model table.
+
+        The log does not use them: it shows only what the journal says.
+        """
         stamp_of = getattr(self._sources, "stamp", None)
         self._durable_stamp = stamp_of() if stamp_of is not None else None
         self._durable_read_at = time.monotonic()
         state, records, usage_rows = self._sources.read()
         if state is None and records:
-            self._note_source(
-                "Campaign state file unavailable - recorded operations shown without state-derived roles"
-            )
+            self._note("Campaign state file unavailable")
         campaign_id = (state or {}).get("campaign", {}).get("id")
         self._switch_campaign(campaign_id)
         self._ensure_feed(campaign_id)
-        if isinstance(self._feed, TypedJsonlFeed) and campaign_id:
+        if isinstance(self._feed, JournalFeed) and campaign_id:
             self._feed.campaign_id = str(campaign_id)
-        self._history_events = synthesize_history(state, records, usage_rows)
-        for event in self._history_events:
-            self._timeline.ingest(event)
 
         snapshot = projector.build_snapshot(
             state,
@@ -741,13 +730,13 @@ class CampaignPanel(Widget):
             process_observed_recently=self._process_observed(),
         )
         self.snapshot = snapshot
+        self._mark_attached()
         self._render_context()
         self._render_models(snapshot.model_rows)
         self._render_progress()
         self._render_training_status()
         self._render_log()
         self._apply_layout()
-        self._detect_context_changes(snapshot)
 
     def _process_observed(self) -> bool:
         stamp = self._last_liveness
@@ -756,22 +745,7 @@ class CampaignPanel(Widget):
         return (_now() - stamp).total_seconds() <= LIVENESS_SECONDS
 
     def _report_source_error(self, message: str) -> None:
-        if self._last_error == message:
-            return
-        self._last_error = message
-        self._append(
-            _now(),
-            f"Campaign source problem: {message}",
-            style=f"bold {self._palette.error}",
-            width_guard=False,
-        )
-        self._render_context()
-
-    def _note_source(self, message: str) -> None:
-        if self._source_note_sent:
-            return
-        self._source_note_sent = True
-        self._append(_now(), message, style=self._palette.muted)
+        self._note(f"Campaign source problem: {message}")
 
     # -- live progress objects -----------------------------------------
 
@@ -1463,53 +1437,16 @@ class CampaignPanel(Widget):
             return f"bold {palette.error}"
         return f"bold {palette.warning}"
 
-    def _append(
-        self,
-        stamp: datetime | None,
-        text: str,
-        *,
-        style: str | None = None,
-        width_guard: bool = True,
-    ) -> None:
-        if stamp is None:
-            stamp = _now()
-        severity = "info"
-        scope = "info"
-        if style:
-            if "error" in style or self._palette.error in style:
-                severity = scope = "error"
-            elif "warning" in style or self._palette.warning in style:
-                severity = scope = "warning"
-        event = Observation(
-            kind="notice",
-            ts=stamp,
-            fields={"text": _display_text(_clean_text(text)), "scope": scope},
-            event_id=f"internal:{stamp.isoformat()}:{hash(text)}",
-            scope=scope,
-            severity=severity,
-        )
-        self._timeline.ingest(event)
-        self._render_log()
-        self._render_reading()
+    def _note(self, message: str) -> None:
+        """Say something about the TUI's own sources.
 
-    def _append_block(
-        self, stamp: datetime | None, lines: list[str], style: str | None = None
-    ) -> None:
-        self._append(stamp, "\n".join(lines), style=style)
-
-    def _hang_block(
-        self,
-        prefix: str,
-        text: str,
-        style: str | None = None,
-        prefix_style: str | None = None,
-    ) -> None:
-        self._append(None, f"{prefix}{_clean_text(text)}", style=style)
-
-    def _write(
-        self, stamp: datetime | None, lines: list[str], style: str | None
-    ) -> None:
-        self._append(stamp, "\n".join(lines), style=style)
+        The log shows only what the campaign did, so these messages go to the
+        attention line of the header band, never into the log.
+        """
+        if self._last_error == message:
+            return
+        self._last_error = message
+        self._render_context()
 
     def _output_width(self) -> int:
         # The log's real content region is narrower than the screen: the
@@ -1524,94 +1461,8 @@ class CampaignPanel(Widget):
             width = self._view_size.width - 4
         return max(20, width)
 
-    def _attach_output(self) -> None:
-        snapshot = self.snapshot
-        if snapshot is None or self._attached:
-            return
+    def _mark_attached(self) -> None:
         self._attached = True
-        palette = self._palette
-        now = _now()
-        self._append(
-            now,
-            f"Autoresearch report attached to campaign {snapshot.campaign_id} "
-            f"- {snapshot.status}",
-        )
-        if self._demo:
-            self._append(
-                now,
-                "Demonstration mode: every value here is synthetic.",
-                style=f"bold {palette.error}",
-            )
-        feed_ready = isinstance(self._feed, TypedJsonlFeed) and self._feed.path.exists()
-        if not self._demo and not feed_ready:
-            self._append(
-                now,
-                "No structured observation feed is available: live PI messages and "
-                "live execution progress are unavailable. Recorded campaign state, "
-                "durable operational history and recorded usage follow.",
-                style=palette.muted,
-            )
-
-    def _append_timeline(self) -> None:
-        snapshot = self.snapshot
-        if snapshot is None:
-            return
-        palette = self._palette
-        for entry in snapshot.timeline:
-            style = None
-            if entry.kind == "error":
-                style = f"bold {palette.error}"
-            elif entry.kind == "pending":
-                style = palette.warning
-            elif entry.kind in {"assessment", "validation"}:
-                style = palette.success
-            prefix = "pending" if entry.timestamp is None else _ts(entry.timestamp)
-            self._append_block(None, [f"[{prefix}] {entry.text}"], style=style)
-
-    def _detect_context_changes(self, snapshot: projector.CampaignSnapshot) -> None:
-        self._attach_output()
-        signature = (
-            snapshot.question,
-            snapshot.synthesis,
-            snapshot.synthesis_session,
-            projector.role_assignment_text(snapshot),
-            snapshot.official_text,
-            snapshot.status,
-        )
-        previous = self._observed_signature
-        self._observed_signature = signature
-        if previous is None:
-            return
-        now = _now()
-        palette = self._palette
-        if signature[0] != previous[0] and signature[0]:
-            source = (
-                f"inquiry [{snapshot.question_source}]"
-                if snapshot.question
-                else "objective"
-            )
-            self._append(
-                now, f"Inquiry question updated ({source}):", style=palette.muted
-            )
-            self._hang_block("", signature[0])
-        if (signature[1], signature[2]) != (previous[1], previous[2]) and signature[1]:
-            self._append(
-                now,
-                f"PI synthesis updated ({snapshot.synthesis_session}):",
-                style=palette.muted,
-            )
-            self._hang_block("", signature[1])
-        if signature[3] != previous[3] and signature[3]:
-            self._append(now, "Model assignments changed:", style=palette.muted)
-            self._append_block(now, signature[3].splitlines(), style=palette.muted)
-        if signature[4] != previous[4] and signature[4]:
-            self._append(
-                now,
-                signature[4],
-                style=self._assessment_style(snapshot.official_status),
-            )
-        if not snapshot.terminal and previous[5] == snapshot.status:
-            return
 
     # ------------------------------------------------------------------
     # Observation feed
@@ -1624,18 +1475,8 @@ class CampaignPanel(Widget):
         events = feed.poll()
         rejected = getattr(feed, "rejected", None)
         if rejected:
-            self._note_feed_error(rejected)
+            self._note(f"Journal: {rejected}")
         self._process_events(events, render=render)
-
-    def _note_feed_error(self, message: str) -> None:
-        if self._last_error == message:
-            return
-        self._last_error = message
-        self._append(
-            _now(),
-            f"Observation feed: {message}",
-            style=f"bold {self._palette.error}",
-        )
 
     def _process_events(self, events: list[Observation], render: bool = True) -> None:
         for event in events:
