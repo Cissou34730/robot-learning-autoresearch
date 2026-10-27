@@ -233,7 +233,7 @@ def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
         return FILE_READ_DENIAL
     if relative == "campaigns/results.jsonl":
         return RESULTS_READ_DENIAL
-    if relative.startswith("reports/tui_observations/"):
+    if relative.split("/", 1)[0] == "reports":
         return FILE_READ_DENIAL
     if preliminary and relative.startswith("robot_learning/"):
         return None
