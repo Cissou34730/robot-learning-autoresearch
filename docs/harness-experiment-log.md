@@ -176,10 +176,17 @@ representations trained from scratch (torque and joint-target variants) scored
 0-159/400. The maintainer stopped both at about 5 h 13. Harness behaviour:
 launchers wrote no console output; invalid requests were refused at the check
 step; PI-code failures (T10, M24 in `a51fadff`) returned their traceback as
-`implementation_error` and were repaired. At the stop, `a51fadff`'s Runner was
-interrupted while loading state and exited with the uncaught-interrupt status
-`0xC000013A` instead of 130; T13 had already completed and been published, and
-the launcher ended cooperatively. `5489d042` stopped with 130 and T15 left at
+`implementation_error` and were repaired. At the maintainer's `stop 1-2`,
+`a51fadff`'s PI had just submitted a new measurement; the stop arrived after validation,
+during the trust scan, so the launcher still wrote the request and started the
+Runner, which was interrupted while loading state and exited with the
+uncaught-interrupt status `0xC000013A` instead of 130. Nothing was accepted;
+T13 had already completed and been published, and the launcher ended
+cooperatively, but the unaccepted request stayed in
+`pi_workspace/operation_request.json` and will execute on resume. Fixed on
+27 October: the Runner exits 130 when a stop request interrupts it outside an
+operation, and the launcher checks the stop again after the trust scan, before
+writing and executing a request. `5489d042` stopped with 130 and T15 left at
 `training_dispatched` for resume.
 
 ### Parallel rounds (25-26 October)
@@ -657,6 +664,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-27 | Stop between validation and execution | A stop that arrived after an operation was validated, during the trust scan, still started the Runner; the Runner, interrupted while loading state, exited `0xC000013A` and the unaccepted request stayed for resume (`a51fadff`). The Runner now exits 130 for a stop outside an operation, and the launcher re-checks the stop before writing and executing the request. Two regression tests. |
 | 2026-10-27 | Parallel round 4 (Python launcher) | `a51fadff` and `5489d042` stopped by the maintainer at about 5 h 13 (115.7 and 100.2 AIU, both near 97.5%); `c7be4376` failed 195/200 (1 h 47, 52.1 AIU). No campaign used the reflection symmetry in the policy. Reports copied into `docs/research-overview/`. See [Round 4](#parallel-round-4-27-october). |
 | 2026-10-27 | Python launcher; TUI-only output | Branch `feature/python-launcher`. `run_research.ps1`, `researcher_session.ps1`, `researcher_mutex.ps1`, `runner/copilot/copilot_controller.ps1`, `reset_research.ps1` and `tools/run_parallel.ps1` replaced by `runner/launcher/` (small modules: options, campaign lock, stop, children, trust gate, Runner client, prompts, Copilot runtime, PI sessions, operation bridge, phases, loop), `runner.launcher.reset` and `tools/run_parallel.py`. `run_research.ps1` forwards to the Python launcher; `researcher_session.ps1` and `researcher_mutex.ps1` remain as retired placeholders because `contracts/authority.md` lists them. The Runner returns validation verdicts and errors in a structured result file (`--result-path`) instead of standard output; `--operation-state-input` removed. One stop request per campaign in its Git directory, so the TUI stops campaigns it did not start; a request older than the launcher start is ignored. Console renderers (`runner/console.py`, `runner/copilot/copilot_console.py`) and the legacy `<campaign-id>.jsonl` feed removed: launches write no console output, Runner/launcher announcements are typed `notice` events. PI prompts, retry, repair and objectives compared on 847 recorded campaign states: 4,797 comparisons, 0 differences. Accepted differences: operation tool-result JSON now has a fixed key order and keeps recorded timestamps (PowerShell converted dates to local time); Runner error detail comes from the structured result. Tests: 746 pass (one TUI layout test failed once under load, passed on rerun); `tests/e2e` fails as before. Contracts and prompt text unchanged. |
 | 2026-10-26 | Campaigns root and parallel runs as the standard launch | Campaign repositories move under one plain folder, `robot-learning-campaigns\campaign-1` to `campaign-5`: the former `robot-learning-campaigns` becomes `campaign-1`, `-run2` and `-run3` become `campaign-2` and `campaign-3`. `tools/run_parallel.ps1 -Count N` (1 to 5) selects the slots and initializes missing ones from an existing slot; `run_research.ps1`, `reset_research.ps1` and `tools/run-report.ps1` default to `campaign-1`. README, AGENTS, reset, stop, policy-runtime and TUI docs updated. The round 1 and round 3 reports were copied from `%TEMP%` into `docs/research-overview/`. |

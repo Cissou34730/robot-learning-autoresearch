@@ -327,3 +327,87 @@ def test_launcher_stop_helper_executes_the_cooperative_exit_contract(tmp_path):
     assert stage.stopped_after(phases.STOPPED, "PI session")
     with pytest.raises(LauncherError, match="instead of completing cooperatively"):
         stage.stopped_after(1, "PI session")
+
+
+@pytest.mark.parametrize("requested", [True, False])
+def test_runner_interrupted_outside_an_operation_exits_cooperatively(
+    monkeypatch, tmp_path, requested
+):
+    from runner import invocation_result
+
+    request = tmp_path / "stop-request"
+    if requested:
+        request.touch()
+    monkeypatch.setenv(STOP_REQUEST_ENV, str(request))
+    invocation_result.configure(None)
+
+    def interrupted_while_loading_state():
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(run_experiment, "main", interrupted_while_loading_state)
+    if requested:
+        assert run_experiment.run_with_stop_control() == 130
+    else:
+        with pytest.raises(KeyboardInterrupt):
+            run_experiment.run_with_stop_control()
+
+
+def test_stop_during_the_trust_scan_never_executes_the_request(monkeypatch, tmp_path):
+    import json
+
+    from runner.launcher import operation_bridge
+
+    state_path = tmp_path / "runner" / "state" / "research_state.json"
+    state_path.parent.mkdir(parents=True)
+    state_path.write_text(
+        json.dumps(
+            {
+                "campaign": {"id": "c"},
+                "scientific_session": {"id": "S1", "backend_session_id": "b"},
+                "operation_events": [],
+                "pending_operation": None,
+                "terminal_state": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "pi_workspace").mkdir()
+    monkeypatch.setattr(operation_bridge, "operation_state", lambda *_args: {})
+    request = tmp_path / "stop-request"
+    calls = []
+    scans = []
+
+    def runner(*arguments, **_options):
+        calls.append(arguments)
+        return SimpleNamespace(exit_code=0, validation_message="OPERATION_VALID: x")
+
+    def verify():
+        scans.append(1)
+        if len(scans) == 2:
+            request.touch()  # the stop arrives during the scan before execution
+
+    bridge = operation_bridge.OperationBridge(
+        campaign_root=tmp_path,
+        runner=SimpleNamespace(runner=runner),
+        trust=SimpleNamespace(verify=verify),
+        stop=_stop(request),
+        update_brief=lambda: None,
+    )
+    binding = {
+        "invocation_id": "i",
+        "session_id": "b",
+        "campaign_id": "c",
+        "scientific_session_id": "S1",
+    }
+    message = {
+        "invocation_id": "i",
+        "session_id": "b",
+        "campaign_id": "c",
+        "event_count": 0,
+        "call_id": "call",
+        "request": {"measurement": {}},
+    }
+    response = bridge.submit(message, binding)
+    assert response["status"] == "interrupted"
+    assert calls == [("--check-operation-input",)]
+    assert not (tmp_path / "pi_workspace" / "operation_request.json").exists()

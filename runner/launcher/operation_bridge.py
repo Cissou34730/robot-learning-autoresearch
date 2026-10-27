@@ -102,6 +102,15 @@ class OperationBridge:
         if check.exit_code != 0:
             response["error"] = validation
             return response
+        if message.get("request") is not None:
+            self._trust.verify()
+        # Validation and the trust scan take seconds; a stop may arrive meanwhile.
+        if self._stop.requested():
+            response["status"], response["error"] = (
+                "interrupted",
+                "Campaign stop requested.",
+            )
+            return response
         outcome = self._execute(message.get("request"), payload)
         return self._settle(response, state, outcome)
 
@@ -148,7 +157,6 @@ class OperationBridge:
             if outcome.exit_code == 0:
                 outcome = self._runner.runner("--execute-pending")
             return outcome
-        self._trust.verify()
         request_path = self._campaign_root / "pi_workspace" / "operation_request.json"
         request_path.write_bytes(payload.encode("utf-8"))
         return self._runner.runner()

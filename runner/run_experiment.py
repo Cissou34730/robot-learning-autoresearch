@@ -25,7 +25,7 @@ from runner import (
     typed_events,
 )
 from runner import reporting as console
-from runner.stop_control import interrupt_on_stop_request
+from runner.stop_control import interrupt_on_stop_request, stop_requested
 
 PROPOSAL_ERRORS = (
     json.JSONDecodeError,
@@ -2740,6 +2740,10 @@ def _run_with_stop_control() -> int:
     try:
         with interrupt_on_stop_request():
             return main()
+    except KeyboardInterrupt:
+        if stop_requested():
+            return 130
+        raise
     except repository.PublicationError as error:
         console.diagnostic(
             f"ERROR: publication failed: {error}",
