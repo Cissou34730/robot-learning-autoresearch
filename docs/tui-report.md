@@ -254,13 +254,19 @@ stale, stopped or non-advancing data does not produce a fabricated zero ETA.
 Live and reconstructed candidate announcements share a candidate identity, so
 each checkpoint appears once and its identifier is not repeated in the row.
 
-The Runner polls progress every second and publishes training and evaluation
-samples when their counters change, and at least every 15 seconds. PI text is
+The Runner publishes one training sample every 30 seconds. It polls evaluation
+progress every second and publishes a sample when the counters change, and at
+least every 15 seconds. PI text is
 published at most once per second. Timeline progress rows are kept one per
 30 seconds for training and one per 15 seconds for evaluation; the newest row
 updates in place. A widget is redrawn only when its content changes: a header
 counter that ticks does not re-lay out the screen, and a refresh of unchanged
-durable data redraws nothing. Each fact (an opened inquiry, an
+durable data redraws nothing. A tick with no new event does no work on the log
+except the counter of a running tool, so its cost does not grow with the length
+of the campaign. A finished session is shown folded with its number of events;
+its rows are built only when you open it. Each campaign tab starts with a dot:
+green for running, amber for stopping, resetting or stale counters, red for
+failed, accent for completed, muted otherwise. Each fact (an opened inquiry, an
 operation lifecycle step) shows once, from the best source (live event, then
 durable record, then state snapshot). Siblings are shown in time order.
 

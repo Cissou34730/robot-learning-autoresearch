@@ -90,6 +90,8 @@ def _now() -> datetime:
 
 
 _ARRIVAL = itertools.count()
+_VERSIONS = itertools.count()
+_USAGE_RECORD_ID = "leaf:usage_recorded"
 PROGRESS_ROW_SECONDS = {"training_progress": 30.0, "eval_progress": 15.0}
 
 
@@ -212,6 +214,8 @@ class TimelineItem:
     # Arrival order breaks ties; arrival time orders items that carry no timestamp.
     seq: int = field(default_factory=lambda: next(_ARRIVAL))
     seen_at: datetime = field(default_factory=_now)
+    # Number of events hidden in a closed group that is shown folded.
+    lazy: int = 0
 
     @property
     def glyph(self) -> str:
@@ -251,6 +255,9 @@ class TimelineReducer:
         self._last_completed_kind = ""
         self._last_completed_ts: datetime | None = None
         self._rank = 2
+        self.version = next(_VERSIONS)
+        self._running_tools: set[str] = set()
+        self._leaf_counts: dict[str, tuple[tuple, int]] = {}
         self._progress_rows: dict[str, TimelineItem] = {}
         self._fact_leaves: dict[tuple, tuple[int, TimelineItem]] = {}
 
@@ -300,6 +307,8 @@ class TimelineReducer:
         ts = event.ts
         if kind == "liveness":
             return
+        # Any other new event may change the view; an idle tick must not.
+        self.version = next(_VERSIONS)
         session_id = event.session_id or str(fields.get("session_id") or "")
         inquiry_id = event.inquiry_id or str(fields.get("inquiry_id") or "")
         operation_id = event.operation_id or str(
@@ -384,7 +393,7 @@ class TimelineReducer:
             "publication_recovered",
             "scientific_model_validated",
         }:
-            self._root_event(kind, ts, fields)
+            self._root_event(kind, ts, fields, session_id)
             return
         if kind == "operation_submitted":
             self._operation_submitted_event(
@@ -858,6 +867,7 @@ class TimelineReducer:
                 payload=dict(fields),
             )
             self._tools[key] = item
+            self._running_tools.add(key)
             self._attach(item, operation_id, inquiry_id, session_id)
         else:
             if item is None:
@@ -874,6 +884,8 @@ class TimelineReducer:
             if kind == "tool_denied":
                 status = "denied"
             item.status = status or item.status
+            if item.status != "started":
+                self._running_tools.discard(key)
             item.end_ts = ts
             seconds = None
             if ts is not None and item.ts is not None:
@@ -1392,6 +1404,15 @@ class TimelineReducer:
             detail=detail,
             payload=dict(fields),
         )
+        if isinstance(rows, list) and kind not in {"campaign_usage", "session_usage"}:
+            # The accounting rows are one running record, not a stream of events.
+            known = self._items.get(_USAGE_RECORD_ID)
+            if known is not None:
+                known.summary = summary
+                known.detail = detail
+                known.payload = dict(fields)
+                return
+            leaf.item_id = _USAGE_RECORD_ID
         self._attach(leaf, "", "", session_id)
         if ts is not None:
             self._touch_groups(ts, "", "", session_id)
@@ -1422,7 +1443,9 @@ class TimelineReducer:
         if ts is not None:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
 
-    def _root_event(self, kind: str, ts: datetime | None, fields: dict) -> None:
+    def _root_event(
+        self, kind: str, ts: datetime | None, fields: dict, session_id: str = ""
+    ) -> None:
         if kind == "run_state":
             self._run_state = str(fields.get("state") or "")
         title = {
@@ -1452,9 +1475,14 @@ class TimelineReducer:
             detail=tuple(f"{key}: {_short(value)}" for key, value in shown.items()),
             payload=dict(fields),
         )
-        if kind == "scientific_model_validated":
-            # It closes the preparation session that produced the model.
+        if kind in {"scientific_model_validated", "publication_recovered"}:
+            # The current session is where these happened.
             self._attach(leaf, "", "", "")
+            return
+        if kind == "campaign_goal_review" and session_id in self._sessions:
+            self._attach(leaf, "", "", session_id)
+            if ts is not None:
+                self._touch_groups(ts, "", "", session_id)
             return
         self._campaign_group().children.append(leaf)
         self._items[leaf.item_id] = leaf
@@ -1810,7 +1838,23 @@ class TimelineReducer:
             role=item.role,
             seq=item.seq,
             seen_at=item.seen_at,
+            lazy=item.lazy,
         )
+
+    def live_summaries(self) -> dict[str, str]:
+        """Current summary of each running tool, keyed by item id."""
+        now = _now()
+        summaries: dict[str, str] = {}
+        for key in self._running_tools:
+            tool = self._tools.get(key)
+            if tool is None or tool.status != "started" or tool.ts is None:
+                continue
+            seconds = max(0.0, (now - tool.ts).total_seconds())
+            if seconds >= 1:
+                summaries[tool.item_id] = _tool_summary(
+                    tool.payload, tool.status, seconds, root=self._campaign_root
+                )
+        return summaries
 
     def _live_tool(self, item: TimelineItem) -> TimelineItem:
         """A running tool shows how long it has been running."""
@@ -1836,14 +1880,64 @@ class TimelineReducer:
             ],
         )
 
+    def _leaf_count(self, item: TimelineItem) -> int:
+        """Events inside a group; cached until the group itself changes."""
+        key = (len(item.children), item.end_ts)
+        cached = self._leaf_counts.get(item.item_id)
+        if cached is not None and cached[0] == key:
+            return cached[1]
+
+        def count(node: TimelineItem) -> int:
+            if not node.is_group:
+                return 1
+            return sum(count(child) for child in node.children)
+
+        total = count(item)
+        self._leaf_counts[item.item_id] = (key, total)
+        return total
+
+    def _fast_view(self, open_ids: set[str] | None) -> tuple[list[TimelineItem], int]:
+        """The unfiltered view in one pass. A finished session that nobody has
+        opened is shown folded, so the cost follows what is open, not how long
+        the campaign has run."""
+        active = self.active_ids()
+        matches = 0
+
+        def build(item: TimelineItem) -> TimelineItem:
+            nonlocal matches
+            if not item.is_group:
+                matches += 1
+                return self._live_tool(item)
+            if (
+                open_ids is not None
+                and item.kind == "session"
+                and item.status == "closed"
+                and item.item_id not in active
+                and item.item_id not in open_ids
+            ):
+                folded = self._clone(item, [])
+                folded.lazy = self._leaf_count(item)
+                matches += folded.lazy
+                return folded
+            return self._clone(
+                item,
+                [build(child) for child in sorted(item.children, key=_chronological)],
+            )
+
+        roots = [build(root) for root in sorted(self._roots, key=_chronological)]
+        return roots, matches
+
     def view(
         self,
         *,
         query: str = "",
         categories: set[str] | None = None,
+        open_ids: set[str] | None = None,
     ) -> tuple[list[TimelineItem], int]:
         query = query.strip().casefold()
         categories = categories or set()
+        if not query and not categories:
+            return self._fast_view(open_ids)
         matches = 0
 
         def include(item: TimelineItem) -> tuple[bool, TimelineItem | None]:

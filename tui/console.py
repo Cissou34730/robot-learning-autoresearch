@@ -33,6 +33,7 @@ from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
+from textual.content import Content
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
@@ -58,6 +59,28 @@ from tui.process import LauncherMachinery
 from tui.report import REPORT_CSS, CampaignPanel, CampaignSources
 
 HELPER_SHUTDOWN_GRACE_SECONDS = 15.0
+
+# Colour of the dot in front of each campaign tab label, by state.
+TAB_TAG_COLOURS = {
+    "failed": "$error",
+    "attention": "$warning",
+    "running": "$success",
+    "completed": "$accent",
+    "quiet": "$text-muted",
+}
+
+
+def tab_tag(stage: str, stalled: bool) -> str:
+    """The tag for one campaign tab, from its launcher stage and progress state."""
+    if stage == "failed":
+        return "failed"
+    if stage in {"stopping", "resetting"}:
+        return "attention"
+    if stage in {"launching", "running"}:
+        return "attention" if stalled else "running"
+    if stage == "completed":
+        return "completed"
+    return "quiet"
 
 
 class CommandInputs:
@@ -392,6 +415,7 @@ class CampaignConsole(App):
         self._command_history: list[str] = []
         self._feedback = ""
         self._summary = ""
+        self._tab_tags: dict[str, str] = {}
 
     # ------------------------------------------------------------------
     # Composition
@@ -641,12 +665,19 @@ class CampaignConsole(App):
             self.call_from_thread(self._batch_finished)
 
     def _refresh_status_now(self) -> None:
+        found = self.query(TabbedContent)
+        tabs = found.first() if found else None
         for panel in self.query(CampaignPanel):
-            target = self._controller.state(panel.id.removeprefix("panel-"))
+            label = panel.id.removeprefix("panel-")
+            target = self._controller.state(label)
             if target.stage in {"launching", "running", "stopping"}:
                 panel.set_process_running(True)
             elif target.stage in {"stopped", "failed", "completed"}:
                 panel.set_process_running(False)
+            if tabs is not None:
+                self._tag_tab(
+                    tabs, label, tab_tag(target.stage, panel.progress_stalled())
+                )
         command = self.query_one("#commands-input", Input)
         active = self.query_one(TabbedContent).active
         command.border_title = active or "Explicit target required"
@@ -678,6 +709,19 @@ class CampaignConsole(App):
             status
             + " | "
             + (self._feedback or "start resumes; run resets + starts; F1 help")
+        )
+
+    def _tag_tab(self, tabs: TabbedContent, label: str, tag: str) -> None:
+        """Colour the dot in front of a tab label; relabel only on a change."""
+        if self._tab_tags.get(label) == tag:
+            return
+        try:
+            tab = tabs.get_tab(label)
+        except Exception:  # noqa: BLE001 - the tab is not mounted yet
+            return
+        self._tab_tags[label] = tag
+        tab.label = Content.from_markup(
+            f"[{TAB_TAG_COLOURS[tag]}]●[/] $name", name=label
         )
 
     def _status_line(self) -> str:

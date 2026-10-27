@@ -603,6 +603,121 @@ def test_usage_and_publication_events_render_structured_numbers():
     assert "remote error" in retry.detail[0]
 
 
+def test_goal_review_and_publication_recovery_sit_in_their_session():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    for session in ("S1", "S2"):
+        reducer.ingest(
+            _event("session_started", start, {"id": session}, session_id=session)
+        )
+    reducer.ingest(
+        _event(
+            "campaign_goal_review",
+            start + timedelta(seconds=5),
+            {"summary": "inquiries 0/15"},
+            session_id="S1",
+        )
+    )
+    reducer.ingest(_event("publication_recovered", start, {"retry": 1}))
+    reducer.ingest(_event("run_state", start, {"state": "executing"}))
+    reducer.ingest(_event("campaign_concluded", start, {"status": "done"}))
+    roots, _ = reducer.view()
+    items = {item.item_id: item for item in _walk(roots)}
+    first, second = items["session:S1"], items["session:S2"]
+    campaign = items["campaign:root"]
+    assert [c.title for c in first.children if c.title == "campaign goal review"]
+    assert [c.title for c in second.children if c.title == "publication recovered"]
+    kept = {child.title for child in campaign.children}
+    assert {"run state executing", "campaign concluded"} <= kept
+    assert not kept & {"campaign goal review", "publication recovered"}
+
+
+def test_closed_sessions_are_folded_until_opened():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    for session in ("S1", "S2"):
+        reducer.ingest(
+            _event("session_started", start, {"id": session}, session_id=session)
+        )
+        for number in range(3):
+            reducer.ingest(
+                _event(
+                    "checkpoint_saved",
+                    start + timedelta(seconds=number),
+                    {"current_synthesis": f"{session} step {number}"},
+                    session_id=session,
+                )
+            )
+        if session == "S1":
+            reducer.ingest(
+                _event("session_ended", start, {"summary": "done"}, session_id="S1")
+            )
+    unfolded, total = reducer.view()
+    closed = next(item for item in unfolded if item.item_id == "session:S1")
+    assert closed.children and closed.lazy == 0
+
+    folded, folded_total = reducer.view(open_ids=set())
+    shut = next(item for item in folded if item.item_id == "session:S1")
+    live = next(item for item in folded if item.item_id == "session:S2")
+    assert shut.children == [] and shut.lazy == len(closed.children) + sum(
+        len(child.children) for child in closed.children
+    )
+    assert live.children and live.lazy == 0
+    assert folded_total == total
+
+    opened, _ = reducer.view(open_ids={"session:S1"})
+    assert next(i for i in opened if i.item_id == "session:S1").children
+
+
+def test_running_tool_summaries_stop_when_the_tool_completes():
+    reducer = TimelineReducer()
+    start = datetime.now(tz=UTC) - timedelta(seconds=90)
+    reducer.ingest(
+        _event(
+            "tool_call_started",
+            start,
+            {"tool_call_id": "t1", "name": "submit_operation", "arguments": {}},
+        )
+    )
+    summaries = reducer.live_summaries()
+    assert list(summaries) == ["tool:t1"]
+    assert "1m30s" in summaries["tool:t1"]
+    reducer.ingest(
+        _event(
+            "tool_call_completed",
+            start + timedelta(seconds=95),
+            {"tool_call_id": "t1", "name": "submit_operation", "status": "completed"},
+        )
+    )
+    assert reducer.live_summaries() == {}
+
+
+def test_liveness_does_not_change_the_timeline_version():
+    reducer = TimelineReducer()
+    before = reducer.version
+    reducer.ingest(_event("liveness", datetime(2026, 10, 24, 12, 0, tzinfo=UTC)))
+    assert reducer.version == before
+    reducer.ingest(_event("checkpoint_saved", None, {"current_synthesis": "x"}))
+    assert reducer.version != before
+
+
+def test_usage_record_updates_in_place_as_rows_change():
+    usage_rows = [{"role": "pi", "model": "m1"}]
+    state = {"campaign": {"id": "C1"}}
+    reducer = TimelineReducer()
+    first = synthesize_history(state, [], usage_rows)
+    second = synthesize_history(state, [], [*usage_rows, {"role": "pi", "model": "m2"}])
+    assert synthesize_history(state, [], usage_rows)[-1].event_id == first[-1].event_id
+    assert second[-1].event_id != first[-1].event_id
+    for event in (*first, *second):
+        reducer.ingest(event)
+    roots, _ = reducer.view()
+    records = [item for item in _walk(roots) if item.title == "usage recorded"]
+    assert len(records) == 1
+    assert records[0].summary == "2 accounting rows"
+    assert "m2" in records[0].detail[0]
+
+
 def test_each_fact_shows_once_in_time_order_whatever_the_source_or_arrival():
     reducer = TimelineReducer()
     start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)

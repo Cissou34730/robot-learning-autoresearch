@@ -512,6 +512,7 @@ class CampaignPanel(Widget):
         self._durable_read_at = float("-inf")
         self._layout_key: tuple | None = None
         self._shown_text: dict[str, Text | str] = {}
+        self._log_key: tuple | None = None
 
     @property
     def _view_size(self) -> Size:
@@ -563,6 +564,7 @@ class CampaignPanel(Widget):
         event_log = self.query_one("#output", EventLog)
         event_log._styles = self._log_styles()
         event_log.on_follower(self._on_follow)
+        event_log.on_open_folded(self._render_log)
         self._apply_log_background()
         self._make_feed()
         self.refresh_snapshot()
@@ -670,6 +672,7 @@ class CampaignPanel(Widget):
         self._shown_text.clear()
         self._layout_key = None
         self._models_key = None
+        self._log_key = None
         self.query_one("#now", Static).update("")
         self._attached = False
         self._context_rows = 0
@@ -865,6 +868,15 @@ class CampaignPanel(Widget):
             episodes_total=state.get("episodes_total"),
             elapsed_seconds=elapsed,
             stale=self._progress_stale(state),
+        )
+
+    def progress_stalled(self) -> bool:
+        """True while a live training or evaluation counter has stopped advancing."""
+        if self._paused_at is not None:
+            return False
+        return any(
+            state and self._progress_stale(state)
+            for state in (self._training, self._evaluation)
         )
 
     def _progress_stale(self, state: dict) -> bool:
@@ -1371,10 +1383,26 @@ class CampaignPanel(Widget):
 
     def _render_log(self) -> None:
         event_log = self.query_one("#output", EventLog)
-        event_log._styles = self._log_styles()
+        styles = self._log_styles()
+        event_log._styles = styles
+        key = (
+            self._timeline.version,
+            self._log_query,
+            frozenset(self._log_categories),
+            tuple(sorted(styles.items())),
+            frozenset(event_log.open_group_ids()),
+            frozenset(self._timeline.active_ids()),
+            self._view_size.width,
+        )
+        if key == self._log_key:
+            # Nothing new since the last draw: only running tools change.
+            event_log.patch_summaries(self._timeline.live_summaries())
+            return
+        self._log_key = key
         roots, matches = self._timeline.view(
             query=self._log_query,
             categories=self._log_categories,
+            open_ids=event_log.open_group_ids(),
         )
         event_log.set_view(roots, active_ids=self._timeline.active_ids())
         now = Text(self._timeline.now_text, style=self._palette.accent)

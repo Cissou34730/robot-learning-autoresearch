@@ -128,6 +128,41 @@ def test_console_start_command_launches_and_stop_command_stops(tmp_path):
     asyncio.run(scenario())
 
 
+def test_campaign_tabs_carry_a_state_colour(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.console import TAB_TAG_COLOURS, tab_tag
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+
+    def dot(tab):
+        label = tab.label
+        assert label.plain == f"● {tab.id.removeprefix('--content-tab-')}"
+        return str(label.spans[0].style)
+
+    async def scenario():
+        async with app.run_test(size=(120, 45)) as pilot:
+            await pilot.pause()
+            tabs = app.query_one(TabbedContent)
+            first, second = tabs.get_tab("campaign-1"), tabs.get_tab("campaign-2")
+            assert dot(first) == dot(second) == TAB_TAG_COLOURS["quiet"]
+            await _run_batch(app, pilot, "start 1")
+            await pilot.pause()
+            assert dot(first) == TAB_TAG_COLOURS["running"]
+            assert dot(second) == TAB_TAG_COLOURS["quiet"]
+            app._controller.state("campaign-1").stage = "failed"
+            app._refresh_status_now()
+            assert dot(first) == TAB_TAG_COLOURS["failed"]
+
+    asyncio.run(scenario())
+    assert tab_tag("running", stalled=True) == "attention"
+    assert tab_tag("stopping", stalled=False) == "attention"
+    assert tab_tag("completed", stalled=False) == "completed"
+    assert tab_tag("idle", stalled=True) == "quiet"
+
+
 def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
     from textual.widgets import Button, Input
 

@@ -375,10 +375,14 @@ def synthesize_history(
         )
 
     if usage_rows:
+        # The id follows the data, so a changed record reaches the timeline.
+        digest = hashlib.sha1(
+            json.dumps(usage_rows, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest()[:12]
         events.append(
             _history_event(
                 "usage_update",
-                event_id=f"history:usage:{campaign_id}",
+                event_id=f"history:usage:{campaign_id}:{digest}",
                 scope="usage",
                 payload={"rows": usage_rows},
             )

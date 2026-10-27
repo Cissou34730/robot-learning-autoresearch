@@ -116,6 +116,41 @@ def test_unchanged_durable_data_redraws_nothing():
     _run(_unchanged_data_redraws_nothing())
 
 
+async def _quiet_tick_does_not_rebuild_the_log():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        for _ in range(10):
+            await pilot.pause()
+        builds = 0
+        original_view = app._timeline.view
+
+        def counted_view(*args, **kwargs):
+            nonlocal builds
+            builds += 1
+            return original_view(*args, **kwargs)
+
+        app._timeline.view = counted_view
+        app._render_log()
+        for _ in range(3):
+            app.tick_clock()
+        assert builds == 0
+        app._process_events(
+            [
+                Observation(
+                    "checkpoint_saved",
+                    datetime.now(tz=UTC),
+                    {"current_synthesis": "a new fact"},
+                    event_id="new-fact",
+                )
+            ]
+        )
+        assert builds == 1
+
+
+def test_quiet_tick_does_not_rebuild_the_log():
+    _run(_quiet_tick_does_not_rebuild_the_log())
+
+
 async def _initial():
     app = _demo_app()
     async with app.run_test(size=(160, 45)) as pilot:

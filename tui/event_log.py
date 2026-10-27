@@ -190,6 +190,7 @@ class EventLog(Tree[TimelineItem]):
         self._last_active_ids: frozenset[str] = frozenset()
         self._last_styles: dict[str, str] = {}
         self._follow_listeners: list = []
+        self._open_listeners: list = []
 
     # ------------------------------------------------------------------
     # Public state
@@ -205,6 +206,25 @@ class EventLog(Tree[TimelineItem]):
 
     def on_follower(self, listener) -> None:
         self._follow_listeners.append(listener)
+
+    def on_open_folded(self, listener) -> None:
+        """Call ``listener`` when a folded group is opened and needs its rows."""
+        self._open_listeners.append(listener)
+
+    def open_group_ids(self) -> set[str]:
+        """Groups the reader has opened; the view must carry their rows."""
+        return set(self._expanded)
+
+    def patch_summaries(self, summaries: dict[str, str]) -> None:
+        """Update the summary of a few rows in place, without a rebuild."""
+        for item_id, summary in summaries.items():
+            node = self._node_by_id.get(item_id)
+            item = self._items_by_id.get(item_id)
+            if node is None or item is None or item.summary == summary:
+                continue
+            item.summary = summary
+            self._sigs[item_id] = self._sig(item)
+            node.set_label(self._label(item))
 
     def selected_item(self) -> TimelineItem | None:
         node = self.cursor_node
@@ -314,6 +334,7 @@ class EventLog(Tree[TimelineItem]):
             item.status,
             item.severity,
             item.detail,
+            item.lazy,
         )
 
     def _reconcile(
@@ -413,6 +434,7 @@ class EventLog(Tree[TimelineItem]):
                 item.status,
                 item.severity,
                 item.detail,
+                item.lazy,
             )
             yield from self._flatten_ids(item.children)
 
@@ -546,6 +568,9 @@ class EventLog(Tree[TimelineItem]):
             if duration:
                 label.append("  ")
                 label.append(f"[{duration}]", style=styles.get("muted", ""))
+            if item.lazy:
+                label.append("  ")
+                label.append(f"{item.lazy:,} events", style=styles.get("muted", ""))
         return label
 
     def _summary_text(self, item: TimelineItem) -> Text:
@@ -782,6 +807,9 @@ class EventLog(Tree[TimelineItem]):
             self._collapsed.discard(item.item_id)
             if not item.is_group and not event.node.children:
                 self._populate_details(event.node, item)
+            if item.lazy:
+                for listener in self._open_listeners:
+                    listener()
 
     def on_tree_node_collapsed(self, event: Tree.NodeCollapsed) -> None:
         item = event.node.data
