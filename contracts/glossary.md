@@ -25,7 +25,7 @@ names in code format are technical names. They keep their exact spelling.
 | policy | A trained neural network together with its saved runtime. | learned policy, learned model, learned candidate |
 | saved runtime | The code that is saved with a policy. It builds the observation of the network and turns the network output into the motor command. | policy io, policy i/o |
 | observation | The input that the saved runtime gives to the network at each control step. | — |
-| robot model | A model of the kinematics or the dynamics of the robot, for example inverse kinematics or a copy of the simulation. You can use a robot model as a tool. The saved runtime cannot contain one. | model of the robot |
+| robot model | A model of the kinematics or the dynamics of the robot, for example inverse kinematics or a copy of the simulation. You can use a robot model as a tool. The fixed transformation from the network output to the motor command cannot contain one; `contracts/scenario.md` gives this limit. | — |
 | candidate | A policy that a training run saved and that you can measure, for example `T2:checkpoint-90112`. | model, saved artifact |
 | training checkpoint | A candidate that a training run saved at a given step count. | checkpoint, policy checkpoint |
 | role | A label that you give to a candidate: working, best-known, or a retained label. The operation is `model_role`. | model role |
@@ -36,10 +36,12 @@ names in code format are technical names. They keep their exact spelling.
 | Term | Meaning | Do not use |
 |---|---|---|
 | method | How you make a policy: the observation, the transformation of the network output into the motor command, the network, the algorithm, the reward, the training targets and the training length. | approach, learning method |
-| change | One modification of the method or of a tool. | intervention, intervention category |
+| change | One modification of the method or of a tool. | — |
+| intervention | A change that you make to test its causal effect on the behavior of the policy. | — |
 | recipe | The source files and the parameters that implement a method. Each candidate records its recipe. | scientific recipe |
 | inherited recipe | The recipe that the campaign contains when it starts. | current recipe, baseline recipe |
-| source code | Any code. | implementation, implementations |
+| source code | Any code. | — |
+| implementation | The source code that realizes a method, a tool or an instrument. | — |
 | PI-owned path | A path whose content you decide. `contracts/authority.md` lists these paths. | — |
 | human-owned path | A path that no campaign role can change. | — |
 
@@ -56,13 +58,19 @@ names in code format are technical names. They keep their exact spelling.
 | development measurement | Any measurement before the official assessment. | — |
 | official assessment | The protected evaluation of the best-known candidate on 200 episodes. Its result ends the campaign. The operation is `campaign_conclusion`. | final assessment, assessment, campaign conclusion |
 | artifact | A file that an operation writes. | — |
-| result | The facts that a completed operation returns. | finding, findings, outcome, outcomes |
+| result | The facts that a completed operation returns. | — |
+| finding | A fact or an interpretation that evidence supports. | — |
 | evidence | Completed results and their artifacts. Only completed operations give evidence. | — |
-| fact | A value or a statement that you read in evidence. | — |
-| conclusion | What you infer from facts. | interpretation, interpretations |
-| explanation | A proposed cause of a behavior of the policy. | mechanism, mechanisms, mechanistic, hypothesis |
-| explanation test | A comparison that shows whether an explanation accounts for where the policy fails and for where it succeeds in comparable conditions. | mechanism test |
-| reference | The candidate that a paired comparison compares with another candidate. | first reference |
+| fact | A value or a statement that you read directly in the task definitions, in the source code or in evidence. It is not an inference. | — |
+| interpretation | What you infer from facts. It is provisional: new evidence can revise it. | — |
+| conclusion | An interpretation that you state as the answer to a question, with its limits. | — |
+| mechanism | The causal chain that produces a behavior of the policy: the dynamics of the robot, the saved runtime, the network and the training process. | — |
+| explanation | A proposed mechanism for a behavior of the policy. | — |
+| hypothesis | An explanation stated so that evidence can test it. One test can support or weaken it; one test alone does not establish it. | — |
+| discriminating evidence | Evidence that can distinguish competing explanations, because they predict different results for it. | — |
+| mechanism test | A comparison that shows whether an explanation accounts for where the policy fails and for where it succeeds in comparable conditions. | explanation test |
+| causal research map | The relations among observations, interpretations, competing explanations, unresolved distinctions and discriminating evidence that `current_synthesis` and `decision_frontier` record. | — |
+| reference | The basis of a comparison. In a paired comparison, it is the candidate that the other candidate is compared with. | first reference |
 
 ## Campaign and sessions
 
@@ -72,7 +80,7 @@ names in code format are technical names. They keep their exact spelling.
 | session | One conversation of the PI or of the analyst, for one purpose. | scientific session, bounded session, bounded scientific session |
 | session objective | The purpose of the current session. | — |
 | analyst session | The first session. The analyst writes the scientific model. | preliminary session, preliminary analyst session, campaign-start session |
-| scientific model | The document `pi_workspace/scientific_model.md`. The analyst writes it. It does not change during the campaign. | physical model |
+| scientific model | The document `pi_workspace/scientific_model.md`: the initial physical model of the robot and the task, which the analyst derives from the definitions. It does not change during the campaign; your session records carry forward what the campaign learns. | — |
 | decision-relevant synthesis | The last section of the scientific model. It gives the facts and the unknowns that are most likely to change your first decisions. | decision-relevant |
 | startup session | Your first session. You choose the first direction of the campaign. | — |
 | goal-review session | A session in which you choose one of two actions: request the official assessment, or open one inquiry. You can measure before you choose. | goal review |
@@ -90,15 +98,13 @@ goal-review session -> open inquiry -> inquiry sessions -> close inquiry -> goal
 goal-review session -> official assessment -> end of the campaign
 ```
 
-## Words that the campaign texts do not use
+## Other terms
 
 | Term | Meaning | Do not use |
 |---|---|---|
-| important | Able to change a decision. | consequential |
-| limited | Kept inside a stated scope. | bounded |
-| separate | Tell two explanations apart with evidence. | discriminate, discriminates, discriminating |
-| work for one session | The part of an inquiry that one session completes. | session-sized deliverable, deliverable |
-| open questions | The questions that remain open. The record field is `decision_frontier`. | decision frontier, frontier, causal research map |
+| consequential | Able to change a decision. | — |
+| session-sized deliverable | The part of an inquiry that one session completes. | — |
+| decision frontier | The open questions, and the evidence that can answer each of them. The record field is `decision_frontier`. | — |
 
 ## Operations by session
 

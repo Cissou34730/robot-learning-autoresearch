@@ -1,7 +1,7 @@
 # Authority and file ownership
 
-This contract states what each campaign role can read, write and execute.
-`contracts/program.md` defines the research process.
+This contract states what each campaign role may read, write and execute.
+`contracts/program.md` defines the research lifecycle.
 `contracts/instruments.md` and its parts in `contracts/instruments/` define
 the operation formats and the acceptance rules.
 
@@ -14,7 +14,7 @@ definitions from these installed libraries, in parts of limited size.
 
 ## Scientific coding roles
 
-The PI gives scientific source changes to the coder through
+The PI delegates scientific source changes to the coder through
 `scientific_coding`.
 
 - The coder changes only the exact files that the PI selected. It reads only
@@ -27,19 +27,19 @@ The PI gives scientific source changes to the coder through
 - When a review fails, the same coder receives it, with the same intent and the
   same files. The same reviewer then checks the repair.
 - The PI receives the final change and the review, or the requirement that
-  stopped the work. Scientific choices, requirements that are not clear and
-  repairs that remain open stay with the PI.
+  stopped the work. Scientific choices, unclear requirements and unresolved
+  repairs stay with the PI.
 
 ## PI-owned paths
 
-The PI decides the content of these paths. The coder writes them only for an
-explicit request of the PI.
+The PI decides the content of these paths. The coder writes them only within
+an explicit request of the PI.
 
 - `robot_learning/scenario/`, except `robot_learning/scenario/__init__.py`,
-  which is a small protected initializer. The modules in this folder import
+  which is a minimal protected initializer. The modules in this folder import
   each other directly.
 - `robot_learning/training/`, which includes `current_params.json` for the
-  active runtime parameters
+  active overrides of the runtime configuration
 - `robot_learning/train.py`, `robot_learning/evaluate.py` and
   `robot_learning/play.py`
 - `robot_learning/lab/`, for the analysis and diagnostic tools of the campaign.
@@ -47,9 +47,9 @@ explicit request of the PI.
   Runner executes them through `python_module` measurements.
 - `pi_workspace/scientific_model.md`, only during the analyst session
 
-In these paths, the PI can keep, rewrite, combine, replace or remove any source
-code. The existing structure has no authority over this choice. An option has
-no priority only because it keeps earlier work.
+In these paths, the PI may retain, rewrite, combine, replace or remove any
+implementation. The existing structure has no authority over this choice. No
+option has standing merely because it preserves earlier work.
 
 ## Human-owned paths
 
@@ -76,14 +76,14 @@ In a PI session, you have these tools:
 - `view` to read one exact file, and `glob` (with `pattern` and `paths`) and
   `rg` to find files
 - `artifact_evidence_query` for JSON evidence and `training_log_query` for the
-  kept training logs
+  preserved training logs
 - `training_series_statistics`, `success_rate_pass_probability` and
   `episode_outcome_breakdown` for numeric summaries
 - `scientific_api_reference` for the definitions of the installed libraries
-- `scientific_coding` to give source changes to the coder
+- `scientific_coding` to delegate source changes to the coder
 - `submit_operation` to request operations from the Runner
 
-Some actions are not available to you. You do not write files or run shell
+Some actions are outside your authority. You do not write files or run shell
 commands. You do not execute code, training, tests or protected evaluation. You
 do not install dependencies, open the viewer or run Git commands. The Runner
 executes the operations that you request through `submit_operation`.
@@ -100,23 +100,23 @@ not through `view` or a search.
 ## Campaign files
 
 - `campaigns/brief.md` - the current context, generated
-- `campaigns/results.jsonl` - the history of completed operations, which is the
-  authority
+- `campaigns/results.jsonl` - the authoritative history of completed
+  operations
 - `campaigns/EXPERIMENTS.md` - the readable history, generated
 - `campaigns/evaluations/` - the detailed measurement artifacts
 - `campaigns/checkpoints/candidates/` and `campaigns/checkpoints/retained/` -
   the archived candidates and the candidates with roles
 - `models/candidates/` - the temporary candidates from training
-- `pi_workspace/scientific_model.md` - the scientific model, which does not
-  change after the analyst session
+- `pi_workspace/scientific_model.md` - the scientific model: the initial
+  physical model of the campaign, frozen after the analyst session
 
 ## Runner
 
 The Runner validates and executes the operations that you request, and returns
-their results. Operation acceptance and training include the validation of the
-structure, of the protected files and of the saved runtime. The Runner does not
-write scientific code, diagnose failures, choose repairs or draw conclusions
-from results.
+factual results. Operation acceptance and training include the validation of
+the structure, of the protected files and of the saved runtime. The Runner does
+not write scientific code, diagnose failures, choose repairs or interpret
+results.
 
 ## Analyst session
 
@@ -125,6 +125,6 @@ The analyst session writes `pi_workspace/scientific_model.md`. Its tools are
 shell, `artifact_evidence_query`, `training_log_query`,
 `training_series_statistics`, `success_rate_pass_probability`,
 `episode_outcome_breakdown` and `scientific_api_reference`. The shell permits
-read-only Git commands to find the origin of code. The Git history is not
-scientific evidence. This session does not give `scientific_coding` or
+read-only Git commands for code provenance. The Git history is not scientific
+evidence. This session does not expose `scientific_coding` or
 `submit_operation`.

@@ -688,10 +688,10 @@
           <h3 style="margin-top: 12px">35 closed issues; five open investigations</h3>
           <ul>
             <li>All 59 issue IDs remain visible. Five are open (OI-024, OI-025, OI-039, OI-040, OI-057).</li>
-            <li>Seven changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
+            <li>Six changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
               (invariances in the scientific model), OI-055 (first-experiment reference), OI-056 (contrast in
-              mechanism tests), OI-058 (task and policy framing) and OI-059 (controlled wording). OI-054 (time
-              and AI usage shown to the PI) was withdrawn on 27 October.</li>
+              mechanism tests) and OI-059 (controlled wording, corrected after round 6). OI-054 (time and AI usage
+              shown to the PI) and OI-058 (task and policy framing) were withdrawn on 27 October.</li>
             <li>On 26 October OI-041 (system prompt), OI-049 (analyst prompt) and OI-052 (duplicate panels) closed.</li>
             <li>OI-033 and OI-037 were closed by maintainer decision, not verified recovery. OI-021, OI-026, OI-038
               and OI-046 were closed by maintainer decision on 22 October.</li>
@@ -1965,7 +1965,7 @@
         the <a href="../harness-experiment-log.md#issue-register">Markdown register</a>; the tables below are generated
         from it. On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and OI-052 to OI-056 were added
         from the parallel rounds. On 27 October OI-054 was withdrawn, OI-057 and OI-058 were added from round 5,
-        and OI-059 from the wording analysis.
+        and OI-059 from the wording analysis. After round 6 OI-058 was withdrawn and OI-059 was corrected.
         OI-040 to
         OI-047 replace the former follow-up items. The maintainer
         approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
@@ -1981,7 +1981,7 @@
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">7</p>
+          <p class="metric">6</p>
           <p class="metric-label">Changes that need more evidence</p>
         </article>
         <article class="card metric-card">
@@ -1989,7 +1989,7 @@
           <p class="metric-label">Closed issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">12</p>
+          <p class="metric">13</p>
           <p class="metric-label">Inactive entries</p>
         </article>
       </div>
@@ -2127,8 +2127,7 @@
                 episodes, per stratum when asked. The maintainer reversed "no harness tool": in <code>e7dbbece</code>
                 the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts
                 unchanged, and the PI-owned <code>comparison.py</code> stays available. Track use. Use: 8 calls in
-                <code>cfa88359</code>, 45 in <code>5d94bf8a</code>.
-              </td>
+                <code>cfa88359</code>, 45 in <code>5d94bf8a</code>.</td>
             </tr>
             <tr>
               <td>OI-040</td>
@@ -2145,13 +2144,14 @@
                 stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by
                 the shoulder limit and did not use the reflection.</td>
               <td><span class="tag">Open</span></td>
-              <td>One campaign only. Check the symmetry statements and their conditions in the next round's models,
-                and whether a conditioned statement precedes a limit-based explanation. No change is authorized.</td>
+              <td>One campaign only. Check the symmetry statements and their conditions in the next round's models, and
+                whether a conditioned statement precedes a limit-based explanation. No change is authorized. Round 6: no
+                model added the condition; <code>229c3e55</code> stated no reflection at all.</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <h3 id="observed-issues">Changes that need more evidence — 7</h3>
+      <h3 id="observed-issues">Changes that need more evidence — 6</h3>
       <p>Each change exists. Campaign evidence is missing or does not yet isolate its effect.</p>
       <div class="card table-wrap wide">
         <table>
@@ -2177,8 +2177,7 @@
                 session's <code>contracts/scenario.md</code> re-reads fell from 21 to 0 in <code>cfa88359</code>; it
                 still re-read <code>authority.md</code> (11) and <code>policy_runtime.py</code> (6), which are now
                 included. Remaining check: context growth and cost across a campaign longer than about 15 sessions. Keep
-                the complete history accessible. Do not infer a context repair from faster model responses.
-              </td>
+                the complete history accessible. Do not infer a context repair from faster model responses.</td>
             </tr>
             <tr>
               <td>OI-051</td>
@@ -2190,8 +2189,7 @@
                 result. All other tools stay blocked meanwhile. The PI session activity limit is now 6 h; coder and
                 reviewer time counts toward it, Runner waits do not. Observed 25 October in the minimal-recipe campaign
                 <code>05229297</code> (M42, 3 × 2,400 episodes, about 35 minutes). No campaign has yet run an operation
-                longer than 25 minutes, so the slice has not been exercised.
-              </td>
+                longer than 25 minutes, so the slice has not been exercised.</td>
             </tr>
             <tr>
               <td>OI-053</td>
@@ -2204,7 +2202,11 @@
                 min, <code>de7af8af</code> in 3 h 21). Before: the only campaign whose model stated it
                 (<code>6b13d5f4</code>) passed in 52 min; <code>fecc7566</code> found it by a mirror-pair experiment;
                 the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See <a
-                  href="../harness-experiment-log.md#parallel-rounds-25-26-october">parallel rounds</a>.</td>
+                href="../harness-experiment-log.md#parallel-rounds-25-26-october">parallel rounds</a>. Round 4: all 3
+                models stated it, no PI used it. Round 5 (invalid): all 4 models stated it; 2 PIs used it and reached
+                400/400 by about 77 min, 1 set it aside under a stated condition (OI-057), 1 never compared mirrored
+                failures. Round 6 (invalid): 3 of 4 models stated it, no PI used it within about 1 h 15; see
+                OI-058.</td>
             </tr>
             <tr>
               <td>OI-055</td>
@@ -2216,7 +2218,9 @@
               <td><code>4ce2fdb1</code> (26 October), <code>contracts/program.md</code>: the inherited recipe is the
                 first reference, and a first experiment that changes several parts at once cannot attribute its result;
                 the assumptions checked before a costly experiment include the choice of method, not only the
-                correctness of its implementation. No campaign has run with it.</td>
+                correctness of its implementation. Round 5: all 4 PIs trained the recipe unchanged first and then
+                changed one factor (training radius). Round 4 also ran with it (0 of 3). Round 6: all first changes
+                altered one part or none.</td>
             </tr>
             <tr>
               <td>OI-056</td>
@@ -2229,33 +2233,25 @@
                 explanation; check the assumptions of a costly experiment; name the limitation the next implementation
                 addresses; an inconclusive result alone does not justify another attempt or abandonment. Changes 1-3
                 come from <a href="../proposals/program-revision-proposal-preserve-lifecycle-20261026.md">the
-                  preserve-lifecycle proposal</a>. Round 3 ran with all of them; their effect cannot be separated from
+                preserve-lifecycle proposal</a>. Round 3 ran with all of them; their effect cannot be separated from
                 OI-053.</td>
             </tr>
             <tr>
-              <td>OI-058</td>
-              <td>The PI and the analyst treat task physics as a cause of failure, separate from the policy. The task
-                is fixed and only sets how demanding each situation is; every measured outcome is the policy's behavior
-                under it. Round 5: <code>923f335d</code> wrote that its labels "do not identify its physical cause";
-                the <code>0c12d136</code> model listed "branch/joint-limit difficulty" among failure classes and the PI
-                explained its failures by the shoulder limit.</td>
-              <td><span class="tag">Implemented</span></td>
-              <td>27 October. Analyst objective: constraints "that make some situations more demanding than others,
-                and what a controller must do to succeed in each". PI system prompt: the task is fixed and defines
-                what success requires and how demanding each situation is, whatever policy is tested; every measured
-                outcome is the behavior of the policy under that task. Round 6 is the first round with it.</td>
-            </tr>
-            <tr>
               <td>OI-059</td>
-              <td>The campaign texts named one concept with several words (for example artifact, candidate,
-                checkpoint and model for a saved policy) and used one word with several meanings (model,
-                checkpoint, development, reference, goal review). About 115 negative statements and coined terms
-                ("decision frontier", "causal research map", "consequential") added ambiguity.</td>
+              <td>The campaign texts named one concept with several words (for example artifact, candidate, checkpoint
+                and model for a saved policy) and used one word with several meanings (model, checkpoint, development,
+                reference, goal review).</td>
               <td><span class="tag">Implemented</span></td>
-              <td>27 October. <code>contracts/glossary.md</code> and a rewrite of all campaign-facing text in
-                Simplified Technical English; the PI is "you". Before: 12,205 words, 107 semicolons, 36 sentences
-                over 25 words. After: 15,595 words including the glossary, no semicolons, 11 long sentences. Round 6
-                is the first round with it.</td>
+              <td>27 October, <code>817d90bb</code>: <code>contracts/glossary.md</code> and a rewrite of all
+                campaign-facing text in Simplified Technical English. Round 6 showed two defects. The glossary listed
+                scientific terms under "Do not use" (mechanism, hypothesis, interpretation, discriminate, intervention,
+                implementation, physical model, consequential, causal research map), and the rewrite replaced them with
+                plain words; its "robot model" row extended the scenario's limit to the whole saved runtime, and
+                <code>757ef81a</code> removed its observation features. Corrected the same day (ledger): the glossary
+                defines these terms, the robot-model row follows the scenario, and every campaign-facing file was
+                compared passage by passage with round 5 (<code>9591b56a</code>) to restore the lost terms, qualifiers
+                and modality; the glossary names, "you" for the PI and the factual corrections stay. The next round is
+                the first with the corrected text.</td>
             </tr>
           </tbody>
         </table>
@@ -2301,8 +2297,8 @@
                 </tr>
                 <tr>
                   <td>OI-004</td>
-                  <td>The PI can prefer the last training checkpoint without a comparison with relevant alternatives.
-                  </td>
+                  <td>The PI can prefer the last training checkpoint without a comparison with relevant
+                    alternatives.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>The PI selects candidates from training context and measured results. The PI does not need to
                     evaluate every checkpoint.</td>
@@ -2314,8 +2310,7 @@
                   <td>Goal review compares official prospects with further work and considers selection bias. In
                     <code>2d4fcc0e</code>, the PI continued at 97.2% on pooled fresh panels and requested assessment at
                     400/400. No automatic assessment rule or readiness condition was added. Closure does not guarantee
-                    future assessment success.
-                  </td>
+                    future assessment success.</td>
                 </tr>
                 <tr>
                   <td>OI-009</td>
@@ -2407,8 +2402,7 @@
                   <td>Closed by maintainer decision on 22 October. Coders receive contract excerpts and the recorded
                     structure of selected evidence (<code>evidence_inputs</code>); missing scientific decisions return
                     to the PI; independent review remains. Coding and review cost 7.1 of 30.1 AIU in
-                    <code>cfa88359</code>. No separate clarification-cost measurement was completed.
-                  </td>
+                    <code>cfa88359</code>. No separate clarification-cost measurement was completed.</td>
                 </tr>
                 <tr>
                   <td>OI-027</td>
@@ -2479,8 +2473,8 @@
                 </tr>
                 <tr>
                   <td>OI-036</td>
-                  <td>A controller can work in research evaluation but omit required behavior in protected evaluation.
-                  </td>
+                  <td>A controller can work in research evaluation but omit required behavior in protected
+                    evaluation.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>T4's saved runtime contains the required controller and episode state. The same artifact scored
                     400/400 locally, 200/200 in protected development and 200/200 officially. Closure combines source
@@ -2514,16 +2508,14 @@
                     <code>contracts/instruments/coding.md</code>): runtime changes reach a candidate only through
                     training; frozen-weight runtime tests are diagnostics; measurement artifacts never become
                     candidates. The repackaging operation is not built. In <code>cfa88359</code> the PI trained T2 fresh
-                    with a reflection in its policy I/O and passed at 199/200.
-                  </td>
+                    with a reflection in its policy I/O and passed at 199/200.</td>
                 </tr>
                 <tr>
                   <td>OI-045</td>
                   <td>Inquiry training requests must use the full 120,000-step allocation.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>Closed on 24 October by the harness change after <code>efd58acc</code>: an inquiry run now lies
-                    between the allocation (120k) and the maintainer maximum (<code>--max-timesteps</code>, default
-                    360k).
+                    between the allocation (120k) and the maintainer maximum (<code>-MaxTimesteps</code>, default 360k).
                     Startup stays at most the allocation.</td>
                 </tr>
                 <tr>
@@ -2537,8 +2529,7 @@
                     campaign repository's local tag <code>baseline-distinct-episodes-v3-robot</code> (commit
                     <code>8bee2b4</code> on top of <code>baseline-distinct-episodes-v3</code>) updates the two recipe
                     imports and <code>campaigns/task_contract.json</code>; Fresh resets use it.
-                    <code>tools/initialize_campaign.py</code> still defaults to the old tag.
-                  </td>
+                    <code>tools/initialize_campaign.py</code> still defaults to the old tag.</td>
                 </tr>
                 <tr>
                   <td>OI-041</td>
@@ -2549,8 +2540,8 @@
                     (<code>runner/copilot/system_prompt.py</code>): own identity, autonomy and tone, contract
                     references; the scientific model arrives in the first message so that it survives compaction.
                     Campaigns since <code>f83fca4d</code> run on it. Plan and adaptations: <a
-                      href="../harness-experiment-log.md#oi-041-system-prompt-plan-22-october">OI-041 system-prompt
-                      plan</a>.</td>
+                    href="../harness-experiment-log.md#oi-041-system-prompt-plan-22-october">OI-041 system-prompt
+                    plan</a>.</td>
                 </tr>
                 <tr>
                   <td>OI-049</td>
@@ -2576,7 +2567,7 @@
           </div>
         </div>
       </details>
-      <h3 id="inactive-issues">Inactive entries — 12</h3>
+      <h3 id="inactive-issues">Inactive entries — 13</h3>
       <p>These entries do not authorize implementation. The historical evidence remains valid.</p>
       <details>
         <summary>Show the retired, paused, proposed, and withdrawn entries</summary>
@@ -2600,7 +2591,7 @@
                   <td>The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending.
                     Continue maintainer cost monitoring without asking the PI to optimize economic cost. Retirement does
                     not establish an optimal allocation. Superseded in part on 24 October: the standard allocation stays
-                    120k, but an inquiry run may extend to the maintainer maximum (<code>--max-timesteps</code>, default
+                    120k, but an inquiry run may extend to the maintainer maximum (<code>-MaxTimesteps</code>, default
                     360k); see the ledger entry "Harness change after <code>efd58acc</code>".</td>
                 </tr>
                 <tr>
@@ -2643,7 +2634,7 @@
                   <td>Each new session receives whole context files. Only named sections could reduce cost further.</td>
                   <td><span class="tag">Proposal</span></td>
                   <td>Distant future. One PI-selected named-sections context tool, as in the <a
-                      href="../archive/copilot-sdk-consolidation-plan.md">SDK consolidation plan</a>. Reconsider after
+                    href="../archive/copilot-sdk-consolidation-plan.md">SDK consolidation plan</a>. Reconsider after
                     OI-008 shows the remaining context cost.</td>
                 </tr>
                 <tr>
@@ -2667,12 +2658,11 @@
                 </tr>
                 <tr>
                   <td>OI-047</td>
-                  <td>Code paths used only for external inference providers remain when the PI runs on GitHub Copilot.
-                  </td>
+                  <td>Code paths used only for external inference providers remain when the PI runs on GitHub
+                    Copilot.</td>
                   <td><span class="tag">Proposal</span></td>
                   <td>Low priority. Remove the <code>read</code> tool, <code>read_alias</code> and
-                    <code>json_editors</code> if external providers are no longer used.
-                  </td>
+                    <code>json_editors</code> if external providers are no longer used.</td>
                 </tr>
                 <tr>
                   <td>OI-050</td>
@@ -2701,7 +2691,7 @@
                     recipe (T1 always widened the training range); one campaign on the skeleton shows whether the PI
                     does better when it owns every design choice. Built on branch <code>experiment/minimal-recipe</code>
                     in a dedicated worktree. <strong>Outcome (25 October): the experiment did not work; the PI needs
-                      more support, not less.</strong> Campaign <code>05229297</code> (folder
+                    more support, not less.</strong> Campaign <code>05229297</code> (folder
                     <code>robot-learning-campaigns-minimal</code>, recipe tag <code>minimal-recipe-v1</code>: zero
                     reward, raw-state observations, task target distribution, library-default PPO, no observation
                     normalization) ran about 6 h 45 min, 15 inquiries, 14 training runs, 110 measurement records and
@@ -2711,23 +2701,37 @@
                     seeds, and spent most effort on large confirmation panels. The main recipe reaches 64–94% in one
                     120k run. On 26 October the experiment was removed: its worktree, branch
                     <code>experiment/minimal-recipe</code>, the minimal recipe repository and the campaign folder
-                    <code>robot-learning-campaigns-minimal</code> no longer exist; this entry is its record.
-                  </td>
+                    <code>robot-learning-campaigns-minimal</code> no longer exist; this entry is its record.</td>
                 </tr>
                 <tr>
                   <td>OI-054</td>
                   <td>The PI is told the campaign is judged on time and AI usage, but sees neither number. In
-                    <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.
-                  </td>
+                    <code>38ad68c6</code> the coder and reviewer used 54 of 123 AIU (44%) on diagnostics.</td>
                   <td><span class="tag">Withdrawn</span></td>
                   <td>Withdrawn by the maintainer on 27 October and removed from the PI's resource line. It was added in
                     <code>4ce2fdb1</code> (elapsed time and AI usage of completed sessions by role). Round 4, the only
                     round with it, passed 0 of 3; its PIs repeated the line in their records 36 to 55 times per
                     campaign, mostly as bookkeeping, and <code>c7be4376</code> requested the assessment after 1 h 47 at
-                    an estimated 41% pass chance. Three campaigns cannot attribute the result to the line. On
-                    20 October cost guidance had already been removed from PI decisions for the same risk of early
-                    assessment.
-                  </td>
+                    an estimated 41% pass chance. Three campaigns cannot attribute the result to the line. On 20 October
+                    cost guidance had already been removed from PI decisions for the same risk of early assessment.</td>
+                </tr>
+                <tr>
+                  <td>OI-058</td>
+                  <td>The PI and the analyst treat task physics as a cause of failure, separate from the policy. Round
+                    5: <code>923f335d</code> wrote that its labels "do not identify its physical cause"; the
+                    <code>0c12d136</code> model listed "branch/joint-limit difficulty" among failure classes and the PI
+                    explained its failures by the shoulder limit.</td>
+                  <td><span class="tag">Withdrawn</span></td>
+                  <td>Withdrawn by the maintainer after round 6. <code>abd40fae</code> (27 October) had the analyst list
+                    constraints "that make some situations more demanding than others" and told the PI that the task
+                    defines "how demanding each situation is". In round 6 no PI tested whether its negative-angle
+                    failures were a property of the policy; two described them as harder bearings (see <a
+                    href="../harness-experiment-log.md#parallel-round-6-27-october">Round 6</a>). The analyst bullet is
+                    back to the round-5 wording ("constraints that create qualitatively different classes of behavior or
+                    failure"); the PI system prompt keeps "The task is fixed for every policy that you test. The episode
+                    outcomes of a policy measure the behavior of that policy under the task" and "Each explanation of a
+                    policy result states how the behavior of the policy produces that result". Four campaigns cannot
+                    separate its effect from chance.</td>
                 </tr>
               </tbody>
             </table>
@@ -2778,13 +2782,15 @@
       </details>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>Round 4 ran on the Python launcher and passed 0 of 3; no campaign used the reflection symmetry in the
-          policy. The maintainer withdrew OI-054 in response. Run round 5 with
-          <code>uv run python -m tools.run_parallel --count 3</code>; it repeats round 3's conditions plus OI-055.
-          Check, for each campaign: whether the scientific model states the invariances and when the PI uses them
-          (OI-053); the development success rate at each official-assessment request, against the earlier failed
-          requests at 40%, 41% and 64% estimated pass chance; whether the first experiment changes one part of the
-          recipe or several (OI-055); the share of AIU spent by the coder and reviewer.
+        <li>Round 6 was invalid: the OI-059 glossary had banned scientific terms and extended the robot-model
+          limit to the observation, and no PI used the reflection symmetry (OI-058 withdrawn). Round 7 repeats round
+          5's conditions with the corrected campaign text: the glossary, the "you" form and the restored scientific
+          terms. Check, for each campaign: whether the scientific model states the invariances, with what
+          conditions, and when the PI uses them (OI-053, OI-057); whether the PI tests a one-sided failure pattern as
+          a property of the policy; whether any agent misreads a glossary definition; the development success rate
+          at each official-assessment request, against the earlier failed requests at 40%, 41% and 64% estimated
+          pass chance; whether the first experiment changes one part of the recipe or several (OI-055); whether
+          reflection I/O is trained from scratch or by transfer; the share of AIU spent by the coder and reviewer.
         </li>
         <li>Classify OI-024 reruns by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
@@ -3110,6 +3116,17 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">27 October: round 6 invalid; scientific terms restored</h3>
+        <p>Round 6 ran on the controlled wording (OI-059) and the task and policy framing (OI-058). The glossary
+          had banned scientific terms (mechanism, hypothesis, interpretation, discriminating evidence, intervention,
+          physical model) and said that the saved runtime cannot contain a robot model; <code>757ef81a</code> then
+          removed its inverse-kinematics observation and fell to 48/400. No PI tested whether its negative-angle
+          failures were a property of the policy; two described them as harder bearings. The maintainer stopped the
+          four campaigns at about 1 h 15 (best 197/200 task reference). The glossary now defines the scientific
+          terms, the robot-model row follows the scenario, every campaign-facing text was compared with round 5 and
+          its lost terms restored, and OI-058 was withdrawn.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">27 October: round 4 passes 0 of 3; time and AI usage removed from the PI's view</h3>
         <p>The first round on the Python launcher showed the PI its elapsed time and AI usage. No campaign used the

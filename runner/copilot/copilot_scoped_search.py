@@ -373,9 +373,9 @@ class ScopedSearch:
                     "reserved files and linked paths BEFORE it reads content. It accepts "
                     "the default root, a subfolder or several paths. Choose content, "
                     "matching file names or counts, with glob, type and context "
-                    "selectors. The output reports its limits. When the output is "
-                    "truncated, narrow the search or search other subsets. Coders cannot "
-                    "use search."
+                    "selectors. The output reports its transport and traversal limits. "
+                    "When the output is truncated, narrow the search or repeat it on "
+                    "distinct subsets. Coders cannot use search."
                 ),
                 handler=self.rg,
                 params_type=RgParams,
@@ -390,7 +390,8 @@ class ScopedSearch:
                     "this tool, not view, to find folders. The tool removes reserved "
                     "files and linked paths BEFORE file names enter the result. paths "
                     "accepts the default root, a subfolder or several folders. A "
-                    "truncated result is not complete. Coders cannot use search."
+                    "truncated result is not a claim of complete retrieval. Coders "
+                    "cannot use search."
                 ),
                 handler=self.glob,
                 params_type=GlobParams,

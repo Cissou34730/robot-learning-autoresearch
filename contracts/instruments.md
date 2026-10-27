@@ -1,7 +1,7 @@
 # Scientific instruments
 
 This document defines the request formats, the acceptance rules and the
-outputs. `contracts/program.md` defines the research process and your
+outputs. `contracts/program.md` defines the research lifecycle and your
 decisions. `contracts/authority.md` defines the ownership and the permissions
 of each role.
 
@@ -25,8 +25,8 @@ accepts and the session record. Read a part below only when you use it:
 ## Paths and evidence storage
 
 Paths in requests and records are logical paths, relative to the repository.
-The read tools find the storage location of each logical path. Read access does
-not give write access.
+The read tools resolve each logical path to its storage location. Read access
+does not give write access.
 
 The campaign keeps versions of the scientific code and of the operation
 records. The raw measurement artifacts and the training logs stay in the local
@@ -70,7 +70,7 @@ through `artifact_evidence_query` and `training_log_query`. After a normal
 result, continue in the same conversation. When you open, reframe or close an
 inquiry, the `checkpoint` operation is the only next operation. A completed
 `checkpoint` or a request for the official assessment ends the session. The
-next session starts from the saved state.
+next session starts from the durable saved state.
 
 When the Runner rejects a request, correct it in the same conversation. A
 second rejected request ends the session.
@@ -108,8 +108,8 @@ The operation kinds have these purposes:
 - Recipe restoration restores recorded PI-owned scientific work.
 - `campaign_conclusion` requests the protected official assessment.
 
-This list does not give a sequence or a priority. `scientific_coding` and the
-evidence tools are tools, not operations. They are available in each PI
+This list does not define a sequence or a preference. `scientific_coding` and
+the evidence tools are tools, not operations. They are available in each PI
 session.
 
 The kind of the current session sets the operations that the Runner accepts:

@@ -38,7 +38,7 @@ Use this interface to close an inquiry:
 
 Set `action` to `close`. The `outcome` and `reason` fields are required and must
 not be empty. The Runner accepts `close` only in the inquiry session of the
-active inquiry. Inquiry operations do not use a training identity.
+active inquiry. Inquiry operations do not allocate a training identity.
 
 ## Request for the official assessment
 
@@ -53,6 +53,6 @@ active inquiry. Inquiry operations do not use a training identity.
 
 Set `action` to `request_official_assessment`. The `reason` field is required
 and must not be empty. The Runner accepts the request only in a goal-review
-session when no inquiry is active. The request also needs a best-known
-candidate. The Runner executes the protected official assessment and records
+session when no inquiry is active. The request also requires an explicit
+best-known candidate. The Runner executes the protected official assessment and records
 its result. No other action is available for `campaign_conclusion`.

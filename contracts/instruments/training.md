@@ -38,16 +38,16 @@ For `transfer` training, `parent` is required and must not be empty. For
 The Runner validates the changed PI-owned source files and the active
 parameters. It executes the accepted seed and step count. It archives all
 candidates that the run makes. It records the parent, the recipe and the facts
-of the training process. A completed training run does not give the working,
+of the learning dynamics. A completed training run does not give the working,
 best-known or retained role.
 
 The candidate archive also records versioned SHA-256 fingerprints of the
-serialized parts of the trained state that it can identify. For the supported
-Stable-Baselines3 ZIP format, these parts are the policy, the optimizer, the
-additional tensor state and the normalization file. The executable saved
-runtime has a separate fingerprint. The archive states each format that it does
-not support and each optional part that is not available. These do not stop the
-normal archive of the candidate.
+identifiable serialized components of the learned state. For the supported
+Stable-Baselines3 ZIP format, these components are the policy, the optimizer,
+the additional tensor state and the normalization file. The Runner
+fingerprints the executable saved runtime separately. The archive states each
+format that it does not support and each optional component that is not
+available. These do not stop the normal archive of the candidate.
 
 The completed training result contains an optional
 `saved_component_comparisons` object with these field types:
@@ -73,16 +73,17 @@ The completed training result contains an optional
 
 Component and runtime entries contain the integer counts `compared` and
 `equal`. Exact-match entries contain the integer `training_steps` and the
-string identities `candidate` and `prior_candidate`. The comparisons use the
-same saved step counts of earlier completed candidates in the same campaign.
+string identities `candidate` and `prior_candidate`. The comparisons use
+corresponding saved training-step counts of earlier completed candidates in
+the same campaign.
 
-They report only exact equality of the serialized parts. They do not show that
-two policies behave the same or that a change was active. They do not show that
-results are scientifically independent or that a candidate is adequate. The
-integrity fingerprint of the complete artifact does not change.
+They report only exact equality of the serialized components. They do not
+declare semantic equivalence of policies, activation of an intervention,
+scientific independence of results or adequacy of a candidate. The integrity
+fingerprint of the complete artifact does not change.
 
-The learning algorithm can round the completed steps up to the end of its
-rollout. This rounding does not permit a different allocation.
+The learning algorithm can round the actual completed steps up to the end of
+its rollout. This rounding does not permit a different allocation.
 
 ## Role operation
 
@@ -137,7 +138,7 @@ candidate. When a selected file is not in that recipe, the operation removes
 it. Source files that you did not select do not change. You cannot select the
 laboratory tools of the campaign. The Runner refuses folders and wildcards.
 
-The Runner does not decide which code belongs to training and which code
-belongs to measurement. When one source file contains both, the restoration of the
-file restores both. No operation restores a complete recipe automatically. The
-operation verifies the result. It does not give a role.
+The Runner does not infer which code implements learning and which code
+implements measurement. When one source file contains both, the restoration of
+the file restores both. No operation restores a complete recipe automatically.
+The operation verifies the result. It does not assign a role.

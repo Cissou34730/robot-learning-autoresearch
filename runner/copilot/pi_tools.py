@@ -17,8 +17,8 @@ ARTIFACT_EVIDENCE_DESCRIPTION = (
     "Read JSON evidence by operation_id, not by file path. Use this tool, not "
     "view, for measurement artifacts. operations lists the operation index. "
     "metadata returns the record, the artifact references, the session records or "
-    "the accepted pending request of one operation, without the artifact contents. "
-    "discover shows the structure of an artifact. query and batch select, filter, "
+    "the accepted pending request of one operation, without opening the artifact "
+    "contents. discover shows the structure of an artifact. query and batch select, filter, "
     "project or aggregate fields. read returns the complete original artifact in "
     "pages. You choose the complete content or any subsets. A page is partial "
     "until next_offset is null. Pending metadata is execution metadata, not "
@@ -43,28 +43,29 @@ TRAINING_SERIES_DESCRIPTION = (
 )
 
 PASS_PROBABILITY_DESCRIPTION = (
-    "Estimate how likely a candidate is to reach a target success rate. Give the "
+    "Estimate how likely a candidate is to reach a success-rate target. Give the "
     "target panel (trials and required successes, from contracts/scenario.md) and "
-    "evidence entries. Each entry is either recorded measurements to combine, as "
+    "evidence entries. Each entry is either recorded measurements to pool, as "
     "{operation_id, candidate, optional label}, which the Runner reads from the "
     "records, or typed counts. For each entry, the result gives: the probability "
     "that a new target panel reaches the target, an interval at your confidence "
-    "level, the pass probability if the true rate is at one limit of the interval, "
-    "and whether the interval is above, below or across the target rate. It also "
-    "gives the true success rate that a pass probability of 50%, 80% or 95% needs. "
-    "Recorded entries also list their sources and shared episodes. The tool "
-    "assumes independent episodes that represent the target panel."
+    "level, the pass probability if the true rate is at either bound of the "
+    "interval, and whether the interval is above, below or across the target rate. "
+    "It also gives the true success rate that a pass probability of 50%, 80% or "
+    "95% needs. Recorded entries also list their sources and shared episodes. The "
+    "tool assumes independent episodes that are representative of the target panel."
 )
 
 EPISODE_OUTCOME_DESCRIPTION = (
-    "Read the episode outcomes of recorded research_evaluation or task_reference "
-    "measurements, given as {operation_id, candidate, optional label}. With one "
-    "measurement: the successes and an interval at your confidence level. With two "
-    "measurements of the same episodes: the paired counts (both, first only, "
-    "second only, none), an exact sign test and the share of the first "
-    "measurement in the episodes where only one succeeds. Optional strata divide "
-    "each result into bins of a numeric field of the episode rows (rows path, field "
-    "and edges that you choose), for example the target radius."
+    "Read the episode-level outcomes of recorded research_evaluation or "
+    "task_reference measurements, given as {operation_id, candidate, optional "
+    "label}. With one measurement: the successes and an interval at your "
+    "confidence level. With two measurements of the same episodes: the paired "
+    "counts (both, first only, second only, neither), an exact sign test and the "
+    "share of the first measurement among the discordant episodes, where only one "
+    "succeeds. Optional strata divide each result into bins of a numeric "
+    "per-episode field (rows path, field and edges that you choose), for example "
+    "the target radius."
 )
 
 API_REFERENCE_DESCRIPTION = (
@@ -74,8 +75,8 @@ API_REFERENCE_DESCRIPTION = (
     "contains, page with offset and limit). action=definition returns the "
     "signature, the documentation, the Python source and the native MuJoCo "
     "declaration (page with offset and max_bytes). The tool reports a missing "
-    "symbol. It does not guess a replacement. A definition does not show that a "
-    "call works at execution."
+    "symbol. It does not guess a replacement. A definition does not show that an "
+    "integration runs."
 )
 
 READ_DESCRIPTION = (

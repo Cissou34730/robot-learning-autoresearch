@@ -14,15 +14,15 @@ environments, not the PI-owned research environment. The protected environment
 calls the saved `io.observe(data)` to build each observation. The saved runtime
 computes the network output with its normalization state. The environment calls
 `io.action(policy_action)`. Then it validates the result and clips it before it
-applies it to the robot. At each episode start, it calls the optional
-`io.reset()` function.
+applies it to the robot. At each episode reset, it calls the optional
+`io.reset()` callback.
 
 Control logic has an effect in protected evaluation only when the saved runtime
 executes it. A runtime marker alone does not make the protected environment
 call code of the research environment. Research evaluation uses the PI-owned
 environment, which can apply additional control logic outside the saved
-runtime. Two artifacts with the same fingerprint can apply different motor
-commands in these two environments.
+runtime. An identical artifact fingerprint does not establish that the motor
+commands applied in these two environments are identical.
 
 Only a training operation makes a candidate. Training and the export of its
 training checkpoints use `make_policy_io()` in
@@ -38,20 +38,21 @@ candidates.
 
 ## Scientific coding interface
 
-`scientific_coding` gives a limited change of PI-owned source code to the
+`scientific_coding` delegates a bounded change of PI-owned source code to the
 coder: a new method, a measurement or analysis tool, or a repair.
 `contracts/authority.md` defines the roles of the coder and the reviewer.
 
-A PI session ends after 6 hours of active session time. The time of the coder
-and the reviewer counts. The time that you wait for the Runner does not count.
+By default, a PI session ends after 6 hours of active session time. The time
+of the coder and the reviewer counts. The time that you wait for the Runner
+does not count.
 
 `scientific_coding` accepts these fields:
 
-- `intent`: the precise expected output of the change
+- `intent`: the precise expected output of the bounded change
 - `allowed_paths`: the exact scientific files that the coder can write,
   relative to the repository
 - `read_paths`: optional. Other relevant scientific sources, contracts or the
-  scientific model `pi_workspace/scientific_model.md`.
+  frozen scientific model `pi_workspace/scientific_model.md`.
 - `source_context`: optional. The requirements, the caller context and the
   errors that you select.
 - `session_handle`: optional. The returned identity of the coder, for
@@ -77,7 +78,7 @@ folders, wildcards, operation requests and paths outside the repository. The
 rejection gives the path and the reason. A new file does not need an existing
 parent folder.
 
-The coder can read only the selected files. The scientific model
+The coder can read only the selected files. The frozen scientific model
 is read-only. When the tool rejects a read path, you can still create new
 files.
 
@@ -94,7 +95,7 @@ reasoning starts. It receives the original request, the task context, the
 changed files and the diff. The review checks coding defects. It also checks the equations,
 the units, the physical assumptions, the timing and the meaning of the
 measurements in the changed code. It checks if the protocol and the reported
-quantities can answer your stated question. An explanation that nobody tested
+quantities can answer your stated question. An untested scientific hypothesis
 is not a defect.
 
 The reviewer returns exactly four fields:
@@ -108,7 +109,7 @@ The reviewer returns exactly four fields:
 }
 ```
 
-The three explanation fields contain plain text, not nested records.
+The three explanation fields contain plain text, not nested finding records.
 `validation` is false only for defects that the coder can repair within the
 request. All three fields then explain the defect. A failed review goes without
 change to the same coder, and the same reviewer checks the repair. A correction
@@ -117,7 +118,7 @@ review checks only the reported problems and the errors that the repair added.
 This repair loop does not come back to you. When a repair changes no source
 code and the next review fails again, the tool returns `needs_pi` with the
 reason and the current changes. When `validation` is true, the explanation
-fields can contain concerns, mixed factors or scientific choices for you.
+fields can contain concerns, confounds or scientific choices for you.
 
 ### Coding result
 
@@ -138,6 +139,6 @@ review that was not available or that failed is reported as such, not as a
 completed review.
 
 The review checks the engineering: the code, the equations, the units and the
-measurement meaning. It does not certify that your scientific conclusions are
-valid. Read the actual changes and the reported limits before you use them.
+measurement meaning. It does not certify scientific validity. Inspect the
+actual changes and the reported limitations before you rely on them.
 The coder executes nothing. Measurements and analyses are separate operations.
