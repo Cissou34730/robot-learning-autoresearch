@@ -51,6 +51,26 @@ typed feed. See [the report documentation](tui-report.md).
 This separation does not add campaign controls, change transport or change
 agent authority.
 
+## Write protection
+
+Copilot hooks refuse PI and coder writes outside the PI-owned paths. Code the
+PI writes runs in Runner child processes that no hook sees: training,
+research evaluation, task-reference assessment and `robot_learning.*` lab
+modules start through `runner.pi_code_guard`. Its Python audit hook refuses
+file writes, deletes, renames and links that the trust gate would reject:
+campaign files outside the PI-owned and Runner-written paths, the Runner's
+own records and any file of the separate harness. It is not an operating-system
+sandbox: processes the PI code starts do not inherit it.
+
+The launcher's trust gate stays as the backstop. In the campaign it compares
+HEAD and every gated file; in the separate harness it compares only the files a
+campaign loads (`runner/`, `benchmark/`, `contracts/`, `tools/`,
+`pyproject.toml`, `uv.lock`, see `runner.paths.is_harness_runtime`). The
+Runner's clean-worktree check before protected evaluation uses the same harness
+scope, so maintainer documents and commits do not stop a campaign. The
+pre-commit hook `.githooks/pre-commit` (`tools/commit_guard.py`) refuses a
+commit of those runtime files while any campaign holds its lock.
+
 The maintainer console orchestrates explicit initialize/reset/start/stop commands
 through `tui/controller.py`; it does not add scientific execution or recovery
 logic. Each tab has an explicit campaign root and independent readers.

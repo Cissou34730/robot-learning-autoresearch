@@ -160,8 +160,8 @@ class StepRecord:
 @dataclass
 class BatchOutcome:
     """One submitted command's step records. Batches are not transactions:
-    earlier successes are never rolled back, and a failed step stops every
-    step that has not run yet."""
+    earlier successes are never rolled back, and a failed step stops only the
+    later steps of the same campaign."""
 
     action: str
     steps: list[StepRecord] = field(default_factory=list)
@@ -176,6 +176,11 @@ class BatchOutcome:
     @property
     def ok(self) -> bool:
         return all(step.status != FAILED for step in self.steps)
+
+    def failed(self, target: str) -> bool:
+        return any(
+            step.target == target and step.status == FAILED for step in self.steps
+        )
 
     @property
     def ran(self) -> bool:
@@ -592,12 +597,12 @@ class CampaignController:
                 return outcome
         if verb == "run":
             for target in targets:
-                if not outcome.ok or self._shutdown:
+                if self._shutdown:
                     outcome.record(
                         "initialize",
                         target.label,
                         SKIPPED,
-                        "blocked by an earlier failure or shutdown",
+                        "blocked by shutdown",
                     )
                     continue
                 if not self._layout.is_installed(target.slot):
@@ -611,7 +616,7 @@ class CampaignController:
                     )
         if verb in {"reset", "run"}:
             for target in targets:
-                if not outcome.ok or self._shutdown:
+                if outcome.failed(target.label) or self._shutdown:
                     outcome.record(
                         "reset",
                         target.label,
@@ -621,9 +626,8 @@ class CampaignController:
                     continue
                 self._reset_one(outcome, target, reset)
         if verb in {"run", "start"}:
-            preparation_failed = not outcome.ok
             for target in targets:
-                if preparation_failed:
+                if outcome.failed(target.label):
                     outcome.record(
                         "launch",
                         target.label,

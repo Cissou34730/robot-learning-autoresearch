@@ -73,8 +73,9 @@ Runner invocations return data to the launcher in a structured result file
 with `ROBOT_LEARNING_CAMPAIGN_ROOT` and use the harness Python environment.
 Campaign Git operations run only in the campaign repository and never push.
 Harness development is committed and pushed separately and requires no merge
-into the campaign. See `README.md` for initialization, launch limits and
-commands.
+into the campaign. Each harness clone runs `git config core.hooksPath .githooks`:
+the pre-commit hook refuses commits of runtime code while a campaign runs. See
+`README.md` for initialization, launch limits and commands.
 
 ## Environment
 

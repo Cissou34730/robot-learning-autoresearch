@@ -267,7 +267,11 @@ def validate_research_delta_ownership(code_changes: list[str]) -> None:
 def validate_clean_human_owned_worktree() -> None:
     changed = repository.status_paths((".",))
     if paths.SPLIT:
-        changed.extend(repository.status_paths((".",), harness=True))
+        changed.extend(
+            path
+            for path in repository.status_paths((".",), harness=True)
+            if paths.is_harness_runtime(path)
+        )
     rejected = sorted(
         path
         for path in changed

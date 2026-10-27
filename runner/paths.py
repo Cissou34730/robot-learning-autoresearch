@@ -42,6 +42,18 @@ def is_campaign_owned(relative: str | Path) -> bool:
     )
 
 
+# Harness files a running campaign loads; documents and tests never affect it.
+HARNESS_RUNTIME_PREFIXES = ("benchmark/", "contracts/", "runner/", "tools/")
+HARNESS_RUNTIME_FILES = frozenset({"pyproject.toml", "uv.lock"})
+
+
+def is_harness_runtime(relative: str | Path) -> bool:
+    normalized = str(relative).replace("\\", "/").lstrip("/").lower()
+    return normalized in HARNESS_RUNTIME_FILES or normalized.startswith(
+        HARNESS_RUNTIME_PREFIXES
+    )
+
+
 def locate(relative: str | Path) -> Path:
     """Physical location of a repository-relative logical path."""
     normalized = str(relative).replace("\\", "/")

@@ -375,7 +375,7 @@ def test_reset_options_failure_popup_and_persistent_details(tmp_path):
             await pilot.click("#settings-apply")
             await pilot.pause()
             await _run_batch(app, pilot, "run 1-2")
-            assert len(calls) == 1
+            assert len(calls) == 2
             assert "baseline" in calls[0] and "selected-baseline" in calls[0]
             assert "--recipe-ref" not in calls[0] and "--clean" not in calls[0]
             assert "--force" in calls[0]

@@ -97,8 +97,9 @@ def stop_process(process: subprocess.Popen, *, graceful: bool) -> None:
 def run_module(
     module: str, *args: str, timeout: int | None = None, cwd: Path | None = None
 ) -> str:
+    guard = ("runner.pi_code_guard",) if module.startswith("robot_learning.") else ()
     result = subprocess.run(
-        [sys.executable, "-m", module, *args],
+        [sys.executable, "-m", *guard, module, *args],
         cwd=cwd or paths.ROOT,
         env=paths.python_environment(),
         capture_output=True,
@@ -370,6 +371,7 @@ def train_candidate(
     command = [
         sys.executable,
         "-m",
+        "runner.pi_code_guard",
         "robot_learning.train",
         "--timesteps",
         str(timesteps),
@@ -669,6 +671,7 @@ def evaluate_artifact(
     command = [
         sys.executable,
         "-m",
+        "runner.pi_code_guard",
         module,
         "--model",
         str(artifact_dir / "model.zip"),

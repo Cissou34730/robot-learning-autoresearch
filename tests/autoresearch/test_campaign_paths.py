@@ -20,6 +20,35 @@ def split_roots(monkeypatch, tmp_path):
     return harness, campaign
 
 
+def test_harness_document_changes_do_not_block_protected_evaluation(
+    monkeypatch, tmp_path
+):
+    import os
+    import shutil
+    import subprocess
+    from uuid import uuid4
+
+    from runner import protocol
+
+    base = Path(os.environ.get("TEMP", str(tmp_path))) / f"clean-check-{uuid4().hex}"
+    harness, campaign = base / "harness", base / "campaign"
+    monkeypatch.setattr(paths, "HARNESS_ROOT", harness)
+    monkeypatch.setattr(paths, "ROOT", campaign)
+    monkeypatch.setattr(paths, "SPLIT", True)
+    try:
+        for root in (harness, campaign):
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+        (harness / "docs").mkdir()
+        (harness / "docs" / "tracker.md").write_text("entry\n", encoding="utf-8")
+        protocol.validate_clean_human_owned_worktree()
+        (harness / "runner").mkdir()
+        (harness / "runner" / "execution.py").write_text("changed\n", encoding="utf-8")
+        with pytest.raises(ValueError, match="runner/execution.py"):
+            protocol.validate_clean_human_owned_worktree()
+    finally:
+        shutil.rmtree(base, ignore_errors=True)
+
+
 def test_paths_resolve_to_their_owning_repository(split_roots):
     harness, campaign = split_roots
     for relative in ("contracts/program.md", "runner/execution.py", "tests/test.py"):
@@ -138,6 +167,53 @@ def test_child_python_loads_campaign_science_and_harness_packages(
     origins = json.loads(execution.run_module("robot_learning.probe"))
     assert origins[0] == str(package / "__init__.py")
     assert all(str(paths.HARNESS_ROOT) in origin for origin in origins[1:])
+
+
+def test_pi_code_cannot_change_files_outside_its_paths(split_roots, monkeypatch):
+    from runner import execution
+
+    _, campaign = split_roots
+    monkeypatch.setattr(paths, "HARNESS_ROOT", Path(__file__).resolve().parents[2])
+    harness_target = paths.HARNESS_ROOT / "runner" / "pi_written.txt"
+    lab = campaign / "robot_learning" / "lab"
+    lab.mkdir(parents=True)
+    (campaign / "robot_learning" / "__init__.py").write_text("", encoding="utf-8")
+    (lab / "__init__.py").write_text("", encoding="utf-8")
+    (lab / "probe.py").write_text(
+        "import json, pathlib, sys\n"
+        "results = {}\n"
+        "for name, target in [\n"
+        "    ('lab', 'robot_learning/lab/out.txt'),\n"
+        "    ('evidence', 'campaigns/evaluations/out.json'),\n"
+        "    ('progress', 'runner/state/last_evaluation.json.progress'),\n"
+        "    ('record', 'runner/state/research_state.json'),\n"
+        "    ('campaign', 'notes.txt'),\n"
+        "    ('harness', sys.argv[1]),\n"
+        "]:\n"
+        "    path = pathlib.Path(target)\n"
+        "    path.parent.mkdir(parents=True, exist_ok=True)\n"
+        "    try:\n"
+        "        path.write_text('x')\n"
+        "        results[name] = 'written'\n"
+        "    except PermissionError:\n"
+        "        results[name] = 'refused'\n"
+        "print(json.dumps(results))\n",
+        encoding="utf-8",
+    )
+    try:
+        results = json.loads(
+            execution.run_module("robot_learning.lab.probe", str(harness_target))
+        )
+    finally:
+        harness_target.unlink(missing_ok=True)
+    assert results == {
+        "lab": "written",
+        "evidence": "written",
+        "progress": "written",
+        "record": "refused",
+        "campaign": "refused",
+        "harness": "refused",
+    }
 
 
 def test_pi_contract_reads_route_to_harness_without_write_access(

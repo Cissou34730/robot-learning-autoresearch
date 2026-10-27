@@ -685,9 +685,9 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">35 closed issues; four open investigations</h3>
+          <h3 style="margin-top: 12px">35 closed issues; five open investigations</h3>
           <ul>
-            <li>All 56 issue IDs remain visible. Four are open (OI-024, OI-025, OI-039, OI-040).</li>
+            <li>All 57 issue IDs remain visible. Five are open (OI-024, OI-025, OI-039, OI-040, OI-057).</li>
             <li>Five changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
               (invariances in the scientific model), OI-055 (first-experiment reference) and OI-056 (contrast in
               mechanism tests). OI-054 (time and AI usage shown to the PI) was withdrawn on 27 October.</li>
@@ -1960,10 +1960,11 @@
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / OPEN WORK</p>
       <h2 id="issues-heading">Open work and closed issues</h2>
-      <p><strong>Status and description review: 26 October 2026.</strong> All 56 issue IDs match
+      <p><strong>Status and description review: 27 October 2026.</strong> All 57 issue IDs match
         the <a href="../harness-experiment-log.md#issue-register">Markdown register</a>; the tables below are generated
         from it. On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and OI-052 to OI-056 were added
-        from the parallel rounds. OI-040 to OI-047 replace the former follow-up items. The maintainer
+        from the parallel rounds. On 27 October OI-054 was withdrawn and OI-057 was added from round 5. OI-040 to
+        OI-047 replace the former follow-up items. The maintainer
         approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
         Retirement does not establish an optimal allocation.</p>
       <p>The maintainer also closed OI-033 and OI-037 without a verified recovery claim.</p>
@@ -1973,7 +1974,7 @@
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">4</p>
+          <p class="metric">5</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
@@ -2079,7 +2080,7 @@
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 4</h3>
+      <h3 id="open-issues">Open issues — 5</h3>
       <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
@@ -2133,6 +2134,16 @@
               <td><span class="tag">Open</span></td>
               <td>Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign
                 shows a defect. Faster responses do not show recovery from a stalled request.</td>
+            </tr>
+            <tr>
+              <td>OI-057</td>
+              <td>The scientific model can state the reflection symmetry with a condition that the definitions do not
+                require. In <code>0c12d136</code> it limited the symmetry to "trajectories away from active joint
+                stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by
+                the shoulder limit and did not use the reflection.</td>
+              <td><span class="tag">Open</span></td>
+              <td>One campaign only. Check the symmetry statements and their conditions in the next round's models,
+                and whether a conditioned statement precedes a limit-based explanation. No change is authorized.</td>
             </tr>
           </tbody>
         </table>

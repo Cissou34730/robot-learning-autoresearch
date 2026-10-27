@@ -35,6 +35,28 @@ def test_campaign_lock_excludes_a_second_owner_until_released(tmp_path):
     assert not campaign_lock.is_held(tmp_path)
 
 
+@requires_windows
+def test_commit_guard_refuses_runtime_commits_only_while_a_campaign_runs(
+    tmp_path, monkeypatch
+):
+    from tools import commit_guard
+
+    campaign = tmp_path / "campaign-1"
+    (campaign / ".git").mkdir(parents=True)
+    staged = ["docs/harness-experiment-log.md"]
+    monkeypatch.setattr(commit_guard, "CAMPAIGNS_ROOT", tmp_path)
+    monkeypatch.setattr(
+        commit_guard,
+        "staged_runtime_paths",
+        lambda: [path for path in staged if commit_guard.is_harness_runtime(path)],
+    )
+    with campaign_lock.CampaignLock(campaign, "busy"):
+        assert commit_guard.main() == 0
+        staged.append("runner/execution.py")
+        assert commit_guard.main() == 1
+    assert commit_guard.main() == 0
+
+
 def _campaigns(tmp_path: Path) -> control.WorkspaceLayout:
     root = tmp_path / "robot-learning-campaigns"
     (root / "campaign-1" / ".git").mkdir(parents=True)

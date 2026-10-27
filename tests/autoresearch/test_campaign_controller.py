@@ -291,7 +291,7 @@ def test_run_resets_stopped_campaign_before_launching_again(tmp_path):
     assert len(machinery.started) == 2
 
 
-def test_batch_reset_failure_stops_later_resets_and_all_launches(tmp_path):
+def test_batch_reset_failure_blocks_only_that_campaign(tmp_path):
     controller, machinery, layout, _ = _controller(tmp_path)
     original = controller._runner
 
@@ -307,10 +307,18 @@ def test_batch_reset_failure_stops_later_resets_and_all_launches(tmp_path):
     assert [(s.target, s.status) for s in outcome.steps if s.action == "reset"] == [
         ("campaign-1", control.SUCCESS),
         ("campaign-2", control.FAILED),
-        ("campaign-3", control.SKIPPED),
+        ("campaign-3", control.SUCCESS),
+    ]
+    assert [(s.target, s.status) for s in outcome.steps if s.action == "launch"] == [
+        ("campaign-1", control.SUCCESS),
+        ("campaign-2", control.SKIPPED),
+        ("campaign-3", control.SUCCESS),
     ]
     assert controller.state("campaign-2").stage == "failed"
-    assert machinery.started == []
+    assert [folder for folder, _ in machinery.started] == [
+        layout.folder(1),
+        layout.folder(3),
+    ]
 
 
 @pytest.mark.parametrize(
@@ -414,9 +422,9 @@ def test_one_failed_forced_cleanup_does_not_skip_other_launchers(tmp_path):
     assert controller.state("campaign-2").child is None
 
 
-def test_run_stops_batch_when_reset_fails(tmp_path):
+def test_run_reset_failure_does_not_block_other_campaigns(tmp_path):
     controller, machinery, *_ = _controller(tmp_path)
-    # Slot 2 reset fails; slot 3 must not reset or launch.
+    # Slot 2 reset fails; slot 3 still resets and launches.
     original = controller._reset_one
 
     def failing_reset(outcome, target, reset_config):
@@ -442,8 +450,8 @@ def test_run_stops_batch_when_reset_fails(tmp_path):
         if step.target == "campaign-3" and step.action == "launch"
     ]
     assert len(launch_3) == 1
-    assert launch_3[0].status == control.SKIPPED
-    assert machinery.started == []
+    assert launch_3[0].status == control.SUCCESS
+    assert len(machinery.started) == 1
 
 
 def test_reset_refused_while_running(tmp_path):

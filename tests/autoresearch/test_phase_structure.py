@@ -139,8 +139,23 @@ def test_launcher_trust_snapshot_protects_the_separate_harness(tmp_path):
         "allowed\n", encoding="utf-8"
     )
     snapshot.verify()
-    (harness / "run_research.ps1").write_text("not allowed\n", encoding="utf-8")
+    (harness / "benchmark" / "adapters" / "final_benchmark.py").write_text(
+        "VALUE = 'changed'\n", encoding="utf-8"
+    )
     assert "outside the PI-owned paths" in _violation(snapshot)
+
+
+def test_launcher_trust_snapshot_ignores_harness_documents_and_commits(tmp_path):
+    campaign = _short_temp_repo(tmp_path)
+    harness = _short_temp_repo(tmp_path)
+    _trust_test_repository(campaign)
+    _trust_test_repository(harness)
+    snapshot = TrustSnapshot.capture(campaign, preliminary=False, harness_root=harness)
+    (harness / "docs" / "tracker.md").write_text("new entry\n", encoding="utf-8")
+    (harness / "run_research.ps1").write_text("# edited wrapper\n", encoding="utf-8")
+    _git(harness, "add", ".")
+    _git(harness, "commit", "-qm", "maintainer documents")
+    snapshot.verify()
 
 
 def test_launcher_trust_snapshot_excludes_git_probe_directory(tmp_path):

@@ -15,9 +15,10 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 - The assistant may inspect and edit approved maintainer-owned files, but must
   never launch, resume, reset, train, measure or evaluate a campaign without
   explicit maintainer authorization for that bounded task.
-- Never edit or commit any harness file, documentation included, while a
-  campaign runs. An uncommitted change fails the Runner's request checks; a
-  new harness commit ends every running PI session (round 5).
+- Never edit or commit harness runtime code (`runner/`, `benchmark/`,
+  `contracts/`, `tools/`, `pyproject.toml`, `uv.lock`) while a campaign runs;
+  the pre-commit hook refuses such commits. Since 27 October, documentation
+  edits and commits do not affect a running campaign.
 - A harness implementation check is not evidence of scientific effectiveness.
 - A campaign observation does not prove causality unless the comparison
   isolates the claimed change.
@@ -606,8 +607,8 @@ This register does not authorize runtime changes or campaign operations.
 | OI-024 | The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern. | **Open** | Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse of prior results. Preserve PI judgment. No automatic duplicate gate is approved. |
 | OI-025 | The PI can confuse measurement fields or state conclusions that the data do not support. Later accurate summaries do not explain the earlier errors. | **Open** | T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated, 12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool defect found. Optional tool `training_series_statistics` (window summary with PI-chosen checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured. Preserve the historical evidence. |
 | OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": in `e7dbbece` the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. Use: 8 calls in `cfa88359`, 45 in `5d94bf8a`. |
-| OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. |
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
+| OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. |
 
 ### Changes that need more evidence — 5
 
@@ -691,9 +692,8 @@ The historical evidence remains valid.
 ### Next maintainer actions
 
 1. Round 5 was invalidated by a maintainer edit and commit during the run.
-   Before round 6, implement the TUI corrections (per-campaign failure
-   isolation). Then repeat round 5's conditions unchanged, with no harness
-   edits until every campaign ends. Check, for each campaign: whether the
+   The protections and the TUI isolation are in place (ledger, 27 October).
+   Round 6 repeats round 5's conditions unchanged. Check, for each campaign: whether the
    scientific model states the invariances, with what conditions, and when the
    PI uses them (OI-053, OI-057); the development success rate at each
    official-assessment request, against the earlier failed requests at 40%,
@@ -720,6 +720,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-27 | Campaign protection without maintainer collisions | The trust gate compares only the harness files a campaign loads and no longer the harness HEAD; the Runner's clean-worktree check uses the same scope (`runner.paths.is_harness_runtime`). `runner/pi_code_guard.py`: training, research evaluation, task-reference assessment and lab modules run under a Python audit hook that refuses file changes outside the PI-owned and Runner-written paths. `tools/commit_guard.py` with `.githooks/pre-commit` refuses commits of runtime code while a campaign holds its lock. The PI can no longer read `reports/` (`101b1fa1`). TUI: a failed step blocks only its own campaign in `run`, `reset` and `start`. Targeted tests; guarded training and evaluation smoke-run on a scratch campaign. |
 | 2026-10-27 | Parallel round 5 (invalid) | Four campaigns from the TUI. A maintainer edit of this tracker during the run failed Runner request checks, and its commit ended the PI sessions of `927b3b57`, `0c12d136` and `923f335d`; the maintainer stopped `f84166f2`. Two campaigns reached 400/400 with reflection I/O by transfer. OI-057 added; the no-edit rule added to the operating rules; test rounds table added. See [Round 5](#parallel-round-5-27-october). |
 | 2026-10-27 | Campaign initializer fixes | `0bcf4884`: `tools/initialize_campaign.py` registers the Git `safe.directory` entry itself, so TUI initialization of a new slot works (it failed on `campaign-4` with "dubious ownership"); `tools/run_parallel.py` no longer duplicates it. `9591b56a`: a failed initialization removes its partial folder, which the TUI otherwise counts as installed. TUI and launcher tests: 96 pass. |
 | 2026-10-27 | Time and AI usage removed from the PI's resource line (OI-054 withdrawn) | Maintainer decision after round 4 (0 of 3). `runner/launcher/summaries.py`: the campaign resource line the PI receives keeps only counts; its test was removed. Round 5 repeats round 3's conditions plus OI-055. Full suite: 748 pass. |

@@ -2,7 +2,8 @@
 
 Before the launcher runs Runner or adapter code again, every file outside the
 PI-owned paths of ``contracts/authority.md`` must match the snapshot taken
-after the last trusted invocation, in the campaign and in a separate harness.
+after the last trusted invocation. In a separate harness only the files a
+campaign loads are compared, so maintainer documents and commits do not stop it.
 """
 
 from __future__ import annotations
@@ -13,6 +14,8 @@ import stat
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+from runner.paths import is_harness_runtime
 
 _PROTECTED_INSIDE_PI_AREA = frozenset(
     {
@@ -191,10 +194,18 @@ def protected_files(root: Path, *, preliminary: bool) -> dict[str, str]:
     return files
 
 
+def harness_runtime_files(root: Path, *, preliminary: bool) -> dict[str, str]:
+    return {
+        relative: identity
+        for relative, identity in protected_files(root, preliminary=preliminary).items()
+        if is_harness_runtime(relative)
+    }
+
+
 @dataclass(frozen=True)
 class TrustSnapshot:
     root: Path
-    head: str
+    head: str | None
     files: dict[str, str]
     preliminary: bool
     harness: TrustSnapshot | None = None
@@ -211,7 +222,12 @@ class TrustSnapshot:
             head=head_identity(root),
             files=protected_files(root, preliminary=preliminary),
             preliminary=preliminary,
-            harness=cls.capture(harness_root, preliminary=preliminary)
+            harness=cls(
+                root=harness_root,
+                head=None,
+                files=harness_runtime_files(harness_root, preliminary=preliminary),
+                preliminary=preliminary,
+            )
             if separate
             else None,
         )
@@ -220,9 +236,13 @@ class TrustSnapshot:
         if self.harness is not None:
             self.harness.verify()
         violations = set()
-        if head_identity(self.root) != self.head:
+        if self.head is not None and head_identity(self.root) != self.head:
             violations.add("HEAD")
-        current = protected_files(self.root, preliminary=self.preliminary)
+        current = (
+            protected_files(self.root, preliminary=self.preliminary)
+            if self.head is not None
+            else harness_runtime_files(self.root, preliminary=self.preliminary)
+        )
         for relative, identity in current.items():
             if self.files.get(relative) != identity:
                 violations.add(relative)
