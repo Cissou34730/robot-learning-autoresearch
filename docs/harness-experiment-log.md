@@ -128,8 +128,27 @@ are in the [legacy log](archive/harness-experiment-log-legacy.md). Since
 controllers of `2d4fcc0e`, `faff0d94` and `f83fca4d` would not count as passes
 under it.
 
+### Test rounds
+
+Each parallel round tests one set of harness changes on campaigns started
+from the same recipe (`baseline-distinct-episodes-v3-robot`). Newest first.
+
+| Round | Date | Harness | Change under test | Passed | Decision |
+|---|---|---|---|---|---|
+| 5 | 27 Oct | `9591b56a` | Round 3 conditions plus OI-055 (recipe as first reference, method among the assumptions); OI-054 removed | Running (4 campaigns) | — |
+| 4 | 27 Oct | `375ca4fb` | Python launcher; OI-054 (elapsed time and AIU shown to the PI); OI-055 | 0 of 3 | OI-054 withdrawn; OI-055 kept |
+| 3 | 26 Oct | `3b288c83` | Contrast paragraph, program changes 1-3, analyst invariances (OI-053, OI-056) | 2 of 3 | Kept; led to OI-054 and OI-055 |
+| 2 | 25 Oct | `9224b15b` | Duplicate-panel refusal (OI-052) | 1 of 3 | Kept |
+| 1 | 25 Oct | `6e2e68bd` | Wait slice and 6 h session limit | 0 of 3 | Kept; exposed OI-052 |
+
+### Campaign results
+
 | Campaign | Date | Harness | Outcome | Time | AIU | Record |
 |---|---|---|---|---|---|---|
+| `927b3b57` | 27 Oct | round 5 (`9591b56a`) | Running | — | — | — |
+| `0c12d136` | 27 Oct | round 5 | Running | — | — | — |
+| `923f335d` | 27 Oct | round 5 | Running | — | — | — |
+| `f84166f2` | 27 Oct | round 5 | Running | — | — | — |
 | `a51fadff` | 27 Oct | round 4 (`375ca4fb`, Python launcher) | Stopped by the maintainer after I13; best T6:checkpoint-120832 389-393/400 | 5 h 13 | 115.7 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-a51fadff-20261027.html) |
 | `5489d042` | 27 Oct | round 4 | Stopped by the maintainer during I10 (T15 pending, resumable); best T3:checkpoint-110592 about 97.5% | 5 h 14 | 100.2 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-5489d042-20261027.html) |
 | `c7be4376` | 27 Oct | round 4 | Failed 195/200 at an estimated 41% pass chance | 1 h 47 | 52.1 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-c7be4376-20261027.html) |
