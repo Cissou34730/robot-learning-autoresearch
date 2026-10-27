@@ -41,7 +41,7 @@ Analyze, from first principles and from the human-owned definitions:
 * the relation between observation, control action, robot motion, and task outcome.
 * alternative physical configurations or solutions available to the robot, such as multiple kinematic solutions.
 * the invariances of the definitions, such as symmetries and conserved quantities, and what each makes equal or different across configurations, targets, and behavior.
-* the physical, kinematic, dynamic, control, and observability constraints that create qualitatively different classes of behavior or failure.
+* the physical, kinematic, dynamic, control, and observability constraints that make some situations more demanding than others, and what a controller must do to succeed in each.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
 For each consequential physical implication and each unknown, state:

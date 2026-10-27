@@ -687,10 +687,11 @@
           <span class="tag">Issue register</span>
           <h3 style="margin-top: 12px">35 closed issues; five open investigations</h3>
           <ul>
-            <li>All 57 issue IDs remain visible. Five are open (OI-024, OI-025, OI-039, OI-040, OI-057).</li>
-            <li>Five changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
-              (invariances in the scientific model), OI-055 (first-experiment reference) and OI-056 (contrast in
-              mechanism tests). OI-054 (time and AI usage shown to the PI) was withdrawn on 27 October.</li>
+            <li>All 58 issue IDs remain visible. Five are open (OI-024, OI-025, OI-039, OI-040, OI-057).</li>
+            <li>Six changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
+              (invariances in the scientific model), OI-055 (first-experiment reference), OI-056 (contrast in
+              mechanism tests) and OI-058 (task and policy framing). OI-054 (time and AI usage shown to the PI) was
+              withdrawn on 27 October.</li>
             <li>On 26 October OI-041 (system prompt), OI-049 (analyst prompt) and OI-052 (duplicate panels) closed.</li>
             <li>OI-033 and OI-037 were closed by maintainer decision, not verified recovery. OI-021, OI-026, OI-038
               and OI-046 were closed by maintainer decision on 22 October.</li>
@@ -1960,10 +1961,10 @@
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / OPEN WORK</p>
       <h2 id="issues-heading">Open work and closed issues</h2>
-      <p><strong>Status and description review: 27 October 2026.</strong> All 57 issue IDs match
+      <p><strong>Status and description review: 27 October 2026.</strong> All 58 issue IDs match
         the <a href="../harness-experiment-log.md#issue-register">Markdown register</a>; the tables below are generated
         from it. On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and OI-052 to OI-056 were added
-        from the parallel rounds. On 27 October OI-054 was withdrawn and OI-057 was added from round 5. OI-040 to
+        from the parallel rounds. On 27 October OI-054 was withdrawn and OI-057 and OI-058 were added from round 5. OI-040 to
         OI-047 replace the former follow-up items. The maintainer
         approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
         Retirement does not establish an optimal allocation.</p>
@@ -1978,7 +1979,7 @@
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">5</p>
+          <p class="metric">6</p>
           <p class="metric-label">Changes that need more evidence</p>
         </article>
         <article class="card metric-card">
@@ -2148,7 +2149,7 @@
           </tbody>
         </table>
       </div>
-      <h3 id="observed-issues">Changes that need more evidence — 5</h3>
+      <h3 id="observed-issues">Changes that need more evidence — 6</h3>
       <p>Each change exists. Campaign evidence is missing or does not yet isolate its effect.</p>
       <div class="card table-wrap wide">
         <table>
@@ -2228,6 +2229,19 @@
                 come from <a href="../proposals/program-revision-proposal-preserve-lifecycle-20261026.md">the
                   preserve-lifecycle proposal</a>. Round 3 ran with all of them; their effect cannot be separated from
                 OI-053.</td>
+            </tr>
+            <tr>
+              <td>OI-058</td>
+              <td>The PI and the analyst treat task physics as a cause of failure, separate from the policy. The task
+                is fixed and only sets how demanding each situation is; every measured outcome is the policy's behavior
+                under it. Round 5: <code>923f335d</code> wrote that its labels "do not identify its physical cause";
+                the <code>0c12d136</code> model listed "branch/joint-limit difficulty" among failure classes and the PI
+                explained its failures by the shoulder limit.</td>
+              <td><span class="tag">Implemented</span></td>
+              <td>27 October. Analyst objective: constraints "that make some situations more demanding than others,
+                and what a controller must do to succeed in each". PI system prompt: the task is fixed and defines
+                what success requires and how demanding each situation is, whatever policy is tested; every measured
+                outcome is the behavior of the policy under that task. Round 6 is the first round with it.</td>
             </tr>
           </tbody>
         </table>
