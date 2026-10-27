@@ -227,8 +227,9 @@ success-rate target. You give:
 - `evidence`: up to 20 entries. Each entry has a `label` and one of these:
   - `recorded`: a list of completed `research_evaluation` or `task_reference`
     measurements to pool. Give each as `operation_id`, `candidate`
-    (identity or role) and an optional measurement `label` when the candidate
-    occurs two times. The Runner reads the successes and the episodes from the
+    (identity or role), an optional `instrument` and an optional measurement
+    `label`. Use them when the operation measured the candidate more than one
+    time. The Runner reads the successes and the episodes from the
     records.
   - typed `successes` and `trials`
 - `confidence`: the level of the two-sided interval, from 0.5 to 0.999
@@ -237,7 +238,8 @@ You decide which measurements an entry pools. When a recorded reference
 matches no single measurement, the tool rejects it and lists the measurements
 of candidates that this operation recorded. A recorded entry also lists its
 sources and the number of episodes that they share. Shared episodes are not
-independent samples.
+independent samples. For each source, it also gives the number of candidates
+that the campaign measured on exactly the same episodes, and their successes.
 
 For each entry, the result gives the proportion, its Wilson interval, and
 whether the interval is `above`, `below` or `includes` the target rate. It also
@@ -249,13 +251,16 @@ rate at which the target panel passes with the probability 0.5, 0.8 and 0.95.
 
 The tool does not verify typed counts. It assumes independent episodes with one
 common success probability, representative of the target panel. The counts of a
-candidate that you selected as the best of several are optimistic.
+candidate that you selected as the best of several on the same episodes are
+optimistic. The optimism increases with the number of candidates that you
+compared on these episodes.
 
 `episode_outcome_breakdown` reads the episode results of recorded
 `research_evaluation` or `task_reference` measurements. You give:
 
 - `measurements`: one or two references, each as `operation_id`, `candidate`
-  (identity or role) and an optional measurement `label`
+  (identity or role), an optional `instrument` and an optional measurement
+  `label`
 - optional `strata`, with three fields:
   - `rows`: a JSON Pointer to the per-episode rows that contain `episode_seed`
     (default `/episode_results`)

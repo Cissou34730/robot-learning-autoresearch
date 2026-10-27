@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import math
 from statistics import NormalDist
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -30,6 +30,10 @@ class RecordedReference(BaseModel):
 
     operation_id: str = Field(min_length=1, description="Completed measurement.")
     candidate: str = Field(min_length=1, description="Candidate ID or role.")
+    instrument: Literal["research_evaluation", "task_reference"] | None = Field(
+        default=None,
+        description="Instrument when the operation measured the candidate twice.",
+    )
     label: str | None = Field(
         default=None, description="Measurement label when the candidate appears twice."
     )
@@ -194,17 +198,56 @@ def recorded_measurement(
         item
         for item in items
         if item.get("candidate") == candidate
+        and (
+            reference.instrument is None
+            or item.get("instrument") == reference.instrument
+        )
         and (reference.label is None or item.get("label") == reference.label)
     ]
     if len(matches) != 1:
-        recorded = [(item.get("candidate"), item.get("label")) for item in items]
+        recorded = [
+            (item.get("candidate"), item.get("instrument"), item.get("label"))
+            for item in items
+        ]
         raise ValueError(
             f"{reference.operation_id} has {len(matches)} measurements of "
             f"{candidate}"
+            + (f" by {reference.instrument}" if reference.instrument else "")
             + (f" labelled {reference.label!r}" if reference.label else "")
             + f"; recorded candidate measurements: {recorded}"
         )
     return event, matches[0]
+
+
+def _panel_key(item: dict) -> tuple:
+    metrics = item["metrics"]
+    if item["instrument"] == "research_evaluation":
+        return (
+            item["instrument"],
+            metrics.get("evaluation_semantics"),
+            int(metrics["seed"]),
+            int(metrics["episodes"]),
+        )
+    return (item["instrument"], metrics.get("panel"), metrics.get("panel_version"))
+
+
+def same_episode_candidates(state: dict, item: dict) -> list[dict]:
+    """Each candidate that a completed measurement ran on exactly these episodes."""
+    key, found = _panel_key(item), {}
+    for event in state.get("operation_events", []):
+        if event.get("kind") != "measurement" or event.get("status") != "completed":
+            continue
+        for other in (event.get("result") or {}).get("measurements") or []:
+            if other.get("instrument") not in {"research_evaluation", "task_reference"}:
+                continue
+            if other.get("candidate") in found or _panel_key(other) != key:
+                continue
+            found[other["candidate"]] = {
+                "operation_id": event["id"],
+                "candidate": other["candidate"],
+                "successes": other["metrics"].get("successes"),
+            }
+    return list(found.values())
 
 
 def recorded_counts(state: dict, references: list[RecordedReference]) -> dict:
@@ -221,6 +264,7 @@ def recorded_counts(state: dict, references: list[RecordedReference]) -> dict:
         identity = _episode_identity(item)
         shared += len(identity & seen)
         seen |= identity
+        measured = same_episode_candidates(state, item)
         sources.append(
             {
                 "operation_id": event["id"],
@@ -229,6 +273,10 @@ def recorded_counts(state: dict, references: list[RecordedReference]) -> dict:
                 "label": item.get("label"),
                 "successes": int(successes),
                 "trials": trials,
+                "candidates_measured_on_these_episodes": len(measured),
+                "measurements_on_these_episodes": sorted(
+                    measured, key=lambda entry: -(entry["successes"] or 0)
+                )[:20],
             }
         )
     return {
@@ -313,7 +361,8 @@ def query_pass_probability(args: dict[str, Any], campaign_id: str = "") -> str:
                 "the evidence panels represent the target panel's distribution",
                 (
                     "uniform prior; selecting the best of several candidates "
-                    "makes its counts optimistic"
+                    "on the same episodes makes its counts optimistic, more so "
+                    "as more candidates were measured on them"
                 ),
                 "pooled sources that share episodes are not independent samples",
             ],
