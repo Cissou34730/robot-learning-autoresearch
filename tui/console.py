@@ -60,24 +60,42 @@ from tui.report import REPORT_CSS, CampaignPanel, CampaignSources
 
 HELPER_SHUTDOWN_GRACE_SECONDS = 15.0
 
-# Colour of the dot in front of each campaign tab label, by state.
-TAB_TAG_COLOURS = {
+# Colour of the dot in front of each campaign tab label. State colours come
+# from the theme; phase colours are fixed (dark, light) because the theme has
+# too few distinct colours.
+TAB_STATE_COLOURS = {
     "failed": "$error",
     "attention": "$warning",
     "running": "$success",
-    "completed": "$accent",
     "quiet": "$text-muted",
 }
+TAB_PHASE_COLOURS = {
+    "training": ("#5aa9ff", "#0b5cc4"),
+    "evaluating": ("#4ed8e0", "#00747d"),
+    "coding": ("#e07cf0", "#8b1fa0"),
+    "official": ("#ffd54a", "#946b00"),
+    "preparing": ("#a58bff", "#5b3fc7"),
+    "completed": ("#8aa4c8", "#4b6584"),
+}
+TAB_TAG_COLOURS = {
+    **TAB_STATE_COLOURS,
+    **{tag: pair[0] for tag, pair in TAB_PHASE_COLOURS.items()},
+}
+# These phases show a dot that pulses once a second.
+PULSING_TAGS = frozenset({"training", "evaluating", "coding", "official"})
 
 
-def tab_tag(stage: str, stalled: bool) -> str:
-    """The tag for one campaign tab, from its launcher stage and progress state."""
+def tab_tag(stage: str, stalled: bool, phase: str = "none") -> str:
+    """The tag for one campaign tab. State beats phase: a failed or stalled
+    campaign keeps its warning colour whatever it was doing."""
     if stage == "failed":
         return "failed"
     if stage in {"stopping", "resetting"}:
         return "attention"
     if stage in {"launching", "running"}:
-        return "attention" if stalled else "running"
+        if stalled:
+            return "attention"
+        return phase if phase in TAB_PHASE_COLOURS else "running"
     if stage == "completed":
         return "completed"
     return "quiet"
@@ -415,7 +433,8 @@ class CampaignConsole(App):
         self._command_history: list[str] = []
         self._feedback = ""
         self._summary = ""
-        self._tab_tags: dict[str, str] = {}
+        self._tab_tags: dict[str, tuple] = {}
+        self._pulse_on = True
 
     # ------------------------------------------------------------------
     # Composition
@@ -454,6 +473,7 @@ class CampaignConsole(App):
 
     def on_mount(self) -> None:
         self.set_interval(2.0, self._refresh_status)
+        self.set_interval(1.0, self._pulse_tabs)
         for label in self._layout.installed():
             self._controller.state(label)
         self._refresh_status_now()
@@ -665,19 +685,13 @@ class CampaignConsole(App):
             self.call_from_thread(self._batch_finished)
 
     def _refresh_status_now(self) -> None:
-        found = self.query(TabbedContent)
-        tabs = found.first() if found else None
         for panel in self.query(CampaignPanel):
-            label = panel.id.removeprefix("panel-")
-            target = self._controller.state(label)
+            target = self._controller.state(panel.id.removeprefix("panel-"))
             if target.stage in {"launching", "running", "stopping"}:
                 panel.set_process_running(True)
             elif target.stage in {"stopped", "failed", "completed"}:
                 panel.set_process_running(False)
-            if tabs is not None:
-                self._tag_tab(
-                    tabs, label, tab_tag(target.stage, panel.progress_stalled())
-                )
+        self._refresh_tab_tags()
         command = self.query_one("#commands-input", Input)
         active = self.query_one(TabbedContent).active
         command.border_title = active or "Explicit target required"
@@ -711,18 +725,47 @@ class CampaignConsole(App):
             + (self._feedback or "start resumes; run resets + starts; F1 help")
         )
 
+    def _tag_colour(self, tag: str) -> str:
+        pair = TAB_PHASE_COLOURS.get(tag)
+        if pair is None:
+            return TAB_STATE_COLOURS[tag]
+        try:
+            dark = self.current_theme.dark
+        except Exception:  # noqa: BLE001 - the theme is not ready yet
+            dark = True
+        return pair[0] if dark else pair[1]
+
+    def _refresh_tab_tags(self) -> None:
+        """Tag every campaign tab, visible or not, from its stage and phase."""
+        found = self.query(TabbedContent)
+        if not found:
+            return
+        tabs = found.first()
+        for panel in self.query(CampaignPanel):
+            label = panel.id.removeprefix("panel-")
+            stage = self._controller.state(label).stage
+            tag = tab_tag(stage, panel.progress_stalled(), panel.phase())
+            self._tag_tab(tabs, label, tag)
+
+    def _pulse_tabs(self) -> None:
+        if self._shutting_down:
+            return
+        self._pulse_on = not self._pulse_on
+        self._refresh_tab_tags()
+
     def _tag_tab(self, tabs: TabbedContent, label: str, tag: str) -> None:
         """Colour the dot in front of a tab label; relabel only on a change."""
-        if self._tab_tags.get(label) == tag:
+        glyph = "●" if tag not in PULSING_TAGS or self._pulse_on else "◐"
+        colour = self._tag_colour(tag)
+        shown = (tag, glyph, colour)
+        if self._tab_tags.get(label) == shown:
             return
         try:
             tab = tabs.get_tab(label)
         except Exception:  # noqa: BLE001 - the tab is not mounted yet
             return
-        self._tab_tags[label] = tag
-        tab.label = Content.from_markup(
-            f"[{TAB_TAG_COLOURS[tag]}]●[/] $name", name=label
-        )
+        self._tab_tags[label] = shown
+        tab.label = Content.from_markup(f"[{colour}]{glyph}[/] $name", name=label)
 
     def _status_line(self) -> str:
         active = self.query_one(TabbedContent).active

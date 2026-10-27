@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import itertools
 import json
+import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -91,6 +92,13 @@ def _now() -> datetime:
 
 _ARRIVAL = itertools.count()
 _VERSIONS = itertools.count()
+_STAGE_SESSION = re.compile(r"(S\d+)\b\s*(.*)")
+
+
+def _is_scientific_session(value: str) -> bool:
+    return value.startswith("S") and value[1:].isdigit()
+
+
 _USAGE_RECORD_ID = "leaf:usage_recorded"
 PROGRESS_ROW_SECONDS = {"training_progress": 30.0, "eval_progress": 15.0}
 
@@ -260,6 +268,8 @@ class TimelineReducer:
         self._leaf_counts: dict[str, tuple[tuple, int]] = {}
         self._progress_rows: dict[str, TimelineItem] = {}
         self._fact_leaves: dict[tuple, tuple[int, TimelineItem]] = {}
+        self._session_alias: dict[str, str] = {}
+        self._coding_open = False
 
     # ------------------------------------------------------------------
     # Ingest
@@ -296,6 +306,34 @@ class TimelineReducer:
             self._fact_leaves[key] = (self._rank, shown)
         return False
 
+    def _canonical_session(self, event: Observation, fields: dict) -> str:
+        """The scientific session an event belongs to.
+
+        The Runner names a session ``S<n>``; the PI backend names the same
+        session with its own identifier and only mentions ``S<n>`` in the
+        stage of its start event. Both names must reach one group.
+        """
+        raw = event.session_id or str(fields.get("session_id") or "")
+        backend = str(fields.get("backend_session_id") or "")
+        scientific = str(fields.get("id") or fields.get("scientific_session_id") or "")
+        if backend and _is_scientific_session(scientific):
+            self._session_alias[backend] = scientific
+        if event.kind == "session_start" and raw:
+            match = _STAGE_SESSION.match(str(fields.get("stage") or ""))
+            if match:
+                self._session_alias[raw] = match.group(1)
+        return self._session_alias.get(raw, raw)
+
+    def _alias_stage(self, raw: str, session_id: str, fields: dict) -> dict:
+        """A start event named by its stage ("S1 startup") titles its group by
+        the part after the session name, so the name is not shown twice."""
+        if not raw or raw == session_id:
+            return fields
+        match = _STAGE_SESSION.match(str(fields.get("stage") or ""))
+        if match is None:
+            return fields
+        return {**fields, "kind": match.group(2) or fields.get("kind") or ""}
+
     def ingest(self, event: Observation) -> None:
         event_id = event.event_id or self._fallback_id(event)
         if event_id in self._seen:
@@ -309,12 +347,13 @@ class TimelineReducer:
             return
         # Any other new event may change the view; an idle tick must not.
         self.version = next(_VERSIONS)
-        session_id = event.session_id or str(fields.get("session_id") or "")
+        session_id = self._canonical_session(event, fields)
         inquiry_id = event.inquiry_id or str(fields.get("inquiry_id") or "")
         operation_id = event.operation_id or str(
             fields.get("operation_id") or fields.get("id") or ""
         )
         if kind == "session_start":
+            fields = self._alias_stage(event.session_id, session_id, fields)
             self._session(session_id or str(fields.get("id") or ""), ts, fields)
             return
         if kind in {"inquiry_opened", "inquiry_closed", "inquiry_reframed"}:
@@ -911,6 +950,10 @@ class TimelineReducer:
     ) -> None:
         phase = str(fields.get("phase") or "coding")
         status = str(fields.get("status") or "")
+        if phase == "request" and status == "started":
+            self._coding_open = True
+        elif phase in {"result", "cancelled", "rejected"}:
+            self._coding_open = False
         agent = str(fields.get("agent") or "")
         detail = fields.get("detail") if isinstance(fields.get("detail"), dict) else {}
         summary = " | ".join(
@@ -1773,6 +1816,28 @@ class TimelineReducer:
     # ------------------------------------------------------------------
     # View
     # ------------------------------------------------------------------
+
+    def phase(self) -> str:
+        """What the campaign is doing now: official, training, evaluating,
+        coding, preparing, pi or none."""
+        operation = (
+            self._operations.get(self._active_operation)
+            if self._active_operation
+            else None
+        )
+        if operation is not None and operation.status in {"running", "requested"}:
+            if self._active_operation == "official":
+                return "official"
+            if operation.kind == "training":
+                return "training"
+            if operation.kind == "measurement":
+                return "evaluating"
+        if self._coding_open:
+            return "coding"
+        session = self._sessions.get(self._current_session)
+        if session is not None and session.status != "closed":
+            return "preparing" if session.title == "Campaign preparation" else "pi"
+        return "none"
 
     @property
     def now_text(self) -> str:

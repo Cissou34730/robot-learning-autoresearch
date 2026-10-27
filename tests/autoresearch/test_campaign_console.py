@@ -163,6 +163,71 @@ def test_campaign_tabs_carry_a_state_colour(tmp_path):
     assert tab_tag("idle", stalled=True) == "quiet"
 
 
+def test_tab_phase_dot_follows_a_hidden_tab_and_pulses(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.console import PULSING_TAGS, TAB_TAG_COLOURS, tab_tag
+    from tui.observations import Observation
+
+    class _Feed:
+        rejected = None
+
+        def __init__(self) -> None:
+            self.events: list = []
+
+        def poll(self):
+            events, self.events = self.events, []
+            return events
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+
+    def label_of(tab):
+        return tab.label.plain, str(tab.label.spans[0].style)
+
+    async def scenario():
+        async with app.run_test(size=(120, 45)) as pilot:
+            await pilot.pause()
+            tabs = app.query_one(TabbedContent)
+            assert tabs.active == "campaign-1"
+            hidden = app.query_one("#panel-campaign-2", CampaignPanel)
+            feed = _Feed()
+            hidden._feed = feed
+            app._controller.state("campaign-2").stage = "running"
+            feed.events = [
+                Observation(
+                    "operation_started",
+                    datetime.now(tz=UTC),
+                    {"kind": "training"},
+                    operation_id="T1",
+                    session_id="S1",
+                )
+            ]
+            hidden._master_tick()
+            assert hidden._hidden, "campaign-2 must be treated as a hidden tab"
+            assert hidden.phase() == "training"
+            tab = tabs.get_tab("campaign-2")
+            app._pulse_on = True
+            app._refresh_tab_tags()
+            assert label_of(tab) == ("● campaign-2", TAB_TAG_COLOURS["training"])
+            app._pulse_tabs()
+            assert label_of(tab)[0] == "◐ campaign-2"
+            app._pulse_tabs()
+            assert label_of(tab)[0] == "● campaign-2"
+            first = tabs.get_tab("campaign-1")
+            assert label_of(first)[0] == "● campaign-1"
+
+    asyncio.run(scenario())
+    assert tab_tag("running", False, "training") == "training"
+    assert tab_tag("running", True, "training") == "attention"
+    assert tab_tag("failed", False, "training") == "failed"
+    assert tab_tag("idle", False, "training") == "quiet"
+    assert tab_tag("running", False, "pi") == "running"
+    assert tab_tag("completed", False, "none") == "completed"
+    assert PULSING_TAGS == {"training", "evaluating", "coding", "official"}
+
+
 def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
     from textual.widgets import Button, Input
 

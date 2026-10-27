@@ -264,9 +264,16 @@ counter that ticks does not re-lay out the screen, and a refresh of unchanged
 durable data redraws nothing. A tick with no new event does no work on the log
 except the counter of a running tool, so its cost does not grow with the length
 of the campaign. A finished session is shown folded with its number of events;
-its rows are built only when you open it. Each campaign tab starts with a dot:
-green for running, amber for stopping, resetting or stale counters, red for
-failed, accent for completed, muted otherwise. Each fact (an opened inquiry, an
+its rows are built only when you open it. Each campaign tab starts with a dot,
+for every tab, shown or not. State beats phase: red for failed, amber for
+stopping, resetting or stale counters, grey-blue for completed, muted for idle
+or stopped. While a campaign runs, the dot shows its phase: blue for training,
+cyan for evaluating, magenta for coding, gold for the official assessment (these
+four pulse between a full and a half dot once a second), violet for the campaign
+preparation, and green for the PI working or waiting between operations. A tab
+that is not shown keeps reading its events and draws nothing until you open it.
+The PI backend session and the Runner's `S<n>` name for the same session share
+one group. Each fact (an opened inquiry, an
 operation lifecycle step) shows once, from the best source (live event, then
 durable record, then state snapshot). Siblings are shown in time order.
 

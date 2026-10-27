@@ -603,6 +603,156 @@ def test_usage_and_publication_events_render_structured_numbers():
     assert "remote error" in retry.detail[0]
 
 
+def test_phase_follows_the_active_work():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    assert reducer.phase() == "none"
+    reducer.ingest(
+        _event(
+            "session_start", start, {"stage": "campaign preparation"}, session_id="u1"
+        )
+    )
+    assert reducer.phase() == "preparing"
+    reducer.ingest(
+        _event(
+            "session_started", start, {"id": "S1", "kind": "startup"}, session_id="S1"
+        )
+    )
+    assert reducer.phase() == "pi"
+    reducer.ingest(
+        _event(
+            "coding", start, {"phase": "request", "status": "started"}, session_id="S1"
+        )
+    )
+    assert reducer.phase() == "coding"
+    reducer.ingest(
+        _event(
+            "coding", start, {"phase": "result", "status": "completed"}, session_id="S1"
+        )
+    )
+    assert reducer.phase() == "pi"
+    reducer.ingest(
+        _event(
+            "operation_started",
+            start,
+            {"kind": "training"},
+            operation_id="T1",
+            session_id="S1",
+        )
+    )
+    assert reducer.phase() == "training"
+    reducer.ingest(
+        _event(
+            "operation_completed",
+            start,
+            {"kind": "training"},
+            operation_id="T1",
+            session_id="S1",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "eval_progress",
+            start,
+            {"operation_id": "M1", "episodes": 1},
+            operation_id="M1",
+            session_id="S1",
+        )
+    )
+    assert reducer.phase() == "evaluating"
+    reducer.ingest(
+        _event(
+            "operation_completed",
+            start,
+            {"kind": "measurement"},
+            operation_id="M1",
+            session_id="S1",
+        )
+    )
+    reducer.ingest(_event("session_ended", start, {"summary": "done"}, session_id="S1"))
+    assert reducer.phase() == "none"
+
+
+def test_backend_session_id_is_an_alias_of_the_scientific_session():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    prep, backend = "70b0166d", "994f0144"
+    reducer.ingest(
+        _event(
+            "session_start",
+            start,
+            {"stage": "campaign preparation"},
+            session_id=prep,
+        )
+    )
+    reducer.ingest(_event("pi_message", start, {"text": "prep"}, session_id=prep))
+    reducer.ingest(
+        _event(
+            "session_started",
+            start + timedelta(seconds=10),
+            {"id": "S1", "kind": "startup"},
+            session_id="S1",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "session_start",
+            start + timedelta(seconds=14),
+            {"stage": "S1 startup"},
+            session_id=backend,
+        )
+    )
+    reducer.ingest(
+        _event(
+            "pi_message",
+            start + timedelta(seconds=20),
+            {"text": "hi"},
+            session_id=backend,
+        )
+    )
+    reducer.ingest(
+        _event(
+            "tool_call_started",
+            start + timedelta(seconds=21),
+            {"tool_call_id": "t", "name": "view", "arguments": {}},
+            session_id=backend,
+        )
+    )
+    reducer.ingest(
+        _event(
+            "operation_started",
+            start + timedelta(seconds=30),
+            {"kind": "training"},
+            operation_id="T1",
+            session_id="S1",
+        )
+    )
+    roots, _ = reducer.view()
+    sessions = [item for item in roots if item.kind == "session"]
+    assert [item.title for item in sessions] == ["Campaign preparation", "S1 startup"]
+    scientific = sessions[1]
+    kinds = {child.kind for child in scientific.children}
+    assert {"pi", "tool", "training"} <= kinds
+    assert not any(item.item_id.endswith(backend) for item in _walk(roots))
+
+
+def test_snapshot_ids_register_the_alias_before_the_pi_events():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    reducer.ingest(
+        Observation(
+            "session_start",
+            None,
+            {"id": "S2", "backend_session_id": "abc", "kind": "experiment"},
+            event_id="history:session:S2",
+            session_id="S2",
+        )
+    )
+    reducer.ingest(_event("pi_message", start, {"text": "hello"}, session_id="abc"))
+    roots, _ = reducer.view()
+    assert [item.item_id for item in roots if item.kind == "session"] == ["session:S2"]
+
+
 def test_goal_review_and_publication_recovery_sit_in_their_session():
     reducer = TimelineReducer()
     start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)

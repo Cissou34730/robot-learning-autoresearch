@@ -598,8 +598,10 @@ class CampaignPanel(Widget):
     def _master_tick(self) -> None:
         """The one periodic update: feed, durable changes, then one render."""
         if not self._is_shown():
-            # An inactive console tab does no work; it catches up when shown.
+            # An inactive console tab keeps its state current (so its tab can
+            # show the phase) but draws nothing; it catches up when shown.
             self._hidden = True
+            self.drain_feed(render=False)
             return
         if self._hidden:
             self._hidden = False
@@ -869,6 +871,13 @@ class CampaignPanel(Widget):
             elapsed_seconds=elapsed,
             stale=self._progress_stale(state),
         )
+
+    def phase(self) -> str:
+        """What this campaign is doing now, for its tab; kept current when hidden."""
+        evaluation = self._evaluation
+        if evaluation and evaluation.get("official"):
+            return "official"
+        return self._timeline.phase()
 
     def progress_stalled(self) -> bool:
         """True while a live training or evaluation counter has stopped advancing."""
@@ -1675,6 +1684,12 @@ class CampaignPanel(Widget):
             or event.fields.get("training_success"),
             "last_ts": event.ts or _now(),
         }
+        self._redraw_live()
+
+    def _redraw_live(self) -> None:
+        """Redraw the progress area; a hidden tab only keeps its state."""
+        if self._hidden:
+            return
         self._render_progress()
         self._render_training_status()
         self._apply_layout()
@@ -1692,7 +1707,8 @@ class CampaignPanel(Widget):
             "elapsed_seconds": event.fields.get("elapsed_seconds"),
             "last_ts": event.ts or _now(),
         }
-        self._render_progress()
+        if not self._hidden:
+            self._render_progress()
 
     def _event_operation_completed(self, event: Observation) -> None:
         operation = _clean_text(
@@ -1705,9 +1721,7 @@ class CampaignPanel(Widget):
             self._training = None
         if self._evaluation and self._evaluation.get("operation_id") == operation:
             self._evaluation = None
-        self._render_progress()
-        self._render_training_status()
-        self._apply_layout()
+        self._redraw_live()
 
     _event_operation_failed = _event_operation_completed
 

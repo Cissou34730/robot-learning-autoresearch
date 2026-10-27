@@ -182,6 +182,7 @@ class EventLog(Tree[TimelineItem]):
         self._expanded: set[str] = set()
         self._collapsed: set[str] = set()
         self._following = True
+        self._follow_pending = False
         self._missed = 0
         self._node_by_id: dict[str, TreeNode[TimelineItem]] = {}
         self._sigs: dict[str, tuple] = {}
@@ -299,6 +300,7 @@ class EventLog(Tree[TimelineItem]):
             return
         new_items = bool(self._last_signature) and signature != self._last_signature
         was_following = self._following
+        scroll_y = self.scroll_offset.y
         selected = self.selected_item()
         if styles_changed:
             self.clear()
@@ -317,9 +319,14 @@ class EventLog(Tree[TimelineItem]):
                 if node._line != self.cursor_line:
                     self.cursor_line = node._line
         if was_following:
-            self.call_after_refresh(self.scroll_end, animate=False)
-        elif new_items:
-            self._missed += 1
+            if not self._follow_pending:
+                self._follow_pending = True
+                self.call_after_refresh(self._follow_tail)
+        else:
+            # Moving the cursor can scroll; the reader's position wins.
+            self.scroll_to(y=scroll_y, animate=False)
+            if new_items:
+                self._missed += 1
         if selected is None and roots:
             self.call_after_refresh(self._select_latest_visible)
 
@@ -405,6 +412,13 @@ class EventLog(Tree[TimelineItem]):
         node._updates += 1
         if expanded and not item.is_group and not node.children:
             self._populate_details(node, item)
+
+    def _follow_tail(self) -> None:
+        """Scroll to the newest row, unless the reader has scrolled away since."""
+        self._follow_pending = False
+        if self._following:
+            # Already after the refresh: no second deferral.
+            self.scroll_end(animate=False, immediate=True)
 
     def _select_latest_visible(self) -> None:
         if self.cursor_node is not None:
