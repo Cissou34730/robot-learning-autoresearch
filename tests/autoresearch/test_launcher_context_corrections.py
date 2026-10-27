@@ -16,46 +16,22 @@ from runner import assessment, protocol, repository, run_experiment
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_parallel_launch_does_not_inherit_shared_observation_paths(tmp_path):
-    import shutil
+def test_parallel_launch_does_not_inherit_shared_feed_paths(monkeypatch, tmp_path):
+    from tools import run_parallel
 
-    powershell = shutil.which("pwsh") or shutil.which("powershell")
-    if powershell is None:
-        pytest.skip("no PowerShell host to exercise parallel launch")
-    campaigns = tmp_path / "campaigns"
-    (campaigns / "campaign-1" / ".git").mkdir(parents=True)
-    exercise = tmp_path / "exercise-parallel-feeds.ps1"
-    exercise.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-$env:TUI_OBSERVATIONS = 'shared-observations.jsonl'
-$env:TUI_TYPED_EVENTS = 'shared-events.jsonl'
-function global:git {{ $global:LASTEXITCODE = 0 }}
-function global:Start-Sleep {{ param([int]$Seconds) }}
-function global:Start-Process {{
-    [CmdletBinding()]
-    param(
-        [string]$FilePath, [string]$WorkingDirectory, [string]$WindowStyle,
-        [string[]]$ArgumentList, [switch]$PassThru
-    )
-    if (Test-Path Env:TUI_OBSERVATIONS) {{ throw 'shared legacy feed inherited' }}
-    if (Test-Path Env:TUI_TYPED_EVENTS) {{ throw 'shared typed feed inherited' }}
-    [pscustomobject]@{{ Id = 123 }}
-}}
-& '{ROOT / "tools" / "run_parallel.ps1"}' -Count 1 -NoReset `
-    -CampaignsRoot '{campaigns}' -ControlDirectory '{tmp_path / "control"}'
-""",
-        encoding="utf-8",
-    )
-    result = subprocess.run(
-        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
-        cwd=tmp_path,
-        capture_output=True,
-        text=True,
-        timeout=45,
-        check=False,
-    )
-    assert result.returncode == 0, result.stdout + result.stderr
+    seen = {}
+    monkeypatch.setenv("TUI_TYPED_EVENTS", "shared-events.jsonl")
+    monkeypatch.setenv("ROBOT_LEARNING_CAMPAIGN_ROOT", str(tmp_path))
+
+    def popen(command, **options):
+        seen.update(options)
+        return types.SimpleNamespace(pid=123)
+
+    monkeypatch.setattr(run_parallel.subprocess, "Popen", popen)
+    run_parallel.start_hidden(["child"], tmp_path / "child.log")
+    assert "TUI_TYPED_EVENTS" not in seen["env"]
+    assert "ROBOT_LEARNING_CAMPAIGN_ROOT" not in seen["env"]
+    assert seen["stdin"] == subprocess.DEVNULL
 
 
 def _ready_state(monkeypatch, *, session_kind: str = "startup") -> dict:
@@ -222,27 +198,6 @@ def test_operation_availability_stops_at_pending_and_terminal_boundaries(monkeyp
     state["pending_operation"] = None
     state["terminal_state"] = {"status": "official_assessment_requested"}
     assert protocol.session_operation_availability(state)["allowed_operations"] == []
-
-
-def test_launcher_operation_state_mode_reports_facts_without_loading_or_writing_state(
-    monkeypatch, capsys
-):
-    import io
-    import json
-
-    state = _ready_state(monkeypatch)
-    monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--operation-state-input"])
-    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(state)))
-    monkeypatch.setattr(
-        repository, "load_state", lambda **_kwargs: pytest.fail("Unexpected state load")
-    )
-    monkeypatch.setattr(
-        repository, "write_state", lambda _state: pytest.fail("Unexpected state write")
-    )
-    assert run_experiment.main() == 0
-    assert json.loads(
-        capsys.readouterr().out
-    ) == protocol.session_operation_availability(state)
 
 
 @pytest.mark.parametrize("kind", sorted(repository.OPERATION_KINDS))
@@ -572,127 +527,50 @@ def test_relaunch_without_max_inquiries_uses_persisted_value(monkeypatch, capsys
     assert capsys.readouterr().out == ""
 
 
-@pytest.mark.parametrize("response", ["valid", "invalid", "null", "missing", "nonzero"])
-def test_launcher_availability_uses_real_process_capture_and_rejects_bad_responses(
-    tmp_path, response
-):
-    import json
-    import shutil
+def test_launcher_operation_state_matches_runner_availability(monkeypatch, tmp_path):
+    from runner.launcher.operation_bridge import operation_state
+    from runner.launcher.prompts import required_transition
 
-    powershell = shutil.which("pwsh") or shutil.which("powershell")
-    if powershell is None:
-        pytest.skip("no PowerShell host to run launcher helper")
-    uv = shutil.which("uv")
-    if uv is None:
-        pytest.skip("no uv executable to run the installed project stack")
-    code = {
-        "valid": (
-            f"import sys; sys.path.insert(0,{str(ROOT)!r}); "
-            "print('inert transport warning',file=sys.stderr); "
-            "from runner.run_experiment import main; "
-            "sys.argv=['runner','--operation-state-input']; raise SystemExit(main())"
-        ),
-        "invalid": "print('not JSON')",
-        "null": "print('null')",
-        "missing": "print('{}')",
-        "nonzero": "import sys; print('native stderr diagnostic',file=sys.stderr); raise SystemExit(7)",
-    }[response]
-    encoded = json.dumps(
+    state = _ready_state(monkeypatch, session_kind="goal_review")
+    state["campaign"]["started_at"] = "2026-10-26T12:00:00+00:00"
+    session = state["scientific_session"]
+    state["active_inquiry"] = {
+        "id": "I1",
+        "opened_in_session": session["id"],
+        "question": "Current question",
+    }
+    session["operation_ids"] = ["E1"]
+    state["operation_events"] = [
         {
-            "launcher": str(ROOT / "run_research.ps1"),
-            "controller": str(ROOT / "runner" / "copilot" / "copilot_controller.ps1"),
-            "root": str(ROOT),
-            "uv": uv,
-            "code": code,
-            "response": response,
+            "id": "E1",
+            "kind": "inquiry",
+            "status": "completed",
+            "result": {"action": "open"},
         }
-    ).replace("'", "''")
-    exercise = tmp_path / "exercise-availability.ps1"
-    exercise.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-$values = ConvertFrom-Json -InputObject '{encoded}'
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    $values.launcher, [ref]$null, [ref]$null)
-$names = @('Invoke-CooperativeProcess', 'Get-RunnerOperationAvailability',
-           'Get-RequiredSessionSummaryTransition')
-$definitions = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -in $names
-}}, $true)
-foreach ($definition in $definitions) {{
-    . ([scriptblock]::Create($definition.Extent.Text))
-}}
-function Test-CampaignStopRequested {{ return $false }}
-function Get-CampaignResourceSummary {{ param($State); return 'inert resources' }}
-function Invoke-Runner {{
-    param($Arguments, $InputText, [switch]$CaptureOutput)
-    return Invoke-CooperativeProcess -FilePath $values.uv -ArgumentList @(
-        'run', '--no-sync', '--project', $values.root, 'python', '-c', $values.code
-    ) -Operation 'read-only transport check' -InputText $InputText -CaptureOutput
-}}
-$state = [pscustomobject]@{{
-    campaign = [pscustomobject]@{{id='campaign'}}
-    scientific_session = [pscustomobject]@{{
-        id='S1'; kind='goal_review'; operation_ids=@(); backend_session_id='inert'
-    }}
-    active_inquiry = [pscustomobject]@{{
-        id='I1'; opened_in_session='S1'; question='Current question'
-    }}
-    pending_operation=$null; terminal_state=$null; operation_events=@(); model_roles=@{{}}
-}}
-if ($values.response -ne 'valid') {{
-    $rejected = $false
-    try {{ Get-RunnerOperationAvailability -State $state | Out-Null }}
-    catch {{
-        $rejected = $true
-        if ($values.response -eq 'nonzero' -and
-            $_.Exception.Message -notlike '*native stderr diagnostic*') {{
-            throw 'Native error detail was lost.'
-        }}
-    }}
-    if (-not $rejected) {{ throw 'Malformed transport response was accepted.' }}
-    exit 0
-}}
-$availability = Get-RunnerOperationAvailability -State $state
-if (-not $availability.checkpoint_required -or
-    $availability.allowed_operations[0] -ne 'checkpoint') {{
-    throw 'Launcher lost the required checkpoint.'
-}}
-if ($script:ProcessStderr -notlike '*inert transport warning*') {{
-    throw 'The real process helper did not capture stderr.'
-}}
-$transition = Get-RequiredSessionSummaryTransition -State $state -Availability $availability
-if (-not $transition) {{ throw 'Required transition disappeared.' }}
-. $values.controller
-$result = Get-CopilotOperationState -State $state
-if (-not $result.checkpoint_required -or
-    $result.allowed_operations[0] -ne 'checkpoint' -or
-    $result.next_question -ne 'Current question') {{
-    throw 'Controller operation state disagrees with Runner.'
-}}
-""",
-        encoding="utf-8",
+    ]
+    monkeypatch.setattr(
+        repository, "load_state", lambda **_kwargs: pytest.fail("Unexpected state load")
     )
-    result = subprocess.run(
-        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        timeout=45,
-        check=False,
+    monkeypatch.setattr(
+        repository, "write_state", lambda _state: pytest.fail("Unexpected state write")
     )
-    assert result.returncode == 0, result.stdout + result.stderr
+    before = copy.deepcopy(state)
+    availability = protocol.session_operation_availability(state)
+    reported = operation_state(state, tmp_path)
+    assert reported["allowed_operations"] == ["checkpoint"]
+    assert reported["allowed_operations"] == availability["allowed_operations"]
+    assert reported["checkpoint_required"] is True
+    assert reported["next_question"] == "Current question"
+    assert required_transition(availability) is not None
+    assert state == before
 
 
 def test_campaign_resources_report_elapsed_time_and_usage_by_role(tmp_path):
     import json
-    import shutil
+    from datetime import datetime, timedelta
 
-    powershell = shutil.which("pwsh") or shutil.which("powershell")
-    if powershell is None:
-        pytest.skip("no PowerShell host to run launcher helper")
+    from runner.launcher.summaries import campaign_resource_summary
+
     usage = tmp_path / "reports" / "session_usage" / "campaign.jsonl"
     usage.parent.mkdir(parents=True)
     usage.write_text(
@@ -707,41 +585,17 @@ def test_campaign_resources_report_elapsed_time_and_usage_by_role(tmp_path):
         ),
         encoding="utf-8",
     )
-    exercise = tmp_path / "exercise-resources.ps1"
-    exercise.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{ROOT / "run_research.ps1"}', [ref]$null, [ref]$null)
-$definition = $ast.Find({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -eq 'Get-CampaignResourceSummary'
-}}, $true)
-. ([scriptblock]::Create($definition.Extent.Text))
-$state = [pscustomobject]@{{
-    campaign = [pscustomobject]@{{
-        id = 'campaign'
-        started_at = [DateTimeOffset]::UtcNow.AddMinutes(-125).ToString('o')
-    }}
-    counters = [pscustomobject]@{{ inquiry = 1; session = 3 }}
-    operation_events = @()
-    candidates = [pscustomobject]@{{}}
-}}
-Get-CampaignResourceSummary -State $state
-""",
-        encoding="utf-8",
-    )
-    result = subprocess.run(
-        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
-        cwd=tmp_path,
-        capture_output=True,
-        text=True,
-        timeout=45,
-        check=False,
-    )
-    assert result.returncode == 0, result.stdout + result.stderr
-    assert result.stdout.strip().startswith(
+    now = datetime.now().astimezone()
+    state = {
+        "campaign": {
+            "id": "campaign",
+            "started_at": (now - timedelta(minutes=125)).isoformat(),
+        },
+        "counters": {"inquiry": 1, "session": 3},
+        "operation_events": [],
+        "candidates": {},
+    }
+    assert campaign_resource_summary(state, tmp_path, now=now).startswith(
         "elapsed 2h05m | AI usage of completed sessions 4.3 AIU "
         "(PI 2.5, coding and review 1.8) | inquiries 1 | sessions 3"
     )

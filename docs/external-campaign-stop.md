@@ -1,187 +1,156 @@
 # External campaign stop contract
 
-Current launcher behavior, reviewed 19 October 2026. Older descriptions of a
-separate TypeScript OpenCode runtime and dedicated first/second Ctrl-C exit
-codes do not describe the current launcher.
+Current launcher behavior, reviewed 27 October 2026. The launcher is the
+Python module `runner.launcher`; older descriptions of a PowerShell launcher,
+a per-run `-StopRequestPath` or console-interrupt exit codes do not describe it.
 
-An external controller must combine the repository's cooperative stop request
-with a Windows Job Object. The request gives the active operation time to save
-state and close its remote session; the Job Object is the independent guarantee
-that no descendant survives a failed or hung graceful stop.
+Every campaign has one cooperative stop request: the file `stop-request` in
+the campaign's Git administration directory (`<campaign>\.git\stop-request`,
+or the directory a `.git` file points to). It is outside the worktree, so it is
+never published or seen by campaign agents. Whoever started the launcher, any
+maintainer tool can stop it by creating that file. `runner.paths.stop_request_path`
+returns the path.
+
+A controller that owns the launcher process should also hold it in a Windows
+Job Object. The request gives the active operation time to save state and close
+its remote session; the Job Object is the independent guarantee that no
+descendant survives a failed or hung graceful stop.
 
 ## Launch
 
-For every launcher invocation, Hermes must:
+Run the launcher from the harness with `uv`:
 
-1. Create a new, private control directory and never reuse it for another run.
-2. Choose an absolute request path inside it, conventionally `stop.request`.
-   The parent directory must exist. The request file may not be a directory.
-3. Create a Windows Job Object with
-   `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`, disallow breakaway, create the launcher
-   suspended, assign it to the job, then resume it. Hermes must retain the job
-   handle until the launcher has exited and all job processes are gone.
-4. Launch PowerShell with the request path and the cooperative timeout:
+```powershell
+uv run --project C:\Users\cyril.beurier\code\robot-learning-harness --group researcher `
+    python -m runner.launcher `
+    --campaign-root C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1 `
+    --stop-timeout-seconds 180
+```
 
-   ```powershell
-   $runId = [guid]::NewGuid().ToString()
-   $controlDirectory = Join-Path $env:TEMP "robot-learning\$runId"
-   New-Item -ItemType Directory -Path $controlDirectory | Out-Null
-   $stopRequest = Join-Path $controlDirectory "stop.request"
+At start the launcher deletes a stop request older than its own start time, so
+a request left by an earlier run does not stop it. A request created or
+refreshed after the start is honored. It passes the request path to each Runner
+or PI-adapter child as `ROBOT_RESEARCH_STOP_REQUEST` and deletes the request
+when it exits.
 
-   # Hermes performs the suspended creation, Job Object assignment and resume.
-   # Run from robot-learning-harness, not the campaign folder.
-   pwsh -NoProfile -File .\run_research.ps1 `
-       -CampaignRoot C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1 `
-       -StopRequestPath $stopRequest `
-       -StopTimeoutSeconds 180
-   ```
-
-The TUI uses the existing PowerShell 7 executable on PATH, including Store/MSIX
-installations. Its `STARTUPINFOEXW` specifies `PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY`
-with `PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE` (0x02), via
-`EXTENDED_STARTUPINFO_PRESENT`. This inherited, documented Windows creation
-policy keeps native descendants of packaged PowerShell in its runtime and the
-owning job. Without this policy, a native child of the installed packaged build
-was observed outside the job. No installation or machine-wide policy changes
-are needed. Attribute initialization/update failure aborts before the child runs;
-there is no uncontained fallback. The existing suspended assignment sequence
-and kill-on-close limit remain unchanged.
-
-Windows PowerShell 5.1 lacks .NET APIs used by the existing campaign launcher.
-If PowerShell 7 is unavailable, command preflight fails before initialization,
-reset or launch. Direct script invocations remain unchanged.
-
-The request path is inherited only by the supervised Runner or PI-adapter
-process as `ROBOT_RESEARCH_STOP_REQUEST`. It is not a repository or campaign
-state file.
-The harness supplies the Python project and scripts; the selected campaign
-folder is the child's working directory. The mutex is per campaign, so two
-launchers cannot own the same campaign concurrently. The launcher restores
-its caller's folder on exit.
+The launcher writes no console output. Its progress is the campaign's typed
+event feed; a failure that ends the launch is written to standard error and to
+`<campaign>\reports\launcher\<UTC time>-<pid>.log`, which also captures the
+children's output. The per-campaign mutex refuses a second launcher or a reset
+for the same campaign.
 
 ## Request
 
-Raise the level-triggered request by atomically creating the file. `CreateNew`
-is idempotence-safe because a second request fails instead of replacing
-anything:
+Create (or refresh) the request file. Writing an empty file is enough:
 
 ```powershell
-$stream = [System.IO.File]::Open(
-    $stopRequest,
-    [System.IO.FileMode]::CreateNew,
-    [System.IO.FileAccess]::Write,
-    [System.IO.FileShare]::Read
-)
-$stream.Dispose()
+$request = uv run python -c "from pathlib import Path; from runner.paths import stop_request_path; print(stop_request_path(Path(r'C:\path\to\campaign-1')))"
+Set-Content -LiteralPath $request -Value '' -NoNewline
 ```
 
-Use the explicit stop-request file for supervised cooperative stopping. Manual
-Ctrl-C uses PowerShell and child-process interrupt behavior; the current
-launcher has no separate first/second console-interrupt handler or dedicated
-exit-125 escalation contract. Do not infer that recovery markers were saved
-merely because an operator pressed Ctrl-C. A forced stop cannot guarantee
-Runner persistence or SDK cleanup.
-
-An external controller does not need to send a console control signal. The
-launcher polls child completion and both stop inputs every 100 ms. The active
-child also polls the external request:
+The request is level-triggered. The launcher polls it with child completion
+every 100 ms. The active child also polls it:
 
 - `runner/run_experiment.py` raises `KeyboardInterrupt` on its main thread.
   Existing runner handling stops training or evaluation cooperatively, persists
   partial state, writes `RECOVERY_PENDING` or `RESTART_PENDING` when applicable,
   and returns 130.
-- `runner/copilot/copilot_adapter.py` calls `session.abort()`, then always disconnects.
-- OpenCode Zen/Go use that same Copilot SDK adapter, not a separate
-  `researcher_opencode` process.
+- `runner/copilot/copilot_adapter.py` calls `session.abort()`, then always
+  disconnects. OpenCode Zen/Go use the same adapter.
 
-After an interrupted PI session exits, the launcher checks the request before
+After an interrupted child exits, the launcher checks the request before
 deliverable validation or retry. It then leaves the campaign loop, shuts down
-its owned persistent Copilot runtime, and releases the campaign mutex.
+its owned persistent Copilot runtime and releases the campaign mutex. A request
+seen while the Copilot runtime is still starting ends that bootstrap without
+sending a session.
 
 ## Wait and fallback
 
-Hermes must wait for the launcher process, not merely the active child:
+Wait for the launcher process, not merely the active child:
 
 - Exit `130`: the cooperative request was observed, the supervised child
   returned normally with exit 0 or 130, and launcher cleanup completed.
-- Exit `124`: the active child did not return before `StopTimeoutSeconds`.
-  The cooperative process helper attempts to kill its owned process tree.
-  Hermes must still close the Job Object; recovery markers are not guaranteed.
-- Exit `0`: the campaign completed normally before the request took effect.
-- Any other exit: launcher or child failure. Hermes must close the Job Object
-  before reporting the failure.
+- Exit `124`: the active child did not return before `--stop-timeout-seconds`.
+  The launcher killed that child's process tree; recovery markers are not
+  guaranteed.
+- Exit `0`: the campaign completed or paused normally before the request took
+  effect.
+- Any other exit: launcher or child failure.
 
-The timeout begins when the launcher first observes the request, not when
-Hermes creates it. The 180-second default allows for the runner's 15-second
-status wait, its 30-second cooperative child interrupt, its 10-second forced
-child fallback, and recovery persistence. It is still a bound, not a guarantee:
-a blocking OS or Git operation can consume it. Hermes should therefore wait at
-least `StopTimeoutSeconds + 5` seconds after creating the request. If the
-launcher has not exited by then, or exits with 124 or another failure, Hermes
-closes its Job Object handle and waits until the job is empty.
+The timeout begins when the launcher first observes the request. The
+180-second default allows for the runner's 15-second status wait, its 30-second
+cooperative child interrupt, its 10-second forced child fallback, and recovery
+persistence. It is a bound, not a guarantee: a blocking OS or Git operation can
+consume it. A controller should therefore wait at least the timeout plus five
+seconds after creating the request. If the launcher has not exited by then, or
+exits with 124 or another failure, an owning controller closes its Job Object
+and waits until the job is empty.
 
-The launcher's cooperative exit path runs its cleanup, but the external
-controller must still confirm the Job Object is empty. A successful Runner
-training interrupt follows its existing recovery-marker path. It does not
-promise that a recoverable checkpoint exists: an early interruption can produce
-`RESTART_PENDING`. Inspect durable pending/completed state before resuming;
-never blindly resubmit completed work.
+A successful Runner training interrupt follows its existing recovery-marker
+path. It does not promise that a recoverable checkpoint exists: an early
+interruption can produce `RESTART_PENDING`. Inspect durable pending/completed
+state before resuming; never blindly resubmit completed work.
 
 Closing the Job Object guarantees process-tree termination, but it is an
 unclean fallback. It cannot guarantee runner recovery markers, SDK
-abort/disconnect, persistent-runtime cleanup, or any other `finally` block. Hermes
-must not start another invocation for the campaign until the old job is empty,
+abort/disconnect, persistent-runtime cleanup, or any other `finally` block. Do
+not start another invocation for the campaign until the old job is empty,
 because a killed launcher releases its named mutex even if an uncontained
 descendant would otherwise still be running.
 
 ## Operator console implementation
 
-The launcher uses `CREATE_NEW_CONSOLE` with `STARTF_USESHOWWINDOW`/`SW_HIDE` so
-it and ordinary descendants use a private hidden console, not Textual's console.
-Standard input/output/error remain redirected. Native Windows checks verify
-separate console identity and hidden visibility; interactive Windows Terminal
-rendering/restoration still needs a manual check.
+The console TUI (`uv run python -m tui`, `tui/console.py`, issue #68)
+implements this contract:
 
-Stop requests are not queued behind an initializer/reset batch. In-flight
-helpers have a separate 15-second finish grace on console shutdown, followed by
-owned-job cleanup if necessary. Incomplete TUI resets retain an administrative
-marker in the campaign's Git directory and block later TUI starts; an explicit
-successful reset/run clears the matching marker. No automatic repair or
-scientific-state rewrite occurs. Cleanup attempts continue after a failure in
-another owned helper or launcher.
-
-The console TUI (`uv run python -m tui`, `tui/console.py`, issue #68) is an
-external controller that implements this contract directly:
-
-- every owned launcher runs through `tui/process.py`: suspended creation in a
-  new process group, assignment to a `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` job,
-  per-run private control directory under `%TEMP%\robot-learning\tui` with
-  captured launcher stdout/stderr and the `stop.request` file;
-- initializer and reset helpers use the same contained boundary. An unfinished
-  helper may finish during console shutdown, but no later reset or launch starts;
-  a helper that misses the shutdown bound is terminated and reported as interrupted;
-- `run`, `reset`, `start` and `stop` commands delegate to the existing
-  `run_research.ps1` / `reset_research.ps1` entry points with the launcher's
-  own options; launch batches carry `-StopRequestPath` and stop with a
-  cooperative deadline of 180 seconds (configurable per command through
-  `-StopTimeoutSeconds`);
+- every owned launcher runs through `tui/process.py`: `uv` on PATH starts
+  `python -m runner.launcher`, created suspended in a new process group with a
+  private hidden console (`CREATE_NEW_CONSOLE`, `SW_HIDE`), assigned to a
+  `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` job, then resumed. The Windows
+  desktop-app child policy
+  (`PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE`) keeps native
+  descendants of packaged executables in the job; attribute failure aborts
+  before the child runs. Standard output and error go to a per-run control
+  directory under `%TEMP%\robot-learning\tui`;
+- initializer and reset helpers (`python -m tools.initialize_campaign`,
+  `python -m runner.launcher.reset`) use the same contained boundary. An
+  unfinished helper may finish during console shutdown, but no later reset or
+  launch starts; a helper that misses the shutdown bound is terminated and
+  reported as interrupted;
+- `stop` writes the campaign's stop request. For a campaign the console did
+  not start but whose mutex is held (for example one launched by
+  `tools.run_parallel`), `stop` writes the same request and reports that the
+  campaign is not owned; there is no process handle to wait on or force;
 - exit classification follows the wait rules above: 130 is a cooperative
   stop, 0 is a normal return that requires inspecting durable state, 124 and
   any other exit are failures; a missed cooperative deadline escalates to
   `TerminateJobObject` and is reported as a failed campaign;
-- ordinary `stop` reports stopping immediately and shows elapsed/remaining wait.
-  The deadline belongs to the invocation: changing shared settings does not
-  change an existing campaign's deadline. A successful cooperative stop does
-  not call forced termination;
+- ordinary `stop` reports stopping immediately and shows elapsed/remaining
+  wait. The deadline belongs to the invocation: changing shared settings does
+  not change an existing campaign's deadline. A successful cooperative stop
+  does not call forced termination;
 - closing the console or pressing `Ctrl+Q` asks every owned launcher to stop
   concurrently, waits up to its stop timeout plus five seconds from request
-  creation, escalates only when needed to the forced
-  fallback and only then exits, so an owned campaign cannot outlive the
-  console (the kill-on-close job handle is the backstop);
+  creation, escalates only when needed to the forced fallback and only then
+  exits, so an owned campaign cannot outlive the console (the kill-on-close
+  job handle is the backstop);
 - `Ctrl+C` copies the current text selection or does nothing; it never
   reaches the campaign processes because the launchers are in their own
   process group with redirected input;
+- stop requests are not queued behind an initializer/reset batch. In-flight
+  helpers have a separate 15-second finish grace on console shutdown,
+  followed by owned-job cleanup if necessary;
+- a reset records `reset-incomplete.json` in the campaign's Git directory at
+  its first mutation and removes it on success; the console refuses `start`
+  while the record exists;
 - one named-mutex instance lock (`Local\RobotLearningTui-<hash>`) refuses a
   second TUI (including read-only reports) against the same canonical harness
-  directory. The owner releases job, process, thread and diagnostic handles
-  after verifying cleanup, before the campaign folder is available for reuse.
+  directory.
+
+## Parallel monitor
+
+`tools.run_parallel` starts each launcher detached without a console window
+(`CREATE_NO_WINDOW`) and a detached monitor. The monitor creates a campaign's
+stop request when its active-time or AIU cap is reached, waits for every
+launcher to release its campaign mutex, then writes one report per campaign.
+These launchers are not in a Job Object; stop them through their request.

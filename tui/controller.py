@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
 
-from runner.paths import reset_marker_path
+from runner.paths import reset_marker_path, stop_request_path
 
 DEFAULT_RECIPE_REF = "baseline-distinct-episodes-v3-robot"
 DEFAULT_STOP_TIMEOUT = 180
@@ -106,19 +106,19 @@ class LaunchSettings:
                 raise CommandError(f"{name} must be between 1 and {maximum}.")
         arguments: list[str] = []
         if self.model:
-            arguments += ["-Model", self.model]
+            arguments += ["--model", self.model]
         if self.provider:
-            arguments += ["-Provider", self.provider]
+            arguments += ["--provider", self.provider]
         if self.reasoning:
-            arguments += ["-Reasoning", self.reasoning]
+            arguments += ["--reasoning", self.reasoning]
         if self.timesteps is not None:
-            arguments += ["-Timesteps", str(self.timesteps)]
+            arguments += ["--timesteps", str(self.timesteps)]
         if self.max_timesteps is not None:
-            arguments += ["-MaxTimesteps", str(self.max_timesteps)]
+            arguments += ["--max-timesteps", str(self.max_timesteps)]
         if self.max_inquiries is not None:
-            arguments += ["-MaxInquiries", str(self.max_inquiries)]
+            arguments += ["--max-inquiries", str(self.max_inquiries)]
         if self.stop_timeout_seconds is not None:
-            arguments += ["-StopTimeoutSeconds", str(self.stop_timeout_seconds)]
+            arguments += ["--stop-timeout-seconds", str(self.stop_timeout_seconds)]
         return arguments
 
 
@@ -136,16 +136,16 @@ class ResetConfig:
             raise CommandError("Reset mode must be Fresh or Baseline.")
         if self.mode == "Fresh" and self.baseline_ref:
             raise CommandError("Fresh reset does not accept a baseline ref.")
-        arguments = ["-Mode", self.mode]
+        arguments = ["--mode", self.mode.lower()]
         if self.mode == "Baseline":
             if not self.baseline_ref:
                 raise ControllerError("Baseline reset requires a baseline ref.")
-            arguments += ["-BaselineRef", self.baseline_ref]
+            arguments += ["--baseline-ref", self.baseline_ref]
         elif self.recipe_ref:
-            arguments += ["-RecipeRef", self.recipe_ref]
+            arguments += ["--recipe-ref", self.recipe_ref]
         if self.clean:
-            arguments.append("-Clean")
-        arguments.append("-Force")
+            arguments.append("--clean")
+        arguments.append("--force")
         return arguments
 
 
@@ -308,7 +308,9 @@ class CampaignFolderState:
 class ProcessMachinery(Protocol):
     """The Windows boundary the controller needs; injected for tests."""
 
-    def start(self, folder: Path, arguments: list[str]) -> object:
+    def start(
+        self, folder: Path, arguments: list[str], control_directory: Path
+    ) -> object:
         """Create, contain, and run one launcher invocation."""
         ...
 
@@ -339,7 +341,6 @@ def _environment_for_launch() -> dict[str, str]:
     """Child environment: presentation overrides must not redirect the
     campaign's own observation feeds."""
     env = dict(os.environ)
-    env.pop("TUI_OBSERVATIONS", None)
     env.pop("TUI_TYPED_EVENTS", None)
     env.pop("ROBOT_LEARNING_CAMPAIGN_ROOT", None)
     return env
@@ -416,6 +417,18 @@ def _recorded_terminal(folder: Path) -> str | None:
     )
 
 
+class ExternalCampaigns:
+    """Campaigns started elsewhere, seen through their exclusion and stop request."""
+
+    def running(self, folder: Path) -> bool:
+        from runner.launcher import campaign_lock
+
+        return campaign_lock.is_held(folder)
+
+    def request_stop(self, folder: Path) -> None:
+        stop_request_path(folder).write_text("", encoding="utf-8")
+
+
 class CampaignController:
     """Orchestrates initialize/reset/launch/stop over standard folders."""
 
@@ -427,9 +440,11 @@ class CampaignController:
         runner: Callable[[list[str]], subprocess.CompletedProcess[str]] | None = None,
         control_directory_factory: Callable[[], Path] | None = None,
         campaign_id_reader: Callable[[Path], str | None] | None = None,
+        external: ExternalCampaigns | None = None,
     ) -> None:
         self._layout = layout
         self._machinery = machinery
+        self._external = external or ExternalCampaigns()
         self._runner = runner or getattr(machinery, "run", _run_git)
         self._control_directory_factory = (
             control_directory_factory or _default_control_directory
@@ -695,13 +710,14 @@ class CampaignController:
         try:
             completed = self._runner(
                 [
-                    "pwsh",
-                    "-NoProfile",
-                    "-ExecutionPolicy",
-                    "Bypass",
-                    "-File",
-                    str(self._layout.harness_root / "reset_research.ps1"),
-                    "-CampaignRoot",
+                    "uv",
+                    "run",
+                    "--project",
+                    str(self._layout.harness_root),
+                    "python",
+                    "-m",
+                    "runner.launcher.reset",
+                    "--campaign-root",
                     str(target.folder),
                     *reset.arguments(),
                 ]
@@ -768,16 +784,14 @@ class CampaignController:
         target.stop_timeout = settings.stop_timeout_seconds or DEFAULT_STOP_TIMEOUT
         target.stop_started = None
         arguments = [
-            "-CampaignRoot",
+            "--campaign-root",
             str(target.folder),
             *settings.launcher_arguments(),
-            "-StopRequestPath",
-            str(control_directory / "stop.request"),
         ]
         target.stage = "launching"
         target.detail = ""
         try:
-            child = self._machinery.start(target.folder, arguments)
+            child = self._machinery.start(target.folder, arguments, control_directory)
         except Exception as error:  # noqa: BLE001 - reported verbatim to the operator
             target.stage = "failed"
             target.detail = str(error)
@@ -791,6 +805,9 @@ class CampaignController:
         self._record(outcome, "launch", target.label, SUCCESS)
 
     def _stop_one(self, outcome: BatchOutcome, target: CampaignFolderState) -> None:
+        if target.child is None and target.stage not in {"running", "launching"}:
+            self._stop_external(outcome, target)
+            return
         if target.child is None or target.stage not in {"running", "launching"}:
             self._record(
                 outcome, "stop", target.label, SKIPPED, f"campaign is {target.stage}"
@@ -798,6 +815,26 @@ class CampaignController:
             return
         with target.cleanup_lock:
             self._request_stop(outcome, target)
+
+    def _stop_external(
+        self, outcome: BatchOutcome, target: CampaignFolderState
+    ) -> None:
+        """A campaign started elsewhere stops through the same request file."""
+        if not self._layout.is_installed(target.slot) or not self._external.running(
+            target.folder
+        ):
+            self._record(
+                outcome, "stop", target.label, SKIPPED, f"campaign is {target.stage}"
+            )
+            return
+        self._external.request_stop(target.folder)
+        self._record(
+            outcome,
+            "stop",
+            target.label,
+            SUCCESS,
+            "stop requested for a campaign this console did not start",
+        )
 
     def _request_stop(self, outcome: BatchOutcome, target: CampaignFolderState) -> None:
         if target.child is None or target.stage not in {"running", "launching"}:

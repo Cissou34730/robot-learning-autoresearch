@@ -1,15 +1,19 @@
 """Focused tests for the external cooperative-stop bridge."""
 
 import asyncio
-import shutil
+import os
 import subprocess
-import sys
 import threading
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from runner import execution, paths, repository, run_experiment
+from runner.launcher import cli, copilot_runtime, phases
+from runner.launcher import reset as launcher_reset
+from runner.launcher.runner_client import LauncherError
+from runner.launcher.stop import StopControl
 from runner.stop_control import (
     STOP_REQUEST_ENV,
     interrupt_on_stop_request,
@@ -19,52 +23,75 @@ from runner.stop_control import (
 )
 
 
+def _stop(path: Path, **options) -> StopControl:
+    return StopControl(path, 180, started_at=0.0, **options)
+
+
+class _Bootstrap:
+    """A runtime process that never connects to the launcher."""
+
+    def __init__(self, *, exits: bool = True) -> None:
+        self.exits = exits
+        self.waits: list[float] = []
+
+    def poll(self):
+        return None
+
+    def wait(self, timeout=None):
+        self.waits.append(timeout)
+        if not self.exits and len(self.waits) == 1:
+            raise subprocess.TimeoutExpired("copilot", timeout)
+        return 0
+
+
 @pytest.mark.parametrize("stop_before_start", [True, False])
-def test_launcher_stop_during_runtime_startup_returns_130_without_session(
+def test_launcher_stop_during_runtime_startup_starts_no_session(
     tmp_path, stop_before_start
 ):
-    powershell = shutil.which("pwsh")
-    if powershell is None:
-        pytest.skip("PowerShell 7 is required")
-    controller = (
-        Path(__file__).resolve().parents[2] / "runner/copilot/copilot_controller.ps1"
+    request = tmp_path / "stop-request"
+    started = []
+    process = _Bootstrap()
+
+    def start(command):
+        started.append(command)
+        request.touch()
+        return process
+
+    if stop_before_start:
+        request.touch()
+    runtime = copilot_runtime.CopilotRuntime(
+        children=SimpleNamespace(start=start),
+        stop=_stop(request),
+        command=lambda port, token: ["copilot", str(port), token],
+        before_start=lambda: None,
     )
-    exercise = tmp_path / "startup-stop.ps1"
-    exercise.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-. '{controller}'
-$script:CopilotRepositoryRoot = '{tmp_path}'
-$script:StopRequestPath = '{tmp_path / "stop.request"}'
-$Model = 'unused'
-$Reasoning = 'high'
-$script:StopPolls = 0
-function Test-CampaignStopRequested {{
-    $script:StopPolls += 1
-    return ($script:StopPolls -ge {1 if stop_before_start else 2})
-}}
-function Enter-TrustedMutableInvocation {{}}
-function Get-Command {{ [pscustomobject]@{{ Source = '{sys.executable}' }} }}
-function Send-CopilotControlMessage {{ throw 'A stopped startup must not submit a session.' }}
-try {{
-    $code = Invoke-PersistentCopilotSession -SessionArguments @('unused') -Prompt 'unused' -State @{{}}
-    if ($code -ne 130) {{ throw "Expected interrupted startup, got $code" }}
-    if (${str(stop_before_start).lower()} -and $script:CopilotProcess) {{
-        throw 'A pre-existing stop request must not start a runtime.'
-    }}
-}}
-finally {{ Stop-PersistentCopilotRuntime }}
-""",
-        encoding="utf-8",
+    runtime.start()
+    assert bool(started) is not stop_before_start
+    runtime.stop()
+    if not stop_before_start:
+        assert process.waits, "the bootstrap must be awaited before release"
+
+
+def test_cancelled_startup_without_channel_cleans_up_bootstrap_without_failure(
+    monkeypatch, tmp_path
+):
+    request = tmp_path / "stop-request"
+    request.touch()
+    killed = []
+    monkeypatch.setattr(copilot_runtime, "kill_tree", killed.append)
+    process = _Bootstrap(exits=False)
+    runtime = copilot_runtime.CopilotRuntime(
+        children=SimpleNamespace(start=lambda _command: process),
+        stop=_stop(request),
+        command=lambda port, token: [],
+        before_start=lambda: None,
     )
-    completed = subprocess.run(
-        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
-        capture_output=True,
-        text=True,
-        timeout=30,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stdout + completed.stderr
+    runtime._process = process
+    runtime.stop()
+    assert killed == [process]
+    assert process.waits[0] <= 5
+    assert len(process.waits) == 2
+    assert runtime._process is None
 
 
 def test_stop_request_is_explicit_and_run_scoped(monkeypatch, tmp_path):
@@ -80,42 +107,31 @@ def test_stop_request_is_explicit_and_run_scoped(monkeypatch, tmp_path):
     assert stop_requested()
 
 
-def test_cancelled_startup_without_channel_cleans_up_bootstrap_without_failure(
-    tmp_path,
-):
-    powershell = shutil.which("pwsh")
-    if powershell is None:
-        pytest.skip("PowerShell 7 is required")
-    controller = (
-        Path(__file__).resolve().parents[2] / "runner/copilot/copilot_controller.ps1"
-    )
-    exercise = tmp_path / "cancel-bootstrap.ps1"
-    exercise.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-. '{controller}'
-function Test-CampaignStopRequested {{ return $true }}
-$script:StopDeadline = [DateTime]::UtcNow.AddSeconds(180)
-$process = [pscustomobject]@{{ HasExited=$false; Killed=$false; Disposed=$false; Waits=[System.Collections.Generic.List[int]]::new() }}
-$process | Add-Member ScriptMethod WaitForExit {{ param($ms) $this.Waits.Add($ms); return $this.HasExited }}
-$process | Add-Member ScriptMethod Kill {{ param($tree) if (-not $tree) {{ throw 'expected owned tree cleanup' }}; $this.Killed=$true; $this.HasExited=$true }}
-$process | Add-Member ScriptMethod Dispose {{ $this.Disposed=$true }}
-$script:CopilotProcess=$process
-$script:CopilotWriter=$null
-Stop-PersistentCopilotRuntime
-if (-not $process.Killed -or -not $process.Disposed -or $script:CopilotProcess) {{ throw 'bootstrap not cleaned up' }}
-if ($process.Waits[0] -gt 5000 -or $process.Waits.Count -ne 2) {{ throw 'startup cancellation used the normal session deadline' }}
-""",
-        encoding="utf-8",
-    )
-    completed = subprocess.run(
-        [powershell, "-NoProfile", "-File", str(exercise)],
-        capture_output=True,
-        text=True,
-        timeout=20,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stdout + completed.stderr
+def test_launcher_discards_only_a_request_older_than_its_start(tmp_path):
+    request = tmp_path / "stop-request"
+    request.touch()
+    os.utime(request, (1000.0, 1000.0))
+    StopControl(request, 180, started_at=2000.0).discard_stale()
+    assert not request.exists()
+    request.touch()
+    StopControl(request, 180, started_at=1000.0).discard_stale()
+    assert request.exists()
+
+
+def test_launcher_stop_deadline_starts_at_the_first_observation(tmp_path):
+    request = tmp_path / "stop-request"
+    clock = [10.0]
+    notices = []
+    stop = _stop(request, on_request=notices.append, clock=lambda: clock[0])
+    assert not stop.requested()
+    request.touch()
+    assert stop.requested()
+    assert stop.remaining_seconds() == 180
+    clock[0] = 189.0
+    assert not stop.deadline_passed()
+    clock[0] = 190.0
+    assert stop.deadline_passed()
+    assert len(notices) == 1
 
 
 def test_sync_runner_bridge_interrupts_when_request_appears(tmp_path):
@@ -207,204 +223,107 @@ def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tm
     assert pending["failure"] is None
 
 
-@pytest.mark.parametrize("mode", ["list", "exit130", "conflict", "missing"])
-def test_launcher_restores_the_callers_directory(tmp_path, mode):
-    powershell = shutil.which("pwsh") or shutil.which("powershell")
-    if powershell is None:
-        pytest.skip("no PowerShell host to run launcher")
-    launcher = Path(__file__).resolve().parents[2] / "run_research.ps1"
+@pytest.fixture
+def _bound_process(monkeypatch, tmp_path):
+    """Launcher entry points bind the process to a campaign; restore it."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv(paths.CAMPAIGN_ROOT_ENV, str(tmp_path))
+    monkeypatch.setenv("PYTHONPATH", "")
+
+
+@pytest.mark.parametrize("mode", ["conflict", "missing"])
+def test_launcher_refusals_return_failure_before_any_work(
+    monkeypatch, tmp_path, _bound_process, mode
+):
     campaign = tmp_path / "campaign"
     (campaign / ".git").mkdir(parents=True)
-    caller = tmp_path / "original folder"
-    caller.mkdir()
+    monkeypatch.setattr(cli, "require_clean_harness", lambda _root: None)
+    monkeypatch.setattr(
+        cli,
+        "CampaignLock",
+        lambda *_args: pytest.fail("A refused launch must not take the campaign."),
+    )
     arguments = {
-        "list": "-ListModels",
-        "exit130": "-ListModels",
-        "conflict": (
-            f"-CampaignRoot '{campaign}' -Provider github-copilot "
-            "-Model opencode/test-model"
-        ),
-        "missing": f"-CampaignRoot '{tmp_path / 'missing'}'",
+        "conflict": [
+            "--campaign-root",
+            str(campaign),
+            "--provider",
+            "github-copilot",
+            "--model",
+            "opencode/test-model",
+        ],
+        "missing": ["--campaign-root", str(tmp_path / "missing")],
     }[mode]
-    exercise = tmp_path / "exercise-launcher-location.ps1"
-    exercise.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-Set-Location -LiteralPath '{caller}'
-$before = (Get-Location).Path
-function uv {{
-    $global:LASTEXITCODE = {130 if mode == "exit130" else 0}
-}}
-$caught = $false
-$exitCode = 0
-try {{
-    & '{launcher}' {arguments}
-    $exitCode = $LASTEXITCODE
-}}
-catch {{
-    $caught = $true
-}}
-if ((Get-Location).Path -ne $before) {{
-    throw "Launcher left the caller in $((Get-Location).Path), expected $before"
-}}
-if ($caught -ne ${str(mode in {"conflict", "missing"}).lower()}) {{
-    throw 'Unexpected launcher failure behavior'
-}}
-if (-not $caught -and $exitCode -ne {130 if mode == "exit130" else 0}) {{
-    throw "Unexpected exit code $exitCode"
-}}
-""",
-        encoding="utf-8",
-    )
-    completed = subprocess.run(
-        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
-        capture_output=True,
-        text=True,
-        timeout=30,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert cli.main(arguments) == 1
 
 
 @pytest.mark.parametrize("reset_exit_code", [0, 1, 130])
-def test_reset_restores_harness_directory_for_chained_launch(tmp_path, reset_exit_code):
-    powershell = shutil.which("pwsh") or shutil.which("powershell")
-    if powershell is None:
-        pytest.skip("no PowerShell host to run reset and launcher")
-    harness = Path(__file__).resolve().parents[2]
+def test_reset_runs_in_the_campaign_with_its_arguments(
+    monkeypatch, tmp_path, _bound_process, reset_exit_code
+):
     campaign = tmp_path / "campaign"
     (campaign / ".git").mkdir(parents=True)
-    exercise = tmp_path / "exercise-reset-location.ps1"
-    exercise.write_text(
-        f"""
-$ErrorActionPreference = 'Stop'
-Set-Location -LiteralPath '{harness}'
-$global:ResetCalled = $false
-$global:LaunchCalled = $false
-function uv {{
-    if ($args -contains 'runner.reset_campaign') {{
-        if ((Get-Location).Path -ne '{campaign}') {{
-            throw 'Reset must still execute in the campaign directory'
-        }}
-        if ($args -notcontains '--clean' -or
-            $args -notcontains 'baseline-distinct-episodes-v3') {{
-            throw 'Reset arguments were not preserved'
-        }}
-        $global:ResetCalled = $true
-        $global:LASTEXITCODE = {reset_exit_code}
-    }}
-    else {{
-        $global:LaunchCalled = $true
-        $global:LASTEXITCODE = 0
-    }}
-}}
-$caught = $false
-try {{
-    .\\reset_research.ps1 -CampaignRoot '{campaign}' -Mode Fresh -Clean `
-        -RecipeRef baseline-distinct-episodes-v3 -Force
-}}
-catch {{
-    if ($_.Exception.Message -notlike 'Research reset failed.*') {{ throw }}
-    $caught = $true
-}}
-if ($caught -ne ${str(reset_exit_code != 0).lower()}) {{
-    throw 'Reset exit status was not preserved'
-}}
-.\\run_research.ps1 -ListModels
-if (-not $global:ResetCalled -or -not $global:LaunchCalled) {{
-    throw 'The reset-then-launch sequence did not complete'
-}}
-if ((Get-Location).Path -ne '{harness}') {{
-    throw 'The reset-then-launch sequence changed the caller directory'
-}}
-""",
-        encoding="utf-8",
+    calls = []
+
+    def run(command, *, cwd, check):
+        calls.append((command, Path(cwd)))
+        return subprocess.CompletedProcess(command, reset_exit_code)
+
+    monkeypatch.setattr(launcher_reset, "uv_executable", lambda: "uv")
+    monkeypatch.setattr(launcher_reset.subprocess, "run", run)
+    code = launcher_reset.main(
+        [
+            "--campaign-root",
+            str(campaign),
+            "--mode",
+            "Fresh",
+            "--clean",
+            "--recipe-ref",
+            "baseline-distinct-episodes-v3",
+            "--force",
+        ]
     )
-    completed = subprocess.run(
-        [powershell, "-NoProfile", "-NonInteractive", "-File", str(exercise)],
-        capture_output=True,
-        text=True,
-        timeout=30,
-        check=False,
+    assert code == (0 if reset_exit_code == 0 else 1)
+    ((command, cwd),) = calls
+    assert cwd == campaign
+    assert command[command.index("--mode") + 1] == "fresh"
+    assert "--clean" in command
+    assert "baseline-distinct-episodes-v3" in command
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        ["--mode", "fresh"],
+        ["--mode", "fresh", "--baseline-ref", "x", "--force"],
+        ["--mode", "baseline", "--force"],
+        ["--mode", "baseline", "--baseline-ref", "x", "--recipe-ref", "y", "--force"],
+    ],
+)
+def test_reset_refuses_inconsistent_arguments_before_any_work(
+    monkeypatch, tmp_path, arguments
+):
+    monkeypatch.setattr(
+        launcher_reset.subprocess,
+        "run",
+        lambda *_args, **_kwargs: pytest.fail("A refused reset must not run."),
     )
-    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert launcher_reset.main(["--campaign-root", str(tmp_path), *arguments]) == 1
 
 
 def test_launcher_stop_helper_executes_the_cooperative_exit_contract(tmp_path):
-    powershell = shutil.which("pwsh") or shutil.which("powershell")
-    if powershell is None:
-        pytest.skip("no PowerShell host to run launcher helper")
-    launcher = Path(__file__).resolve().parents[2] / "run_research.ps1"
-    request = tmp_path / "stop.request"
-    exercise = tmp_path / "exercise-stop-helper.ps1"
-    exercise.write_text(
-        f"""
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{launcher}', [ref]$null, [ref]$null)
-$names = @(
-    'Request-CampaignStop',
-    'Test-CampaignStopRequested',
-    'Test-StopAfterOperation'
-)
-$definitions = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -in $names
-}}, $true)
-foreach ($definition in $definitions) {{
-    . ([scriptblock]::Create($definition.Extent.Text))
-}}
-function Write-Status {{ param([string]$Message) }}
-$StopTimeoutSeconds = 180
-$script:StopRequestPath = '{request}'
-$script:CampaignStopRequested = $false
-$script:CampaignExitCode = 0
-if (Test-StopAfterOperation 0 'PI session') {{
-    throw 'stop was reported before the request existed'
-}}
-New-Item -ItemType File -Path $script:StopRequestPath | Out-Null
-if (-not (Test-StopAfterOperation 0 'PI session')) {{
-    throw 'cooperative exit was not accepted'
-}}
-if ($script:CampaignExitCode -ne 130) {{
-    throw 'cooperative exit did not set campaign exit code 130'
-}}
-$script:CampaignStopRequested = $false
-try {{
-    [void](Test-StopAfterOperation 1 'PI session')
-    throw 'non-cooperative exit was accepted'
-}}
-catch {{
-    if ($_.Exception.Message -notlike '*instead of completing cooperatively*') {{
-        throw
-    }}
-}}
-""",
-        encoding="utf-8",
+    request = tmp_path / "stop-request"
+    stage = phases.Phases(
+        options=SimpleNamespace(campaign_root=tmp_path),
+        runner=SimpleNamespace(),
+        sessions=SimpleNamespace(),
+        stop=_stop(request),
+        events=SimpleNamespace(),
+        home=tmp_path,
     )
-
-    completed = subprocess.run(
-        [
-            powershell,
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            str(exercise),
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert completed.returncode == 0, completed.stderr
-
-
-def test_launcher_does_not_consume_native_console_interrupts():
-    source = (Path(__file__).resolve().parents[2] / "run_research.ps1").read_text(
-        encoding="utf-8"
-    )
-
-    assert "SetConsoleCtrlHandler" not in source
-    assert "RobotResearchConsoleInterrupt" not in source
+    assert not stage.stopped_after(0, "PI session")
+    request.touch()
+    assert stage.stopped_after(0, "PI session")
+    assert stage.stopped_after(phases.STOPPED, "PI session")
+    with pytest.raises(LauncherError, match="instead of completing cooperatively"):
+        stage.stopped_after(1, "PI session")

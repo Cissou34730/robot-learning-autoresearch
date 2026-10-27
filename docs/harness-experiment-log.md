@@ -65,8 +65,8 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
-**26 October 2026.** Branch `harness` at `4ce2fdb1` plus documentation
-commits, local and ahead of `origin/harness`.
+**27 October 2026.** Branch `harness` with the Python launcher (see the launch
+entry below).
 
 - **Repositories.** The harness is published on GitHub branch `harness`. Campaigns
   live in local repositories under one plain folder beside the harness,
@@ -74,34 +74,46 @@ commits, local and ahead of `origin/harness`.
   Slots were initialized from the local tag `baseline-distinct-episodes-v3-robot`;
   each new slot gets a global Git `safe.directory` entry. Campaign Git never
   pushes.
-- **Launch.** Standard: `tools/run_parallel.ps1 -Count N` (1 to 5) uses
-  `campaign-1` to `campaign-N`, initializes missing slots from an existing one,
-  resets each folder, launches each launcher detached with the caller's PATH and
-  starts a detached monitor. `-CampaignRoots <folders>` selects folders
-  explicitly. The monitor stops a campaign cooperatively at 6 h of active time or
-  120 AIU (defaults), excludes sleep gaps, keeps the PC awake (closing the lid
-  can still force sleep) and writes one report per campaign. Control files,
-  transcripts and reports go to `%TEMP%\robot-learning\parallel-<UTC time>`.
-  `run_research.ps1` and `reset_research.ps1` act on one campaign and default to
+- **Launch.** Standard: `uv run python -m tools.run_parallel --count N` (1 to 5)
+  uses `campaign-1` to `campaign-N`, initializes missing slots from an existing
+  one, resets each folder, launches each launcher detached without a console
+  window and starts a detached monitor. `--campaign-roots <folders>` selects
+  folders explicitly. The monitor stops a campaign cooperatively, through its
+  stop request, at 6 h of active time or 120 AIU (defaults), excludes sleep gaps,
+  keeps the PC awake (closing the lid can still force sleep) and writes one
+  report per campaign. Launcher logs, the monitor log and reports go to
+  `%TEMP%\robot-learning\parallel-<UTC time>`. The launcher
+  (`python -m runner.launcher`, wrapped by `run_research.ps1`) and the reset
+  (`python -m runner.launcher.reset`) act on one campaign and default to
   `campaign-1`. Launchers refuse a harness worktree with uncommitted or untracked
-  files.
+  files. Launches write no console output: the TUI reads the typed event feed
+  and can stop any running campaign through its stop request in the campaign's
+  Git directory. The PowerShell launcher, Copilot controller, reset and parallel
+  scripts and the console renderers were removed on 27 October; PI prompts are
+  byte-identical (847 recorded states compared).
 - **Agents.** PI and analyst run gpt-6-luna on GitHub Copilot with a customized
   system message (OI-041); PI reasoning high, analyst max. The analyst's model
   scope includes the invariances of the definitions (OI-053).
 - **Lifecycle.** Unchanged: startup, goal review, inquiries, bounded sessions,
-  hidden `-MaxInquiries` 15. `contracts/program.md` carries the 25-26 October
+  hidden `--max-inquiries` 15. `contracts/program.md` carries the 25-26 October
   reasoning changes (OI-055, OI-056).
 - **Training and measurement.** Allocation 120k steps; inquiry runs up to
-  `-MaxTimesteps` 360k. Development panel: seed 100000, 400 episodes. Paired
+  `--max-timesteps` 360k. Development panel: seed 100000, 400 episodes. Paired
   comparisons can reuse stored references. A request that repeats a panel is
   refused (OI-052).
 - **Session limits.** `submit_operation` waits in 25-minute slices (OI-051).
   The PI session activity limit is 6 h.
 - **PI information.** The campaign resource line shows elapsed time and AI usage
   by role (OI-054).
-- **Tests.** `tests/autoresearch` and `tests/benchmark`: 592 pass and 1 fails,
-  `test_runner_reads_the_live_training_metric_only_through_the_boundary`
-  (`success_rate` in `runner/execution.py` since TUI commit `ef3e0c44`).
+- **Tests.** `tests/autoresearch` and `tests/benchmark` with
+  `ROBOT_LEARNING_CAMPAIGN_ROOT` set to a campaign: 746 pass. One TUI layout
+  test (`test_settings_remain_scrollable_with_visible_apply_and_cancel_at_the_floor[size0]`)
+  failed once under full-suite load and passed when rerun. `tests/e2e` fails
+  as before: it expects `robot_learning/` in a harness clone.
+- **Open authority item.** `contracts/authority.md` still lists
+  `researcher_session.ps1` and `researcher_mutex.ps1` as human-owned launcher
+  files. They are now retired placeholders; removing them needs an approved
+  edit of that contract.
 
 The architecture record of 21 October is under
 [History and sources](#architecture-and-operational-status-21-october).
@@ -616,6 +628,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-27 | Python launcher; TUI-only output | Branch `feature/python-launcher`. `run_research.ps1`, `researcher_session.ps1`, `researcher_mutex.ps1`, `runner/copilot/copilot_controller.ps1`, `reset_research.ps1` and `tools/run_parallel.ps1` replaced by `runner/launcher/` (small modules: options, campaign lock, stop, children, trust gate, Runner client, prompts, Copilot runtime, PI sessions, operation bridge, phases, loop), `runner.launcher.reset` and `tools/run_parallel.py`. `run_research.ps1` forwards to the Python launcher; `researcher_session.ps1` and `researcher_mutex.ps1` remain as retired placeholders because `contracts/authority.md` lists them. The Runner returns validation verdicts and errors in a structured result file (`--result-path`) instead of standard output; `--operation-state-input` removed. One stop request per campaign in its Git directory, so the TUI stops campaigns it did not start; a request older than the launcher start is ignored. Console renderers (`runner/console.py`, `runner/copilot/copilot_console.py`) and the legacy `<campaign-id>.jsonl` feed removed: launches write no console output, Runner/launcher announcements are typed `notice` events. PI prompts, retry, repair and objectives compared on 847 recorded campaign states: 4,797 comparisons, 0 differences. Accepted differences: operation tool-result JSON now has a fixed key order and keeps recorded timestamps (PowerShell converted dates to local time); Runner error detail comes from the structured result. Tests: 746 pass (one TUI layout test failed once under load, passed on rerun); `tests/e2e` fails as before. Contracts and prompt text unchanged. |
 | 2026-10-26 | Campaigns root and parallel runs as the standard launch | Campaign repositories move under one plain folder, `robot-learning-campaigns\campaign-1` to `campaign-5`: the former `robot-learning-campaigns` becomes `campaign-1`, `-run2` and `-run3` become `campaign-2` and `campaign-3`. `tools/run_parallel.ps1 -Count N` (1 to 5) selects the slots and initializes missing ones from an existing slot; `run_research.ps1`, `reset_research.ps1` and `tools/run-report.ps1` default to `campaign-1`. README, AGENTS, reset, stop, policy-runtime and TUI docs updated. The round 1 and round 3 reports were copied from `%TEMP%` into `docs/research-overview/`. |
 | 2026-10-26 | Documentation housekeeping | Historical plans, RCAs and reviews moved to `docs/archive/`, the two program proposals to `docs/proposals/`, links updated (`a985fa57`). This log reordered into rules, current state, campaigns, register, ledger and history, with ledger rows sorted newest first into one table; word counts confirm no text was lost apart from the obsolete "Follow-up outside the numbered register" stub. Register updated (OI-041, OI-049 and OI-052 closed; OI-051 implemented; OI-053 to OI-056 added; status **Implemented** added). |
 | 2026-10-26 | Cost visibility and first-experiment reference (OI-054, OI-055) | `4ce2fdb1`. The campaign resource line shows elapsed time and AI usage of completed sessions by role, read from the usage records; caps stay hidden; a launcher test covers it. `contracts/program.md`: the inherited recipe is the first reference; assumptions checked before a costly experiment include the choice of method. From the `38ad68c6` deep dive. Full suite: 592 pass, 1 known failure. No campaign launched. |

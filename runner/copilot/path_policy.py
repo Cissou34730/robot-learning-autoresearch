@@ -50,8 +50,8 @@ RESERVED_SCRIPT_NAMES = (
     "migrate_policy_runtime.py",
     "reset_campaign.py",
     "run_research.ps1",
-    "reset_research.ps1",
     "campaign_tui.ps1",
+    "run_parallel.py",
 )
 
 
@@ -83,6 +83,9 @@ RESERVED_MODULES = (
     "runner.assessment",
     "runner.migrate_policy_runtime",
     "runner.reset_campaign",
+    "runner.launcher",
+    "runner.launcher.reset",
+    "tools.run_parallel",
     "robot_learning.evaluate",
     "robot_learning.train",
     "robot_learning.play",

@@ -74,14 +74,12 @@ FILTER_CATEGORIES = {
         "operation_completed",
         "operation_failed",
         "operation_submitted",
-        "execution_end",
         "campaign_started",
         "campaign_concluded",
         "campaign_goal_review",
         "run_state",
         "scientific_model_validated",
-        "console_line",
-        "console_card",
+        "notice",
     },
 }
 
@@ -268,7 +266,6 @@ class TimelineReducer:
             "operation_progress",
             "operation_completed",
             "operation_failed",
-            "execution_end",
         }:
             self._operation_event(
                 kind, operation_id, inquiry_id, session_id, ts, fields
@@ -343,8 +340,8 @@ class TimelineReducer:
                 ts, session_id, inquiry_id, operation_id, fields
             )
             return
-        if kind in {"console_line", "console_card"}:
-            self._console_event(ts, session_id, inquiry_id, operation_id, fields)
+        if kind == "notice":
+            self._notice_event(ts, session_id, inquiry_id, operation_id, fields)
             return
         if kind in {"activity"}:
             self._simple_event(
@@ -554,23 +551,15 @@ class TimelineReducer:
         elif kind == "operation_started":
             item.status = "running"
             summary = "started"
-        elif (
-            kind == "operation_failed"
-            or status == "failed"
-            or (kind == "execution_end" and status == "failed")
-        ):
+        elif kind == "operation_failed" or status == "failed":
             item.status = "failed"
             item.severity = "error"
             summary = "failed"
-        elif status == "interrupted" or (
-            kind == "execution_end" and status == "interrupted"
-        ):
+        elif status == "interrupted":
             item.status = "interrupted"
             item.severity = "warning"
             summary = "interrupted"
-        elif kind == "operation_completed" or (
-            kind == "execution_end" and status == "completed"
-        ):
+        elif kind == "operation_completed":
             item.status = "completed"
             summary = "completed"
             self._last_completed = operation_id
@@ -1390,7 +1379,7 @@ class TimelineReducer:
         self._campaign_group().children.append(leaf)
         self._items[leaf.item_id] = leaf
 
-    def _console_event(
+    def _notice_event(
         self,
         ts: datetime | None,
         session_id: str,
@@ -1426,17 +1415,13 @@ class TimelineReducer:
             detail.extend(str(line) for line in body)
         elif isinstance(body, str):
             detail.extend(body.splitlines())
-        if not title and text.startswith("==="):
-            first, _, rest = text.partition("\n")
-            title = first.strip("= ").strip()
-            detail.extend(rest.splitlines())
-        elif not title:
+        if not title:
             title = _first_line(text)
             detail.extend(text.splitlines()[1:])
             if len(text) > len(title):
                 detail.insert(0, text)
         leaf = TimelineItem(
-            item_id=f"leaf:console:{ts}:{len(self._seen)}",
+            item_id=f"leaf:notice:{ts}:{len(self._seen)}",
             kind=kind,
             title=title or "log",
             summary="",

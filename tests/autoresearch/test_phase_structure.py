@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
-import json
 import os
-import shutil
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -24,14 +24,9 @@ from runner import (
 from runner import (
     protocol as runner_protocol,
 )
-
-ROOT = Path(__file__).resolve().parents[2]
-SCRIPT_PATH = ROOT / "run_research.ps1"
-TRUST_SCRIPT_PATH = ROOT / "researcher_session.ps1"
-POWERSHELL = shutil.which("pwsh") or shutil.which("powershell")
-powershell_only = pytest.mark.skipif(
-    POWERSHELL is None, reason="no PowerShell host to run launcher functions"
-)
+from runner.launcher import phases, runner_client
+from runner.launcher.runner_client import LauncherError, RunnerClient
+from runner.launcher.trust import TrustSnapshot, TrustViolation, protected_files
 
 
 def _short_temp_repo(tmp_path: Path) -> Path:
@@ -41,90 +36,27 @@ def _short_temp_repo(tmp_path: Path) -> Path:
     )
 
 
-def _run_launcher_trust_script(
-    tmp_path: Path, body: str
-) -> subprocess.CompletedProcess:
-    script = tmp_path / "trust-gate.ps1"
-    script.write_text(
-        f"""
-. '{TRUST_SCRIPT_PATH}'
-{body}
-""",
-        encoding="utf-8",
-    )
-    return subprocess.run(
+def _git(root: Path, *arguments: str) -> None:
+    subprocess.run(
         [
-            POWERSHELL,
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            str(script),
+            "git",
+            "-C",
+            str(root),
+            "-c",
+            "user.name=Tests",
+            "-c",
+            "user.email=tests@example.invalid",
+            *arguments,
         ],
+        check=True,
         capture_output=True,
-        text=True,
-        check=False,
     )
 
 
-@powershell_only
-def test_redirected_status_lines_are_one_write_each(tmp_path):
-    script = tmp_path / "status-write-probe.ps1"
-    script.write_text(
-        f"""
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{TRUST_SCRIPT_PATH}', [ref]$null, [ref]$null)
-$definition = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -eq 'Write-ConsoleStatus'
-}}, $true) | Select-Object -First 1
-. ([scriptblock]::Create($definition.Extent.Text))
-$script:writes = @()
-function global:Write-Host {{
-    param(
-        [Parameter(Position=0, ValueFromRemainingArguments=$true)][object[]]$Object,
-        [ConsoleColor]$ForegroundColor,
-        [switch]$NoNewline
-    )
-    $script:writes += [pscustomobject]@{{
-        text = ($Object -join ' ')
-        no_newline = [bool]$NoNewline
-    }}
-}}
-Write-ConsoleStatus -Message (('boundary prose ' * 60).Trim()) `
-    -Color Magenta -Label session
-$script:writes | ConvertTo-Json -Compress
-""",
-        encoding="utf-8",
-    )
-    completed = subprocess.run(
-        [
-            POWERSHELL,
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            str(script),
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert completed.returncode == 0, completed.stderr
-    writes = json.loads(completed.stdout)
-    if isinstance(writes, dict):
-        writes = [writes]
-    assert len(writes) == 1
-    assert not writes[0]["no_newline"]
-    assert writes[0]["text"].startswith("[")
-    assert "[session]" in writes[0]["text"]
-    assert "\r" not in writes[0]["text"]
-    assert "\n" not in writes[0]["text"]
-    assert "  " not in writes[0]["text"]
+def _violation(snapshot: TrustSnapshot) -> str:
+    with pytest.raises(TrustViolation) as raised:
+        snapshot.verify()
+    return str(raised.value)
 
 
 def _trust_test_repository(path: Path) -> None:
@@ -175,24 +107,17 @@ def _trust_test_repository(path: Path) -> None:
     )
 
 
-@powershell_only
 def test_launcher_trust_gate_allows_only_the_documented_pi_surface(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Set-Content -LiteralPath (Join-Path $root 'robot_learning\\training\\algorithm.py') `
-    -Value 'VALUE = 2'
-Set-Content -LiteralPath (Join-Path $root 'pi_workspace\\operation_request.json') `
-    -Value '{{"checkpoint": {{}}}}'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    (root / "robot_learning" / "training" / "algorithm.py").write_text(
+        "VALUE = 2\n", encoding="utf-8"
     )
-    assert completed.returncode == 0, completed.stderr
+    (root / "pi_workspace" / "operation_request.json").write_text(
+        '{"checkpoint": {}}', encoding="utf-8"
+    )
+    snapshot.verify()
     assert (root / "docs" / "untracked-plan.md").read_text(
         encoding="utf-8"
     ) == "preserve this plan\n"
@@ -204,31 +129,20 @@ Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
     ).read_text(encoding="utf-8") == '{"completed":false}\n'
 
 
-@powershell_only
 def test_launcher_trust_snapshot_protects_the_separate_harness(tmp_path):
     campaign = _short_temp_repo(tmp_path)
     harness = _short_temp_repo(tmp_path)
     _trust_test_repository(campaign)
     _trust_test_repository(harness)
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$snapshot = New-PITrustSnapshot -Root '{campaign}' -HarnessRoot '{harness}'
-Set-Content -LiteralPath '{campaign}\\robot_learning\\training\\algorithm.py' -Value 'allowed'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root '{campaign}'
-Set-Content -LiteralPath '{harness}\\run_research.ps1' -Value 'not allowed'
-try {{
-    Assert-PITrustSnapshot -Snapshot $snapshot -Root '{campaign}'
-    throw 'Harness change was not detected'
-}} catch {{
-    if ($_ -notmatch 'outside the PI-owned paths') {{ throw }}
-}}
-""",
+    snapshot = TrustSnapshot.capture(campaign, preliminary=False, harness_root=harness)
+    (campaign / "robot_learning" / "training" / "algorithm.py").write_text(
+        "allowed\n", encoding="utf-8"
     )
-    assert completed.returncode == 0, completed.stderr
+    snapshot.verify()
+    (harness / "run_research.ps1").write_text("not allowed\n", encoding="utf-8")
+    assert "outside the PI-owned paths" in _violation(snapshot)
 
 
-@powershell_only
 def test_launcher_trust_snapshot_excludes_git_probe_directory(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
@@ -236,35 +150,16 @@ def test_launcher_trust_snapshot_excludes_git_probe_directory(tmp_path):
     probe.mkdir(parents=True)
     marker = probe / "marker.txt"
     marker.write_text("initial\n", encoding="utf-8")
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Set-Content -LiteralPath (Join-Path $root '.py-git-probe\\probe\\marker.txt') `
-    -Value 'changed'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode == 0, completed.stderr
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    marker.write_text("changed\n", encoding="utf-8")
+    snapshot.verify()
 
 
-@powershell_only
 def test_launcher_protected_file_scan_fails_closed_on_enumeration_error(tmp_path):
-    missing = tmp_path / "missing-root"
-    quoted_root = str(missing).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-Get-LauncherProtectedFiles -Root '{quoted_root}'
-""",
-    )
-    assert completed.returncode != 0
-    assert "missing-root" in completed.stderr
+    with pytest.raises(OSError, match="missing-root"):
+        protected_files(tmp_path / "missing-root", preliminary=False)
 
 
-@powershell_only
 @pytest.mark.parametrize(
     "relative",
     [
@@ -278,253 +173,110 @@ def test_launcher_trust_snapshot_rejects_protected_file_modification(
 ):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    quoted_relative = relative.replace("/", "\\")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Add-Content -LiteralPath (Join-Path $root '{quoted_relative}') -Value 'PI mutation'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode != 0
-    assert relative in completed.stderr
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    with (root / relative).open("a", encoding="utf-8") as stream:
+        stream.write("PI mutation\n")
+    assert relative in _violation(snapshot)
 
 
-@powershell_only
 def test_launcher_trust_snapshot_ignores_assume_unchanged_index_mask(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-& git -C $root update-index --assume-unchanged run_research.ps1
-Add-Content -LiteralPath (Join-Path $root 'run_research.ps1') -Value 'hidden mutation'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode != 0
-    assert "run_research.ps1" in completed.stderr
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    _git(root, "update-index", "--assume-unchanged", "run_research.ps1")
+    with (root / "run_research.ps1").open("a", encoding="utf-8") as stream:
+        stream.write("hidden mutation\n")
+    assert "run_research.ps1" in _violation(snapshot)
 
 
-@powershell_only
 def test_launcher_trust_snapshot_rejects_protected_commit_and_head_change(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Add-Content -LiteralPath (Join-Path $root 'run_research.ps1') -Value 'committed mutation'
-& git -C $root add run_research.ps1
-& git -C $root -c user.name=Tests -c user.email=tests@example.invalid `
-    commit -qm 'untrusted protected commit'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode != 0
-    assert "HEAD" in completed.stderr
-    assert "run_research.ps1" in completed.stderr
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    with (root / "run_research.ps1").open("a", encoding="utf-8") as stream:
+        stream.write("committed mutation\n")
+    _git(root, "add", "run_research.ps1")
+    _git(root, "commit", "-qm", "untrusted protected commit")
+    message = _violation(snapshot)
+    assert "HEAD" in message
+    assert "run_research.ps1" in message
 
 
-@powershell_only
 def test_launcher_trust_snapshot_rejects_added_non_pi_file(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Set-Content -LiteralPath (Join-Path $root 'docs\\new-plan.md') -Value 'new'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode != 0
-    assert "docs/new-plan.md" in completed.stderr
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    (root / "docs" / "new-plan.md").write_text("new\n", encoding="utf-8")
+    assert "docs/new-plan.md" in _violation(snapshot)
 
 
-@powershell_only
 def test_launcher_trust_snapshot_rejects_deleted_non_pi_file(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Remove-Item -LiteralPath (Join-Path $root 'docs\\untracked-plan.md')
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode != 0
-    assert "docs/untracked-plan.md" in completed.stderr
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    (root / "docs" / "untracked-plan.md").unlink()
+    assert "docs/untracked-plan.md" in _violation(snapshot)
 
 
-@powershell_only
-def test_launcher_trust_snapshot_allows_pi_edit_and_generated_request(tmp_path):
-    root = _short_temp_repo(tmp_path)
-    _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Set-Content -LiteralPath (Join-Path $root 'robot_learning\\training\\algorithm.py') `
-    -Value 'VALUE = 2'
-Set-Content -LiteralPath (Join-Path $root 'pi_workspace\\operation_request.json') `
-    -Value '{{"checkpoint": {{}}}}'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode == 0, completed.stderr
-
-
-@powershell_only
 def test_preliminary_snapshot_allows_only_scientific_model_handoff(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
     model = root / "pi_workspace" / "scientific_model.md"
     model.write_text("initial model\n", encoding="utf-8")
-    subprocess.run(
-        ["git", "-C", str(root), "add", "pi_workspace/scientific_model.md"], check=True
+    _git(root, "add", "pi_workspace/scientific_model.md")
+    _git(root, "commit", "-qm", "add scientific model")
+    snapshot = TrustSnapshot.capture(root, preliminary=True)
+    model.write_text("updated model\n", encoding="utf-8")
+    snapshot.verify()
+    (root / "pi_workspace" / "operation_request.json").write_text(
+        '{"checkpoint": {}}', encoding="utf-8"
     )
-    subprocess.run(
-        [
-            "git",
-            "-C",
-            str(root),
-            "-c",
-            "user.name=Tests",
-            "-c",
-            "user.email=tests@example.invalid",
-            "commit",
-            "-qm",
-            "add scientific model",
-        ],
-        check=True,
-    )
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root -Preliminary
-Set-Content -LiteralPath (Join-Path $root 'pi_workspace\\scientific_model.md') `
-    -Value 'updated model'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-Set-Content -LiteralPath (Join-Path $root 'pi_workspace\\operation_request.json') `
-    -Value '{{"checkpoint": {{}}}}'
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
-    )
-    assert completed.returncode != 0
-    assert "pi_workspace/operation_request.json" in completed.stderr
+    assert "pi_workspace/operation_request.json" in _violation(snapshot)
 
 
-@powershell_only
 def test_launcher_trust_snapshot_refresh_accepts_trusted_runner_commit(tmp_path):
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$snapshot = New-PITrustSnapshot -Root $root
-Set-Content -LiteralPath (Join-Path $root 'runner\\state\\research_state.json') `
-    -Value '{{"status":"trusted"}}'
-& git -C $root add runner/state/research_state.json
-& git -C $root -c user.name=Tests -c user.email=tests@example.invalid `
-    commit -qm 'trusted runner state'
-try {{
-    Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-    throw 'old snapshot unexpectedly accepted the new HEAD'
-}}
-catch {{
-    if ($_.Exception.Message -notlike '*HEAD*') {{ throw }}
-}}
-$snapshot = New-PITrustSnapshot -Root $root
-Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
-""",
+    snapshot = TrustSnapshot.capture(root, preliminary=False)
+    (root / "runner" / "state" / "research_state.json").write_text(
+        '{"status":"trusted"}\n', encoding="utf-8"
     )
-    assert completed.returncode == 0, completed.stderr
+    _git(root, "add", "runner/state/research_state.json")
+    _git(root, "commit", "-qm", "trusted runner state")
+    assert "HEAD" in _violation(snapshot)
+    TrustSnapshot.capture(root, preliminary=False).verify()
 
 
-@powershell_only
-def test_failed_runner_exit_refreshes_snapshot_after_trusted_publication(tmp_path):
-    root = _short_temp_repo(tmp_path)
-    _trust_test_repository(root)
-    quoted_root = str(root).replace("'", "''")
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$root = '{quoted_root}'
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
-$names = @('Enter-TrustedMutableInvocation', 'Invoke-Runner')
-$definitions = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -in $names
-}}, $true)
-foreach ($definition in $definitions) {{
-    . ([scriptblock]::Create($definition.Extent.Text))
-}}
-$script:PITrustPreliminary = $false
-$script:PublishedBeforeFailure = $false
-Remove-Item Function:\\New-PITrustSnapshot
-function New-PITrustSnapshot {{
-    param([switch]$Preliminary)
-    [pscustomobject]@{{
-        PublishedBeforeFailure = $script:PublishedBeforeFailure
-        Preliminary = [bool]$Preliminary
-    }}
-}}
-$script:PITrustSnapshot = New-PITrustSnapshot
-function Get-Command {{
-    [pscustomobject]@{{ Source = 'uv.exe' }}
-}}
-function Invoke-CooperativeProcess {{
-    Set-Content -LiteralPath (Join-Path $root 'runner\\state\\research_state.json') `
-        -Value '{{"status":"published-before-failure"}}'
-    & git -C $root add runner/state/research_state.json
-    & git -C $root -c user.name=Tests -c user.email=tests@example.invalid `
-        commit -qm 'trusted publication before failure'
-    $script:PublishedBeforeFailure = $true
-    return 1
-}}
-Push-Location $root
-try {{
-    $exitCode = Invoke-Runner
-    if ($exitCode -ne 1) {{ throw "Runner exit status was not preserved." }}
-    if (-not $script:PITrustSnapshot.PublishedBeforeFailure) {{
-        throw "Runner trust snapshot was not refreshed after the failed exit."
-    }}
-}}
-finally {{
-    Pop-Location
-}}
-""",
+def test_failed_runner_exit_refreshes_snapshot_after_trusted_publication(
+    monkeypatch, tmp_path
+):
+    calls = []
+    trust = SimpleNamespace(
+        verify=lambda: calls.append("verify"),
+        refresh=lambda: calls.append("refresh"),
     )
-    assert completed.returncode == 0, completed.stderr
+
+    def run(command, *, operation, input_text=None):
+        calls.append("runner")
+        return 1
+
+    monkeypatch.setattr(runner_client, "uv_executable", lambda: "uv")
+    client = RunnerClient(
+        harness_root=tmp_path,
+        children=SimpleNamespace(run=run),
+        trust=trust,
+        timesteps=10,
+        max_timesteps=20,
+    )
+    try:
+        assert client.runner("--execute-pending").exit_code == 1
+    finally:
+        client.close()
+    assert calls == ["verify", "runner", "refresh"]
 
 
-@powershell_only
 @pytest.mark.parametrize("progress", ["result_ready", "completed"])
 def test_pending_publication_failure_stops_without_pi_repair(tmp_path, progress):
-    root = _short_temp_repo(tmp_path)
-    (root / "runner" / "state").mkdir(parents=True)
     operation_id = f"T-{uuid4().hex}"
     state = {
         "pending_operation": {
@@ -533,97 +285,32 @@ def test_pending_publication_failure_stops_without_pi_repair(tmp_path, progress)
             "failure": None,
         }
     }
-    (root / "runner" / "state" / "research_state.json").write_text(
-        json.dumps(state), encoding="utf-8"
+    before = copy.deepcopy(state)
+
+    def refuse(*_args, **_kwargs):
+        pytest.fail("No Runner or PI work may follow a publication failure.")
+
+    stage = phases.Phases(
+        options=SimpleNamespace(campaign_root=tmp_path),
+        runner=SimpleNamespace(runner=refuse, build_brief=refuse),
+        sessions=SimpleNamespace(run=refuse),
+        stop=SimpleNamespace(requested=lambda: False),
+        events=SimpleNamespace(),
+        home=tmp_path,
     )
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
-$definitions = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -in @('Stop-OnPublicationFailure', 'Invoke-PendingOperation')
-}}, $true)
-foreach ($definition in $definitions) {{
-    . ([scriptblock]::Create($definition.Extent.Text))
-}}
-$script:runnerCalls = 0
-$script:piCalls = 0
-function Invoke-Runner {{
-    param($Arguments)
-    $script:runnerCalls += 1
-    return 1
-}}
-function Invoke-PISession {{
-    $script:piCalls += 1
-    throw 'Scientific repair must not run for publication failures.'
-}}
-function Test-StopAfterOperation {{ return $false }}
-Push-Location '{root}'
-try {{
-    $state = Get-Content 'runner\\state\\research_state.json' -Raw | ConvertFrom-Json
-    try {{
-        [void](Invoke-PendingOperation -State $state)
-        $stopped = $false
-        $message = ''
-    }}
-    catch {{
-        $stopped = $true
-        $message = $_.Exception.Message
-    }}
-    [pscustomobject]@{{
-        stopped = $stopped
-        message = $message
-        runner_calls = $script:runnerCalls
-        pi_calls = $script:piCalls
-    }} | ConvertTo-Json -Compress
-}}
-finally {{ Pop-Location }}
-""",
-    )
-    assert completed.returncode == 0, completed.stderr
-    result = json.loads(completed.stdout)
-    assert result["stopped"]
-    assert operation_id in result["message"]
-    assert result["runner_calls"] == 0
-    assert result["pi_calls"] == 0
-    assert (
-        json.loads(
-            (root / "runner" / "state" / "research_state.json").read_text(
-                encoding="utf-8"
-            )
-        )
-        == state
-    )
+    with pytest.raises(LauncherError, match=operation_id):
+        stage.pending_operation(state)
+    assert state == before
 
 
-@powershell_only
 @pytest.mark.parametrize("progress", [None, "training_dispatched"])
-def test_publication_failure_guard_preserves_other_recovery_routes(tmp_path, progress):
+def test_publication_failure_guard_preserves_other_recovery_routes(progress):
     pending = (
         {"id": "T1", "progress": progress, "failure": "execution error"}
         if progress is not None
         else None
     )
-    state_json = json.dumps({"pending_operation": pending})
-    completed = _run_launcher_trust_script(
-        tmp_path,
-        f"""
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
-$definition = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -eq 'Stop-OnPublicationFailure'
-}}, $true) | Select-Object -First 1
-. ([scriptblock]::Create($definition.Extent.Text))
-$state = '{state_json}' | ConvertFrom-Json
-Stop-OnPublicationFailure -State $state
-""",
-    )
-    assert completed.returncode == 0, completed.stderr
+    phases.require_publication_recovered({"pending_operation": pending})
 
 
 def test_schema6_state_and_model_are_the_only_fresh_start_contract():
@@ -855,7 +542,6 @@ def test_goal_review_measurement_returns_to_same_session_before_inquiry(
         runner_protocol.validate_operation_request(_open_inquiry_request(), measured)
 
 
-@powershell_only
 @pytest.mark.parametrize(
     ("count", "active_field", "expected"),
     [
@@ -869,7 +555,7 @@ def test_goal_review_measurement_returns_to_same_session_before_inquiry(
     ],
 )
 def test_launcher_pauses_at_cap_only_after_scientific_work_is_checkpointed(
-    tmp_path, count, active_field, expected
+    count, active_field, expected
 ):
     state = {
         "campaign": {"max_inquiries": 15},
@@ -881,36 +567,9 @@ def test_launcher_pauses_at_cap_only_after_scientific_work_is_checkpointed(
     }
     if active_field:
         state[active_field] = {"id": "active"}
-    state_json = json.dumps(state)
-    script = tmp_path / "cap-pause.ps1"
-    script.write_text(
-        f"""
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
-$definition = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -eq 'Test-InquiryCapPause'
-}}, $true) | Select-Object -First 1
-. ([scriptblock]::Create($definition.Extent.Text))
-$state = '{state_json}' | ConvertFrom-Json
-$before = $state | ConvertTo-Json -Depth 20 -Compress
-$pause = Test-InquiryCapPause -State $state
-if (($state | ConvertTo-Json -Depth 20 -Compress) -ne $before) {{
-    throw 'Cap pause mutated scientific state'
-}}
-Write-Output $pause
-""",
-        encoding="utf-8",
-    )
-    completed = subprocess.run(
-        [POWERSHELL, "-NoProfile", "-NonInteractive", "-File", str(script)],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip().lower() == str(expected).lower()
+    before = copy.deepcopy(state)
+    assert phases.inquiry_cap_reached(state) is expected
+    assert state == before
 
 
 def test_goal_review_assigns_best_known_and_requests_assessment_at_cap(

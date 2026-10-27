@@ -1,7 +1,6 @@
 """Typed presentation events and the durable history adapter.
 
-The report consumes one campaign-scoped event file. During the transition it
-also accepts the older ``console_line`` feed. Typed records use a small
+The report consumes one campaign-scoped typed event file. Records use a small
 envelope and keep their payload uncompacted; unknown kinds and fields are
 rendered generically by the timeline reducer.
 """
@@ -10,11 +9,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from tui.observations import JsonlFeed, Observation
+from tui.observations import Observation
 from tui.projector import parse_timestamp
 
 SCHEMA_VERSION = 1
@@ -117,69 +116,11 @@ class TypedJsonlFeed:
         )
 
 
-@dataclass
-class CampaignEventFeed:
-    """Prefer the typed event file; fall back to the legacy console feed."""
-
-    typed_path: Path
-    legacy_path: Path
-    campaign_id: str | None = None
-    typed: TypedJsonlFeed = field(init=False)
-    legacy: JsonlFeed = field(init=False)
-    _using_typed: bool = False
-    _last_poll_had_typed: bool = False
-    rejected: str | None = None
-
-    def __post_init__(self) -> None:
-        self.typed = TypedJsonlFeed(self.typed_path, campaign_id=self.campaign_id)
-        self.legacy = JsonlFeed(self.legacy_path, campaign_id=self.campaign_id)
-
-    @property
-    def path(self) -> Path:
-        return self.typed_path if self._using_typed else self.legacy_path
-
-    @property
-    def mode(self) -> str:
-        return "typed" if self._using_typed else "legacy"
-
-    def reset(self) -> None:
-        self.typed.reset()
-        self.legacy.reset()
-        self._using_typed = False
-        self._last_poll_had_typed = False
-
-    def poll(self) -> list[Observation]:
-        try:
-            typed_size = self.typed_path.stat().st_size
-        except OSError:
-            typed_size = 0
-        if typed_size > 0:
-            self._using_typed = True
-            events = self.typed.poll()
-            self.rejected = self.typed.rejected
-            if events:
-                self._last_poll_had_typed = True
-                return events
-            if self._last_poll_had_typed:
-                return []
-        self._using_typed = False
-        events = self.legacy.poll()
-        self.rejected = self.legacy.rejected
-        return events
-
-
 def typed_path_for(campaign_id: str, root: Path | None = None) -> Path:
     from runner import paths
 
     base = root if root is not None else paths.ROOT
     return base / "reports" / "tui_observations" / f"{campaign_id}{_TYPED_SUFFIX}"
-
-
-def legacy_path_for(campaign_id: str, root: Path | None = None) -> Path:
-    from runner import paths
-
-    base = root if root is not None else paths.ROOT
-    return base / "reports" / "tui_observations" / f"{campaign_id}.jsonl"
 
 
 def _history_event(

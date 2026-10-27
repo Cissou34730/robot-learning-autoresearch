@@ -6,9 +6,12 @@ controller process (see ``docs/external-campaign-stop.md``):
 - a kill-on-close Job Object per launcher invocation;
 - suspended child creation before Job assignment, new process groups, so a
   terminal Ctrl+C used for copying cannot reach the campaign;
-- per-run private control directories (stop request + diagnostic logs) kept
-  outside campaign state and outside the harness worktree;
+- per-run private control directories (diagnostic logs) kept outside campaign
+  state and outside the harness worktree;
 - a single-instance lock keyed to the canonical harness directory.
+
+The cooperative stop request is the campaign's own request file
+(``runner.paths.stop_request_path``), whoever started the launcher.
 
 No third-party dependency: ``ctypes`` only. The logic is Windows-only; the
 module raises :class:`NotImplementedError` on other platforms instead of
@@ -260,7 +263,7 @@ def _environment_block(env: dict[str, str]) -> bytes:
 
 @contextmanager
 def _desktop_app_attributes():
-    """Keep packaged PowerShell descendants inside its runtime and owning job.
+    """Keep packaged-app descendants inside their runtime and owning job.
 
     Desktop Bridge defaults to child breakaway. This documented Windows
     creation policy is inherited by descendants; it also works for unpackaged
@@ -337,7 +340,6 @@ class ConsoleLog:
         self.control_directory = control_directory
         self.stdout_path = control_directory / "console.out.log"
         self.stderr_path = control_directory / "console.err.log"
-        self.stop_request_path = control_directory / "stop.request"
         self._handles: list[int] = []
         try:
             self._stdout = self._open_append(self.stdout_path)
@@ -395,13 +397,14 @@ class ConsoleLog:
 
 
 def create_stop_request(stop_request_path: Path) -> bool:
-    """Create ``stop.request`` atomically; ``False`` when it already exists."""
-    try:
-        with open(stop_request_path, "x", encoding="utf-8") as request:
-            request.write("")
-        return True
-    except FileExistsError:
-        return False
+    """Raise the request; ``False`` when one was already pending.
+
+    Writing refreshes the time stamp, so a launcher that is still starting does
+    not mistake the request for one left by an earlier run.
+    """
+    existed = stop_request_path.exists()
+    stop_request_path.write_text("", encoding="utf-8")
+    return not existed
 
 
 @dataclass
@@ -413,6 +416,7 @@ class SupervisedLauncher:
     _process: wintypes.HANDLE
     _thread: wintypes.HANDLE
     _log: ConsoleLog
+    stop_request: Path | None = None
     stop_requested: bool = False
     _exit_code: int | None = None
 
@@ -447,9 +451,9 @@ class SupervisedLauncher:
     # -- Control -----------------------------------------------------------
     def request_stop(self) -> bool:
         """Cooperative stop; ``False`` when a request already exists."""
-        if self.stop_requested:
+        if self.stop_requested or self.stop_request is None:
             return False
-        created = create_stop_request(self._log.stop_request_path)
+        created = create_stop_request(self.stop_request)
         self.stop_requested = True
         return created
 
@@ -538,15 +542,12 @@ class JobHandle:
             self.handle = None
 
 
-def _launcher_executable() -> str:
-    """Find the existing PowerShell 7, including Microsoft Store installations."""
-    for directory in os.get_exec_path():
-        found = shutil.which("pwsh.exe", path=directory)
-        if found:
-            return found
+def _uv_executable() -> str:
+    found = shutil.which("uv")
+    if found:
+        return found
     raise RuntimeError(
-        "The campaign console requires PowerShell 7 (pwsh.exe) on PATH. "
-        "Windows PowerShell 5.1 lacks the launcher's required .NET APIs. "
+        "The campaign console requires uv on PATH. "
         "No campaign was initialized, reset or started."
     )
 
@@ -559,28 +560,30 @@ class LauncherBuilder:
 
     def start(
         self,
-        script_path: Path,
         arguments: list[str],
         control_directory: Path,
+        *,
+        stop_request: Path,
         env: dict[str, str] | None = None,
     ) -> SupervisedLauncher:
-        script_path = script_path.resolve()
-        if not script_path.is_file():
-            raise RuntimeError(f"Launcher script is missing: {script_path}")
-        executable = _launcher_executable()
-        return self.start_command(
+        child = self.start_command(
             [
-                executable,
-                "-NoProfile",
-                "-ExecutionPolicy",
-                "Bypass",
-                "-File",
-                str(script_path),
+                _uv_executable(),
+                "run",
+                "--project",
+                str(self.harness_root),
+                "--group",
+                "researcher",
+                "python",
+                "-m",
+                "runner.launcher",
                 *arguments,
             ],
             control_directory,
             env=env,
         )
+        child.stop_request = stop_request
+        return child
 
     def start_command(
         self,
@@ -679,9 +682,8 @@ def new_control_directory(control_root_path: Path | None = None) -> Path:
 class LauncherMachinery:
     """``ProcessMachinery`` adapter around :class:`LauncherBuilder`.
 
-    One child per campaign folder at a time. The control directory comes from
-    the controller's ``-StopRequestPath`` argument so the cooperative stop
-    file and the captured console logs live together.
+    One child per campaign folder at a time. Its console logs live in the
+    controller's control directory; its stop request is the campaign's own.
     """
 
     def __init__(self, harness_root: Path) -> None:
@@ -692,32 +694,27 @@ class LauncherMachinery:
         self._helpers: list[SupervisedLauncher] = []
         self._closing = False
 
-    def _control_directory(self, arguments: list[str]) -> tuple[Path, list[str]]:
-        if "-StopRequestPath" in arguments:
-            index = arguments.index("-StopRequestPath")
-            stop_request_path = Path(arguments[index + 1])
-            return stop_request_path.parent, arguments
-        return new_control_directory(control_root()), arguments
-
     def preflight(self) -> None:
-        _launcher_executable()
+        _uv_executable()
 
     def _launch_environment(self) -> dict[str, str]:
         environment = dict(os.environ)
         for override in (
-            "TUI_OBSERVATIONS",
             "TUI_TYPED_EVENTS",
             "ROBOT_LEARNING_CAMPAIGN_ROOT",
         ):
             environment.pop(override, None)
         return environment
 
-    def start(self, folder: Path, arguments: list[str]) -> SupervisedLauncher:
-        control_directory, arguments = self._control_directory(arguments)
+    def start(
+        self, folder: Path, arguments: list[str], control_directory: Path
+    ) -> SupervisedLauncher:
+        from runner.paths import stop_request_path
+
         child = self._builder.start(
-            self._harness_root / "run_research.ps1",
             list(arguments),
             control_directory,
+            stop_request=stop_request_path(Path(folder)),
             env=self._launch_environment(),
         )
         self._children[Path(folder)] = child
@@ -752,8 +749,8 @@ class LauncherMachinery:
 
     def run(self, arguments: list[str]) -> subprocess.CompletedProcess[str]:
         """Execute command helpers without orphaning them on console exit."""
-        if Path(arguments[0]).stem.lower() in {"pwsh", "powershell"}:
-            arguments = [_launcher_executable(), *arguments[1:]]
+        if Path(arguments[0]).stem.lower() == "uv":
+            arguments = [_uv_executable(), *arguments[1:]]
         with self._helper_lock:
             if self._closing:
                 raise RuntimeError("The console is shutting down; helper refused.")

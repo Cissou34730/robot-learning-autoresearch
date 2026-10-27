@@ -1,6 +1,6 @@
 """SDK session observations, accounting and shared display descriptions.
 
-Facts are produced here before dispatch to an optional terminal renderer.
+Facts go to the campaign's typed event feed; nothing is written to a console.
 """
 
 from __future__ import annotations
@@ -8,11 +8,10 @@ from __future__ import annotations
 import json
 import ntpath
 import re
-import shutil
 import time
 from pathlib import Path, PureWindowsPath
 
-from runner import observation_feed, typed_events
+from runner import typed_events
 from runner.copilot.path_policy import ROOT
 from runner.copilot.usage import SessionUsage
 
@@ -78,64 +77,13 @@ def result_issue(content: object) -> str | None:
     return f"{status}: {detail}" if detail else status
 
 
-UUID_SUFFIX_PATTERN = re.compile(
-    r"(?<!\w)(?:"
-    r"[0-9a-fA-F]{1,8}|"
-    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{0,4}|"
-    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{0,4}|"
-    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
-    r"[0-9a-fA-F]{0,4}|"
-    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
-    r"[0-9a-fA-F]{4}-[0-9a-fA-F]{0,12}"
-    r")$"
-)
+# Display roles of factual result lines.
+GREEN = "success"
+YELLOW = "warning"
+RED = "error"
 
 
-WINDOWS_PATH_SUFFIX_PATTERN = re.compile(r"[A-Za-z]:[\\/][^ \r\n:]*$")
-
-
-WINDOWS_DRIVE_SUFFIX_PATTERN = re.compile(r"(?<!\w)[A-Za-z]:?$")
-
-
-MAX_UNRESOLVED_CONSOLE_TOKEN = 512
-
-
-_RESET = "\033[0m"
-
-
-_DIM = "\033[90m"
-
-
-# The model's own words: one bright block behind a matching gutter, so a line it
-# writes is never mistaken for muted Runner output.
-_MESSAGE = "\033[1;96m"
-
-
-_PLAIN_GUTTER = "  "
-
-
-_GUTTER = f"{_MESSAGE}{_PLAIN_GUTTER}│{_RESET}{_MESSAGE} "
-
-
-_MARKER_COLORS = {
-    ">": "\033[36m",
-    "x": "\033[1;91m",
-    "+": "\033[32m",
-    "-": "\033[31m",
-    "~": "\033[36m",
-    "=": "\033[35m",
-    "!": "\033[1;91m",
-    "--": "\033[1;96m",
-    "[session]": "\033[95m",
-}
-
-
-GREEN = "\033[32m"
-YELLOW = "\033[33m"
-RED = "\033[31m"
-
-
-_TOOL_COLORS = dict.fromkeys(
+_SPECIAL_TOOLS = frozenset(
     (
         "artifact_evidence_query",
         "training_log_query",
@@ -145,50 +93,8 @@ _TOOL_COLORS = dict.fromkeys(
         "scientific_api_reference",
         "scientific_coding",
         "submit_operation",
-    ),
-    "\033[1;34m",
+    )
 )
-
-
-_STATUS_COLORS = {
-    "completed": GREEN,
-    "checkpointed": GREEN,
-    "needs_pi": YELLOW,
-    "timeout": YELLOW,
-    "cancelled": YELLOW,
-}
-
-
-def _colored_tool_remainder(remainder: str) -> str:
-    name, separator, rest = remainder.partition(":")
-    color = _TOOL_COLORS.get(name)
-    if color is None:
-        return remainder
-    if name == "submit_operation" and rest.strip():
-        status = rest.strip().split(";")[0].split()[0]
-        status_color = _STATUS_COLORS.get(status, RED)
-        rest = rest.replace(status, f"{status_color}{status}{_RESET}", 1)
-    return f"{color}{name}{_RESET}{separator}{rest}"
-
-
-def _observation_scope(text: str, color: str | None = None) -> str:
-    """Classify one PI-console line for the observation feed."""
-    if color == GREEN:
-        return "success"
-    if color == YELLOW:
-        return "warning"
-    if color == RED:
-        return "error"
-    marker = text.lstrip().split(" ", 1)[0]
-    if marker == ">":
-        return "tool"
-    if marker == "=":
-        return "result"
-    if marker == "x":
-        return "error"
-    if marker == "!":
-        return "warning"
-    return "info"
 
 
 def compact_console_path(target: str) -> str:
@@ -274,23 +180,6 @@ def compact_console_text(text: object) -> str:
         lambda match: compact_console_path(match.group(0)),
         value,
     )
-
-
-def unresolved_console_suffix_start(text: str) -> int:
-    start = len(text)
-    for pattern in (
-        UUID_SUFFIX_PATTERN,
-        WINDOWS_PATH_SUFFIX_PATTERN,
-        WINDOWS_DRIVE_SUFFIX_PATTERN,
-    ):
-        match = pattern.search(text)
-        if match:
-            start = min(start, match.start())
-    return start
-
-
-def _console_width() -> int:
-    return max(shutil.get_terminal_size(fallback=(100, 24)).columns, 40)
 
 
 def _artifact_query_detail(arguments: dict) -> str:
@@ -482,11 +371,11 @@ def tool_detail(name: str, arguments: object) -> str:
 
 def tool_color_role(name: str) -> str:
     """Share tool-name emphasis without exposing terminal escape sequences."""
-    return "special_tool" if name in _TOOL_COLORS else "tool"
+    return "special_tool" if name in _SPECIAL_TOOLS else "tool"
 
 
 def tool_result_lines(name: str, result: object) -> list[tuple[str, str | None]]:
-    """The same factual result lines for the console and structured report."""
+    """Factual result lines with their display role."""
     if not isinstance(result, dict) or result.get("status") != "computed":
         return []
     lines: list[tuple[str, str | None]] = []
@@ -559,28 +448,13 @@ def tool_result_lines(name: str, result: object) -> list[tuple[str, str | None]]
 
 def tool_result_parts(name: str, result: object) -> list[tuple[str, str]]:
     """Return the existing result lines with renderer-neutral colour roles."""
-    roles = {GREEN: "success", YELLOW: "warning", RED: "error", None: "result"}
-    return [(text, roles[color]) for text, color in tool_result_lines(name, result)]
-
-
-_DEFAULT_RENDERER = object()
+    return [(text, role or "result") for text, role in tool_result_lines(name, result)]
 
 
 class SessionReporter:
-    """Own session facts regardless of whether any console renderer exists."""
+    """Own one session's facts and publish them to the typed event feed."""
 
-    def __init__(
-        self,
-        columns: int | None = None,
-        *,
-        session_id: str = "",
-        renderer=_DEFAULT_RENDERER,
-    ) -> None:
-        if renderer is _DEFAULT_RENDERER:
-            from runner.copilot.copilot_console import Console
-
-            renderer = Console(columns=columns)
-        self.renderer = renderer
+    def __init__(self, *, session_id: str = "") -> None:
         self.usage = SessionUsage()
         self.session_id = str(session_id or "")
         self._mid_stream = False
@@ -595,10 +469,6 @@ class SessionReporter:
         self.model_calls = 0
         self.last_input_tokens = 0
         self._context_band = 0
-
-    def _render(self, method: str, *args) -> None:
-        if self.renderer is not None:
-            getattr(self.renderer, method)(*args)
 
     def _emit(
         self,
@@ -621,31 +491,8 @@ class SessionReporter:
             event_id=event_id,
         )
 
-    def line(self, text: str, color: str | None = None, *, typed: bool = True) -> None:
-        self._close_message()
-        scope = _observation_scope(text, color)
-        if typed:
-            self._emit(
-                "console_line",
-                {"text": text.strip(), "color": color, "scope": scope},
-                scope=scope,
-                severity="error"
-                if scope == "error"
-                else "warning"
-                if scope == "warning"
-                else "info",
-            )
-        observation_feed.emit(
-            {
-                "kind": "console_line",
-                "scope": scope,
-                "text": text.strip(),
-            }
-        )
-        self._render("line", text, color)
-
     def _close_message(self) -> None:
-        """End the model's block, so the next fact starts at column zero."""
+        """End the model's block before the next fact."""
         if not self._mid_stream:
             return
         message = self._message_text
@@ -659,18 +506,9 @@ class SessionReporter:
                 },
                 scope="pi",
             )
-            observation_feed.emit(
-                {
-                    "kind": "pi_message",
-                    "text": message,
-                    "final": True,
-                    "turn": self._pi_turn,
-                }
-            )
         self._message_text = ""
         self._message_emitted = 0
         self._mid_stream = False
-        self._render("_close_message")
 
     def delta(self, text: str) -> None:
         if not text:
@@ -683,7 +521,6 @@ class SessionReporter:
             self._pi_turn += 1
         self._message_text += text
         self._maybe_emit_message_partial(force="\n\n" in text)
-        self._render("delta", text)
 
     def _maybe_emit_message_partial(self, *, force: bool) -> None:
         """Publish the text grown so far; whole words only, throttled."""
@@ -707,20 +544,9 @@ class SessionReporter:
             },
             scope="pi",
         )
-        observation_feed.emit(
-            {
-                "kind": "pi_message",
-                "text": addition,
-                "final": False,
-                "turn": self._pi_turn,
-            }
-        )
 
     def message(self, text: str) -> None:
-        if self._mid_stream:
-            self._render("message", text)
-            return
-        if not text:
+        if self._mid_stream or not text:
             return
         self.delta(text)
         self._close_message()
@@ -743,7 +569,6 @@ class SessionReporter:
             },
             scope="tool",
         )
-        self.line(f"  > {name}: {detail}" if detail else f"  > {name}", typed=False)
 
     def tool_failed(
         self,
@@ -789,8 +614,6 @@ class SessionReporter:
             scope="tool",
             severity="error",
         )
-        operation = f"{name} ({target})" if target else name
-        self.line(f"  x {operation} failed: {reason}", typed=False)
 
     def tool_completed(
         self, name: str = "tool", tool_call_id: str | None = None
@@ -820,7 +643,6 @@ class SessionReporter:
             scope="tool",
             severity="warning",
         )
-        self.line(f"  x {name}: {issue}", typed=False)
 
     def tool_result(
         self, name: str, content: object, tool_call_id: str | None = None
@@ -843,8 +665,6 @@ class SessionReporter:
             else:
                 payload["content_length"] = len(content)
         self._emit("tool_call_completed", payload, scope="tool")
-        for text, color in tool_result_lines(name, result):
-            self.line(text, color, typed=False)
 
     def model_call(self, input_tokens: int | None) -> None:
         self.model_calls += 1
@@ -859,19 +679,6 @@ class SessionReporter:
                     "model_calls": self.model_calls,
                 },
                 scope="pi",
-            )
-            color = (
-                RED
-                if self.last_input_tokens >= 150_000
-                else YELLOW
-                if self.last_input_tokens >= 100_000
-                else None
-            )
-            self.line(
-                f"  ~ context {input_tokens / 1000:.0f}k tokens "
-                f"at model call {self.model_calls}",
-                color,
-                typed=False,
             )
 
     def denied(self, reason: str, tool_call_id: str | None = None) -> None:
@@ -892,7 +699,6 @@ class SessionReporter:
             scope="tool",
             severity="warning",
         )
-        self.line(f"  x {reason.splitlines()[0]}", typed=False)
 
     def coding(
         self,
@@ -904,19 +710,19 @@ class SessionReporter:
         detail: dict | None = None,
         severity: str = "info",
     ) -> None:
-        """Report one coding handoff fact without making the TUI parse its line."""
+        """Report one coding handoff fact for the operator log."""
         self._emit(
             "coding",
             {
                 "phase": phase,
                 "agent": agent,
                 "status": status,
+                "text": text.strip(),
                 "detail": detail or {},
             },
             scope="tool",
             severity=severity,
         )
-        self.line(text, typed=False)
 
     def operation_submitted(self, status: str, error: str | None = None) -> None:
         self._emit(
@@ -927,30 +733,25 @@ class SessionReporter:
             if status in {"rejected", "implementation_error", "validation_fatal"}
             else "info",
         )
-        self.line(f"  > submit_operation: {status}", typed=False)
 
-    def warning(self, text: str, *, code: str = "", color: str | None = None) -> None:
+    def warning(self, text: str, *, code: str = "") -> None:
         self._emit(
             "warning",
             {"code": code, "message": text},
             scope="warning",
             severity="warning",
         )
-        self.line(f"  ! {text}", color, typed=False)
 
     def diagnostic(self, text: str, *, code: str, severity: str = "warning") -> None:
         self._emit(
             severity, {"code": code, "message": text}, scope=severity, severity=severity
         )
-        observation_feed.emit({"kind": "console_line", "scope": severity, "text": text})
-        self._render("diagnostic", text)
 
     def compaction(self, data) -> None:
         if not data.success:
             self.warning(
                 f"context compaction failed: {data.error or 'unknown error'}",
                 code="compaction_failed",
-                color=YELLOW,
             )
             return
         before = data.pre_compaction_tokens or 0
@@ -960,7 +761,6 @@ class SessionReporter:
             f"context compacted: {before / 1000:.0f}k -> {after / 1000:.0f}k tokens, "
             f"{data.messages_removed or 0} messages replaced by a summary",
             code="compaction",
-            color=YELLOW,
         )
 
     def file_changed(self, operation: str, path: str) -> None:
@@ -981,8 +781,6 @@ class SessionReporter:
                 },
                 scope="tool",
             )
-            suffix = " | PI operation request updated" if operation_request else ""
-            self.line(f"  {marker} {path}{suffix}", typed=False)
 
     def error(self, message: str) -> None:
         self.session_error = message
@@ -992,7 +790,6 @@ class SessionReporter:
             scope="error",
             severity="error",
         )
-        self.line(f"  ! session error: {message}", typed=False)
 
     def summary(self, changed: list[str]) -> None:
         """Expose unannounced changes; lifecycle summaries come from the Runner."""
@@ -1008,21 +805,15 @@ class SessionReporter:
                     },
                     scope="tool",
                 )
-                self.line(f"  ~ {path}", typed=False)
 
 
 class CodingReporter(SessionReporter):
     """Collect child accounting; forward only file names of child patches to the parent."""
 
     def __init__(self, parent: SessionReporter | None = None, agent: str = "") -> None:
-        super().__init__(
-            session_id=parent.session_id if parent is not None else "", renderer=None
-        )
+        super().__init__(session_id=parent.session_id if parent is not None else "")
         self.parent = parent
         self.agent = agent
-
-    def line(self, text: str, color: str | None = None, *, typed: bool = True) -> None:
-        pass
 
     def tool(
         self, name: str, arguments: object, tool_call_id: str | None = None

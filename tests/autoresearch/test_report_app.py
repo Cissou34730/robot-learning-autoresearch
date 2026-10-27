@@ -165,7 +165,7 @@ def test_report_follows_only_its_campaign_feed(monkeypatch, tmp_path):
     monkeypatch.setattr(paths, "ROOT", tmp_path)
     app = CampaignReport()
     app._ensure_feed("campaign-abc")
-    expected = tmp_path / "reports" / "tui_observations" / "campaign-abc.jsonl"
+    expected = tmp_path / "reports" / "tui_observations" / "campaign-abc.events.jsonl"
     assert app._feed.path == expected
     current = app._feed
     app._ensure_feed("campaign-abc")
@@ -173,7 +173,7 @@ def test_report_follows_only_its_campaign_feed(monkeypatch, tmp_path):
     app._ensure_feed("campaign-other")
     assert (
         app._feed.path
-        == tmp_path / "reports" / "tui_observations" / "campaign-other.jsonl"
+        == tmp_path / "reports" / "tui_observations" / "campaign-other.events.jsonl"
     )
 
 
@@ -198,7 +198,7 @@ async def _progress():
         assert "24,000 / 80,000" in rendered
         assert "Elapsed 12m" in rendered
         app._feed.advance(1.0)
-        app.drain_feed()  # execution_end for T5
+        app.drain_feed()  # operation_completed for T5
         await pilot.pause()
         progress = app.query_one("#progress")
         assert progress.display is False
@@ -476,31 +476,32 @@ async def _scope_styles():
         app._process_events(
             [
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {"scope": "tool", "text": "> submit_operation train"},
                 ),
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {"scope": "error", "text": "x failed"},
                 ),
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {"scope": "pi", "text": "PI text"},
                 ),
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {"scope": "result", "text": "= result 0.94"},
                 ),
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {
                         "scope": "operation",
-                        "text": "=== OPERATION | T5 ===\nWhy\nbody line",
+                        "title": "OPERATION | T5",
+                        "body": ["Why", "body line"],
                     },
                 ),
             ]
@@ -535,17 +536,17 @@ async def _no_color_frame():
         app._process_events(
             [
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {"scope": "tool", "text": "> submit_operation train"},
                 ),
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {"scope": "error", "text": "x failed"},
                 ),
                 Observation(
-                    "console_line",
+                    "notice",
                     now,
                     {"scope": "pi", "text": "PI text"},
                 ),

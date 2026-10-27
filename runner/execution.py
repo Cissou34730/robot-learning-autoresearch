@@ -18,7 +18,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from runner import observation_feed, paths, repository, typed_events
+from runner import paths, repository, typed_events
 from runner import reporting as console
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
@@ -281,14 +281,13 @@ def announce_training_checkpoints(
     operation_id: str,
     announced: set[str],
 ) -> None:
-    """Print saved candidate metrics together, after the live heartbeat."""
+    """Publish saved candidate metrics together as one event."""
     pool_dir = output_dir / "candidate_pool"
     candidates: list[tuple[int, Path]] = []
     for path in pool_dir.glob("checkpoint-*"):
         match = CANDIDATE_NAME_PATTERN.fullmatch(path.name)
         if match is not None:
             candidates.append((int(path.name.removeprefix("checkpoint-")), path))
-    rows: list[tuple[str, str]] = []
     records: list[dict] = []
     for _, path in sorted(candidates):
         if path.name in announced:
@@ -300,7 +299,6 @@ def announce_training_checkpoints(
             continue
         summary = console.training_progress_suffix(metrics).removeprefix(" | ")
         candidate = f"{operation_id}:{path.name}"
-        rows.append((candidate, summary or "metrics unavailable"))
         records.append(
             {
                 "candidate": candidate,
@@ -311,23 +309,13 @@ def announce_training_checkpoints(
             }
         )
         announced.add(path.name)
-    if not rows:
+    if not records:
         return
     typed_events.emit(
         "training_checkpoints",
         {"operation_id": operation_id, "candidates": records},
         scope="training",
         operation_id=operation_id,
-    )
-    candidate_width = max(len(candidate) for candidate, _ in rows)
-    console.boundary(
-        "training",
-        "TRAINING RESULTS",
-        operation_id,
-        "\n".join(
-            f"{candidate:<{candidate_width}} | {summary}" for candidate, summary in rows
-        ),
-        typed=False,
     )
 
 
@@ -356,7 +344,6 @@ def training_progress_event(
 
 def _emit_progress(event: dict) -> None:
     """Publish structured progress to both the legacy and typed feeds."""
-    observation_feed.emit(event)
     kind = str(event.get("kind") or "progress")
     payload = {key: value for key, value in event.items() if key != "kind"}
     typed_events.emit(
@@ -428,17 +415,12 @@ def train_candidate(
                 log_text = read_training_log(train_log, progress_offset)
                 record = latest_training_record(log_text)
                 steps = latest_step_count(log_text)
-                observation_feed.emit({"kind": "liveness"})
                 typed_events.emit("liveness", {}, scope="info")
                 if steps is None:
                     _emit_progress(
                         training_progress_event(
                             operation_id, None, None, elapsed, record
                         )
-                    )
-                    console.progress(
-                        f"TRAIN {operation_id} | starting | "
-                        f"{console.format_duration(elapsed)} elapsed"
                     )
                 else:
                     if steps != last_steps:
@@ -454,24 +436,6 @@ def train_candidate(
                         elapsed * max(progress_target - steps, 0) / completed_this_run
                         if completed_this_run
                         else 0
-                    )
-                    fps = (
-                        float(record["fps"])
-                        if record and record.get("fps") is not None
-                        else completed_this_run / elapsed
-                        if elapsed
-                        else 0.0
-                    )
-                    console.progress(
-                        console.training_heartbeat(
-                            operation_id,
-                            steps,
-                            progress_target,
-                            elapsed,
-                            eta,
-                            fps,
-                            record,
-                        )
                     )
                     _emit_progress(
                         training_progress_event(
@@ -489,13 +453,6 @@ def train_candidate(
                         output_dir,
                         operation_id,
                         announced_checkpoints,
-                    )
-                    console.boundary(
-                        "error",
-                        "TRAINING FAILED",
-                        operation_id,
-                        "no progress for 30 minutes; stopping",
-                        typed=False,
                     )
                     typed_events.emit(
                         "error",
@@ -516,13 +473,6 @@ def train_candidate(
                         operation_id,
                         announced_checkpoints,
                     )
-                    console.boundary(
-                        "error",
-                        "TRAINING FAILED",
-                        operation_id,
-                        "12 hour safety limit reached; stopping",
-                        typed=False,
-                    )
                     typed_events.emit(
                         "error",
                         {
@@ -541,13 +491,6 @@ def train_candidate(
                 output_dir,
                 operation_id,
                 announced_checkpoints,
-            )
-            console.boundary(
-                "warning",
-                "TRAINING STOPPING",
-                operation_id,
-                "waiting for the process to close",
-                typed=False,
             )
             typed_events.emit(
                 "warning",
@@ -742,7 +685,6 @@ def evaluate_artifact(
         command.append("--official-benchmark")
     if task_reference:
         command.append("--task-reference")
-    progress_label = evaluation_label(artifact_dir.name)
     started = time.monotonic()
     typed_events.emit(
         "measurement_panel_started",
@@ -757,13 +699,6 @@ def evaluate_artifact(
         },
         scope="measurement",
         operation_id=operation_id,
-    )
-    console.boundary(
-        "measurement",
-        "PANEL",
-        f"{operation_id} {progress_label}",
-        f"{episodes} episodes | seed {seed} | {label}",
-        typed=False,
     )
     last_progress_at = started
     completed_episodes = 0
@@ -803,12 +738,6 @@ def evaluate_artifact(
                     if current_completed > completed_episodes:
                         completed_episodes = current_completed
                         last_progress_at = time.monotonic()
-                    console.progress(
-                        f"MEASURE {operation_id} | {progress_label} | "
-                        f"{completed_episodes}/{episodes} | "
-                        f"{100 * completed_episodes // episodes}% | "
-                        f"{console.format_duration(time.monotonic() - started)}"
-                    )
                     _emit_progress(
                         {
                             "kind": "eval_progress",
@@ -820,7 +749,6 @@ def evaluate_artifact(
                             "elapsed_seconds": round(time.monotonic() - started, 1),
                         }
                     )
-                    observation_feed.emit({"kind": "liveness"})
                     typed_events.emit("liveness", {}, scope="info")
                     if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
                         stop_process(process, graceful=False)
@@ -837,13 +765,6 @@ def evaluate_artifact(
                             f"({completed_episodes}/{episodes} complete)"
                         )
         except KeyboardInterrupt:
-            console.boundary(
-                "warning",
-                "MEASUREMENT STOPPING",
-                operation_id,
-                label,
-                typed=False,
-            )
             typed_events.emit(
                 "warning",
                 {
@@ -882,15 +803,6 @@ def evaluate_artifact(
         },
         scope="measurement",
         operation_id=operation_id,
-    )
-    console.boundary(
-        "measurement",
-        "PANEL COMPLETE",
-        f"{operation_id} {progress_label}",
-        f"{int(metrics['episodes'])}/{episodes} | "
-        f"{console.format_duration(time.monotonic() - started)} | "
-        f"success {metrics['success_percent']:.1f}%",
-        typed=False,
     )
     return metrics
 

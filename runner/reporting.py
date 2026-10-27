@@ -1,47 +1,38 @@
-"""Runner observations and shared presentation helpers.
+"""Runner observations and shared formatting helpers.
 
 The Runner formats facts the researcher already decided or the tools already
-measured. It never adds a scientific conclusion of its own.
+measured. It never adds a scientific conclusion of its own. Every fact goes to
+the campaign's typed event feed; nothing is written to a console.
 """
 
 import json
 import re
-import shutil
-import textwrap
-from contextlib import contextmanager
-from contextvars import ContextVar
 from pathlib import Path
 
-from runner import observation_feed, paths, typed_events
+from runner import invocation_result, paths, typed_events
 
-_RESET = "\033[0m"
-_DIM = "\033[90m"
-_CYAN = "\033[1;96m"
-_GREEN = "\033[1;92m"
-_YELLOW = "\033[1;93m"
-_RED = "\033[1;91m"
-_WHITE = "\033[1;97m"
-_MAGENTA = "\033[1;95m"
 _ROOT = paths.ROOT
 _UUID = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
     r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"
 )
-_SEMANTIC_COLORS = {
-    "campaign": _WHITE,
-    "session": _MAGENTA,
-    "pi": _MAGENTA,
-    "inquiry": _YELLOW,
-    "operation": _CYAN,
-    "measurement": _CYAN,
-    "training": _CYAN,
-    "checkpoint": _WHITE,
-    "assessment": _GREEN,
-    "validation": _GREEN,
-    "runner": _CYAN,
-    "warning": _YELLOW,
-    "error": _RED,
-}
+SCOPES = frozenset(
+    {
+        "campaign",
+        "session",
+        "pi",
+        "inquiry",
+        "operation",
+        "measurement",
+        "training",
+        "checkpoint",
+        "assessment",
+        "validation",
+        "runner",
+        "warning",
+        "error",
+    }
+)
 _CARD_SCOPES = frozenset(
     {
         "assessment",
@@ -54,58 +45,6 @@ _CARD_SCOPES = frozenset(
         "warning",
     }
 )
-_SECTION_HEADINGS = frozenset(
-    {
-        "Hypothesis",
-        "Experiment",
-        "Training dynamics",
-        "Candidates",
-        "Next",
-        "Next question",
-        "Outcome",
-        "Usage",
-        "Why",
-        "Rationale",
-        "Panels",
-        "Results",
-        "Question",
-        "Plan",
-        "Selections",
-        "Reason",
-        "Candidate",
-        "Champion",
-        "Task reference",
-        "Paired comparison",
-        "Continue from",
-        "Scientific recipe",
-        "Retained alternatives",
-        "Removed retained alternatives",
-        "Working lineage",
-        "Best-known model",
-        "Final benchmark",
-        "Hypothesis assessment",
-        "Frozen model",
-    }
-)
-_CONTEXT_PREFIXES = ("Phase: ", "Campaign: ")
-_CONTEXT = "\033[36m"
-
-# A heartbeat is rewritten in place and reaches the log only on this cadence:
-# long enough that a run does not become a wall of near-identical counters,
-# short enough that a redirected log still shows the recent dynamics of a run.
-PROGRESS_ARCHIVE_SECONDS = 20.0
-
-
-def _console_width() -> int:
-    return max(shutil.get_terminal_size(fallback=(100, 24)).columns, 40)
-
-
-def _clip(text: str, width: int) -> str:
-    if len(text) <= width:
-        return text
-    if width <= 3:
-        return text[:width]
-    return text[: width - 3].rstrip() + "..."
 
 
 def compact_path(value: str | Path) -> str:
@@ -121,170 +60,65 @@ def compact_path(value: str | Path) -> str:
         return (".../" + "/".join(parts)).replace("\\", "/")
 
 
-def _wrap_console_text(text: str, *, initial_prefix: str = "") -> list[str]:
-    width = _console_width()
-    subsequent = " " * len(initial_prefix)
-    lines: list[str] = []
-    for index, logical_line in enumerate(text.splitlines() or [""]):
-        first = initial_prefix if index == 0 else subsequent
-        lines.extend(
-            textwrap.wrap(
-                logical_line,
-                width=width,
-                initial_indent=first,
-                subsequent_indent=subsequent,
-                break_long_words=False,
-                break_on_hyphens=False,
-                replace_whitespace=False,
-            )
-            or [first.rstrip()]
-        )
-    return lines
-
-
 def compact_text(text: object) -> str:
     return _UUID.sub("<id>", str(text))
 
 
-def _style_card_sections(text: str) -> str:
-    lines = text.splitlines(keepends=True)
-    return "".join(
-        f"{_YELLOW}{line}{_RESET}" if line.rstrip("\r\n") in _SECTION_HEADINGS else line
-        for line in lines
-    )
+def _severity(scope: str) -> str:
+    return "error" if scope == "error" else "warning" if scope == "warning" else "info"
 
 
-_DEFAULT_RENDERER = object()
-_renderer: ContextVar = ContextVar("runner_renderer", default=_DEFAULT_RENDERER)
-
-
-@contextmanager
-def rendering(renderer):
-    """Select an output renderer; None keeps observations without terminal I/O."""
-    token = _renderer.set(renderer)
-    try:
-        yield
-    finally:
-        _renderer.reset(token)
-
-
-def _render(method: str, *args, **kwargs) -> None:
-    renderer = _renderer.get()
-    if renderer is _DEFAULT_RENDERER:
-        from runner import console
-
-        renderer = console
-    if renderer is not None:
-        getattr(renderer, method)(*args, **kwargs)
-
-
-def progress(message: str, *, archive: bool = False) -> None:
-    """Report a heartbeat that a later one supersedes."""
-    _render("progress", message, archive=archive)
-
-
-def diagnostic(
-    message: str, *, stderr: bool = False, code: str = "runner_error"
-) -> None:
-    """Publish an execution diagnostic before its unchanged terminal line."""
+def diagnostic(message: str, *, code: str = "runner_error") -> None:
+    """An execution diagnostic for the launcher result and the operator log."""
+    invocation_result.add_error(message)
     typed_events.emit(
         "error", {"code": code, "message": message}, scope="error", severity="error"
     )
-    observation_feed.emit({"kind": "console_line", "scope": "error", "text": message})
-    _render("diagnostic", message, stderr=stderr)
 
 
-def _observation_scope(text: str) -> tuple[str, str]:
-    """Split a console marker from its body for the observation feed."""
+def _marker_scope(text: str) -> str:
+    """The scope named by a leading ``[marker]``, if it is a known scope."""
     if text.startswith("[") and "]" in text:
         marker = text[1 : text.index("]")].casefold()
-        body = text[text.index("]") + 1 :].strip()
-        scope = marker if marker in _SEMANTIC_COLORS else "info"
-        return scope, body
-    return "info", text
+        return marker if marker in SCOPES else "info"
+    return "info"
 
 
-def announce(message: str, *, typed: bool = True) -> None:
-    full_text = message.lstrip("\n")
-    scope, _ = _observation_scope(compact_text(full_text))
-    if typed:
-        typed_events.emit(
-            "console_line",
-            {"text": full_text, "scope": scope},
-            scope=scope,
-            severity="error"
-            if scope == "error"
-            else "warning"
-            if scope == "warning"
-            else "info",
-        )
-    text = compact_text(full_text)
-    scope, observation_text = _observation_scope(text)
-    observation_feed.emit(
-        {"kind": "console_line", "scope": scope, "text": observation_text}
+def announce(message: str) -> None:
+    """One operator notice line."""
+    text = message.lstrip("\n")
+    scope = _marker_scope(compact_text(text))
+    typed_events.emit(
+        "notice", {"text": text, "scope": scope}, scope=scope, severity=_severity(scope)
     )
-    _render("announce", message)
 
 
-def card(
-    scope: str,
-    title: str,
-    lines: list[str] | tuple[str, ...] = (),
-    *,
-    typed: bool = True,
-) -> None:
-    """Print one spaced console card for a meaningful lifecycle boundary."""
+def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> None:
+    """One titled operator notice for a meaningful lifecycle boundary."""
     scope = scope.casefold()
-    if typed:
-        typed_events.emit(
-            "console_card",
-            {"title": title, "body": list(lines), "scope": scope},
-            scope=scope,
-            severity="error"
-            if scope == "error"
-            else "warning"
-            if scope == "warning"
-            else "info",
-        )
-    full_title = title
-    title = compact_text(title)
-    body = [compact_text(line) for line in lines]
-    observation_text = f"=== {title} ==="
-    if body:
-        observation_text += "\n" + "\n".join(body)
-    observation_feed.emit(
-        {"kind": "console_line", "scope": scope, "text": observation_text}
+    typed_events.emit(
+        "notice",
+        {"title": title, "body": list(lines), "scope": scope},
+        scope=scope,
+        severity=_severity(scope),
     )
-    _render("card", scope, full_title, lines)
 
 
-def boundary(
-    scope: str,
-    action: str,
-    subject: str = "",
-    detail: str = "",
-    *,
-    typed: bool = True,
-) -> None:
-    """Print one durable lifecycle boundary with a stable visual hierarchy."""
+def boundary(scope: str, action: str, subject: str = "", detail: str = "") -> None:
+    """One durable lifecycle boundary with a stable hierarchy."""
     normalized_scope = scope.casefold()
     if normalized_scope in _CARD_SCOPES:
         title = " | ".join(
             part for part in (normalized_scope.upper(), action.upper(), subject) if part
         )
-        card(
-            normalized_scope,
-            title,
-            tuple(detail.splitlines()) if detail else (),
-            typed=typed,
-        )
+        card(normalized_scope, title, tuple(detail.splitlines()) if detail else ())
         return
     head = " | ".join(part for part in (action.upper(), subject) if part)
     if "\n" in detail:
-        announce(f"[{normalized_scope}] {head}\n{detail}", typed=typed)
+        announce(f"[{normalized_scope}] {head}\n{detail}")
         return
     body = " | ".join(part for part in (head, detail) if part)
-    announce(f"[{normalized_scope}] {body}", typed=typed)
+    announce(f"[{normalized_scope}] {body}")
 
 
 def format_duration(seconds: float) -> str:
@@ -330,45 +164,6 @@ def training_progress_suffix(record: dict[str, float] | None) -> str:
     if scenario_fragment:
         parts.append(scenario_fragment)
     return "".join(f" | {part}" for part in parts)
-
-
-def training_heartbeat(
-    operation_id: str,
-    steps: int,
-    target: int,
-    elapsed: float,
-    eta: float,
-    fps: float,
-    record: dict[str, float] | None,
-) -> str:
-    percent = min(100.0, 100 * steps / target) if target else 0.0
-    reward = None if not record else record.get("ep_rew_mean")
-    scenario_fragment = scenario_progress_metric(record) if record else None
-    verbose = (
-        f"TRAIN {operation_id} | {percent:.0f}% | "
-        f"{format_count(steps)}/{format_count(target)} | {format_count(fps)} fps | "
-        f"{format_duration(elapsed)} | ETA {format_duration(eta)}"
-        + (
-            "".join(
-                (
-                    f" | reward {float(reward):g}" if reward is not None else "",
-                    f" | {scenario_fragment}" if scenario_fragment else "",
-                )
-            )
-        )
-    )
-    available = max(_console_width() - len("[00:00:00] "), 20)
-    if len(verbose) <= available:
-        return verbose
-    compact = (
-        f"T {operation_id} {percent:.0f}% "
-        f"{format_count(steps)}/{format_count(target)} "
-        f"{format_duration(elapsed)}/{format_duration(eta)} "
-        f"{format_count(fps)}fps"
-        + (f" r{float(reward):g}" if reward is not None else "")
-        + (f" {scenario_fragment}" if scenario_fragment else "")
-    )
-    return compact
 
 
 def _usage_rows(campaign_id: str, session_id: str | None = None) -> list[dict]:

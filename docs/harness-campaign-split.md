@@ -152,3 +152,11 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
   same resolver. Split/Copilot checks: 45 passed. All eight failing contract and
   AGENTS requests from the reported session were verified against the actual
   harness files without starting or changing a campaign.
+- 27 October 2026: the launcher, reset and parallel tool were ported from
+  PowerShell to Python (`runner.launcher`, `runner.launcher.reset`,
+  `tools.run_parallel`). They select the campaign with `--campaign-root`, set
+  `ROBOT_LEARNING_CAMPAIGN_ROOT` and `PYTHONPATH` exactly as before and keep the
+  per-campaign mutex name, so a Python launcher and a running PowerShell one
+  would still exclude each other. Directory restoration is no longer needed:
+  each runs in its own process. The trust snapshot of both roots is unchanged
+  in scope (`runner/launcher/trust.py`).

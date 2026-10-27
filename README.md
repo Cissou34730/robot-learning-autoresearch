@@ -22,8 +22,8 @@ Current operating guidance, reviewed 26 October 2026:
   lifecycle and operation contracts.
 - [Change tracker](docs/harness-experiment-log.md): current state, campaign results,
   issue register and change ledger.
-- `tools\run_parallel.ps1 -Count N`: the standard way to run 1 to 5 campaigns at
-  once, with maintainer-only time and AIU caps (see [Run campaigns](#run-campaigns-standard)).
+- `uv run python -m tools.run_parallel --count N`: the standard way to run 1 to 5
+  campaigns at once, with maintainer-only time and AIU caps (see [Run campaigns](#run-campaigns-standard)).
 
 Dated RCAs, plans and reviews are in [docs/archive](docs/archive/), program
 proposals in [docs/proposals](docs/proposals/), campaign HTML reports in
@@ -44,12 +44,17 @@ The two repositories have different contents:
 
 Run commands from the harness folder. Campaign repositories live under the
 sibling folder `robot-learning-campaigns`, one per slot: `campaign-1` to
-`campaign-5`. The launch and reset scripts default to `campaign-1`; use
-`-CampaignRoot <path>` to select another initialized campaign repository. No
+`campaign-5`. The launcher and reset default to `campaign-1`; use
+`--campaign-root <path>` to select another initialized campaign repository. No
 harness merge or copy is needed when the harness evolves: subsequent operations
 use the current harness with the selected campaign's scientific code.
-The launch and reset scripts work inside the campaign folder while running and
-restore the calling terminal's original folder on exit, including on failure.
+The launcher and reset are Python processes (`runner.launcher` and
+`runner.launcher.reset`); they change folder only inside their own process, so
+the calling terminal's folder never changes.
+The launcher writes no console output. The campaign's typed event feed, read by
+the [terminal report](docs/tui-report.md), is its only progress output; errors
+that end a launch go to standard error and to the launcher log
+`<campaign>\reports\launcher\<UTC time>-<pid>.log`.
 The harness has its own Git storage and no longer depends on the old reference
 repository or its worktrees. Existing historical branches remain on GitHub.
 
@@ -58,28 +63,28 @@ repository or its worktrees. Existing historical branches remain on GitHub.
 Run 1 to 5 campaigns at once from the harness folder:
 
 ```powershell
-.\tools\run_parallel.ps1 -Count 3
+uv run python -m tools.run_parallel --count 3
 ```
 
-The script uses `robot-learning-campaigns\campaign-1` to `campaign-<Count>`,
+The tool uses `robot-learning-campaigns\campaign-1` to `campaign-<count>`,
 initializes missing slots from an existing one (adding a global Git
 `safe.directory` entry for the new folder), resets each to the recipe
-(`-RecipeRef`, default `baseline-distinct-episodes-v3-robot`; `-NoReset` skips
-this), launches each campaign in its own window and starts a minimized monitor.
-The monitor stops a campaign cooperatively at `-MaxHours` of active time
-(default 6) or `-MaxAiu` (default 120); campaign agents never see these caps.
-Transcripts, the monitor log and one report per campaign go to
-`%TEMP%\robot-learning\parallel-<UTC time>`. Watch one campaign with
-`.\campaign_tui.ps1 -CampaignRoot <campaign folder>`.
+(`--recipe-ref`, default `baseline-distinct-episodes-v3-robot`; `--no-reset`
+skips this), launches each campaign as a hidden background process without a
+console window and starts a hidden monitor. The monitor stops a campaign
+cooperatively, through its stop request, at `--max-hours` of active time
+(default 6) or `--max-aiu` (default 120); campaign agents never see these caps.
+Launcher logs, the monitor log and one report per campaign go to
+`%TEMP%\robot-learning\parallel-<UTC time>`. Watch the campaigns with
+`.\campaign_tui.ps1`; it can also stop them.
 
 ### Operator console
 
-The controller uses the existing PowerShell 7 `pwsh.exe` on PATH, including
-Microsoft Store/MSIX installations. It sets the Windows desktop-app child
-policy when launching owned processes so native descendants remain contained.
-No separate installation or manually started shell is needed. Windows PowerShell
-5.1 cannot run the existing launcher. Missing PowerShell 7 fails preflight before
-initialization/reset; opening the interface still starts nothing.
+The console starts the launcher, the reset and the initializer with `uv` on
+PATH, each in a hidden private console inside a kill-on-close Windows Job, so
+native descendants remain contained. No PowerShell host is needed for campaign
+work. Missing `uv` fails preflight before initialization/reset; opening the
+interface still starts nothing.
 
 `.\campaign_tui.ps1` (or `uv run python -m tui`) opens the first installed campaign report (normally
 campaign-1), with a visible **Command / Execute / Settings** row below it.
@@ -104,8 +109,10 @@ without resetting it. Untargeted commands follow the active campaign tab;
 an explicit range or folder list selects a batch. Numbers are identities:
 `start 2` starts only campaign-2, `start 1-2` selects campaigns 1 and 2, and
 `start 2-3` selects campaigns 2 and 3. This also applies to run/reset/stop;
-`stop all` still stops every owned campaign. The direct `run_parallel.ps1`
-`-Count` option is unchanged.
+`stop all` still stops every owned campaign. A campaign the console did not
+start (for example one launched by `tools.run_parallel`) can be stopped too:
+the console writes the campaign's stop request and the launcher ends
+cooperatively.
 **Ctrl+L** opens/closes the bottom command area, preserving the draft. Opening
 focuses the input; closing returns focus and four rows to the campaign report.
 The footer remains visible so commands can always be reopened.
@@ -127,7 +134,7 @@ owning or stopping external campaigns; the same-directory instance lock applies.
 
 ### Initialize a campaign repository once
 
-`tools\run_parallel.ps1` creates missing slots itself. To create one by hand,
+`tools.run_parallel` creates missing slots itself. To create one by hand,
 choose a destination that does not exist:
 
 ```powershell
@@ -150,26 +157,26 @@ recipe importing the renamed robot contract (`contracts/robots/robot.py`); the
 older `baseline-distinct-episodes-v3` tag no longer matches the task contract.
 
 Stop any active campaign before resetting. These commands act on `campaign-1`
-unless `-CampaignRoot` selects another slot:
+unless `--campaign-root` selects another slot:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3-robot -Force
-.\run_research.ps1 -Provider github-copilot
+uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distinct-episodes-v3-robot --force
+uv run --group researcher python -m runner.launcher --provider github-copilot
 ```
 
-The reset script also restores the folder before the next command, so this
-sequence works from the harness folder:
+`.\run_research.ps1` is a shortcut for the second command and passes its
+arguments through. A reset followed by a launch:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force ; .\run_research.ps1
+uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force ; .\run_research.ps1
 ```
 
-Use `-Clean` only when you intend to discard eligible uncommitted campaign
+Use `--clean` only when you intend to discard eligible uncommitted campaign
 changes. It is not needed merely to resume a stopped campaign.
 The semicolon is not a success-only condition: if reset fails, inspect the error
 before launching.
 
-`run_research.ps1` refuses to start, including a resume, while the harness
+The launcher refuses to start, including a resume, while the harness
 worktree has uncommitted or untracked changes. Commit or discard them first.
 
 Baseline v3 is a scientific recipe, not a trained model. Its reset initializes
@@ -184,15 +191,15 @@ ignored; they are Runner-owned output, not scientific source changes.
 
 ### Campaign limits
 
-`-MaxInquiries` (default 15) limits the inquiries opened in one unattended
+`--max-inquiries` (default 15) limits the inquiries opened in one unattended
 run. It is a maintainer guardrail: neither the limit nor its value is shown to
 the PI. After the final permitted inquiry closes and its session record is
 saved, the launcher pauses before the next goal review. It records no campaign
 conclusion and requests no official assessment. Launch again with a higher
-`-MaxInquiries` to continue the same campaign; the value can only increase.
+`--max-inquiries` to continue the same campaign; the value can only increase.
 
-`-Timesteps` (default 120,000) sets the training allocation per run. During an
-inquiry a run may extend up to `-MaxTimesteps` (default 360,000). The PI sees
+`--timesteps` (default 120,000) sets the training allocation per run. During an
+inquiry a run may extend up to `--max-timesteps` (default 360,000). The PI sees
 both values in its session context and cannot change them.
 
 ### Known restart limitation
@@ -229,25 +236,25 @@ runtime. Inference can use GitHub Copilot, OpenCode Zen or OpenCode Go.
 
 ### Select inference at launch
 
-`-Provider` accepts `github-copilot`, `opencode` (Zen), or `opencode-go`.
-`-Model` accepts a catalogue model ID or a provider-qualified ID.
+`--provider` accepts `github-copilot`, `opencode` (Zen), or `opencode-go`.
+`--model` accepts a catalogue model ID or a provider-qualified ID.
 Conflicting provider/model prefixes fail explicitly.
-Without `-Provider`, the default is GitHub Copilot `gpt-6-luna`.
-With an OpenCode provider and no `-Model`, the default is
+Without `--provider`, the default is GitHub Copilot `gpt-6-luna`.
+With an OpenCode provider and no `--model`, the default is
 `opencode/deepseek-v4.1-flash-free`.
 
 List choices without starting or changing campaign state:
 
 ```powershell
-.\run_research.ps1 -Provider opencode -ListModels
-.\run_research.ps1 -Provider opencode-go -ListModels
+.\run_research.ps1 --provider opencode --list-models
+.\run_research.ps1 --provider opencode-go --list-models
 ```
 
 For an authorized campaign launch, select the provider and model:
 
 ```powershell
-.\run_research.ps1 -Provider opencode
-.\run_research.ps1 -Model opencode-go/kimi-k3
+.\run_research.ps1 --provider opencode
+.\run_research.ps1 --model opencode-go/kimi-k3
 ```
 
 One `OPENCODE_API_KEY` authorizes both Zen and Go.

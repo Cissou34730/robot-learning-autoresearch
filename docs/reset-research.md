@@ -1,21 +1,21 @@
 # Reset the local campaign repository
 
-Stop the campaign before resetting. `reset_research.ps1` requires both an
-explicit `-Mode` and `-Force`; there is no default mode. It never creates a
-branch or worktree, starts training, or changes the research loop.
+Stop the campaign before resetting. `python -m runner.launcher.reset` requires
+both an explicit `--mode` and `--force`; there is no default mode. It never
+creates a branch or worktree, starts training, or changes the research loop.
 
-Run the script from the harness repository. `-CampaignRoot <path>` selects an
-independent campaign repository; the default is
-`robot-learning-campaigns\campaign-1` beside the harness. Resets change and commit files only in that
-campaign repository. They do not reset or copy the harness.
-The reset script restores the calling terminal's original folder on success
-or failure, so it can be followed by a relative launcher command:
+Run the command from the harness repository with `uv run`.
+`--campaign-root <path>` selects an independent campaign repository; the
+default is `robot-learning-campaigns\campaign-1` beside the harness. Resets
+change and commit files only in that campaign repository. They do not reset or
+copy the harness. The reset runs in its own process, so the calling terminal's
+folder never changes and a relative launcher command can follow:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force ; .\run_research.ps1
+uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force ; .\run_research.ps1
 ```
 
-`-Clean` discards eligible uncommitted campaign changes before reset; it does
+`--clean` discards eligible uncommitted campaign changes before reset; it does
 not bypass ownership checks. Do not use it just to resume a stopped campaign.
 The semicolon separates commands; it is not a success-only condition. If reset
 fails, inspect that failure before authorizing launch.
@@ -25,7 +25,7 @@ next successful reset removes it. Refusals before any change leave no record.
 
 The maintainer TUI provides the success-dependent batch form: `run 1-3` completes
 all selected resets before launching any selected campaign. Its default is
-`-Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force`.
+`--mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force`.
 Fresh/Baseline, Clean and the relevant reference are configurable in the shared
 Settings dialog (F2), alongside the campaign report.
 An initialization/reset failure stops further preparation and starts none of
@@ -44,7 +44,7 @@ definitions are refused before cleanup.
 ## Fresh
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -Force
+uv run python -m runner.launcher.reset --mode fresh --force
 ```
 
 Preserves the current code, parameters, tests, task and protocol decision log.
@@ -57,7 +57,7 @@ or from historical scientific code.
 To restore the baseline v3 scientific recipe as well:
 
 ```powershell
-.\reset_research.ps1 -Mode Fresh -RecipeRef baseline-distinct-episodes-v3-robot -Force
+uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distinct-episodes-v3-robot --force
 ```
 
 This tag is a recipe, not a prepared trained model, so use Fresh rather than
@@ -67,7 +67,7 @@ scientific model starts pending and is prepared on the next authorized launch.
 ## Baseline
 
 ```powershell
-.\reset_research.ps1 -Mode Baseline -BaselineRef <commit-or-tag> -Force
+uv run python -m runner.launcher.reset --mode baseline --baseline-ref <commit-or-tag> --force
 ```
 
 The Git reference must contain one prepared schema-6 candidate designated as
@@ -118,9 +118,9 @@ baseline are not recoverable after cleanup.
 
 Both modes refuse dirty tracked/untracked files and detached HEAD.
 An independent campaign repository does not need an origin remote.
-Commit or resolve development edits first; `-Force` does not bypass
+Commit or resolve development edits first; `--force` does not bypass
 these checks. Existing file locks and linked cleanup targets are checked before
-deletion. The script also holds the same per-campaign mutex as the launcher,
+deletion. The reset also holds the same per-campaign mutex as the launcher,
 but keep the campaign stopped before requesting reset.
 
 A successful reset creates local campaign commits and never pushes in split

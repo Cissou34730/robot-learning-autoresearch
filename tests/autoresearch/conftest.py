@@ -5,15 +5,12 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def quiet_presentation_feeds(monkeypatch):
-    """Keep test console output out of the selected campaign's report files."""
-    from runner import observation_feed, typed_events
+    """Keep test events out of the selected campaign's report files."""
+    from runner import typed_events
 
-    monkeypatch.setenv("TUI_OBSERVATIONS", "off")
     monkeypatch.setenv("TUI_TYPED_EVENTS", "off")
-    observation_feed.reset()
     typed_events.reset()
     yield
-    observation_feed.reset()
     typed_events.reset()
 
 

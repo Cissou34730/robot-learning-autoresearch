@@ -272,14 +272,15 @@ def demo_schedule() -> list[tuple[float, Observation]]:
     Times deliberately include a stream/final-style replay and a training
     execution that ends before the measurement starts, so the demo exercises
     deduplication, the training/evaluation progress switch and the
-    execution-end removal of the progress area.
+    operation-end removal of the progress area.
     """
     _, stage_start, now = demo_clock()
     first_pi = stage_start + timedelta(seconds=0.5)
 
     def event(
         seconds: float,
-        kind: str,
+        event_kind: str,
+        /,
         *,
         at: datetime | None = None,
         **fields,
@@ -287,9 +288,11 @@ def demo_schedule() -> list[tuple[float, Observation]]:
         stamp = at
         if stamp is None:
             stamp = (
-                now if kind == "liveness" else stage_start + timedelta(seconds=seconds)
+                now
+                if event_kind == "liveness"
+                else stage_start + timedelta(seconds=seconds)
             )
-        return seconds, Observation(kind, stamp, fields)
+        return seconds, Observation(event_kind, stamp, fields)
 
     return [
         event(0.0, "liveness"),
@@ -299,7 +302,7 @@ def demo_schedule() -> list[tuple[float, Observation]]:
             session_id="S7",
             stage_started_at=stage_start.isoformat(),
         ),
-        event(0.3, "console_line", scope="activity", text="M6 measurement accepted"),
+        event(0.3, "notice", scope="activity", text="M6 measurement accepted"),
         event(0.5, "pi_message", session_id="S7", text=_PI_MESSAGE, at=first_pi),
         event(
             0.8,
@@ -353,10 +356,11 @@ def demo_schedule() -> list[tuple[float, Observation]]:
         ),
         event(
             3.0,
-            "execution_end",
+            "operation_completed",
             operation_id="T5",
+            id="T5",
+            kind="training",
             status="completed",
-            text="T5 training completed",
         ),
         event(3.2, "activity", label="M6 measurement"),
         event(
@@ -395,10 +399,11 @@ def demo_schedule() -> list[tuple[float, Observation]]:
         ),
         event(
             4.6,
-            "execution_end",
+            "operation_completed",
             operation_id="M6",
+            id="M6",
+            kind="measurement",
             status="completed",
-            text="M6 measurement completed",
         ),
         event(5.0, "activity", label="publication"),
     ]

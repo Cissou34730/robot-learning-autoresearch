@@ -219,7 +219,7 @@ class SharedSettings(ModalScreen[dict | None]):
                         id="reset-mode",
                     )
                     yield Checkbox(
-                        "Clean eligible changes (-Clean)",
+                        "Clean eligible changes (--clean)",
                         value=self.values["reset-clean"],
                         id="reset-clean",
                     )
@@ -598,14 +598,17 @@ class CampaignConsole(App):
         try:
             if verb == "models":
                 args = [
-                    "pwsh",
-                    "-NoProfile",
-                    "-File",
-                    str(self._layout.harness_root / "run_research.ps1"),
-                    "-ListModels",
+                    "uv",
+                    "run",
+                    "--project",
+                    str(self._layout.harness_root),
+                    "python",
+                    "-m",
+                    "runner.launcher",
+                    "--list-models",
                 ]
                 if settings.provider:
-                    args += ["-Provider", settings.provider]
+                    args += ["--provider", settings.provider]
                 result = self._controller._runner(args)
                 message = result.stdout + result.stderr
                 if result.returncode:

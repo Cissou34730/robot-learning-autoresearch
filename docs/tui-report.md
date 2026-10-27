@@ -13,8 +13,9 @@ execution.
     torn JSONL tails).
   - `tui/projector.py` - pure projection of research state, accepted
     transactions and usage rows into a display snapshot.
-  - `tui/observations.py` - consumer for a structured one-way observation
-    JSONL feed (see below), plus the synthetic feed used by `--demo`.
+  - `tui/observations.py` - the observation record the report consumes, plus
+    the synthetic feed used by `--demo`; `tui/events.py` follows the typed
+    event file (see below).
   - `tui/report.py` - the single-screen report application.
   - `tui/demo.py` - synthetic campaign material for `--demo` and tests.
 - `campaign_tui.ps1` - launcher helper in the harness root.
@@ -60,12 +61,12 @@ on 26 October. The standard folders are `robot-learning-campaigns\campaign-1`
 through `campaign-5`; Tab/Shift+Tab cycle their tabs. Launching the console starts
 nothing; campaigns run only when a command is submitted.
 
-Controlled execution uses the existing PowerShell 7 on PATH, including
-Store/MSIX installations. The launcher sets the inherited Windows desktop-app
-child policy to keep packaged native descendants contained; no reinstall or
-manual shell instance is required. Windows PowerShell 5.1 lacks the launcher's
-required .NET APIs. Missing PowerShell 7 fails preflight before initialization,
-reset or launch, without preventing the interface from opening.
+Controlled execution starts `python -m runner.launcher`, the reset and the
+initializer with `uv` on PATH; no PowerShell host is involved. Each child gets
+a private hidden console in a kill-on-close Job; the inherited Windows
+desktop-app child policy keeps packaged native descendants contained. Missing
+`uv` fails preflight before initialization, reset or launch, without preventing
+the interface from opening.
 
 - The bottom command composer has a permanent label, an editable field,
   **Execute** and **Settings**, plus a one-line target/status preview. Press
@@ -96,11 +97,11 @@ reset or launch, without preventing the interface from opening.
   default remains Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force.
   Targets and options are logged before execution. Measurements/logs may be
   deleted; ignored measurements have no reset backup.
-  Only the reference field for the selected reset mode is visible. `-Clean`
+  Only the reference field for the selected reset mode is visible. `--clean`
   is labelled as cleaning eligible changes, not merely cleaning logs.
 - `run` initializes a missing standard folder from the recipe (same as
-  `tools\run_parallel.ps1`), resets it (`-Mode Fresh -Clean -RecipeRef
-  baseline-distinct-episodes-v3-robot -Force`) and launches it. `start`
+  `tools.run_parallel`), resets it (`--mode fresh --clean --recipe-ref
+  baseline-distinct-episodes-v3-robot --force`) and launches it. `start`
   launches without resetting; `reset` resets without launching; `stop`
   sends the cooperative stop request. All selected resets complete before
   any batch launcher starts. An initialization/reset failure stops further
@@ -121,8 +122,9 @@ reset or launch, without preventing the interface from opening.
   console process triggers the kill-on-close Job Object directly.
 - One console per harness directory: a second console instance refuses to
   start. Campaign processes owned by the console run in separate job
-  objects (see `docs/external-campaign-stop.md`); by-runner windows launched
-  outside the console remain untouched.
+  objects (see `docs/external-campaign-stop.md`). A campaign launched outside
+  the console (`tools.run_parallel`, `run_research.ps1`) has no window; its tab
+  follows its feed, and `stop` writes its stop request without owning it.
 
 The machinery lives in `tui/process.py` (Job Objects, suspended creation,
 instance lock, per-run control directories with captured console logs) and
@@ -132,6 +134,9 @@ orchestration); both are terminal-free and tested with fake executors in
 `tests/autoresearch/test_campaign_console.py`.
 
 ### Controller validation status (26 October 2026)
+
+This subsection records the PowerShell-launcher revision; see the
+[27 October update](#python-launcher-27-october-2026) for the current launcher.
 
 Review follow-up: stop requests are accepted during another batch. Reset helpers
 have a separate 15-second shutdown grace, not the scientific stop timeout. The
@@ -191,6 +196,20 @@ cleans up the owned bootstrap without pretending a scientific session ran.
   restoration still need an interactive check; headless tests cannot establish
   those physical-terminal behaviors.
 
+### Python launcher (27 October 2026)
+
+The launcher, the reset entry point and the parallel tool are Python
+(`runner.launcher`, `runner.launcher.reset`, `tools.run_parallel`); the
+PowerShell launcher, session helpers, Copilot controller and reset script were
+removed, and `run_research.ps1` is a thin wrapper. The console starts them with
+`uv` directly. Every campaign has one stop request in its Git directory, so the
+console can stop a campaign it did not start. The console terminal renderers
+and the legacy `<campaign-id>.jsonl` feed were removed: launches write no
+console output, and the typed feed is the only observation stream. Windows
+containment tests now run dummy PowerShell scripts only as arbitrary native
+children, and the `uv → Python` chain test verifies a cooperative exit 130
+without forced cleanup.
+
 Reference size is 160x45; the layout adapts down to an 80x24 and 60-column
 fallback. The console keeps seven rows for tabs and open controls (38 report
 rows at 160x45), or three with commands collapsed (42 report rows). It adds no
@@ -232,9 +251,8 @@ stale, stopped or non-advancing data does not produce a fabricated zero ETA.
 Live and reconstructed candidate announcements share a candidate identity, so
 each checkpoint appears once and its identifier is not repeated in the row.
 
-The observation feed is drained every second so PI messages and console lines
-stay live; training progress events arrive every 15 seconds, matching the
-console heartbeat.
+The observation feed is drained every second so PI messages and notices
+stay live; training progress events arrive every 15 seconds.
 
 ## Data the report reads now
 
@@ -243,7 +261,7 @@ console heartbeat.
 | Campaign, human goal, counters, stage IDs, inquiry, session, synthesis, roles, pending operation | `runner/state/research_state.json` |
 | Completed operations, training dynamics, measurement panels, last-training proxy | `campaigns/results.jsonl` |
 | Recorded usage (AIU / token rows) | `reports/session_usage/<campaign-id>.jsonl` |
-| Live training reward/success and progress | `reports/tui_observations/<campaign-id>.jsonl` (written by `runner/observation_feed.py` and the launcher) |
+| Live training reward/success, progress and every other live fact | `reports/tui_observations/<campaign-id>.events.jsonl` (typed feed, `runner/typed_events.py`) |
 
 Projection rules follow the specification: roles come only from
 `model_roles`; development success is the latest completed evaluation for a
@@ -275,7 +293,7 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   and `r` shows the full recorded timestamp;
 - training progress rows show the interval since the previous row, steps
   delta and steps per second when derivable;
-- tool actions use the console's summaries and factual result lines, paired by
+- tool actions use shared summaries and factual result lines, paired by
   `tool_call_id`; paths, search patterns and API targets wrap naturally instead
   of opening argument dumps; routine completed/zero-duration labels are omitted;
 - PI messages appear once, in full, without Copilot session UUIDs; long actions
@@ -283,7 +301,7 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   and reflow when the terminal is resized;
 - raw arguments, patch payloads and session metadata are available through `r`,
   not mixed into the normal reading view;
-- semantic colours follow the console: cyan PI/execution activity, magenta
+- semantic colours: cyan PI/execution activity, magenta
   session context and ordinary result lines, emphasized scientific tool names,
   green success/created files, yellow warnings and red failures/deleted files;
   result assessments retain their individual success/warning/error colours;
@@ -305,73 +323,25 @@ log, the marker returns to the keyboard cursor. There is no underline or pane
 outline. Dragging across output text paints a text-selection background that
 remains after release; `Ctrl+C` copies that selection.
 
-The log renders typed events when `reports/tui_observations/<campaign-id>.events.jsonl`
-exists. Otherwise it renders the legacy `console_line` feed and the durable
+The log renders the typed events of
+`reports/tui_observations/<campaign-id>.events.jsonl` together with the durable
 history synthesized from `research_state.json` and `results.jsonl`. The
 reducer (`tui/timeline.py`) is terminal-free and tested with synthetic events.
 
 ## Observation feed (producer and consumer)
 
-The Runner appends presentation events to
-`reports/tui_observations/<campaign-id>.jsonl` under the campaign root (that
-directory is presentation-only, ignored by campaign Git, and refused to PI and
-analyst reads). One file per campaign means a reset cannot surface earlier
-events. `runner/observation_feed.py` owns the writer: it is best-effort,
-appends one JSON object per line, binds the campaign identity from durable
-state (also in the Copilot adapter process), and swallows every failure so
-presenting can never alter acceptance, execution, publication or recovery.
-Setting `TUI_OBSERVATIONS` to another path moves the file; setting it to `off`
-disables the feed. The report follows the current campaign's file
-automatically, by byte offset: only appended complete lines are read, and a
-shrunken or replaced file restarts from the beginning.
-
-Observations are produced by neutral reporting facades and execution handlers,
-before optional terminal rendering:
-
-- Launcher (`researcher_session.ps1`, `run_research.ps1`) - the status lines
-  and cards the launcher displays, including session start and resume
-  identity; `session_start` supplies the live stage timer.
-- `runner/reporting.py` `announce()` and `card()` - every Runner message
-  and lifecycle card, with its existing scope classification (`pi`,
-  `operation`, `warning`, `error`, ...) as the color channel.
-- `runner/copilot/reporting.py` `SessionReporter` - tool calls, results,
-  failures and coder/reviewer facts; `delta()`/`_close_message()` -
-  PI text published while it is still being written (whole-word snapshots at
-  most every 2 s, immediately on a paragraph break) and a final snapshot at
-  turn end.
-- `runner/execution.py` training and evaluation loops - structured
-  `training_progress` and `eval_progress` (the progress panels never read
-  formatted console text), plus `liveness` every status interval.
-- `runner/run_experiment.py` - `execution_end` for completed, failed,
-  interrupted and official-assessment operations; official assessment progress
-  comes from its existing callback.
-
-Events follow this shape (one JSON object per line):
-
-```json
-{"campaign_id": "...", "ts": "2026-10-24T12:41:04+00:00", "kind": "training_progress",
- "operation_id": "T4", "steps": 72000, "target": 120000, "elapsed_seconds": 728,
- "ep_rew_mean": 86.3, "scenario_metric": "success 97%"}
-```
-
-Kinds: `pi_message {text, final, turn}` (whole-word snapshots while the PI
-writes, `final: true` at turn end; the report appends only the new text, so a
-growing message never duplicates), `console_line {scope, text}`,
-`training_progress` (`operation_id, steps, target, elapsed_seconds, eta_seconds,
-ep_rew_mean, scenario_metric`), `eval_progress` (`operation_id, instrument,
-official, episodes, episodes_total, elapsed_seconds`), `execution_end
-{operation_id, status, text}`, `liveness {}`. The consumer still tolerates the
-optional `session_start`, `activity` and `tool` kinds for future emitters.
-
-Without an event file the report still renders the durable state, the
-reconstructed operation timeline and recorded usage; the output states the
-live-observation limitation on attachment. Foreign-campaign events are
-rejected; replayed events are deduplicated.
-
-### Typed event feed
-
 `runner/typed_events.py` writes the maintainer-only typed stream to
-`reports/tui_observations/<campaign-id>.events.jsonl`:
+`reports/tui_observations/<campaign-id>.events.jsonl` under the campaign root
+(that directory is presentation-only, ignored by campaign Git, and refused to PI
+and analyst reads). One file per campaign means a reset cannot surface earlier
+events. The writer is best-effort: it appends one JSON object per line, binds
+the campaign identity from durable state (also in the Copilot adapter process),
+and swallows every failure so presenting can never alter acceptance,
+execution, publication or recovery. `TUI_TYPED_EVENTS` moves the file or
+disables it with `off`. The report follows the current campaign's file by byte
+offset: only appended complete lines are read, and a shrunken or replaced file
+restarts from the beginning. It is the only observation stream; nothing is
+written to a console.
 
 ```json
 {"schema_version": 1, "event_id": "...", "campaign_id": "...",
@@ -382,33 +352,33 @@ rejected; replayed events are deduplicated.
              "scenario_metric": "success 97%"}}
 ```
 
-The writer is best-effort and never raises into the Runner. `TUI_TYPED_EVENTS`
-moves the file or disables it with `off`. A domain handler owns the typed fact
-and calls the reporting facade with `typed=False` to avoid a duplicate typed
-copy. Generic `console_line`/`console_card` records are produced by the reporting
-facade, not by a console renderer, and remain available without console output.
-The launcher writes typed and legacy transports independently: disabling or
-failing the legacy sink does not stop typed observations.
+Emitters:
 
-Domain emitters:
-
-- launcher (`researcher_session.ps1`, `run_research.ps1`): `session_start` and
-  status lines, written to both feeds;
+- launcher (`runner/launcher/events.py`): `session_start` (live stage timer and
+  resume identity), launcher status lines and cards as `notice`, and `error`
+  when a launch ends in failure;
+- `runner/reporting.py` `announce()`, `card()` and `boundary()`: `notice`
+  events (`{text, scope}` or `{title, body, scope}`), with the scope (`pi`,
+  `operation`, `warning`, `error`, ...) as the colour channel; `diagnostic()`
+  writes an `error` event and adds the message to the Runner's structured
+  result for the launcher;
 - `runner/run_experiment.py`: `session_started`, `session_ended`,
   `campaign_goal_review`, `inquiry_opened`, `inquiry_reframed`,
   `inquiry_closed`, `checkpoint_saved`, `campaign_concluded`,
-  `operation_requested`, `operation_started`, `operation_completed`,
-  `operation_failed`, `role_assigned`, `candidate_created`,
-  `scientific_model_validated`, and campaign/session usage totals;
+  `operation_requested`, `operation_started`, `operation_completed`
+  (including interrupted operations), `operation_failed`, `role_assigned`,
+  `candidate_created`, `scientific_model_validated`, campaign/session usage
+  totals and official-assessment progress;
 - `runner/execution.py`: `training_checkpoints` (one record per saved
   candidate), `measurement_panel_started`, `measurement_panel_completed`,
-  training/evaluation progress, `liveness` and structured warnings for stalls,
-  timeouts and stops;
+  `training_progress`, `eval_progress`, `liveness` and structured warnings for
+  stalls, timeouts and stops;
 - `runner/repository.py`: `publication_retry` and `publication_recovered`;
-- `runner/copilot/reporting.py` and `session_events.py`:
-  `pi_message`, `pi_context`, `tool_call_started`, `tool_call_completed`,
-  `tool_call_failed`, `tool_denied`, `file_changed`, `coding`,
-  `operation_submitted`, `warning` and `error`;
+- `runner/copilot/reporting.py` and `session_events.py`: `pi_message` (whole-word
+  snapshots at most every 2 s or at a paragraph break, `final: true` at turn
+  end; the report appends only new text), `pi_context`, `tool_call_started`,
+  `tool_call_completed`, `tool_call_failed`, `tool_denied`, `file_changed`,
+  `coding`, `operation_submitted`, `warning` and `error`;
 - `runner/copilot/usage.py`: `usage_update` per durable accounting row;
 - `runner/copilot/copilot_adapter.py`: `session_usage` at session end.
 
@@ -422,46 +392,22 @@ Training progress carries the scenario-owned metric as the rendered
 `scenario_metric` fragment; the Runner and the live progress path never read
 the scenario's success field directly.
 
-The TUI prefers the typed file and falls back to the legacy feed. Durable
-history is folded into the same reducer, so a late attach still rebuilds the
-campaign timeline.
-
-### Parity with the console
-
-The console stays fully functional and remains the presentation reference.
-`runner/console.py` and `runner/copilot/copilot_console.py` are optional terminal
-renderers only. They do not produce observations. The TUI imports shared
-descriptions from the neutral reporting modules, never from either renderer.
-
-Observation production can run with `reporting.rendering(None)` and
-`SessionReporter(renderer=None)`. These are internal composition interfaces,
-not a new launcher mode or a cutover. Default execution still uses the console.
-The tests assert that:
-
-- `announce()`, `card()` and `boundary()` print identical text with the typed
-  emitter on and off;
-- domain-owned lifecycle cards write their typed fact and no duplicate
-  `console_card`;
-- tool, coding, file and usage domain events carry the same numbers the console
-  prints, before compaction;
-- typed and legacy observations and accounting remain identical when both
-  console renderer modules are unavailable;
-- the TUI starts with imports of both console renderer modules blocked;
-- launcher facts survive absent renderers and a disabled or broken legacy sink.
-
-Historical feed compatibility remains. Transport redesign, controls and the
-eventual console cutover are separate work, not part of this pass.
+Without an event file the report still renders the durable state, the
+reconstructed operation timeline and recorded usage; the output states the
+live-observation limitation on attachment. Durable history is folded into the
+same reducer, so a late attach still rebuilds the campaign timeline.
+Foreign-campaign events are rejected; replayed events are deduplicated.
 
 ## Validation
 
 ```powershell
-uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py tests/autoresearch/test_campaign_controller.py tests/autoresearch/test_campaign_console.py
+uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py tests/autoresearch/test_campaign_controller.py tests/autoresearch/test_campaign_console.py tests/autoresearch/test_launcher.py tests/autoresearch/test_stop_control.py
 ```
 
-The tests cover the legacy and typed feed writers, console stdout identity
-with the typed emitter on/off and with domain-owned `typed=False` funnels,
-context merging, the projector contracts, the timeline reducer and the
-headless rendering behavior:
+The tests cover the typed feed writer and reader, the absence of console
+output from every producer, context merging, the projector contracts, the
+timeline reducer, the launcher's exclusion, stop and external-stop behaviour,
+and the headless rendering behavior:
 single-screen composition, stage IDs, goal gap, counters, pending chip,
 last-training proxy, live training reward/success, streamed/final PI
 deduplication, timeline grouping, default collapse, search/filter, timestamps

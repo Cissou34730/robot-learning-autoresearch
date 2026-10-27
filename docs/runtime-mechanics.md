@@ -21,34 +21,47 @@ The preliminary analyst keeps its publication tools and a restricted shell.
 mutating Git, dependency changes, direct test runs and reserved scripts.
 Coding delegation is not exposed in that phase.
 
-## Observations and terminal rendering
+## Launcher and observations
+
+The campaign launcher is the Python package `runner/launcher/`
+(`python -m runner.launcher`). Small modules own one concern each: options and
+command line (`options`, `cli`), campaign exclusion (`campaign_lock`),
+cooperative stop (`stop`), child processes and the run log (`child`), the trust
+gate (`trust`), Runner invocations (`runner_client`), PI prompts and objectives
+(`prompts`), the persistent Copilot runtime and its control channel
+(`copilot_runtime`), PI sessions (`pi_session`), operation submissions
+(`operation_bridge`), campaign phases (`phases`) and the loop (`campaign`);
+`assembly` composes them. `pstext` reproduces the PowerShell text rendering the
+earlier launcher used, so the PI's prompts and tool results are unchanged.
+
+Runner invocations write their data to a JSON result file (`--result-path`,
+`runner/invocation_result.py`): validation verdicts, errors and failure
+summaries. Standard output and error of every child go only to the launcher
+log `<campaign>\reports\launcher\<UTC time>-<pid>.log`; nothing is parsed from
+them. The launcher writes nothing to a console.
 
 `runner/reporting.py` and `runner/copilot/reporting.py` own observations and
 shared display descriptions. SDK callbacks and coding/operation handlers use
-`SessionReporter` and `CodingReporter`; the reporters retain accounting and
-message assembly even when their renderer is absent. The TUI imports these
-neutral modules, not the terminal implementations.
-
-`runner/console.py` and `runner/copilot/copilot_console.py` only render output.
-Default launches still use them. Internally, `reporting.rendering(None)` and
-`SessionReporter(renderer=None)` leave typed and legacy observations active
-without loading either console renderer. Launcher reporting follows the same
-boundary: status/card/session producers call optional `Write-Console*`
-functions, and typed output does not depend on the legacy sink succeeding.
+`SessionReporter` and `CodingReporter`, which keep accounting and message
+assembly and publish facts to the campaign's typed event feed
+(`runner/typed_events.py`). Runner and launcher announcements are `notice`
+events. There is no terminal renderer and no second feed; the TUI reads the
+typed feed. See [the report documentation](tui-report.md).
 
 This separation does not add campaign controls, change transport or change
-agent authority. See [the report documentation](tui-report.md) for validation.
+agent authority.
 
 The maintainer console orchestrates explicit initialize/reset/start/stop commands
 through `tui/controller.py`; it does not add scientific execution or recovery
 logic. Each tab has an explicit campaign root and independent readers.
-`tui/process.py` contains launchers and command helpers in Windows kill-on-close
-jobs, using the existing PowerShell 7 executable. A Windows desktop-app creation
-policy keeps Store/MSIX PowerShell's native descendants in the same boundary;
-no runtime reinstall or machine-wide policy changes are required. Normal stopping uses the
-existing private request file; timeout/failure cleanup is separate. See
-[the stop contract](external-campaign-stop.md) for deadlines and persistence
-limits. Direct PowerShell/console use remains available during issue #69.
+`tui/process.py` starts launchers and command helpers with `uv` inside Windows
+kill-on-close jobs. A Windows desktop-app creation policy keeps native
+descendants of packaged executables in the same boundary. Normal stopping uses
+the campaign's stop request in its Git directory; timeout/failure cleanup is
+separate. See [the stop contract](external-campaign-stop.md) for deadlines and
+persistence limits. A campaign started without the console
+(`tools.run_parallel`, `run_research.ps1`) runs without any console window and
+can be stopped from the console or by writing its stop request.
 
 ## Coding handoff
 

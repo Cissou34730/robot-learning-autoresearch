@@ -20,7 +20,6 @@ from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
 
 from runner import paths, typed_events
-from runner import reporting as console
 
 
 class PublicationError(RuntimeError):
@@ -532,14 +531,6 @@ def push_head() -> None:
             except RuntimeError as error:
                 if retry == GIT_PUSH_RETRIES or not _retryable_push_error(error):
                     raise
-                console.boundary(
-                    "warning",
-                    "PUBLICATION RETRY",
-                    f"retry {retry + 1}/{GIT_PUSH_RETRIES} "
-                    f"in {GIT_PUSH_RETRY_SECONDS} seconds",
-                    str(error),
-                    typed=False,
-                )
                 typed_events.emit(
                     "publication_retry",
                     {
@@ -554,12 +545,6 @@ def push_head() -> None:
                 time.sleep(GIT_PUSH_RETRY_SECONDS)
             else:
                 if retry:
-                    console.boundary(
-                        "runner",
-                        "PUBLICATION RECOVERED",
-                        f"retry {retry}/{GIT_PUSH_RETRIES}",
-                        typed=False,
-                    )
                     typed_events.emit(
                         "publication_recovered",
                         {"retry": retry, "limit": GIT_PUSH_RETRIES},

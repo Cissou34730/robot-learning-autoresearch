@@ -387,9 +387,7 @@ def test_a_long_operation_is_awaited_in_slices(monkeypatch, tmp_path, capsys):
     assert all(
         event["campaign_id"] == "c" and event["session_id"] == "s" for event in events
     )
-    assert capsys.readouterr().out == (
-        "  > submit_operation: running\n  > submit_operation: completed\n"
-    )
+    assert capsys.readouterr().out == ""
 
 
 # --- native children ----------------------------------------------------------------

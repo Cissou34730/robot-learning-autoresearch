@@ -31,8 +31,6 @@ def _layout(tmp_path: Path) -> control.WorkspaceLayout:
         (campaign / ".git").mkdir()
     harness = tmp_path / "harness"
     harness.mkdir()
-    (harness / "reset_research.ps1").write_text("$args", encoding="utf-8")
-    (harness / "run_research.ps1").write_text("$args", encoding="utf-8")
     return control.WorkspaceLayout(harness, root)
 
 
@@ -70,7 +68,9 @@ class FakeMachinery:
         self.fail_start: str | None = None
 
     # ProcessMachinery protocol -------------------------------------------
-    def start(self, folder: Path, arguments: list[str]) -> FakeChild:
+    def start(
+        self, folder: Path, arguments: list[str], control_directory: Path
+    ) -> FakeChild:
         if self.fail_start:
             raise RuntimeError(self.fail_start)
         child = FakeChild(exit_code=self.next_exit_code)
@@ -204,26 +204,26 @@ def test_settings_preserve_omitted_arguments():
         max_inquiries=15,
         stop_timeout_seconds=180,
     )
-    assert "-Provider" not in settings.launcher_arguments()
+    assert "--provider" not in settings.launcher_arguments()
     assert settings.launcher_arguments() == [
-        "-Model",
+        "--model",
         "gpt-6-luna",
-        "-Reasoning",
+        "--reasoning",
         "high",
-        "-MaxTimesteps",
+        "--max-timesteps",
         "360000",
-        "-MaxInquiries",
+        "--max-inquiries",
         "15",
-        "-StopTimeoutSeconds",
+        "--stop-timeout-seconds",
         "180",
     ]
     assert control.ResetConfig().arguments() == [
-        "-Mode",
-        "Fresh",
-        "-RecipeRef",
+        "--mode",
+        "fresh",
+        "--recipe-ref",
         control.DEFAULT_RECIPE_REF,
-        "-Clean",
-        "-Force",
+        "--clean",
+        "--force",
     ]
     with pytest.raises(control.ControllerError):
         control.ResetConfig(mode="Baseline").arguments()
@@ -266,16 +266,14 @@ def test_run_executes_reset_then_launch(tmp_path):
     reset_arguments = [
         call
         for call in runner.calls
-        if call[:2] != ["git", "-C"] and "reset_research.ps1" in " ".join(call)
+        if call[:2] != ["git", "-C"] and "runner.launcher.reset" in call
     ]
     assert len(reset_arguments) == 1
-    assert "-Clean" in reset_arguments[0]
+    assert "--clean" in reset_arguments[0]
     assert control.DEFAULT_RECIPE_REF in reset_arguments[0]
     started_folder, started_arguments = machinery.started[-1]
     assert started_folder == layout.folder(2)
-    joined = " ".join(started_arguments)
-    assert "-CampaignRoot" in joined
-    assert "-StopRequestPath" in joined
+    assert started_arguments[:2] == ["--campaign-root", str(layout.folder(2))]
     assert outcome.ok
 
 
@@ -298,7 +296,7 @@ def test_batch_reset_failure_stops_later_resets_and_all_launches(tmp_path):
     original = controller._runner
 
     def run(arguments):
-        if str(layout.folder(2)) in arguments and "-Mode" in arguments:
+        if str(layout.folder(2)) in arguments and "--mode" in arguments:
             return subprocess.CompletedProcess(
                 arguments, 1, stdout="", stderr="reset failed"
             )
@@ -493,26 +491,25 @@ def test_stop_sends_request_and_marks_stopping(tmp_path):
 
 
 @pytest.mark.parametrize("existing", [False, True])
-def test_launcher_stop_request_acknowledges_creation_without_overwriting(
-    tmp_path, existing
-):
+def test_launcher_stop_request_reports_creation_and_is_sent_once(tmp_path, existing):
     from tui.process import SupervisedLauncher
 
-    request = tmp_path / "stop.request"
+    request = tmp_path / "stop-request"
     if existing:
-        request.write_text("existing request", encoding="utf-8")
+        request.write_text("earlier request", encoding="utf-8")
+        os.utime(request, (0, 0))
     child = SupervisedLauncher(
         pid=0,
         job=None,
         _process=None,
         _thread=None,
-        _log=SimpleNamespace(stop_request_path=request),
+        _log=None,
+        stop_request=request,
     )
     assert child.request_stop() is (not existing)
     assert child.stop_requested
-    assert request.read_text(encoding="utf-8") == (
-        "existing request" if existing else ""
-    )
+    # A request left by an earlier run is refreshed so the launcher honours it.
+    assert request.stat().st_mtime > 0
     request.write_text("do not overwrite", encoding="utf-8")
     assert child.request_stop() is False
     assert request.read_text(encoding="utf-8") == "do not overwrite"
@@ -666,26 +663,26 @@ requires_windows = pytest.mark.skipif(
 
 
 @pytest.fixture(params=["installed", "windows-powershell"])
-def native_shell(monkeypatch, request):
-    """Exercise the installed PS 7 (including MSIX) and unpackaged PS 5.1.
+def native_shell(request):
+    """A shell that runs dummy scripts: installed PS 7 and unpackaged PS 5.1.
 
-    PS 5.1 is only a dummy-script regression for the Windows creation policy;
-    production campaign scripts still require PS 7.
+    The scripts only exercise the Windows creation and containment policy.
     """
-    from tui import process
+    import shutil
 
     if request.param == "installed":
-        try:
-            executable = process._launcher_executable()
-        except RuntimeError as error:
-            pytest.skip(str(error))
-    else:
-        executable = str(
-            Path(os.environ["SystemRoot"])
-            / "System32/WindowsPowerShell/v1.0/powershell.exe"
-        )
-    monkeypatch.setattr(process, "_launcher_executable", lambda: executable)
-    return executable
+        executable = shutil.which("pwsh")
+        if executable is None:
+            pytest.skip("PowerShell 7 is not installed")
+        return executable
+    return str(
+        Path(os.environ["SystemRoot"])
+        / "System32/WindowsPowerShell/v1.0/powershell.exe"
+    )
+
+
+def _script(shell: str, script: Path) -> list[str]:
+    return [shell, "-NoProfile", "-NonInteractive", "-File", str(script)]
 
 
 @requires_windows
@@ -695,7 +692,9 @@ def test_supervised_launcher_captures_output_and_reports_exit(tmp_path, native_s
     script = tmp_path / "dummy.ps1"
     script.write_text("Write-Output 'child-alive'\nexit 3\n", encoding="utf-8")
     builder = LauncherBuilder(tmp_path)
-    launcher = builder.start(script, [], tmp_path / "control")
+    launcher = builder.start_command(
+        _script(native_shell, script), tmp_path / "control"
+    )
     assert launcher.pid > 0
     assert launcher.poll() is False
     exit_code = launcher.wait(20.0)
@@ -721,7 +720,9 @@ def test_assignment_failure_does_not_run_the_suspended_child(
     )
     monkeypatch.setattr(kernel32, "AssignProcessToJobObject", lambda *_: False)
     with pytest.raises(OSError, match="assigning"):
-        LauncherBuilder(tmp_path).start(script, [], tmp_path / "control")
+        LauncherBuilder(tmp_path).start_command(
+            _script(native_shell, script), tmp_path / "control"
+        )
     assert not marker.exists()
     # Cleanup also releases every diagnostic handle on partial startup failure.
     (tmp_path / "control/console.out.log").unlink()
@@ -741,19 +742,21 @@ def test_packaged_creation_policy_failure_never_runs_the_child(
     )
     monkeypatch.setattr(kernel32, "UpdateProcThreadAttribute", lambda *_: False)
     with pytest.raises(OSError, match="disabling packaged process-tree breakaway"):
-        LauncherBuilder(tmp_path).start(script, [], tmp_path / "control")
+        LauncherBuilder(tmp_path).start_command(
+            _script(native_shell, script), tmp_path / "control"
+        )
     assert not marker.exists()
     (tmp_path / "control/console.out.log").unlink()
     (tmp_path / "control/console.err.log").unlink()
 
 
 @requires_windows
-def test_installed_powershell_uv_python_chain_stops_cooperatively(tmp_path):
-    from tui.process import LauncherBuilder
+def test_uv_python_chain_stops_cooperatively(tmp_path):
+    from tui.process import LauncherBuilder, _uv_executable
 
     harness = Path(__file__).resolve().parents[2]
     pidfile = tmp_path / "worker.pid"
-    request = tmp_path / "control/stop.request"
+    request = tmp_path / "stop-request"
     worker = tmp_path / "worker.py"
     worker.write_text(
         "import os, sys, time\nfrom pathlib import Path\n"
@@ -762,20 +765,27 @@ def test_installed_powershell_uv_python_chain_stops_cooperatively(tmp_path):
         "raise SystemExit(130)\n",
         encoding="utf-8",
     )
-    script = tmp_path / "dummy.ps1"
-    script.write_text(
-        f"& uv run --no-sync --project '{harness}' python '{worker}' '{pidfile}' '{request}'\n"
-        "exit $LASTEXITCODE\n",
-        encoding="utf-8",
+    child = LauncherBuilder(harness).start_command(
+        [
+            _uv_executable(),
+            "run",
+            "--no-sync",
+            "--project",
+            str(harness),
+            "python",
+            str(worker),
+            str(pidfile),
+            str(request),
+        ],
+        tmp_path / "control",
     )
-    child = LauncherBuilder(harness).start(script, [], request.parent)
+    child.stop_request = request
     try:
         deadline = time.monotonic() + 20
         while not pidfile.exists() and not child.poll() and time.monotonic() < deadline:
             time.sleep(0.05)
         worker_pid = int(pidfile.read_text(encoding="utf-8"))
         assert {child.pid, worker_pid}.issubset(child.job_process_ids())
-        assert len(child.job_process_ids()) >= 3  # launcher, uv and Python
         assert child.request_stop()
         assert child.wait(20) == 130
         assert child.job_process_ids() == []
@@ -795,7 +805,9 @@ def test_force_stop_terminates_the_whole_contained_tree(tmp_path, native_shell):
         encoding="utf-8",
     )
     builder = LauncherBuilder(tmp_path)
-    launcher = builder.start(script, [], tmp_path / "control")
+    launcher = builder.start_command(
+        _script(native_shell, script), tmp_path / "control"
+    )
     try:
         deadline = time.monotonic() + 15
         while (
@@ -829,10 +841,9 @@ def test_kill_on_close_contains_native_descendants_after_owner_crash(
         encoding="utf-8",
     )
     owner_code = (
-        "import os,time; from pathlib import Path; import tui.process as process; "
-        f"process._launcher_executable=lambda: {native_shell!r}; "
+        "import os,time; from pathlib import Path; "
         "from tui.process import LauncherBuilder; "
-        f"child=LauncherBuilder(Path({str(tmp_path)!r})).start(Path({str(script)!r}),[],Path({str(tmp_path / 'control')!r})); "
+        f"child=LauncherBuilder(Path({str(tmp_path)!r})).start_command({_script(native_shell, script)!r},Path({str(tmp_path / 'control')!r})); "
         "print(child.pid,flush=True); input(); os._exit(0)"
     )
     owner = subprocess.Popen(
@@ -946,16 +957,12 @@ def test_owned_launch_has_a_private_hidden_console_not_the_owners_console(tmp_pa
         "print(json.dumps({'window':window,'visible':bool(u.IsWindowVisible(window)),'codepage':k.GetConsoleCP()}))\n",
         encoding="utf-8",
     )
-    shell = tmp_path / "worker.ps1"
-    shell.write_text(
-        f"& '{sys.executable}' '{worker}'\nexit $LASTEXITCODE\n", encoding="utf-8"
-    )
     owner = tmp_path / "owner.py"
     owner.write_text(
         "import ctypes,json\nfrom pathlib import Path\nfrom tui.process import LauncherBuilder\n"
         "k=ctypes.WinDLL('kernel32'); k.GetConsoleWindow.restype=ctypes.c_void_p\n"
         "window=k.GetConsoleWindow(); assert window and k.GetConsoleCP()\n"
-        f"child=LauncherBuilder(Path({str(harness)!r})).start(Path({str(shell)!r}),[],Path({str(tmp_path / 'control')!r}))\n"
+        f"child=LauncherBuilder(Path({str(harness)!r})).start_command([{sys.executable!r},{str(worker)!r}],Path({str(tmp_path / 'control')!r}))\n"
         "try:\n"
         " assert child.wait(20)==0\n"
         " result=json.loads(child._log.stdout_path.read_text(encoding='utf-8-sig'))\n"

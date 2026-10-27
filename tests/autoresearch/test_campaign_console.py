@@ -30,8 +30,6 @@ def _workspace(tmp_path: Path) -> control.WorkspaceLayout:
         (campaign / ".git").mkdir(parents=True)
     harness = tmp_path / "harness"
     harness.mkdir()
-    (harness / "run_research.ps1").write_text("param() ", encoding="utf-8")
-    (harness / "reset_research.ps1").write_text("param() ", encoding="utf-8")
     return control.WorkspaceLayout(harness, root)
 
 
@@ -119,9 +117,7 @@ def test_console_start_command_launches_and_stop_command_stops(tmp_path):
             assert machinery.started, "the start command must reach the launcher"
             started_folder, started_arguments = machinery.started[-1]
             assert started_folder == layout.folder(1)
-            joined = " ".join(started_arguments)
-            assert "-CampaignRoot" in joined
-            assert "-StopRequestPath" in joined
+            assert started_arguments[:2] == ["--campaign-root", str(layout.folder(1))]
             assert app._controller.state("campaign-1").stage == "running"
 
             await _run_batch(app, pilot, "stop all")
@@ -380,9 +376,9 @@ def test_reset_options_failure_popup_and_persistent_details(tmp_path):
             await pilot.pause()
             await _run_batch(app, pilot, "run 1-2")
             assert len(calls) == 1
-            assert "Baseline" in calls[0] and "selected-baseline" in calls[0]
-            assert "-RecipeRef" not in calls[0] and "-Clean" not in calls[0]
-            assert "-Force" in calls[0]
+            assert "baseline" in calls[0] and "selected-baseline" in calls[0]
+            assert "--recipe-ref" not in calls[0] and "--clean" not in calls[0]
+            assert "--force" in calls[0]
             assert machinery.started == []
             assert isinstance(app.screen, ConsoleDetail)
             assert "synthetic reset failure" in app.screen.body_text

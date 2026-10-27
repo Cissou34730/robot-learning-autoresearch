@@ -20,8 +20,8 @@ Keep three audiences separate:
   reserved from every campaign agent.
 - Runner: `runner/`, `benchmark/`, `tools/` and the launch scripts. These are
   reserved from campaign reads.
-- Campaign agents: `contracts/`, `campaigns/brief.md`, session prompts in the
-  launch scripts, the PI and analyst system prompts in
+- Campaign agents: `contracts/`, `campaigns/brief.md`, session prompts in
+  `runner/launcher/prompts.py`, the PI and analyst system prompts in
   `runner/copilot/system_prompt.py` and tool descriptions in `runner/copilot/`.
   The system prompts carry the campaign reference files listed there; the path
   policy refuses PI and analyst reads of those files. The coder and
@@ -31,7 +31,7 @@ Keep three audiences separate:
 
 Text that campaign agents receive states the current rules only. Keep
 maintainer reasoning, change history, incident references and launcher
-guardrails out of it. The unattended inquiry cap (`-MaxInquiries`) is a
+guardrails out of it. The unattended inquiry cap (`--max-inquiries`) is a
 maintainer guardrail: never expose it, its value or its remaining count to
 campaign agents.
 
@@ -59,12 +59,17 @@ to the owning repository. Protected scientific package initializers stay
 protected although they are stored with the campaign.
 
 Campaign repositories live under the sibling folder `robot-learning-campaigns`,
-one per slot (`campaign-1` to `campaign-5`). `tools/run_parallel.ps1 -Count N`
-is the standard direct batch launcher. `.\campaign_tui.ps1` (or
-`uv run python -m tui`) opens the
+one per slot (`campaign-1` to `campaign-5`).
+`uv run python -m tools.run_parallel --count N` is the standard direct batch
+launcher. `.\campaign_tui.ps1` (or `uv run python -m tui`) opens the
 interactive campaign console without starting work; its explicit commands
-reuse the existing initialization, reset and launch scripts. The launch and reset scripts accept
-`-CampaignRoot` and default to `campaign-1`. Direct maintainer Python commands select a campaign
+reuse the existing initialization, reset and launch entry points. The launcher
+(`python -m runner.launcher`, wrapped by `run_research.ps1`) and the reset
+(`python -m runner.launcher.reset`) accept `--campaign-root` and default to
+`campaign-1`. The launcher writes no console output: progress goes to the
+campaign's typed event feed and errors to standard error and its launcher log.
+Runner invocations return data to the launcher in a structured result file
+(`--result-path`), never on standard output. Direct maintainer Python commands select a campaign
 with `ROBOT_LEARNING_CAMPAIGN_ROOT` and use the harness Python environment.
 Campaign Git operations run only in the campaign repository and never push.
 Harness development is committed and pushed separately and requires no merge

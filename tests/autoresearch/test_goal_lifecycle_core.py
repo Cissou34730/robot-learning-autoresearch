@@ -13,7 +13,14 @@ from pathlib import Path
 
 import pytest
 
-from runner import execution, paths, protocol, repository, run_experiment
+from runner import (
+    execution,
+    invocation_result,
+    paths,
+    protocol,
+    repository,
+    run_experiment,
+)
 
 
 def _init_git_worktree(path: Path) -> None:
@@ -1188,7 +1195,7 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
 
 
 def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "startup", "Repair a failed training operation.")
@@ -1232,9 +1239,16 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
     with pytest.raises(ValueError, match="--reaccept-pending"):
         run_experiment.execute_pending_operation()
     assert work["calls"] == 0
-    monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--execute-pending"])
+    result = tmp_path / "result.json"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["run_experiment.py", "--execute-pending", "--result-path", str(result)],
+    )
     assert run_experiment.main() == 1
-    assert "--reaccept-pending" in capsys.readouterr().out
+    invocation_result.write(1)
+    errors = json.loads(result.read_text(encoding="utf-8"))["errors"]
+    assert any("--reaccept-pending" in error for error in errors)
     assert work["calls"] == 0
     second = run_experiment.reaccept_pending_operation()
     assert second["id"] == "T2"

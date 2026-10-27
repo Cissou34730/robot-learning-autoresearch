@@ -715,10 +715,6 @@ def announce_usage(args) -> None:
             f"domain:session_usage:{args.session_id}:{args.phase or ''}:{args.attempt}"
         ),
     )
-    runner_console.announce(
-        f"[session] USAGE | {args.phase or 'session'} | {summary}",
-        typed=False,
-    )
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -61,11 +61,9 @@ Inspect these sources instead of treating this document as an execution contract
 
 | Source | Relevant behavior |
 |---|---|
-| `run_research.ps1` | Campaign loop, stage transitions, process output, durable recovery, and existing shutdown behavior |
-| `researcher_session.ps1` | Launcher status and card formatting |
-| `runner/console.py` | Runner cards, progress rewriting, redirected progress snapshots, and usage summaries |
-| `runner/copilot/copilot_console.py` | PI message streaming, tool output, file changes, and child-output suppression |
-| `runner/copilot/copilot_controller.ps1` | Persistent adapter process and trusted operation control channel |
+| `runner/launcher/` | Campaign loop, stage transitions, launcher events, durable recovery, and shutdown behavior (formerly `run_research.ps1`, `researcher_session.ps1` and `runner/copilot/copilot_controller.ps1`) |
+| `runner/launcher/copilot_runtime.py`, `operation_bridge.py` | Persistent adapter process and trusted operation control channel |
+| `runner/reporting.py`, `runner/copilot/reporting.py` | Runner notices, PI message assembly, tool results, file changes and usage; the former console renderers `runner/console.py` and `runner/copilot/copilot_console.py` were removed on 27 October 2026 |
 | `runner/copilot/session_events.py` | Observable SDK messages, tools, usage, and session errors |
 | `runner/copilot/coding_session.py` | Coder/reviewer activity and separate usage accounting |
 | `runner/copilot/usage.py` | Durable usage rows and unavailable values |

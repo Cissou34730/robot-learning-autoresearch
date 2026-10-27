@@ -6,7 +6,7 @@ import json
 from datetime import UTC, datetime, timedelta
 
 from tui.demo import demo_clock, demo_records, demo_state, demo_usage_rows
-from tui.events import CampaignEventFeed, TypedJsonlFeed, synthesize_history
+from tui.events import TypedJsonlFeed, synthesize_history
 from tui.observations import Observation
 from tui.timeline import TimelineReducer
 
@@ -254,34 +254,6 @@ def test_typed_feed_parses_envelope_and_rejects_schema(tmp_path):
     feed = TypedJsonlFeed(path, campaign_id="campaign-1")
     assert feed.poll() == []
     assert feed.rejected == "unsupported typed event schema"
-
-
-def test_campaign_feed_prefers_typed_file(tmp_path):
-    typed = tmp_path / "campaign.events.jsonl"
-    legacy = tmp_path / "campaign.jsonl"
-    legacy.write_text(
-        json.dumps({"kind": "liveness", "ts": "2026-10-24T12:00:00+00:00"}) + "\n",
-        encoding="utf-8",
-    )
-    typed.write_text(
-        json.dumps(
-            {
-                "schema_version": 1,
-                "event_id": "evt-1",
-                "campaign_id": "campaign-1",
-                "ts": "2026-10-24T12:00:01+00:00",
-                "kind": "run_state",
-                "payload": {"state": "executing"},
-            }
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    feed = CampaignEventFeed(typed, legacy, campaign_id="campaign-1")
-    events = feed.poll()
-    assert len(events) == 1
-    assert events[0].kind == "run_state"
-    assert feed.path == typed
 
 
 def _event(kind, ts, fields=None, **identity):

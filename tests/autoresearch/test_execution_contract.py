@@ -8,7 +8,25 @@ from pathlib import Path
 
 import pytest
 
-from runner import execution, paths, repository, run_experiment
+from runner import execution, invocation_result, paths, repository, run_experiment
+
+
+def _checked(tmp_path: Path) -> tuple[int, str]:
+    """Run the operation check and return its exit code and launcher message."""
+    result = tmp_path / "check-result.json"
+    invocation_result.configure(result)
+    code = run_experiment.check_operation()
+    invocation_result.write(code)
+    validation = json.loads(result.read_text(encoding="utf-8"))["validation"]
+    return code, validation["message"]
+
+
+def _result_errors(tmp_path: Path) -> str:
+    result = tmp_path / "execution-result.json"
+    invocation_result.write(1)
+    errors = json.loads(result.read_text(encoding="utf-8"))["errors"]
+    invocation_result.configure(result)
+    return "\n".join(errors)
 
 
 def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") -> dict:
@@ -155,7 +173,7 @@ def test_protected_files_are_rejected_from_training_delta(monkeypatch, tmp_path)
 
 
 def test_check_operation_rejects_scientific_ownership_without_state_mutation(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path
 ):
     _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(
@@ -164,14 +182,15 @@ def test_check_operation_rejects_scientific_ownership_without_state_mutation(
     _write_request(_training())
     before = repository.read_state()
 
-    assert run_experiment.check_operation() == 1
-
-    assert "human-owned" in capsys.readouterr().out
+    code, message = _checked(tmp_path)
+    assert code == 1
+    assert message.startswith("OPERATION_INVALID: ")
+    assert "human-owned" in message
     assert repository.read_state() == before
 
 
 def test_check_operation_rejects_protected_panel_overlap_without_acceptance(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
     artifact = tmp_path / "archive" / "candidate"
@@ -214,14 +233,14 @@ def test_check_operation_rejects_protected_panel_overlap_without_acceptance(
     )
     before = repository.read_state()
 
-    assert run_experiment.check_operation() == 1
-
-    assert "overlap" in capsys.readouterr().out.lower()
+    code, message = _checked(tmp_path)
+    assert code == 1
+    assert "overlap" in message.lower()
     assert repository.read_state() == before
 
 
 def test_check_operation_rejects_missing_python_module_without_acceptance(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path
 ):
     _configure(monkeypatch, tmp_path)
     artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
@@ -243,14 +262,14 @@ def test_check_operation_rejects_missing_python_module_without_acceptance(
     )
     before = repository.read_state()
 
-    assert run_experiment.check_operation() == 1
-
-    assert "python_module source does not exist" in capsys.readouterr().out
+    code, message = _checked(tmp_path)
+    assert code == 1
+    assert "python_module source does not exist" in message
     assert repository.read_state() == before
 
 
 def test_check_operation_rejects_invalid_current_params_without_acceptance(
-    monkeypatch, tmp_path, capsys
+    monkeypatch, tmp_path
 ):
     _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(
@@ -261,9 +280,9 @@ def test_check_operation_rejects_invalid_current_params_without_acceptance(
     _write_request(_training())
     before = repository.read_state()
 
-    assert run_experiment.check_operation() == 1
-
-    assert "current_params.json is invalid" in capsys.readouterr().out
+    code, message = _checked(tmp_path)
+    assert code == 1
+    assert "current_params.json is invalid" in message
     assert repository.read_state() == before
 
 
@@ -397,9 +416,10 @@ def test_transfer_parent_is_revalidated_at_execution(monkeypatch, tmp_path):
 )
 @pytest.mark.parametrize("requested_steps", [5, 10])
 def test_completed_training_transaction_retries_publication_without_retraining(
-    monkeypatch, tmp_path, failure_point, requested_steps, capsys
+    monkeypatch, tmp_path, failure_point, requested_steps
 ):
     state = _configure(monkeypatch, tmp_path)
+    invocation_result.configure(tmp_path / "execution-result.json")
     monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
     request = _training()
     request["training"]["steps"] = requested_steps
@@ -473,13 +493,13 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     assert interrupted["pending_operation"]["failure"] is None
     assert interrupted["pending_operation"]["request"] == request
     assert interrupted["pending_operation"]["data"]["archived_candidates"] == archived
-    assert "PUBLICATION FAILED" in capsys.readouterr().out
+    assert "PUBLICATION FAILED" in _result_errors(tmp_path)
 
     if failure_point == "resumed_finalization":
         with pytest.raises(OSError, match="publication failure"):
             run_experiment.execute_pending_operation()
         assert repository.read_state() == interrupted
-        assert "PUBLICATION FAILED" in capsys.readouterr().out
+        assert "PUBLICATION FAILED" in _result_errors(tmp_path)
 
     assert run_experiment.execute_pending_operation() == 0
     assert calls["training"] == 1

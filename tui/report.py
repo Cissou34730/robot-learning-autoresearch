@@ -34,12 +34,11 @@ from runner import reporting as console
 from tui import projector
 from tui.event_log import EventLog, FilterScreen, RawEventScreen
 from tui.events import (
-    CampaignEventFeed,
-    legacy_path_for,
+    TypedJsonlFeed,
     synthesize_history,
     typed_path_for,
 )
-from tui.observations import JsonlFeed, Observation
+from tui.observations import Observation
 from tui.timeline import TimelineReducer
 
 MIN_COLUMNS = 48
@@ -472,7 +471,6 @@ class CampaignPanel(Widget):
         self._campaign_id: str | None = None
         self._timeline = TimelineReducer(self._campaign_root)
         self._history_events: list[Observation] = []
-        self._feed_mode = ""
         self._log_query = ""
         self._log_categories: set[str] = set()
         self._search_visible = False
@@ -571,7 +569,7 @@ class CampaignPanel(Widget):
             self._feed = SyntheticFeed(demo_schedule())
             return
         if self._events_path is not None:
-            self._feed = JsonlFeed(self._events_path)
+            self._feed = TypedJsonlFeed(self._events_path)
             return
         # The per-campaign file is known only once the campaign identity is read.
         self._feed = None
@@ -609,7 +607,6 @@ class CampaignPanel(Widget):
         self.query_one("#output", EventLog).reset_campaign()
         self._timeline.clear()
         self._history_events = []
-        self._feed_mode = ""
         self._log_query = ""
         self._log_categories = set()
         self._search_visible = False
@@ -641,18 +638,12 @@ class CampaignPanel(Widget):
         if self._demo or self._events_path is not None or not campaign_id:
             return
         campaign = str(campaign_id)
-        if (
-            isinstance(self._feed, CampaignEventFeed)
-            and self._feed_campaign == campaign
-        ):
+        if isinstance(self._feed, TypedJsonlFeed) and self._feed_campaign == campaign:
             return
-        self._feed = CampaignEventFeed(
-            typed_path_for(campaign, self._campaign_root),
-            legacy_path_for(campaign, self._campaign_root),
-            campaign_id=campaign,
+        self._feed = TypedJsonlFeed(
+            typed_path_for(campaign, self._campaign_root), campaign_id=campaign
         )
         self._feed_campaign = campaign
-        self._feed_mode = ""
 
     # ------------------------------------------------------------------
     # Snapshot refresh
@@ -667,12 +658,8 @@ class CampaignPanel(Widget):
         campaign_id = (state or {}).get("campaign", {}).get("id")
         self._switch_campaign(campaign_id)
         self._ensure_feed(campaign_id)
-        if isinstance(self._feed, JsonlFeed) and campaign_id:
+        if isinstance(self._feed, TypedJsonlFeed) and campaign_id:
             self._feed.campaign_id = str(campaign_id)
-        if isinstance(self._feed, CampaignEventFeed) and campaign_id:
-            self._feed.campaign_id = str(campaign_id)
-            self._feed.typed.campaign_id = str(campaign_id)
-            self._feed.legacy.campaign_id = str(campaign_id)
         self._history_events = synthesize_history(state, records, usage_rows)
         for event in self._history_events:
             self._timeline.ingest(event)
@@ -1336,7 +1323,7 @@ class CampaignPanel(Widget):
             elif "warning" in style:
                 severity = scope = "warning"
         event = Observation(
-            kind="console_line",
+            kind="notice",
             ts=stamp,
             fields={"text": _display_text(_clean_text(text)), "scope": scope},
             event_id=f"internal:{stamp.isoformat()}:{hash(text)}",
@@ -1397,13 +1384,7 @@ class CampaignPanel(Widget):
                 "Demonstration mode: every value here is synthetic.",
                 style=f"bold {palette.error}",
             )
-        feed_ready = False
-        if isinstance(self._feed, CampaignEventFeed):
-            feed_ready = (
-                self._feed.typed_path.exists() or self._feed.legacy_path.exists()
-            )
-        elif isinstance(self._feed, JsonlFeed):
-            feed_ready = self._feed.path.exists()
+        feed_ready = isinstance(self._feed, TypedJsonlFeed) and self._feed.path.exists()
         if not self._demo and not feed_ready:
             self._append(
                 now,
@@ -1479,13 +1460,6 @@ class CampaignPanel(Widget):
         if feed is None:
             return
         events = feed.poll()
-        mode = getattr(feed, "mode", "")
-        if mode and self._feed_mode and mode != self._feed_mode:
-            self._timeline.clear()
-            for event in self._history_events:
-                self._timeline.ingest(event)
-        if mode:
-            self._feed_mode = mode
         rejected = getattr(feed, "rejected", None)
         if rejected:
             self._note_feed_error(rejected)
@@ -1566,8 +1540,13 @@ class CampaignPanel(Widget):
         }
         self._render_progress()
 
-    def _event_execution_end(self, event: Observation) -> None:
-        operation = _clean_text(event.fields.get("operation_id") or "")
+    def _event_operation_completed(self, event: Observation) -> None:
+        operation = _clean_text(
+            event.operation_id
+            or event.fields.get("operation_id")
+            or event.fields.get("id")
+            or ""
+        )
         if self._training and self._training.get("operation_id") == operation:
             self._training = None
         if self._evaluation and self._evaluation.get("operation_id") == operation:
@@ -1575,6 +1554,8 @@ class CampaignPanel(Widget):
         self._render_progress()
         self._render_training_status()
         self._apply_layout()
+
+    _event_operation_failed = _event_operation_completed
 
     # ------------------------------------------------------------------
     # Reading status

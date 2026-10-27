@@ -1,9 +1,8 @@
 """Maintainer-only typed event feed for the structured operator log.
 
-The feed is a sibling of ``observation_feed``: one JSON object per line, one
-file per campaign, best-effort and one-way. It carries full payloads before
-console formatting shortens them. The campaign state, results and console
-stdout are never modified.
+The feed is one JSON object per line, one file per campaign, best-effort and
+one-way. It is the only live source of the operator TUI and carries full
+payloads. The campaign state and results are never modified.
 """
 
 from __future__ import annotations

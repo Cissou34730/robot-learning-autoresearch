@@ -7,6 +7,29 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-10-27 - Python launcher without console output
+
+- **Launcher:** the campaign launcher, its PI session handling, the Copilot
+  control channel, the reset entry point and the parallel tool are Python
+  (`runner.launcher`, `runner.launcher.reset`, `tools.run_parallel`).
+  `run_research.ps1` only forwards to the Python launcher; options use
+  `--kebab-case` names (`--campaign-root`, `--max-inquiries`, ...).
+- **Unchanged for agents:** PI prompts and session objectives are
+  byte-identical to the PowerShell launcher's, verified on 847 recorded
+  campaign states; contracts are untouched. Operation tool results carry the
+  same fields, now in a fixed key order and with recorded timestamps instead of
+  PowerShell's local-time conversion. Operation permissions and the inquiry cap
+  are unchanged; the cap stays hidden from campaign agents.
+- **No console output:** campaigns can still run without the TUI, but the
+  launcher writes nothing to a console. The typed event feed is the only
+  progress stream; launcher failures go to standard error and the launcher log.
+  The console renderers and the second (legacy) observation feed were removed.
+- **Structured results:** the Runner returns validation verdicts and errors to
+  the launcher in a result file (`--result-path`), never on standard output.
+- **Stop:** each campaign has one stop request in its Git administration
+  directory. Any maintainer tool may create it; the launcher ignores a request
+  older than its own start.
+
 ## 2026-10-20 - Three audiences and a hidden inquiry cap
 
 - **Audiences:** maintainer text (`AGENTS.md`, `README.md`, `docs/`,

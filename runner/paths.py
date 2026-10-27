@@ -87,15 +87,25 @@ def python_environment(campaign_root: Path | None = None) -> dict[str, str]:
     return environment
 
 
-def reset_marker_path(campaign_root: Path) -> Path:
-    """Unfinished-reset record in Git administration, outside the worktree."""
+def git_admin_path(campaign_root: Path) -> Path:
+    """Git administration directory: outside the worktree and publication."""
     admin = campaign_root / ".git"
     if admin.is_file():
         pointer = admin.read_text(encoding="utf-8").strip()
         if not pointer.startswith("gitdir:"):
             raise RuntimeError(f"Cannot locate Git administration for {campaign_root}.")
         admin = (campaign_root / pointer.split(":", 1)[1].strip()).resolve()
-    return admin / "reset-incomplete.json"
+    return admin
+
+
+def reset_marker_path(campaign_root: Path) -> Path:
+    """Unfinished-reset record in Git administration, outside the worktree."""
+    return git_admin_path(campaign_root) / "reset-incomplete.json"
+
+
+def stop_request_path(campaign_root: Path) -> Path:
+    """The one cooperative stop request of a campaign, whoever launched it."""
+    return git_admin_path(campaign_root) / "stop-request"
 
 
 CAMPAIGNS_DIR = ROOT / "campaigns"
