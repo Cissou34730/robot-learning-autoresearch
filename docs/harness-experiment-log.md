@@ -65,8 +65,9 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
-**27 October 2026.** Branch `harness` with the Python launcher (see the launch
-entry below).
+**27 October 2026.** Branch `harness` at `375ca4fb` (Python launcher) plus
+documentation commits, pushed to `origin/harness`. Latest round: round 4,
+0 of 3 passed (see [Round 4](#parallel-round-4-27-october)).
 
 - **Repositories.** The harness is published on GitHub branch `harness`. Campaigns
   live in local repositories under one plain folder beside the harness,
@@ -128,6 +129,9 @@ under it.
 
 | Campaign | Date | Harness | Outcome | Time | AIU | Record |
 |---|---|---|---|---|---|---|
+| `a51fadff` | 27 Oct | round 4 (`375ca4fb`, Python launcher) | Stopped by the maintainer after I13; best T6:checkpoint-120832 389-393/400 | 5 h 13 | 115.7 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-a51fadff-20261027.html) |
+| `5489d042` | 27 Oct | round 4 | Stopped by the maintainer during I10 (T15 pending, resumable); best T3:checkpoint-110592 about 97.5% | 5 h 14 | 100.2 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-5489d042-20261027.html) |
+| `c7be4376` | 27 Oct | round 4 | Failed 195/200 at an estimated 41% pass chance | 1 h 47 | 52.1 | [Round 4](#parallel-round-4-27-october), [report](research-overview/robot-campaign-c7be4376-20261027.html) |
 | `de7af8af` | 26 Oct | round 3 (`3b288c83`) | **Passed** 200/200; reflection I/O found late (I6) | 3 h 21 | 72.1 | [Parallel rounds](#parallel-rounds-25-26-october) |
 | `17e9764f` | 26 Oct | round 3 | **Passed** 200/200; reflection I/O in I1 | 50 min | 16.5 | [Parallel rounds](#parallel-rounds-25-26-october) |
 | `38ad68c6` | 26 Oct | round 3 | Stopped at the AIU cap; best about 85% on a fixed-gain controller base | about 4 h | 123.0 | [Parallel rounds](#parallel-rounds-25-26-october) |
@@ -155,6 +159,28 @@ under it.
 | `4a65a241` | 21 Oct | dirty worktree | Stopped after about 6 h; every protected evaluation rejected | about 6 h | 205.8 | Ledger 21 Oct |
 | `758843c0` | 20 Oct | `2b52e36a` | Failed 189/200 | — | 60.9 | Ledger 20 Oct |
 | `1c940d68` | 20 Oct | before `2b52e36a` | Failed 189/200 | — | — | [Report](research-overview/robot-campaign-1c940d68-20261020.html) |
+
+### Parallel round 4 (27 October)
+
+First round on the Python launcher (`375ca4fb`), started with
+`uv run python -m tools.run_parallel --count 3`. PI prompts and system prompts
+were byte-identical to the PowerShell launcher's (recorded system prompts hash
+the same before and after the port). No campaign used the reflection symmetry
+in the policy, although all three scientific models stated it as a consistency
+check; all three plateaued at about 97.5% with the residual failures in the
+shoulder-limit sector. `c7be4376` tried two focal samplers, a reward variant, a
+fixed-gain joint-target policy (0/800) and a branch sentinel, then requested
+the assessment knowing its estimated pass chance was 41% and failed 195/200.
+`a51fadff` (13 inquiries) and `5489d042` (10 inquiries) kept tuning; new
+representations trained from scratch (torque and joint-target variants) scored
+0-159/400. The maintainer stopped both at about 5 h 13. Harness behaviour:
+launchers wrote no console output; invalid requests were refused at the check
+step; PI-code failures (T10, M24 in `a51fadff`) returned their traceback as
+`implementation_error` and were repaired. At the stop, `a51fadff`'s Runner was
+interrupted while loading state and exited with the uncaught-interrupt status
+`0xC000013A` instead of 130; T13 had already completed and been published, and
+the launcher ended cooperatively. `5489d042` stopped with 130 and T15 left at
+`training_dispatched` for resume.
 
 ### Parallel rounds (25-26 October)
 
@@ -602,11 +628,14 @@ The historical evidence remains valid.
 
 ### Next maintainer actions
 
-1. Run the next parallel round of three on `4ce2fdb1` with
-   `tools/run_parallel.ps1`. Check, for each campaign: whether the scientific
+1. Round 4 (27 October, Python launcher) ran: 0 of 3 passed, and no campaign
+   used the reflection symmetry in the policy although every scientific model
+   stated it. Before the next round, decide whether that finding calls for a
+   change. Then run it with `uv run python -m tools.run_parallel --count 3` and
+   check, for each campaign: whether the scientific
    model states the invariances and when the PI uses them (OI-053); the
    development success rate at each official-assessment request, against the
-   earlier failed requests at 40% and 64% estimated pass chance (OI-054);
+   earlier failed requests at 40%, 41% and 64% estimated pass chance (OI-054);
    whether the first experiment changes one part of the recipe or several
    (OI-055); the share of AIU spent by the coder and reviewer.
 2. Classify OI-024 reruns by their actual information gain or corrected
@@ -628,6 +657,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-27 | Parallel round 4 (Python launcher) | `a51fadff` and `5489d042` stopped by the maintainer at about 5 h 13 (115.7 and 100.2 AIU, both near 97.5%); `c7be4376` failed 195/200 (1 h 47, 52.1 AIU). No campaign used the reflection symmetry in the policy. Reports copied into `docs/research-overview/`. See [Round 4](#parallel-round-4-27-october). |
 | 2026-10-27 | Python launcher; TUI-only output | Branch `feature/python-launcher`. `run_research.ps1`, `researcher_session.ps1`, `researcher_mutex.ps1`, `runner/copilot/copilot_controller.ps1`, `reset_research.ps1` and `tools/run_parallel.ps1` replaced by `runner/launcher/` (small modules: options, campaign lock, stop, children, trust gate, Runner client, prompts, Copilot runtime, PI sessions, operation bridge, phases, loop), `runner.launcher.reset` and `tools/run_parallel.py`. `run_research.ps1` forwards to the Python launcher; `researcher_session.ps1` and `researcher_mutex.ps1` remain as retired placeholders because `contracts/authority.md` lists them. The Runner returns validation verdicts and errors in a structured result file (`--result-path`) instead of standard output; `--operation-state-input` removed. One stop request per campaign in its Git directory, so the TUI stops campaigns it did not start; a request older than the launcher start is ignored. Console renderers (`runner/console.py`, `runner/copilot/copilot_console.py`) and the legacy `<campaign-id>.jsonl` feed removed: launches write no console output, Runner/launcher announcements are typed `notice` events. PI prompts, retry, repair and objectives compared on 847 recorded campaign states: 4,797 comparisons, 0 differences. Accepted differences: operation tool-result JSON now has a fixed key order and keeps recorded timestamps (PowerShell converted dates to local time); Runner error detail comes from the structured result. Tests: 746 pass (one TUI layout test failed once under load, passed on rerun); `tests/e2e` fails as before. Contracts and prompt text unchanged. |
 | 2026-10-26 | Campaigns root and parallel runs as the standard launch | Campaign repositories move under one plain folder, `robot-learning-campaigns\campaign-1` to `campaign-5`: the former `robot-learning-campaigns` becomes `campaign-1`, `-run2` and `-run3` become `campaign-2` and `campaign-3`. `tools/run_parallel.ps1 -Count N` (1 to 5) selects the slots and initializes missing ones from an existing slot; `run_research.ps1`, `reset_research.ps1` and `tools/run-report.ps1` default to `campaign-1`. README, AGENTS, reset, stop, policy-runtime and TUI docs updated. The round 1 and round 3 reports were copied from `%TEMP%` into `docs/research-overview/`. |
 | 2026-10-26 | Documentation housekeeping | Historical plans, RCAs and reviews moved to `docs/archive/`, the two program proposals to `docs/proposals/`, links updated (`a985fa57`). This log reordered into rules, current state, campaigns, register, ledger and history, with ledger rows sorted newest first into one table; word counts confirm no text was lost apart from the obsolete "Follow-up outside the numbered register" stub. Register updated (OI-041, OI-049 and OI-052 closed; OI-051 implemented; OI-053 to OI-056 added; status **Implemented** added). |

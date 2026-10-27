@@ -592,7 +592,7 @@
         accepted operations. It does not choose the science.</p>
       <p class="intro">The example is a two-joint arm that must reach a target and hold still. Training is one tool, not
         the whole process.</p>
-      <p class="snapshot">Last reviewed <time datetime="2026-10-26">26 October 2026</time>. This is a static
+      <p class="snapshot">Last reviewed <time datetime="2026-10-27">27 October 2026</time>. This is a static
         architecture and status overview, not a live campaign monitor. The filename is retained for existing links. The
         <a href="../harness-experiment-log.md">harness tracker</a> is the source for status and issues; this page
         mirrors
@@ -619,7 +619,11 @@
       <p class="section-label">1 / STATUS</p>
       <h2 id="status-heading">Where the project stands</h2>
       <div class="note" style="margin-bottom: 16px">
-        <p><strong>Latest results:</strong> three rounds of three campaigns ran in parallel on 25 and 26 October.
+        <p><strong>Latest results:</strong> round 4 (27 October, first on the Python launcher) passed 0 of 3:
+          <code>c7be4376</code> failed 195/200 after 1 h 47; <code>a51fadff</code> and <code>5489d042</code> plateaued
+          at about 97.5% and were stopped after about 5 h 13. No campaign used the reflection symmetry in the policy,
+          although every scientific model stated it. Earlier, three rounds of three campaigns ran in parallel on 25 and
+          26 October.
           Round 3, with the analyst's invariance item and the program changes, passed 2 of 3:
           <code>17e9764f</code> at 200/200 in 50 minutes for 16.5 AIU, the fastest pass so far, and
           <code>de7af8af</code> at 200/200 in 3 h 21. Rounds 1 and 2 passed 1 of 6. See <a href="#reports">Campaigns</a>
@@ -627,12 +631,15 @@
         </p>
         <p><strong>What decides success:</strong> every campaign that used the arm's reflection symmetry on a
           direct-torque policy passed quickly; every campaign that did not use it stalled at about 97.5%. The scientific
-          model stated the symmetry in 1 of 28 models before 26 October and in 3 of 3 since. Three campaigns cannot
-          confirm a rate.</p>
-        <p><strong>Harness:</strong> branch <code>harness</code> at <code>4ce2fdb1</code> plus documentation commits,
-          not yet pushed. Changes since 24 October: duplicate panels refused, mechanism tests account for the contrast
-          with comparable successes, the analyst models invariances, operations wait in 25-minute slices, the PI sees
-          elapsed time and AI usage, and <code>tools/run_parallel.ps1</code> runs several campaigns at once.</p>
+          model stated the symmetry in 1 of 28 models before 26 October and in 6 of 6 since, but in round 4 none of
+          the three PIs used it in the policy. Six campaigns cannot confirm a rate.</p>
+        <p><strong>Harness:</strong> branch <code>harness</code> at <code>375ca4fb</code>, pushed. On 27 October the
+          launcher, the reset and the parallel tool moved from PowerShell to Python (<code>runner.launcher</code>,
+          <code>runner.launcher.reset</code>, <code>tools.run_parallel</code>); PI prompts, system prompts, tools and
+          contracts are unchanged. Launches write no console output; the TUI follows the campaign's typed event feed
+          and can stop any running campaign. Changes since 24 October: duplicate panels refused, mechanism tests
+          account for the contrast with comparable successes, the analyst models invariances, operations wait in
+          25-minute slices, the PI sees elapsed time and AI usage, and several campaigns can run at once.</p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
@@ -748,28 +755,31 @@
       </div>
       <div class="card" style="margin-top: 16px">
         <h3>Run campaigns from the harness folder</h3>
-        <p><strong>Standard: 1 to 5 campaigns at once.</strong> <code>.\tools\run_parallel.ps1 -Count 3</code> uses
+        <p><strong>Standard: 1 to 5 campaigns at once.</strong> <code>uv run python -m tools.run_parallel --count 3</code> uses
           <code>campaign-1</code> to <code>campaign-3</code>, initializes missing slots from an existing one, resets
           each
-          to the recipe, launches each campaign in its own window and starts a monitor that stops a campaign
-          cooperatively at 6 h of active time or 120 AIU (defaults; the PI never sees these caps). Transcripts and one
-          report per campaign go to <code>%TEMP%\robot-learning\parallel-&lt;time&gt;</code>.
+          to the recipe, launches each campaign in the background without a window and starts a monitor that stops a
+          campaign cooperatively at 6 h of active time or 120 AIU (defaults; the PI never sees these caps). Launcher
+          logs and one report per campaign go to <code>%TEMP%\robot-learning\parallel-&lt;time&gt;</code>. Watch and
+          stop campaigns with <code>.\campaign_tui.ps1</code>.
         </p>
-        <p><strong>One campaign by hand.</strong> <code>.\run_research.ps1</code> launches or resumes the selected
-          campaign. It does not reset it.</p>
+        <p><strong>One campaign by hand.</strong> <code>.\run_research.ps1</code> (the Python launcher
+          <code>runner.launcher</code>) launches or resumes the selected campaign without console output. It does not
+          reset it.</p>
         <p>
-          <code>.\reset_research.ps1 -Mode Fresh -Clean -RecipeRef baseline-distinct-episodes-v3-robot -Force ; .\run_research.ps1</code>
+          <code>uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force ; .\run_research.ps1</code>
         </p>
-        <p>The second command deliberately resets before launch. Stop the campaign first. <code>-Clean</code> discards
+        <p>The second command deliberately resets before launch. Stop the campaign first. <code>--clean</code> discards
           eligible uncommitted changes. The semicolon is not success-only: inspect any reset failure before authorizing
           launch.</p>
-        <p>Both scripts accept <code>-CampaignRoot &lt;path&gt;</code>, default to <code>campaign-1</code>, and
-          restore the caller's folder on exit. During execution, the working directory is the campaign folder.</p>
+        <p>Both accept <code>--campaign-root &lt;path&gt;</code> and default to <code>campaign-1</code>. They run in their
+          own process, so the caller's folder never changes. A campaign stops cooperatively when its stop request
+          <code>.git\stop-request</code> appears.</p>
         <p><strong>Baseline v3 is a recipe, not a trained model.</strong> Its Fresh reset keeps the current harness,
           restores scientific files and starts empty history with scientific-model preparation pending. It does not
           restore an old harness commit.</p>
         <p>The task fingerprints must match. A new campaign repository needs one-time initialization from a source
-          repository containing the recipe tag; <code>run_parallel.ps1</code> does this for missing slots, an ordinary
+          repository containing the recipe tag; <code>tools.run_parallel</code> does this for missing slots, an ordinary
           reset does not.</p>
         <p><a href="../../README.md">Setup and provider commands</a> &middot; <a href="../reset-research.md">Reset
             guide</a> &middot; <a href="../harness-campaign-split.md">Split design</a> &middot; <a
@@ -900,7 +910,7 @@
         <div class="diagram loop" tabindex="0" aria-label="Scrollable agents and data flow diagram">
           <svg viewBox="0 0 1000 1030" role="img" aria-labelledby="arch-title arch-description">
             <title id="arch-title">Research lifecycle: agents, Runner and campaign records</title>
-            <desc id="arch-description">The maintainer starts the launcher, run_research.ps1. The launcher first runs
+            <desc id="arch-description">The maintainer starts the launcher, the Python module runner.launcher. The launcher first runs
               the preliminary analyst session, which writes the fixed scientific model in
               pi_workspace/scientific_model.md, then starts PI sessions one at a time. Each PI session receives a system
               prompt with persona, autonomy and campaign reference contracts, and a first message with the scientific
@@ -915,8 +925,8 @@
               measurement (research_evaluation, python_module diagnostics, task_reference) and model role operations,
               and return results to the same conversation. Runner publishes completed operations to the local campaign
               Git repository, which evidence readers read for the PI. The official assessment uses the protected
-              benchmark and ends the campaign with pass or fail. The launcher and Runner write an observation feed
-              that the read-only TUI report follows.</desc>
+              benchmark and ends the campaign with pass or fail. The launcher and Runner write a typed event feed
+              that the TUI follows.</desc>
             <defs>
               <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
                 orient="auto-start-reverse">
@@ -945,12 +955,12 @@
             <path d="M 220 58 H 270" class="flow" marker-end="url(#arch-arrow)" />
             <rect x="270" y="20" width="260" height="76" rx="10" class="box" />
             <text x="400" y="50" text-anchor="middle" class="label" font-weight="700">Launcher</text>
-            <text x="400" y="76" text-anchor="middle" class="caption">run_research.ps1</text>
+            <text x="400" y="76" text-anchor="middle" class="caption">runner.launcher</text>
             <path d="M 530 58 H 780" class="return" stroke-dasharray="6 4" marker-end="url(#arch-return)" />
-            <text x="655" y="50" text-anchor="middle" class="caption">observation feed</text>
+            <text x="655" y="50" text-anchor="middle" class="caption">typed event feed</text>
             <rect x="780" y="20" width="200" height="76" rx="10" class="end-box" />
-            <text x="880" y="50" text-anchor="middle" class="label" font-weight="700">TUI report</text>
-            <text x="880" y="76" text-anchor="middle" class="caption">read-only, maintainer</text>
+            <text x="880" y="50" text-anchor="middle" class="label" font-weight="700">TUI console</text>
+            <text x="880" y="76" text-anchor="middle" class="caption">maintainer</text>
 
             <path d="M 310 96 V 121 H 120 V 146" class="flow" marker-end="url(#arch-arrow)" />
             <text x="130" y="114" class="caption">first</text>
@@ -1108,7 +1118,7 @@
               <td>A role line, then, for a new PI conversation that is not a checkpoint transition, the full scientific
                 model; then the state, decision guidance, permitted operations and the brief. The analyst's first
                 message carries the human goal and the model-writing instructions.</td>
-              <td><code>run_research.ps1</code></td>
+              <td><code>runner/launcher/prompts.py</code></td>
             </tr>
             <tr>
               <td>Scientific coding</td>
@@ -1126,7 +1136,7 @@
                 error;
                 after a source repair the PI can re-accept the same request.</td>
               <td><code>runner/copilot/operation_submission.py</code>,
-                <code>runner/copilot/copilot_controller.ps1</code>, <code>runner/run_experiment.py</code>
+                <code>runner/launcher/operation_bridge.py</code>, <code>runner/run_experiment.py</code>
               </td>
             </tr>
             <tr>
@@ -1143,24 +1153,24 @@
                 help through F1 and recent command outcomes through F3. There is one report tab per installed
                 campaign (up to five), and opening the interface starts nothing.
                 Explicit <code>run N</code>, <code>reset N</code>, <code>start N</code> and
-                <code>stop N</code>/<code>stop all</code> reuse the existing scripts with shared launch settings.
+                <code>stop N</code>/<code>stop all</code> reuse the existing entry points with shared launch settings.
                 A number is a campaign identity: <code>start 2</code> selects only campaign-2;
                 inclusive ranges such as <code>start 1-2</code> and <code>start 2-3</code> select batches.
                 Default reset is Fresh + Clean + <code>baseline-distinct-episodes-v3-robot</code> + Force;
                 measurements/logs may be deleted without a backup. All batch resets precede launch, and reset failure
                 blocks every batch launch. Stop is cooperative (180 seconds by default, plus five seconds controller
-                allowance); Ctrl+Q stops owned campaigns before exit. Job Objects provide crash cleanup, using
-                the existing PowerShell 7, including Store/MSIX installations, with an inherited Windows desktop-app
-                creation policy that keeps native descendants contained. No reinstall or manual shell instance is
-                needed.
-                Missing PowerShell 7 fails preflight before initialization/reset.
-                Windows PowerShell 5.1 cannot run the existing launcher. Ctrl+C copies only.
+                allowance); Ctrl+Q stops owned campaigns before exit, and <code>stop</code> also reaches campaigns
+                started elsewhere through their stop request. Job Objects provide crash cleanup for owned launchers,
+                which <code>uv</code> starts with an inherited Windows desktop-app creation policy that keeps native
+                descendants contained. Missing <code>uv</code> fails preflight before initialization/reset.
+                Ctrl+C copies only.
                 Read-only monitoring remains available, subject to the same one-TUI-per-harness lock.
                 Report tabs read campaign state, results and usage, and follow
-                <code>reports/tui_observations/&lt;campaign-id&gt;.jsonl</code>, which Runner and the launcher append
-                to. Feed failures are swallowed and cannot change operation acceptance or execution.
+                <code>reports/tui_observations/&lt;campaign-id&gt;.events.jsonl</code>, the typed event feed that
+                Runner and the launcher append to; launches write nothing else. Feed failures are swallowed and cannot
+                change operation acceptance or execution.
               </td>
-              <td><code>tui/</code>, <code>runner/observation_feed.py</code>, <code>campaign_tui.ps1</code>,
+              <td><code>tui/</code>, <code>runner/typed_events.py</code>, <code>campaign_tui.ps1</code>,
                 <a href="../tui-report.md">TUI report notes</a>
               </td>
             </tr>
@@ -1377,7 +1387,7 @@
           <p>The PI sees only the number of opened inquiries, not the cap. The launcher console shows the cap to the
             maintainer.</p>
           <p>After the last allowed inquiry is saved, the launcher pauses. A pause is not a conclusion.</p>
-          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. OI-013 is withdrawn: the
+          <p>Only the maintainer can resume, with a higher <code>--max-inquiries</code>. OI-013 is withdrawn: the
             maintainer did not adopt the removal proposal. The cap remains an accepted execution limit.</p>
         </div>
       </div>
@@ -1491,6 +1501,27 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><code>a51fadff</code></td>
+              <td>27 Oct, 01:13 CET</td>
+              <td>Stopped by the maintainer after I13 (5 h 13, 115.7 AIU). Round 4. Best T6:checkpoint-120832 at
+                389&ndash;393/400; new representations trained from scratch scored 0&ndash;159/400.</td>
+              <td><a href="robot-campaign-a51fadff-20261027.html">Campaign report</a></td>
+            </tr>
+            <tr>
+              <td><code>5489d042</code></td>
+              <td>27 Oct, 01:13 CET</td>
+              <td>Stopped by the maintainer during I10 (5 h 14, 100.2 AIU); T15 left resumable. Round 4. Best
+                T3:checkpoint-110592 at about 97.5%.</td>
+              <td><a href="robot-campaign-5489d042-20261027.html">Campaign report</a></td>
+            </tr>
+            <tr>
+              <td><code>c7be4376</code></td>
+              <td>27 Oct, 01:13 CET</td>
+              <td>Official fail: 195/200 (1 h 47, 52.1 AIU). Round 4. Five adaptations after T3 lost; the PI
+                requested the assessment at an estimated 41% pass chance.</td>
+              <td><a href="robot-campaign-c7be4376-20261027.html">Campaign report</a></td>
+            </tr>
             <tr>
               <td><code>de7af8af</code></td>
               <td>26 Oct, 01:25 CEST</td>
@@ -1852,8 +1883,9 @@
               and did not pass. Every campaign that did not use it stalled at about 97.5%.
             </li>
             <li>Before 26 October the analyst's scientific model stated the symmetry in 1 of 28 models; that campaign,
-              <code>6b13d5f4</code>, passed in 52 minutes. Since the analyst models invariances (OI-053), 3 of 3 models
-              state it.
+              <code>6b13d5f4</code>, passed in 52 minutes. Since the analyst models invariances (OI-053), 6 of 6 models
+              state it. In round 4 (27 October) all three treated it as a consistency check only, none used it in the
+              policy, and none passed.
             </li>
           </ul>
         </article>
@@ -2455,7 +2487,7 @@
                   <td>Inquiry training requests must use the full 120,000-step allocation.</td>
                   <td><span class="tag">Closed</span></td>
                   <td>Closed on 24 October by the harness change after <code>efd58acc</code>: an inquiry run now lies
-                    between the allocation (120k) and the maintainer maximum (<code>-MaxTimesteps</code>, default 360k).
+                    between the allocation (120k) and the maintainer maximum (<code>--max-timesteps</code>, default 360k).
                     Startup stays at most the allocation.</td>
                 </tr>
                 <tr>
@@ -2532,7 +2564,7 @@
                   <td>The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending.
                     Continue maintainer cost monitoring without asking the PI to optimize economic cost. Retirement does
                     not establish an optimal allocation. Superseded in part on 24 October: the standard allocation stays
-                    120k, but an inquiry run may extend to the maintainer maximum (<code>-MaxTimesteps</code>, default
+                    120k, but an inquiry run may extend to the maintainer maximum (<code>--max-timesteps</code>, default
                     360k); see the ledger entry "Harness change after <code>efd58acc</code>".</td>
                 </tr>
                 <tr>
@@ -2695,10 +2727,12 @@
       </details>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>Run the next parallel round of three on <code>4ce2fdb1</code> with <code>tools/run_parallel.ps1</code>.
+        <li>Round 4 ran on the Python launcher and passed 0 of 3; no campaign used the reflection symmetry in the
+          policy. Decide whether that calls for a change, then run the next round with
+          <code>uv run python -m tools.run_parallel --count 3</code>.
           Check, for each campaign: whether the scientific model states the invariances and when the PI uses them
           (OI-053); the development success rate at each official-assessment request, against the earlier failed
-          requests at 40% and 64% estimated pass chance (OI-054); whether the first experiment changes one part of the
+          requests at 40%, 41% and 64% estimated pass chance (OI-054); whether the first experiment changes one part of the
           recipe or several (OI-055); the share of AIU spent by the coder and reviewer.</li>
         <li>Classify OI-024 reruns by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
@@ -3032,6 +3066,14 @@
           history, with no text lost. This page was reordered the same way; its register tables are now generated from
           the tracker.
         </p>
+      </div>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">27 October: Python launcher; round 4 passes 0 of 3</h3>
+        <p>The launcher, the reset and the parallel tool moved from PowerShell to Python (<code>375ca4fb</code>). PI
+          prompts and system prompts are byte-identical; launches write no console output, and the TUI follows the
+          typed event feed and can stop any campaign through its stop request. Round 4 then ran on it:
+          <code>c7be4376</code> failed 195/200, and <code>a51fadff</code> and <code>5489d042</code> were stopped near
+          97.5%. All three scientific models stated the reflection symmetry; none used it in the policy.</p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">26 October: the PI sees time and AI usage; the recipe is the first reference</h3>
@@ -3837,7 +3879,7 @@
               cannot read it.</li>
             <li><a href="../runtime-mechanics.md"><code>docs\runtime-mechanics.md</code></a>: tool binding, coding
               handoff, read policy, and recovery.</li>
-            <li><a href="../../run_research.ps1"><code>run_research.ps1</code></a> and <a
+            <li><a href="../../runner/launcher/"><code>runner\launcher\</code></a> and <a
                 href="../../runner/copilot/copilot_adapter.py"><code>runner\copilot\copilot_adapter.py</code></a>:
               prompt delivery, launcher flow, and permission controls.</li>
             <li><a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a>: history,

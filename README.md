@@ -4,7 +4,7 @@ Read the [Robot-learning research process](docs/research-overview/robot-learning
 
 ## Documentation map
 
-Current operating guidance, reviewed 26 October 2026:
+Current operating guidance, reviewed 27 October 2026:
 
 - [HTML overview](docs/research-overview/robot-learning-overview-20261002.html):
   architecture, lifecycle, status and links to historical evidence. Its filename
