@@ -132,7 +132,7 @@ class OperationBridge:
         ):
             return (
                 "session_ended",
-                "Submission does not belong to the active bounded session.",
+                "Submission does not belong to the active session.",
             )
         if message.get("event_count") != len(
             pstext.items(state.get("operation_events"))
@@ -147,7 +147,7 @@ class OperationBridge:
         ):
             return (
                 "recovery_required",
-                "Accepted transaction requires controller recovery, not another submission.",
+                "Accepted transaction requires Runner recovery, not another submission.",
             )
         return None
 

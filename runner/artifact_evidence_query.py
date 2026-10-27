@@ -87,9 +87,7 @@ class ArtifactEvidenceQuerySpec(BaseModel):
             "A supplied pointer must start with / and cannot be empty."
         ),
     )
-    aggregate: (
-        Literal["count", "numeric_summary", "value_counts"] | None
-    ) = Field(
+    aggregate: Literal["count", "numeric_summary", "value_counts"] | None = Field(
         default=None,
         description=(
             "Optional bounded aggregate instead of returning raw matches: "
@@ -126,8 +124,8 @@ class ArtifactEvidenceQueryParams(BaseModel):
                 "aggregates values. read returns the complete original artifact in "
                 "byte pages; continue with next_offset and expected_fingerprint. "
                 "operations queries the operation index. metadata queries one "
-                "operation's record, artifacts, checkpoints or accepted pending "
-                "request without opening artifact data."
+                "operation's record, artifacts, training checkpoints or accepted "
+                "pending request without opening artifact data."
             ),
         )
     )
@@ -247,18 +245,24 @@ class ArtifactEvidenceQueryParams(BaseModel):
         ):
             raise ValueError("This action requires operation_id.")
         if self.action == "operations" and self.operation_id is not None:
-            raise ValueError("operations lists the campaign; use metadata for one operation.")
+            raise ValueError(
+                "operations lists the campaign; use metadata for one operation."
+            )
         if self.action in {"operations", "metadata"} and (
-            self.prefix is not None or self.queries is not None
+            self.prefix is not None
+            or self.queries is not None
             or self.expected_fingerprint is not None
-            or self.artifact_index != 0 or self.encoding != "utf-8"
+            or self.artifact_index != 0
+            or self.encoding != "utf-8"
         ):
             raise ValueError(
                 "Metadata selection uses path, where, select and aggregate. "
                 "Artifact indices, fingerprints, discovery prefixes and byte encodings are not metadata selectors."
             )
         if self.action in {"operations", "metadata"} and self.path == "":
-            raise ValueError("Metadata path must be a non-empty JSON Pointer or omitted.")
+            raise ValueError(
+                "Metadata path must be a non-empty JSON Pointer or omitted."
+            )
         if self.action == "batch" and not self.queries:
             raise ValueError("batch action requires queries")
         if self.action == "query" and not self.path:
@@ -270,8 +274,12 @@ class ArtifactEvidenceQueryParams(BaseModel):
         if self.action == "read" and any(
             field is not None
             for field in (
-                self.path, self.where, self.select,
-                self.aggregate, self.prefix, self.queries,
+                self.path,
+                self.where,
+                self.select,
+                self.aggregate,
+                self.prefix,
+                self.queries,
             )
         ):
             raise ValueError(
@@ -279,7 +287,9 @@ class ArtifactEvidenceQueryParams(BaseModel):
                 "selection fields require query or batch"
             )
         if self.action == "discover" and self.offset:
-            raise ValueError("discover does not accept offsets; narrow prefix or use read")
+            raise ValueError(
+                "discover does not accept offsets; narrow prefix or use read"
+            )
         return self
 
 
@@ -313,18 +323,14 @@ def _tokens(pointer: str) -> list[str]:
     if not pointer.startswith("/"):
         raise ValueError("path must use JSON Pointer syntax")
     return [
-        token.replace("~1", "/").replace("~0", "~")
-        for token in pointer[1:].split("/")
+        token.replace("~1", "/").replace("~0", "~") for token in pointer[1:].split("/")
     ]
 
 
 def _pointer(tokens: list[str]) -> str:
     if not tokens:
         return "/"
-    escaped = (
-        str(token).replace("~", "~0").replace("/", "~1")
-        for token in tokens
-    )
+    escaped = (str(token).replace("~", "~0").replace("/", "~1") for token in tokens)
     return "/" + "/".join(escaped)
 
 
@@ -342,12 +348,14 @@ def _artifact_catalog(event: dict[str, Any]) -> list[dict[str, Any]]:
             continue
         if not isinstance(fingerprint, str) or not fingerprint:
             continue
-        artifacts.append({
-            "artifact_path": artifact_path,
-            "recorded_artifact_fingerprint": fingerprint,
-            "instrument": measurement.get("instrument"),
-            "label": measurement.get("label"),
-        })
+        artifacts.append(
+            {
+                "artifact_path": artifact_path,
+                "recorded_artifact_fingerprint": fingerprint,
+                "instrument": measurement.get("instrument"),
+                "label": measurement.get("label"),
+            }
+        )
     return artifacts
 
 
@@ -377,17 +385,13 @@ def _recorded_artifact(
         "operation_status": event.get("status"),
     }
     if event.get("status") != "completed":
-        raise ArtifactUnavailableError(
-            "operation_not_completed", event_provenance
-        )
+        raise ArtifactUnavailableError("operation_not_completed", event_provenance)
     if event.get("kind") != "measurement":
         raise ArtifactUnavailableError(
             "operation_has_no_measurement_artifacts", event_provenance
         )
     result = event.get("result")
-    measurements = (
-        result.get("measurements") if isinstance(result, dict) else None
-    )
+    measurements = result.get("measurements") if isinstance(result, dict) else None
     if not isinstance(measurements, list):
         raise ArtifactUnavailableError(
             "completed_measurement_result_unavailable", event_provenance
@@ -405,9 +409,8 @@ def _recorded_artifact(
     selected = artifacts[artifact_index]
     relative = repository.canonical_repo_path(selected["artifact_path"])
     expected_prefix = f"campaigns/evaluations/{campaign_id}/"
-    if (
-        not relative.startswith(expected_prefix)
-        or not relative.lower().endswith(".json")
+    if not relative.startswith(expected_prefix) or not relative.lower().endswith(
+        ".json"
     ):
         raise ValueError(
             "recorded measurement artifact is outside the active campaign "
@@ -419,9 +422,7 @@ def _recorded_artifact(
         "artifact_index": artifact_index,
         "artifact_count": len(artifacts),
         "artifact_path": relative,
-        "recorded_artifact_fingerprint": selected[
-            "recorded_artifact_fingerprint"
-        ],
+        "recorded_artifact_fingerprint": selected["recorded_artifact_fingerprint"],
     }
     for key in ("instrument", "label"):
         if selected[key] is not None:
@@ -467,7 +468,9 @@ def recorded_candidate_metadata(state: dict, reference: dict) -> dict:
     return {
         "candidate": candidate["id"],
         "archive_path": candidate["artifact"],
-        "archive_files": sorted(path.name for path in archive.iterdir() if path.is_file()),
+        "archive_files": sorted(
+            path.name for path in archive.iterdir() if path.is_file()
+        ),
         "artifact_json": metadata,
     }
 
@@ -475,14 +478,18 @@ def recorded_candidate_metadata(state: dict, reference: dict) -> dict:
 def resolve_artifact_reference(state: dict, reference: dict) -> dict:
     selected = ArtifactReference.model_validate(reference)
     path, provenance = _recorded_artifact(
-        state, repository.current_campaign_id(state),
-        selected.operation_id.strip(), selected.artifact_index,
+        state,
+        repository.current_campaign_id(state),
+        selected.operation_id.strip(),
+        selected.artifact_index,
     )
     _artifact_bytes(path, provenance, max_bytes=0)
     return {
         key: provenance[key]
         for key in (
-            "operation_id", "artifact_index", "artifact_path",
+            "operation_id",
+            "artifact_index",
+            "artifact_path",
             "recorded_artifact_fingerprint",
         )
     }
@@ -494,8 +501,10 @@ def recorded_artifact_structure(state: dict, reference: dict) -> dict:
     operation_id = selected.operation_id.strip()
     try:
         _, provenance = _recorded_artifact(
-            state, repository.current_campaign_id(state),
-            operation_id, selected.artifact_index,
+            state,
+            repository.current_campaign_id(state),
+            operation_id,
+            selected.artifact_index,
         )
     except ArtifactUnavailableError as error:
         raise ValueError(
@@ -514,7 +523,8 @@ def recorded_artifact_structure(state: dict, reference: dict) -> dict:
             and isinstance(measurement["metrics"].get("evaluation_artifact"), str)
             and repository.canonical_repo_path(
                 measurement["metrics"]["evaluation_artifact"]
-            ) == provenance["artifact_path"]
+            )
+            == provenance["artifact_path"]
         ),
         None,
     )
@@ -530,10 +540,19 @@ def recorded_artifact_structure(state: dict, reference: dict) -> dict:
 def _operation_summary(event: dict) -> dict:
     request = event.get("request") or {}
     return {
-        **{key: event.get(key) for key in (
-            "id", "kind", "status", "session_id", "inquiry_id",
-            "completed_at", "supersedes", "superseded_by",
-        )},
+        **{
+            key: event.get(key)
+            for key in (
+                "id",
+                "kind",
+                "status",
+                "session_id",
+                "inquiry_id",
+                "completed_at",
+                "supersedes",
+                "superseded_by",
+            )
+        },
         "description": request.get("description"),
         "artifact_count": len(_artifact_catalog(event)),
     }
@@ -571,7 +590,9 @@ def _query_metadata(state: dict, args: dict, campaign_id: str) -> str:
             else None
         )
         if event is None and selected_pending is None:
-            raise ArtifactUnavailableError("operation_not_found", {"operation_id": identifier})
+            raise ArtifactUnavailableError(
+                "operation_not_found", {"operation_id": identifier}
+            )
         source = {
             "operation": _operation_summary(event)
             if event
@@ -613,23 +634,38 @@ def _query_metadata(state: dict, args: dict, campaign_id: str) -> str:
     spec = {**args, "path": args.get("path") or default_path}
     try:
         response, _, _ = _query(
-            source, spec, [0], MAX_RESULTS, args["max_bytes"],
+            source,
+            spec,
+            [0],
+            MAX_RESULTS,
+            args["max_bytes"],
         )
     except TraversalBudgetExceededError as error:
         response = {
-            "status": "traversal_budget_exhausted", "evidence_state": "not_inspected",
-            "error": str(error), "max_traversed_nodes": MAX_NODES,
+            "status": "traversal_budget_exhausted",
+            "evidence_state": "not_inspected",
+            "error": str(error),
+            "max_traversed_nodes": MAX_NODES,
         }
-    if args["action"] == "operations" and response.get("absence_reason") == "path_absent":
+    if (
+        args["action"] == "operations"
+        and response.get("absence_reason") == "path_absent"
+    ):
         response["recovery"] = (
             "Operation rows are a list (/0, /1, ...), not keyed by ID. Use "
             'where {"path": "/id", "equals": "<ID>"} or action=metadata with operation_id.'
         )
-    return json.dumps({
-        **response, "action": args["action"], "scope": "recorded_metadata_only",
-        "campaign_id": campaign_id, "operation_id": args.get("operation_id"),
-        "artifact_contents_inspected": False, "bounded": True,
-    })
+    return json.dumps(
+        {
+            **response,
+            "action": args["action"],
+            "scope": "recorded_metadata_only",
+            "campaign_id": campaign_id,
+            "operation_id": args.get("operation_id"),
+            "artifact_contents_inspected": False,
+            "bounded": True,
+        }
+    )
 
 
 def _artifact_bytes(
@@ -666,9 +702,7 @@ def _artifact_bytes(
 
 def _read_artifact(path: Any, provenance: dict[str, Any], args: dict) -> dict:
     offset = args["offset"]
-    page_limit = (
-        MAX_READ_BYTES if args["encoding"] == "utf-8" else MAX_READ_BYTES // 2
-    )
+    page_limit = MAX_READ_BYTES if args["encoding"] == "utf-8" else MAX_READ_BYTES // 2
     chunk, total = _artifact_bytes(
         path, provenance, offset=offset, max_bytes=min(args["max_bytes"], page_limit)
     )
@@ -730,19 +764,17 @@ def utf8_page(
         content = chunk.decode("utf-8")
     except UnicodeDecodeError as error:
         if (
-            not more_bytes or error.reason != "unexpected end of data"
+            not more_bytes
+            or error.reason != "unexpected end of data"
             or error.end != len(chunk)
         ):
             raise ValueError(
                 "page is not UTF-8 or offset splits a character; use encoding=base64 "
                 "or a returned next_offset"
             ) from error
-        content = chunk[:error.start].decode("utf-8")
-    while (
-        len(json.dumps(content, ensure_ascii=False).encode("utf-8"))
-        > byte_limit
-    ):
-        content = content[:len(content) // 2]
+        content = chunk[: error.start].decode("utf-8")
+    while len(json.dumps(content, ensure_ascii=False).encode("utf-8")) > byte_limit:
+        content = content[: len(content) // 2]
     return content, content.encode("utf-8")
 
 
@@ -807,9 +839,7 @@ def _matches(
     return matches
 
 
-def _discover(
-    value: Any, prefix: str, output: list[str], budget: list[int]
-) -> None:
+def _discover(value: Any, prefix: str, output: list[str], budget: list[int]) -> None:
     if len(output) >= MAX_PATHS:
         return
     budget[0] += 1
@@ -919,9 +949,7 @@ def _select(
     selected: list[tuple[str, Any]] = []
     for base_path, value in matches:
         for relative_path, selected_value in _matches(value, select, budget):
-            selected.append(
-                (_join_pointer(base_path, relative_path), selected_value)
-            )
+            selected.append((_join_pointer(base_path, relative_path), selected_value))
     return selected
 
 
@@ -931,17 +959,20 @@ def _bounded_matches(
     output: list[dict[str, Any]] = []
     size = 0
     for match_path, match_value in matches[:limit]:
-        wrapper_size = len(json.dumps(
-            {"path": match_path, "value": None}, separators=(",", ":")
-        ).encode("utf-8")) - 4
+        wrapper_size = (
+            len(
+                json.dumps(
+                    {"path": match_path, "value": None}, separators=(",", ":")
+                ).encode("utf-8")
+            )
+            - 4
+        )
         try:
             match_value = bounded_value(match_value, byte_limit - size - wrapper_size)
         except OutputBudgetExceeded:
             return output, True, size
         item = {"path": match_path, "value": match_value}
-        item_size = len(
-            json.dumps(item, separators=(",", ":")).encode("utf-8")
-        )
+        item_size = len(json.dumps(item, separators=(",", ":")).encode("utf-8"))
         if size + item_size > byte_limit:
             return output, True, size
         output.append(item)
@@ -972,7 +1003,9 @@ def _summary(
     if aggregate == "count":
         return {"count": len(values)}, 0, 0
     if aggregate == "value_counts":
-        if any(isinstance(value, (dict, list, JsonObject, JsonArray)) for value in values):
+        if any(
+            isinstance(value, (dict, list, JsonObject, JsonArray)) for value in values
+        ):
             raise ValueError("value_counts requires scalar selected values")
         counts: dict[str, int] = {}
         decoded: dict[str, Any] = {}
@@ -988,11 +1021,9 @@ def _summary(
         if offset > len(counts):
             raise ValueError("offset exceeds the distinct value count")
         remaining = len(counts) - offset
-        for key, count in list(counts.items())[offset:offset + effective_limit]:
+        for key, count in list(counts.items())[offset : offset + effective_limit]:
             item = {"value": decoded[key], "count": count}
-            item_size = len(
-                json.dumps(item, separators=(",", ":")).encode("utf-8")
-            )
+            item_size = len(json.dumps(item, separators=(",", ":")).encode("utf-8"))
             if size + item_size > byte_limit:
                 byte_truncated = True
                 break
@@ -1020,7 +1051,8 @@ def _summary(
                 "recovery": (
                     "Continue with next_offset. If no distinct value fits, use "
                     "action=read for the original artifact."
-                    if byte_truncated else None
+                    if byte_truncated
+                    else None
                 ),
             },
             len(output),
@@ -1028,11 +1060,14 @@ def _summary(
         )
     if aggregate == "numeric_summary":
         numbers = [
-            value for value in (
-                scalar_value(item) if (
+            value
+            for value in (
+                scalar_value(item)
+                if (
                     not isinstance(item, JsonScalar)
                     or item.document.buffer[item.start] != 34
-                ) else item
+                )
+                else item
                 for item in values
             )
             if isinstance(value, (int, float)) and not isinstance(value, bool)
@@ -1053,9 +1088,7 @@ def _summary(
             0,
         )
     if aggregate is not None:
-        raise ValueError(
-            "aggregate must be count, numeric_summary or value_counts"
-        )
+        raise ValueError("aggregate must be count, numeric_summary or value_counts")
     return None, 0, 0
 
 
@@ -1172,9 +1205,7 @@ def _query(
     else:
         result = summary
     selected_field_absent = (
-        bool(filtered_matches)
-        and spec.get("select") is not None
-        and not matches
+        bool(filtered_matches) and spec.get("select") is not None and not matches
     )
     field_absent = (not path_matches and not expanded_arrays) or selected_field_absent
     response: dict[str, Any] = {
@@ -1226,7 +1257,9 @@ def query_artifact(args: dict[str, Any], campaign_id: str) -> str:
         return _query_artifact(args, campaign_id, resources)
 
 
-def _query_artifact(args: dict[str, Any], campaign_id: str, resources: ExitStack) -> str:
+def _query_artifact(
+    args: dict[str, Any], campaign_id: str, resources: ExitStack
+) -> str:
     provenance: dict[str, Any] = {}
     try:
         if args.get("action") != "batch":

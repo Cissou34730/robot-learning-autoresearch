@@ -625,7 +625,7 @@ def validate_reusable_candidate(
         == timesteps,
         "effective configuration": artifact.get("effective_config")
         == expected_effective_config,
-        "resume checkpoint": (
+        "resume training checkpoint": (
             not bool(artifact.get("completed", True))
             or actual_resume == expected_resume
         ),

@@ -17,10 +17,19 @@ intervention.
 
 The synthesis is the last register. It selects the consequences and the
 unknowns that are most likely to change the first decisions of the campaign.
-For each selected item, it keeps the decision relevance, the assumptions, the
-source references and the discriminating evidence. The startup session
-receives this register as the handoff. The PI also reads the full scientific
-model in the startup session and selects the initial direction.
+These decisions include the design and the interpretation of the first
+measurements. For each selected item, it keeps the decision relevance, the
+assumptions, the source references and the discriminating evidence.
+
+The synthesis also includes the invariances of the definitions. For each
+invariance, it states which outcomes the invariance predicts to be equal when
+the episode start and the target are transformed the same way. A measured difference between such
+outcomes, beyond sampling variation, is evidence about the policy, not about
+the task.
+
+The startup session receives the synthesis as the handoff. The PI also reads
+the full scientific model in the startup session and selects the initial
+direction.
 
 After acceptance, the scientific model stays fixed for the campaign. Later
 session records preserve or revise its consequential conclusions. The Runner

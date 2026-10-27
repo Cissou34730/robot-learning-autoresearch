@@ -369,7 +369,7 @@ def test_compact_context_leads_with_protected_human_goal(monkeypatch, tmp_path):
 
     brief = render_research_brief()
 
-    assert "## Human goal" in brief
+    assert "## Goal" in brief
     assert "campaign objective is a learned policy" in brief
     assert "## Best evidence relative to the goal" in brief
     assert "## Current goal gap" in brief

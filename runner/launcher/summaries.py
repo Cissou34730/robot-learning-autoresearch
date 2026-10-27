@@ -74,14 +74,14 @@ def _saved_component_fact(result: object) -> str:
             f"{text(field(comparison, 'operation'))}: "
             f"{len(items(field(comparison, 'exact_component_matches')))}/"
             f"{text(field(comparison, 'corresponding_checkpoint_count'))} corresponding "
-            "checkpoints; runtime files "
+            "training checkpoints; runtime files "
             f"{text(field(field(comparison, 'runtime'), 'equal'))}/"
             f"{text(field(field(comparison, 'runtime'), 'compared'))}"
         )
         for comparison in items(field(saved, "comparisons"))
         if len(items(field(comparison, "exact_component_matches"))) > 0
     ]
-    summary = " | ".join(exact) if exact else "no exact checkpoint matches"
+    summary = " | ".join(exact) if exact else "no exact training-checkpoint matches"
     return (
         f" Exact saved-component comparison={summary}. "
         "This reports serialized equality only; realization of an "
@@ -121,7 +121,7 @@ def latest_session_result(state: dict) -> str:
         or not pstext.truthy(operation_ids)
         or pstext.count(operation_ids) == 0
     ):
-        return "No operation has completed in the current line of work."
+        return "No operation has completed in the current session."
     identifier = text(items(operation_ids)[-1])
     event = next(
         (
@@ -186,4 +186,4 @@ def human_goal_summary(state: dict, harness_root: Path) -> str:
     )
     if match:
         return re.sub(r"\s+", " ", match["body"]).strip()
-    return "The protected human goal is defined in contracts/scenario.md."
+    return "contracts/scenario.md defines the protected goal."

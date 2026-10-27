@@ -53,7 +53,9 @@ def _scientific_model_lines(state: dict) -> list[str]:
     if commit:
         lines.append(f"- Published commit: `{commit}`.")
     if not model_file.is_file():
-        lines.append("- Model content is not available in the current worktree.")
+        lines.append(
+            "- The scientific model content is not available in the current worktree."
+        )
         return lines
     text = model_file.read_text(encoding="utf-8")
     selected = _markdown_section(text, "Decision-relevant synthesis")
@@ -61,7 +63,8 @@ def _scientific_model_lines(state: dict) -> list[str]:
         lines.append(f"- **Decision-relevant synthesis:** {selected}")
     else:
         lines.append(
-            "- This historical model predates the required decision-relevant synthesis."
+            "- This historical scientific model predates the required "
+            "decision-relevant synthesis."
         )
     return lines
 
@@ -210,12 +213,16 @@ def _event_detail_lines(event: dict) -> list[str]:
                 exact.append(
                     f"`{comparison['operation']}`: {len(matches)}/"
                     f"{comparison['corresponding_checkpoint_count']} corresponding "
-                    "checkpoints; runtime files "
+                    "training checkpoints; runtime files "
                     f"{runtime.get('equal', 0)}/{runtime.get('compared', 0)}"
                 )
             lines.append(
                 "  - Exact saved-component comparison: "
-                + ("; ".join(exact) if exact else "no exact checkpoint matches")
+                + (
+                    "; ".join(exact)
+                    if exact
+                    else "no exact training-checkpoint matches"
+                )
                 + "."
             )
         return lines
@@ -226,7 +233,7 @@ def _best_evidence(state: dict) -> list[str]:
     lines: list[str] = []
     checkpoint = state["pi_checkpoint"]
     if isinstance(checkpoint, dict):
-        lines.append("- PI interpretation: see the latest durable checkpoint below.")
+        lines.append("- Your interpretation: see the latest session record below.")
         if checkpoint["evidence_references"]:
             lines.append(
                 "- Supporting references: "
@@ -238,7 +245,7 @@ def _best_evidence(state: dict) -> list[str]:
         lines.extend(
             [
                 (
-                    f"- Best-known model: `{best_id}` from "
+                    f"- Best-known candidate: `{best_id}` from "
                     f"`{candidate['origin_operation']}`; "
                     f"{candidate['training_steps']:,} accumulated training steps."
                 ),
@@ -264,7 +271,7 @@ def _best_evidence(state: dict) -> list[str]:
         )
     if not lines:
         lines.append(
-            "- No PI checkpoint, best-known model, or official assessment yet."
+            "- No session record, best-known candidate or official assessment yet."
         )
     return lines
 
@@ -276,7 +283,7 @@ def _goal_gap(state: dict) -> str:
     checkpoint = state["pi_checkpoint"]
     if isinstance(checkpoint, dict):
         return checkpoint["current_goal_gap"]
-    return "No PI-interpreted goal gap has been checkpointed yet."
+    return "No session record contains your interpreted goal gap yet."
 
 
 def _active_inquiry_lines(state: dict) -> list[str]:
@@ -284,20 +291,21 @@ def _active_inquiry_lines(state: dict) -> list[str]:
     if not isinstance(inquiry, dict):
         session = state["scientific_session"]
         if not isinstance(session, dict):
-            return ["- None; no bounded scientific session is active."]
+            return ["- None; no session is active."]
         if session["kind"] == "startup":
             return [
                 (
-                    "- None; the current scientific session is `startup`. "
-                    "Goal review begins after the startup checkpoint."
+                    "- None; the current session is `startup`. The goal-review "
+                    "session begins after the checkpoint operation of the startup "
+                    "session."
                 )
             ]
         if session["kind"] == "goal_review":
-            return ["- None; the current scientific session is `goal_review`."]
+            return ["- None; the current session is `goal_review`."]
         return [
             (
-                "- None; the inquiry has closed and the current `inquiry` session "
-                "must checkpoint before the next session."
+                "- None; the inquiry has closed. The current `inquiry` session "
+                "must submit the checkpoint operation before the next session."
             )
         ]
     return [
@@ -313,7 +321,7 @@ def _active_inquiry_lines(state: dict) -> list[str]:
 def _checkpoint_lines(state: dict) -> list[str]:
     checkpoint = state["pi_checkpoint"]
     if not isinstance(checkpoint, dict):
-        return ["- No durable PI checkpoint has been recorded."]
+        return ["- No session record has been saved."]
     question_label = (
         "Active inquiry question"
         if isinstance(state["active_inquiry"], dict)
@@ -323,15 +331,15 @@ def _checkpoint_lines(state: dict) -> list[str]:
     if isinstance(state["official_assessment"], dict):
         historical_context = [
             (
-                "- This checkpoint predates the official assessment. Its "
-                "statements describe the evidence available at that time."
+                "- This session record predates the official assessment. Its "
+                "statements describe the evidence that was available at that time."
             ),
-            f"- Goal gap at checkpoint: {checkpoint['current_goal_gap']}",
+            f"- Goal gap in this session record: {checkpoint['current_goal_gap']}",
         ]
     return [
         *historical_context,
         f"- Inquiry: `{checkpoint['inquiry_id'] or '-'}`",
-        f"- Human-goal connection: {checkpoint['human_goal_connection']}",
+        f"- Connection to the goal: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
         f"- Decision frontier: {checkpoint['decision_frontier']}",
         f"- {question_label}: {checkpoint['next_question']}",
@@ -350,7 +358,7 @@ def _checkpoint_lines(state: dict) -> list[str]:
 def _session_lines(state: dict) -> list[str]:
     session = state["scientific_session"]
     if not isinstance(session, dict):
-        return ["- None; the next scientific work begins from durable state."]
+        return ["- None; the next session begins from durable state."]
     availability = runner_protocol.session_operation_availability(state)
     allowed = availability["allowed_operations"]
     evaluation_root = (
@@ -363,9 +371,9 @@ def _session_lines(state: dict) -> list[str]:
         + (", ".join(f"`{operation}`" for operation in allowed) or "none"),
         "- Required transition: " + (availability["checkpoint_reason"] or "none"),
         f"- Campaign evaluation artifact root: `{evaluation_root}`",
-        f"- Objective: {session['objective']}",
+        f"- Session objective: {session['objective']}",
         f"- Inquiry: `{session['inquiry_id'] or '-'}`",
-        "- Completed operations in the current work: "
+        "- Completed operations in the current session: "
         + (
             ", ".join(f"`{item}`" for item in session["operation_ids"])
             if session["operation_ids"]
@@ -397,14 +405,14 @@ def _candidate_lines(state: dict) -> list[str]:
     lines.extend(
         [
             (
-                f"- Available checkpoints: {len(state['candidates'])}. "
-                "The training index below does not nominate a checkpoint."
+                f"- Available candidates: {len(state['candidates'])}. "
+                "The training index below does not nominate a candidate."
             ),
             f"- Candidate archive root: `campaigns/checkpoints/candidates/{campaign_id}/`.",
             f"- Retained archive root: `campaigns/checkpoints/retained/{campaign_id}/`.",
             (
                 "- Operation index: `artifact_evidence_query` action=operations. "
-                "Checkpoint metadata and learning statistics: action=metadata, "
+                "Training-checkpoint metadata and learning statistics: action=metadata, "
                 "selected by training operation, paths /checkpoints and /record. "
                 "Archived `artifact.json` files remain available. "
                 "Training statistics are not development measurements."
@@ -431,8 +439,8 @@ def _candidate_lines(state: dict) -> list[str]:
             if candidate["evaluation_artifacts"]
         ]
         lines.append(
-            f"- `{event['id']}`: {len(candidates)} archived checkpoints. "
-            "Development-measured checkpoints: "
+            f"- `{event['id']}`: {len(candidates)} archived training checkpoints. "
+            "Development-measured training checkpoints: "
             + (", ".join(measured) if measured else "none")
             + "."
         )
@@ -464,7 +472,10 @@ def _event_lines(state: dict) -> list[str]:
     ]
     if not events:
         return [
-            "- No non-training operations referenced by current work or the latest checkpoint."
+            (
+                "- No non-training operations referenced by the current session or "
+                "the latest session record."
+            )
         ]
     lines = []
     for event in events:
@@ -519,7 +530,7 @@ def render_research_brief() -> str:
     lines = [
         "# Research brief",
         "",
-        "## Human goal",
+        "## Goal",
         "",
         _human_goal(state),
         "",
@@ -541,11 +552,11 @@ def render_research_brief() -> str:
         "",
         *_active_inquiry_lines(state),
         "",
-        "## Latest durable PI checkpoint",
+        "## Latest session record",
         "",
         *_checkpoint_lines(state),
         "",
-        "## Current scientific work",
+        "## Current session",
         "",
         *_session_lines(state),
         "",
@@ -553,16 +564,17 @@ def render_research_brief() -> str:
         "",
         *_candidate_lines(state),
         "",
-        "### Evidence referenced by current work",
+        "### Evidence referenced by the current session and the latest session record",
         "",
         *_event_lines(state),
         "",
         "### Full evidence sources",
         "",
         (
-            "- Full operation records, including all checkpoint metadata, paired "
-            "comparisons and execution errors: `artifact_evidence_query` "
-            "action=metadata with the operation ID, path /record."
+            "- Full operation records, paired comparisons and execution errors: "
+            "`artifact_evidence_query` action=metadata with the operation ID, path "
+            "/record. Training-checkpoint metadata: the same action and operation "
+            "ID, path /checkpoints."
         ),
         "- Chronological operation index: `campaigns/EXPERIMENTS.md`.",
         (

@@ -281,7 +281,8 @@ def validate_clean_human_owned_worktree() -> None:
     if rejected:
         raise ValueError(
             "protected or human-owned files have uncommitted changes: "
-            f"{rejected}; restore them before protected assessment"
+            f"{rejected}; restore them before a research evaluation, a "
+            "task-reference evaluation or the official assessment"
         )
 
 
@@ -327,7 +328,7 @@ def _integer(record: dict, field: str, description: str, *, minimum: int = 0) ->
 def require_active_session(state: dict) -> dict:
     session = state.get("scientific_session")
     if not isinstance(session, dict):
-        raise TypeError("this operation requires an active scientific session")
+        raise TypeError("this operation requires an active session")
     return session
 
 
@@ -340,13 +341,13 @@ def resolve_candidate(state: dict, identifier: str) -> dict:
         candidate_id = roles["retained"][candidate_id]
     candidate = state["candidates"].get(candidate_id)
     if not isinstance(candidate, dict):
-        raise KeyError(f"unknown model candidate {identifier!r}")
+        raise KeyError(f"unknown candidate {identifier!r}")
     artifact = repository.resolve_repo_path(candidate["artifact"])
     repository.require_complete_inference_artifact(
-        artifact, f"model candidate {identifier!r}"
+        artifact, f"candidate {identifier!r}"
     )
     if repository.artifact_fingerprint(artifact) != candidate["fingerprint"]:
-        raise ValueError(f"model candidate {identifier!r} fingerprint changed")
+        raise ValueError(f"candidate {identifier!r} fingerprint changed")
     return candidate
 
 
@@ -655,8 +656,9 @@ def planned_paired_comparisons(
                 raise ValueError(
                     f"paired comparison reference {reference['id']!r} must have a "
                     "planned research_evaluation measurement or an earlier completed "
-                    "research_evaluation of the same saved artifact on shared "
-                    "episode seeds under the current evaluation semantics"
+                    "research_evaluation of the same candidate with the same "
+                    "fingerprint on shared episode seeds under the current "
+                    "evaluation semantics"
                 )
         shared_episode_seeds = sorted(candidate_episodes & reference_episodes)
         if not shared_episode_seeds:
@@ -790,7 +792,7 @@ def plan_inquiry_operation(request: dict, state: dict) -> dict:
         checkpoint = state.get("pi_checkpoint")
         if not isinstance(checkpoint, dict):
             raise ValueError(
-                "inquiry open requires the previous scientific session record"
+                "inquiry open requires the session record of the previous session"
             )
         next_index = int(state["counters"]["inquiry"]) + 1
         return {
@@ -858,7 +860,8 @@ def plan_checkpoint(request: dict, state: dict) -> dict:
             or active.get("opened_in_session") != session["id"]
         ):
             raise ValueError(
-                "goal-review checkpoint requires an inquiry opened in this session"
+                "the checkpoint operation of a goal-review session requires an "
+                "inquiry opened in this session"
             )
     expected = repository.CHECKPOINT_FIELDS - {
         "session_id",
@@ -874,7 +877,8 @@ def plan_checkpoint(request: dict, state: dict) -> dict:
         and request["next_question"].strip() != state["active_inquiry"]["question"]
     ):
         raise ValueError(
-            "goal-review checkpoint next_question must match the opened inquiry"
+            "in a goal-review session, checkpoint next_question must match the "
+            "question of the opened inquiry"
         )
     if (
         session["kind"] == "inquiry"
@@ -882,7 +886,8 @@ def plan_checkpoint(request: dict, state: dict) -> dict:
         and request["next_question"].strip() != state["active_inquiry"]["question"]
     ):
         raise ValueError(
-            "active-inquiry checkpoint next_question must match the current inquiry"
+            "in an inquiry session with an active inquiry, checkpoint next_question "
+            "must match the question of the active inquiry"
         )
     evidence = request["evidence_references"]
     if not isinstance(evidence, list) or not all(
@@ -906,7 +911,8 @@ def plan_checkpoint(request: dict, state: dict) -> dict:
             f"checkpoint completed_operations mismatch in session {session['id']}. "
             f"Expected {json.dumps(session['operation_ids'])}. "
             f"Submitted {json.dumps(completed)}. "
-            "The session remains active until the Runner accepts its checkpoint."
+            "The session remains active until the Runner accepts its checkpoint "
+            "operation."
         )
     return {
         "session_id": session["id"],
@@ -930,7 +936,7 @@ def plan_model_role(request: dict, state: dict) -> dict:
             "model_role action must be set_working, set_best_known, or retain"
         )
     candidate = resolve_candidate(state, _nonempty(request, "candidate", "candidate"))
-    _nonempty(request, "reason", "model role reason")
+    _nonempty(request, "reason", "model_role reason")
     evidence = request["evidence"]
     completed_event_ids = {
         event["id"]
@@ -942,10 +948,10 @@ def plan_model_role(request: dict, state: dict) -> dict:
         or not evidence
         or not all(isinstance(item, str) and item.strip() for item in evidence)
     ):
-        raise ValueError("model role evidence must name completed operations")
+        raise ValueError("model_role evidence must name completed operations")
     if any(item not in completed_event_ids for item in evidence):
         raise ValueError(
-            "model role evidence must name operation events with status == completed"
+            "model_role evidence must name operation events with status == completed"
         )
     plan = {
         "action": action,
@@ -954,9 +960,9 @@ def plan_model_role(request: dict, state: dict) -> dict:
         "evidence": list(evidence),
     }
     if action == "retain":
-        label = _nonempty(request, "label", "retained model label")
+        label = _nonempty(request, "label", "retained role label")
         if label in {"working", "best_known"}:
-            raise ValueError("retained model label conflicts with a fixed role")
+            raise ValueError("retained role label conflicts with a fixed role")
         plan["label"] = label
     return plan
 
@@ -1042,7 +1048,7 @@ def plan_recipe_restore(request: dict, state: dict) -> dict:
 def plan_campaign_conclusion(request: dict, state: dict) -> dict:
     session = require_active_session(state)
     if session["kind"] != "goal_review":
-        raise ValueError("campaign conclusion requires a goal-review session")
+        raise ValueError("campaign_conclusion requires a goal-review session")
     if state["active_inquiry"] is not None:
         raise ValueError("close the active inquiry before concluding the campaign")
     if set(request) != {"action", "reason"}:
@@ -1050,13 +1056,13 @@ def plan_campaign_conclusion(request: dict, state: dict) -> dict:
     action = str(request.get("action", "")).strip()
     if action != "request_official_assessment":
         raise ValueError(
-            "campaign conclusion action must be request_official_assessment"
+            "campaign_conclusion action must be request_official_assessment"
         )
-    reason = _nonempty(request, "reason", "campaign conclusion reason")
+    reason = _nonempty(request, "reason", "campaign_conclusion reason")
     model = state["model_roles"]["best_known"]
     if model is None:
         raise ValueError(
-            "official assessment requires an explicitly assigned best-known model"
+            "official assessment requires an explicitly assigned best-known candidate"
         )
     resolve_candidate(state, model)
     return {"status": "official_assessment_requested", "reason": reason, "model": model}
@@ -1099,19 +1105,26 @@ def session_operation_availability(state: dict) -> dict:
     reason = None
     if session["kind"] == "goal_review":
         if isinstance(active, dict) and active["opened_in_session"] == session["id"]:
-            reason = f"Inquiry {active['id']} was opened; checkpoint this goal-review session."
+            reason = (
+                f"Inquiry {active['id']} was opened. Submit the checkpoint "
+                "operation for this goal-review session."
+            )
         else:
             allowed.discard("checkpoint")
     elif session["kind"] == "inquiry":
         if active is None:
-            reason = "The inquiry is closed; checkpoint this inquiry session."
+            reason = (
+                "The inquiry is closed. Submit the checkpoint operation for this "
+                "inquiry session."
+            )
         elif (
             isinstance(latest, dict)
             and latest["kind"] == "inquiry"
             and latest["result"].get("action") == "reframe"
         ):
             reason = (
-                f"Inquiry {active['id']} was reframed; checkpoint this inquiry session."
+                f"Inquiry {active['id']} was reframed. Submit the checkpoint "
+                "operation for this inquiry session."
             )
     if reason:
         allowed = {"checkpoint"}
@@ -1136,15 +1149,16 @@ def _validate_session_operation(
     if kind not in allowed:
         if availability["checkpoint_required"]:
             raise ValueError(
-                "the current session requires a checkpoint before further operation. "
-                + availability["checkpoint_reason"]
+                "the current session requires a checkpoint operation before any "
+                "other operation. " + availability["checkpoint_reason"]
             )
         if kind == "checkpoint" and session_kind == "goal_review" and allowed:
             raise ValueError(
-                "goal-review checkpoint requires an inquiry opened in this session"
+                "the checkpoint operation of a goal-review session requires an "
+                "inquiry opened in this session"
             )
         raise ValueError(
-            f"{kind} is not available in the current {session_kind} scientific session"
+            f"{kind} is not available in the current {session_kind} session"
         )
     if (
         session_kind == "goal_review"
@@ -1498,14 +1512,19 @@ def validate_operation_request(operation: dict, state: dict) -> str:
         and session["kind"] == "inquiry"
         and kind != "checkpoint"
     ):
-        raise ValueError("a closed inquiry session must checkpoint before more work")
+        raise ValueError(
+            "an inquiry session whose inquiry is closed requires a checkpoint "
+            "operation before any other operation"
+        )
     if (
         state["active_inquiry"] is not None
         and session["kind"] == "goal_review"
         and kind != "checkpoint"
         and not (kind == "inquiry" and request.get("action") == "open")
     ):
-        raise ValueError("an opened inquiry requires a checkpoint and fresh session")
+        raise ValueError(
+            "an opened inquiry requires a checkpoint operation and a new session"
+        )
     if kind == "training":
         validate_training_request(request)
         resolved_training_parent(request, state)

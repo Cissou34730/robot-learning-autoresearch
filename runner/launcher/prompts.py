@@ -53,7 +53,7 @@ For each consequential physical implication and each unknown, state:
 
 The scientific model states physical consequences and the evidence that discriminates between them. The PI selects the interventions.
 
-End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.
+End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.
 
 The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.
 

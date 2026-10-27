@@ -21,7 +21,7 @@ CODING_SCOPE_DENIAL = "This action is outside this coding session's exact file s
 
 CODING_PERMISSION_DENIAL = (
     "Harness authorization failure: the permission request has no matching active "
-    "native-child or main-PI identity. No file access was authorized."
+    "coder, reviewer or PI identity. No file access was authorized."
 )
 
 

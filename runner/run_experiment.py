@@ -707,7 +707,7 @@ def _execute_inquiry(state: dict, pending: dict) -> int:
 
 def _execute_checkpoint(state: dict, pending: dict) -> int:
     data = pending["data"]
-    _revalidate_frozen_science(data, "scientific session surface")
+    _revalidate_frozen_science(data, "session scientific surface")
     if data["scientific_commit"] is None:
         changed_paths = [entry["path"] for entry in data["scientific_manifest"]]
         if changed_paths:
@@ -1149,7 +1149,9 @@ def _validate_partial_measurement(
         if partial.get(field) != spec[field]:
             raise FrozenOperationMismatch(f"partial measurement {field} changed")
     if metrics.get("model_fingerprint") != spec["model_fingerprint"]:
-        raise FrozenOperationMismatch("partial measurement model fingerprint changed")
+        raise FrozenOperationMismatch(
+            "partial measurement candidate fingerprint changed"
+        )
     if spec["instrument"] == "research_evaluation":
         if metrics.get("evaluation_semantics") != semantics:
             raise FrozenOperationMismatch(
@@ -1353,7 +1355,9 @@ def execute_measurement(state: dict, pending: dict) -> int:
                 continue
             artifact = repository.resolve_repo_path(spec["artifact"])
             if repository.artifact_fingerprint(artifact) != spec["model_fingerprint"]:
-                raise FrozenOperationMismatch("measurement model fingerprint changed")
+                raise FrozenOperationMismatch(
+                    "measurement candidate fingerprint changed"
+                )
             output_dir = paths.campaign_evaluation_dir(campaign_id)
             output_dir.mkdir(parents=True, exist_ok=True)
             if spec["instrument"] == "research_evaluation":

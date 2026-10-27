@@ -22,7 +22,7 @@ from runner.copilot.path_policy import (
 )
 
 SHELL_DENIAL = "Shell tools are unavailable in this session; Runner executes checks."
-RUNNER_LOCKED_DENIAL = "Runner is executing or this bounded session has ended."
+RUNNER_LOCKED_DENIAL = "The Runner is executing or this session has ended."
 PI_CUSTOM_TOOLS = (
     "artifact_evidence_query",
     "training_log_query",

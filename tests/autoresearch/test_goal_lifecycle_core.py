@@ -928,7 +928,7 @@ def test_comparisons_are_resolved_to_planned_canonical_candidates_at_acceptance(
     invalid["measurement"]["paired_comparisons"][0]["candidate"] = "typo"
     state = repository.read_state()
     state["pending_operation"] = None
-    with pytest.raises(KeyError, match="unknown model candidate"):
+    with pytest.raises(KeyError, match="unknown candidate"):
         run_experiment.accept_operation(invalid, state)
 
 

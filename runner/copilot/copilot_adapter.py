@@ -73,9 +73,9 @@ RESUMED_STATE_PROMPT = (
 )
 
 CONTINUE_PROMPT = (
-    "This bounded session is still active. Continue from the actual "
+    "This session is still active. Continue from the actual "
     "operation results in this conversation. Submit the next supported "
-    "action or the scientific checkpoint through submit_operation. "
+    "operation or the checkpoint operation through submit_operation. "
     "Current factual state: "
 )
 
