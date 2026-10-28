@@ -69,16 +69,17 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
-**28 October 2026.** Branch `harness` at `270b37b0` (key-moment wording) on
-top of the console commits `d61d3b60` to `f4ef06c6`. Latest round: round 10,
+**28 October 2026.** Branch `harness` at `511c9cfe`: the round-10 wording
+(`270b37b0`) without the startup invariance sentence, which the startup test
+showed to add PI time without benefit. Latest full round: round 10,
 **5 of 5 passed, each 200/200** (see
 [Round 10](#parallel-round-10-28-october-cause-of-the-passes)). It builds on
 round 7 (scientific terms restored, 4 of 4 passed); rounds 8 and 9 are counted
 as a failed test (3 of 6 assessed campaigns passed). The no-recipe experiment
-(branch `experiment/no-recipe` in the worktree
+(branch `experiment/no-recipe`, commit `d6624b37`, in the worktree
 `robot-learning-harness-norecipe`, starting code tag `skeleton-v1` in
-`robot-learning-recipes\skeleton`, four initialized campaigns in
-`robot-learning-campaigns-norecipe`) is prepared, uncommitted and parked.
+`robot-learning-recipes\skeleton`) runs two campaigns in
+`robot-learning-campaigns-norecipe` since 21:53 UTC, beside the main harness.
 
 - **Repositories.** The harness is published on GitHub branch `harness`. Campaigns
   live in local repositories under one plain folder beside the harness,
@@ -145,6 +146,7 @@ from the same recipe (`baseline-distinct-episodes-v3-robot`). Newest first.
 
 | Round | Date | Harness | Change under test | Passed | Decision |
 |---|---|---|---|---|---|
+| 11 (startup test) | 28 Oct | `511c9cfe` | Round 10 without the startup sentence "State which predictions of the scientific model, including its invariances, your first measurements check." Three campaigns, five at once with the no-recipe experiment | Stopped by decision at about 35 min, after the startup sessions: PI time in startup 2.6 and 4.0 min (third not recorded), against 3.7-19.2 (mean 9.3) in round 10 and 1.7-5.4 (mean 3.7) in round 9; no startup mirror measurement; radius change at 26-30 min against 32-50 | Sentence removed. Round 7 passed 4 of 4 without it |
 | 10 | 28 Oct | `270b37b0` | Round 9 plus the key-moment wording: goal review compares the assessment risk, given unexplained residual failures, with what one more inquiry can learn; an inquiry closed with unresolved causes states the open explanations; a development step states its explanation; startup names the invariance predictions that the first measurements check (OI-060) | **5 of 5, each 200/200** | Kept. A fixed-evidence replay supports the goal-review sentence; see [Round 10](#parallel-round-10-28-october-cause-of-the-passes) |
 | 9 | 28 Oct | `ecb1aed4` | Round 8 plus: the synthesis carries the invariances; Runner messages use the glossary terms; harness paths and maintainer words removed from PI messages | 2 of 4 assessed (1 more without assessment) | Counted as a failed test; changes kept |
 | 8 | 27 Oct | `ccd98ae9` | Round 7 plus: recorded references name the instrument and list the candidates measured on the same episodes | 1 of 2 assessed (2 more without assessment) | Kept |
@@ -883,7 +885,7 @@ An unrelated official assessment is not a condition for closure.
 | OI-049 | The opening analyst shared the PI's system-prompt construction and omitted parts of the physical model (in `5d94bf8a` it read 6 files instead of 38 and omitted the 14-20 cm training range). | **Closed** | The analyst has its own identity, exploration and autonomy sections since the OI-041 merge, and its scope includes invariances since `2f22d98d` (see OI-053). No separate analyst prompt file was built. |
 | OI-052 | A measurement request that listed the same panel twice was accepted and measured, then publication failed on duplicate source artifacts and the launcher exited (`cf5d9dd9`, M14). | **Closed** | `de98a7b1` (25 October): acceptance refuses a request that repeats a panel (same instrument, candidate, seed and episode count, after alias resolution) with an error naming both measurements. Covered by a targeted test. |
 | OI-059 | The campaign texts named one concept with several words (for example artifact, candidate, checkpoint and model for a saved policy) and used one word with several meanings (model, checkpoint, development, reference, goal review). Round 6 showed that the first rewrite removed the scientific terms and over-extended the robot-model limit. | **Closed** | Closed on 28 October. `817d90bb` added `contracts/glossary.md` and the Simplified Technical English rewrite; `ced3202d` (27 October) restored the scientific terms, qualifiers and modality and scoped the robot-model row to the output transformation. Every round since runs on the corrected text: round 7 passed 4 of 4 and is the base of round 10, which passed 5 of 5 at 200/200. |
-| OI-060 | At goal review the PI requested the official assessment at 196-198/200 task reference while its residual failures were unexplained, and after a failed correction it could drop the explanation instead of the correction. `f9317c37` and `c0b3ef41` requested it at their first 197/200 (64% estimated pass chance) and failed 195/200; `ebf5fe54` dropped its mirror explanation after a failed limit penalty and failed 195/200. | **Closed** | Closed on 28 October. Repair `270b37b0`: the goal-review prompt compares the assessment risk, given the residual failures not explained, with what one more inquiry can learn; an inquiry closed with unresolved causes states the open explanations; a development step states its explanation; startup names the invariance predictions that the first measurements check. Round 10: all five PIs continued at 196-198/200, the four whose first correction failed kept the asymmetry explanation and changed the correction, and all five passed 200/200 with reflection-canonicalized I/O. Blinded replay with the exact prompts (OI-043): at `c0b3ef41`'s decision the goal-review sentence reduced assessment requests from 4 of 6 to 0 of 6. The closure, development-step and startup sentences showed no replay effect; the time cost of the startup sentence is a next action. See [Round 10](#parallel-round-10-28-october-cause-of-the-passes). |
+| OI-060 | At goal review the PI requested the official assessment at 196-198/200 task reference while its residual failures were unexplained, and after a failed correction it could drop the explanation instead of the correction. `f9317c37` and `c0b3ef41` requested it at their first 197/200 (64% estimated pass chance) and failed 195/200; `ebf5fe54` dropped its mirror explanation after a failed limit penalty and failed 195/200. | **Closed** | Closed on 28 October. Repair `270b37b0`: the goal-review prompt compares the assessment risk, given the residual failures not explained, with what one more inquiry can learn; an inquiry closed with unresolved causes states the open explanations; a development step states its explanation; startup names the invariance predictions that the first measurements check. Round 10: all five PIs continued at 196-198/200, the four whose first correction failed kept the asymmetry explanation and changed the correction, and all five passed 200/200 with reflection-canonicalized I/O. Blinded replay with the exact prompts (OI-043): at `c0b3ef41`'s decision the goal-review sentence reduced assessment requests from 4 of 6 to 0 of 6. The closure, development-step and startup sentences showed no replay effect; the time cost of the startup sentence is a next action. On 28 October the startup test (round 11) showed that the sentence doubled the PI time in startup without benefit, and `511c9cfe` removed it. See [Round 10](#parallel-round-10-28-october-cause-of-the-passes). |
 
 ### Inactive entries — 13
 
@@ -908,11 +910,11 @@ The historical evidence remains valid.
 
 ### Next maintainer actions
 
-1. Round 10 (`270b37b0`) is the reference harness: 5 of 5 at 200/200 with the
-   cause identified (OI-060 closed). Open cost question: the startup invariance
-   sentence showed no benefit; a round without it can test whether the time to
-   the assessment falls back toward round 7's 82 min with the same result. The
-   no-recipe experiment is prepared and parked (see Current state).
+1. Harness `511c9cfe` is the reference: the round-10 wording (5 of 5 at
+   200/200, cause identified, OI-060 closed) without the startup sentence,
+   which added PI time in startup and no benefit (round 11). The no-recipe
+   experiment runs two campaigns; analyse it when they end (6 h or 120 AIU
+   cap).
 2. Classify OI-024 reruns by their actual information gain or corrected
    defect. Do not equate all repetition with waste.
 3. Earlier check, still unanswered: whether frozen-weight runtime tests lead to
@@ -932,6 +934,8 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-28 | Startup sentence removed (`511c9cfe`, round 11) | Three campaigns on round 10 minus the startup sentence, stopped by decision after their startup sessions. PI time in startup (session time minus Runner wait) 2.6 and 4.0 min against a mean of 9.3 min in round 10 (up to 19.2) and 3.7 in round 9; no startup mirror measurement; the training-radius change came at 26-30 min against 32-50. The sentence stays removed; round 7 passed 4 of 4 without it. |
+| 2026-10-28 | No-recipe experiment launched | Two campaigns from the worktree `robot-learning-harness-norecipe` (`d6624b37`, skeleton `skeleton-v1`), beside the main harness. After 40 min: `e4eb4acd` built a relative-bearing observation, joint-target feedback output and a dense hold reward, reached 197/400 at 100k steps and 101/400 at 120k; `f762cca6` reached 0/160 and opened an inquiry on reach versus hold failure. |
 | 2026-10-28 | OI-059 and OI-060 closed | OI-059 on rounds 7 (4 of 4) and 10 (5 of 5), both on the corrected text; OI-060 on round 10 and the replay. |
 | 2026-10-28 | Round 10 cause analysis and fixed-evidence replay (OI-043, OI-060) | Across rounds 7-10, all 12 assessed candidates with reflection-canonicalized I/O passed and all 3 without it failed 195/200. Two decisions lead there: no assessment at 196-198/200 with unexplained failures, and keeping the explanation when a correction fails. Replay of the exact old and new prompts at five recorded decision points, blinded, 37 runs: the goal-review sentence shifted `c0b3ef41`'s decision (0 of 6 against 4 of 6 assessment requests), not `f9317c37`'s; the closure, development-step and startup sentences showed no effect. See [Round 10](#parallel-round-10-28-october-cause-of-the-passes). |
 | 2026-10-28 | Parallel round 10 | Five campaigns from the TUI on `270b37b0`: 5 of 5 passed, each 200/200, in 110-144 min and 27.2-44.3 AIU. |

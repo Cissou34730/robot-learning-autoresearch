@@ -632,11 +632,12 @@
           request the assessment at 196-198/200 while residual failures are unexplained, and keep the explanation when a
           correction fails. A blinded replay of the exact old and new prompts shows that the round-10 goal-review
           sentence changes the first decision (OI-060).</p>
-        <p><strong>Harness:</strong> branch <code>harness</code> at <code>270b37b0</code>, pushed. Since round 6: the
+        <p><strong>Harness:</strong> branch <code>harness</code> at <code>511c9cfe</code>, pushed. Since round 6: the
           scientific terms are restored in the campaign text (round 7); recorded references name the instrument and the
           candidates that shared a panel (round 8); the synthesis carries the invariances and PI messages carry no
-          harness words (round 9); the key-moment wording for startup, development steps, inquiry closure and goal
-          review (round 10). The launcher, reset and parallel tool run in Python since 27 October.
+          harness words (round 9); the key-moment wording for development steps, inquiry closure and goal review
+          (round 10). The startup invariance sentence of round 10 was removed after the startup test (round 11). The
+          launcher, reset and parallel tool run in Python since 27 October.
         </p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
@@ -2875,10 +2876,9 @@
       </details>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>Round 10 (<code>270b37b0</code>) is the reference harness: 5 of 5 at 200/200 with the cause identified
-          (OI-060 closed). Open cost question: the startup invariance sentence showed no benefit; a round without it
-          can test whether the time to the assessment falls back toward round 7's 82 min with the same result. The
-          no-recipe experiment is prepared and parked.
+        <li>Harness <code>511c9cfe</code> is the reference: the round-10 wording (5 of 5 at 200/200, cause identified,
+          OI-060 closed) without the startup sentence, which added PI time in startup and no benefit (round 11). The
+          no-recipe experiment runs two campaigns; analyse it when they end.
         </li>
         <li>Classify OI-024 reruns by their actual information gain or corrected defect.
           Do not equate all repetition with waste.</li>
@@ -3204,6 +3204,14 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">28 October: startup sentence removed; no-recipe experiment running</h3>
+        <p>Three campaigns ran round 10 without the startup invariance sentence and were stopped after their startup
+          sessions. The PI time in startup fell from a mean of 9.3 min (round 10, up to 19.2) to 2.6&ndash;4.0 min, with
+          no startup mirror measurement, and the training-radius change came 5&ndash;20 min earlier. The sentence stays
+          removed (<code>511c9cfe</code>). Two campaigns of the no-recipe experiment run beside the main harness from
+          the skeleton recipe; after 40 min one had built its own method and reached 197/400.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">28 October: round 10 passes 5 of 5, each 200/200</h3>
         <p>The key-moment wording (<code>270b37b0</code>): goal review compares the assessment risk, given the residual
