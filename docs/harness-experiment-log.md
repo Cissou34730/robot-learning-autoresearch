@@ -793,7 +793,7 @@ or mutated by this review; the evidence-fidelity RCA remains deferred.
 
 **Status and description review: 28 October 2026.**
 
-Five issues require work. Seven changes need more evidence. Thirty-five issues
+Five issues require work. Five changes need more evidence. Thirty-seven issues
 are closed. Thirteen entries are inactive. All 60 issue IDs remain.
 
 On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and
@@ -801,7 +801,8 @@ OI-052 to OI-056 were added from the parallel rounds. On 27 October the
 maintainer withdrew OI-054 after round 4, OI-057 and OI-058 were added
 from round 5, and OI-059 was added from the wording analysis. After round 6
 the maintainer withdrew OI-058, and OI-059 was corrected. On 28 October OI-060
-was added from the round 10 analysis.
+was added from the round 10 analysis, and OI-059 and OI-060 were closed on the
+evidence of rounds 7 and 10 and the replay.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
 The maintainer also closed OI-033 and OI-037 without a verified recovery claim,
@@ -823,7 +824,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
 | OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. Round 6: no model added the condition; `229c3e55` stated no reflection at all. |
 
-### Changes that need more evidence — 7
+### Changes that need more evidence — 5
 
 Each change exists. Campaign evidence is missing or does not yet isolate its
 effect.
@@ -835,10 +836,8 @@ effect.
 | OI-053 | Campaign outcomes depend on whether the scientific model states the arm's reflection symmetry. The analyst wrote it in 1 of 28 models before 26 October. | **Observed** | `2f22d98d` (26 October) adds to the analyst's model scope: the invariances of the definitions, such as symmetries and conserved quantities, and what each makes equal or different. Round 3 (26 October): all 3 models state the symmetry; 2 of 3 campaigns passed (`17e9764f` in 50 min, `de7af8af` in 3 h 21). Before: the only campaign whose model stated it (`6b13d5f4`) passed in 52 min; `fecc7566` found it by a mirror-pair experiment; the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See [parallel rounds](#parallel-rounds-25-26-october). Round 4: all 3 models stated it, no PI used it. Round 5 (invalid): all 4 models stated it; 2 PIs used it and reached 400/400 by about 77 min, 1 set it aside under a stated condition (OI-057), 1 never compared mirrored failures. Round 6 (invalid): 3 of 4 models stated it, no PI used it within about 1 h 15; see OI-058. Rounds 7-10: every assessed candidate with reflection-canonicalized I/O passed (12 of 12, 199-200/200) and every one without it failed 195/200 (3 of 3); the amount of symmetry text in the scientific model does not separate them (see OI-060). |
 | OI-055 | The PI's first experiment can change several parts of the recipe at once and anchor the campaign on an untested base. In `38ad68c6`, T1 widened the radius range and switched to fixed-gain joint targets together (60%); the campaign never tested direct torque (about 94% elsewhere) and ended at about 85%. | **Implemented** | `4ce2fdb1` (26 October), `contracts/program.md`: the inherited recipe is the first reference, and a first experiment that changes several parts at once cannot attribute its result; the assumptions checked before a costly experiment include the choice of method, not only the correctness of its implementation. Round 5: all 4 PIs trained the recipe unchanged first and then changed one factor (training radius). Round 4 also ran with it (0 of 3). Round 6: all first changes altered one part or none. |
 | OI-056 | At a plateau the PI explains failures without the contrast with comparable successes, repeats the same mechanism question, and abandons or repeats methods after one inconclusive result. | **Implemented** | `a93baf4b` and `2f22d98d` (25-26 October), `contracts/program.md`: a mechanism test accounts for where behavior fails and where comparable conditions succeed, and the scientific model states what the definitions make equal; an intervention can supply the evidence for an explanation; check the assumptions of a costly experiment; name the limitation the next implementation addresses; an inconclusive result alone does not justify another attempt or abandonment. Changes 1-3 come from [the preserve-lifecycle proposal](proposals/program-revision-proposal-preserve-lifecycle-20261026.md). Round 3 ran with all of them; their effect cannot be separated from OI-053. |
-| OI-059 | The campaign texts named one concept with several words (for example artifact, candidate, checkpoint and model for a saved policy) and used one word with several meanings (model, checkpoint, development, reference, goal review). | **Implemented** | 27 October, `817d90bb`: `contracts/glossary.md` and a rewrite of all campaign-facing text in Simplified Technical English. Round 6 showed two defects. The glossary listed scientific terms under "Do not use" (mechanism, hypothesis, interpretation, discriminate, intervention, implementation, physical model, consequential, causal research map), and the rewrite replaced them with plain words; its "robot model" row extended the scenario's limit to the whole saved runtime, and `757ef81a` removed its observation features. Corrected the same day (ledger): the glossary defines these terms, the robot-model row follows the scenario, and every campaign-facing file was compared passage by passage with round 5 (`9591b56a`) to restore the lost terms, qualifiers and modality; the glossary names, "you" for the PI and the factual corrections stay. The next round is the first with the corrected text. |
-| OI-060 | At goal review the PI can request the official assessment at 196-198/200 task reference while its residual failures are unexplained, and after a failed correction it can drop the explanation instead of the correction. `f9317c37` and `c0b3ef41` requested it at their first 197/200 (64% estimated pass chance) and failed 195/200; `ebf5fe54` dropped its mirror explanation after a failed limit penalty and failed 195/200. | **Observed** | `270b37b0` (28 October): the goal-review prompt compares the assessment risk, given the residual failures not explained, with what one more inquiry can learn; an inquiry closed with unresolved causes states the open explanations and the evidence that can separate them; a development step states the explanation that motivates it; startup names the invariance predictions that the first measurements check. Round 10: 5 of 5 continued at 196-198/200 and passed 200/200. Replay (OI-043): at `c0b3ef41`'s decision 0 of 6 requested the assessment with the new wording against 4 of 6 with the old; at `f9317c37`'s, 4 of 4 against 5 of 6; the closure and development-step sentences showed no effect (0 of 8 against 0 of 7 proposed the structural correction). The startup sentence has no measured benefit and may add time. Remaining check: early-stop rate and time to the assessment in later rounds; a replay or round without the startup sentence. |
 
-### Closed issues — 35
+### Closed issues — 37
 
 Most closures reflect recorded repairs.
 OI-021, OI-026, OI-033, OI-037, OI-038 and OI-046 were closed by maintainer
@@ -883,6 +882,8 @@ An unrelated official assessment is not a condition for closure.
 | OI-041 | The PI role arrived in the first user message; the SDK system message stayed at its default. | **Closed** | Merged into `harness` on 24 October (tag `pre-system-prompt` marks the previous tip). The PI and the analyst receive a customized system message (`runner/copilot/system_prompt.py`): own identity, autonomy and tone, contract references; the scientific model arrives in the first message so that it survives compaction. Campaigns since `f83fca4d` run on it. Plan and adaptations: [OI-041 system-prompt plan](#oi-041-system-prompt-plan-22-october). |
 | OI-049 | The opening analyst shared the PI's system-prompt construction and omitted parts of the physical model (in `5d94bf8a` it read 6 files instead of 38 and omitted the 14-20 cm training range). | **Closed** | The analyst has its own identity, exploration and autonomy sections since the OI-041 merge, and its scope includes invariances since `2f22d98d` (see OI-053). No separate analyst prompt file was built. |
 | OI-052 | A measurement request that listed the same panel twice was accepted and measured, then publication failed on duplicate source artifacts and the launcher exited (`cf5d9dd9`, M14). | **Closed** | `de98a7b1` (25 October): acceptance refuses a request that repeats a panel (same instrument, candidate, seed and episode count, after alias resolution) with an error naming both measurements. Covered by a targeted test. |
+| OI-059 | The campaign texts named one concept with several words (for example artifact, candidate, checkpoint and model for a saved policy) and used one word with several meanings (model, checkpoint, development, reference, goal review). Round 6 showed that the first rewrite removed the scientific terms and over-extended the robot-model limit. | **Closed** | Closed on 28 October. `817d90bb` added `contracts/glossary.md` and the Simplified Technical English rewrite; `ced3202d` (27 October) restored the scientific terms, qualifiers and modality and scoped the robot-model row to the output transformation. Every round since runs on the corrected text: round 7 passed 4 of 4 and is the base of round 10, which passed 5 of 5 at 200/200. |
+| OI-060 | At goal review the PI requested the official assessment at 196-198/200 task reference while its residual failures were unexplained, and after a failed correction it could drop the explanation instead of the correction. `f9317c37` and `c0b3ef41` requested it at their first 197/200 (64% estimated pass chance) and failed 195/200; `ebf5fe54` dropped its mirror explanation after a failed limit penalty and failed 195/200. | **Closed** | Closed on 28 October. Repair `270b37b0`: the goal-review prompt compares the assessment risk, given the residual failures not explained, with what one more inquiry can learn; an inquiry closed with unresolved causes states the open explanations; a development step states its explanation; startup names the invariance predictions that the first measurements check. Round 10: all five PIs continued at 196-198/200, the four whose first correction failed kept the asymmetry explanation and changed the correction, and all five passed 200/200 with reflection-canonicalized I/O. Blinded replay with the exact prompts (OI-043): at `c0b3ef41`'s decision the goal-review sentence reduced assessment requests from 4 of 6 to 0 of 6. The closure, development-step and startup sentences showed no replay effect; the time cost of the startup sentence is a next action. See [Round 10](#parallel-round-10-28-october-cause-of-the-passes). |
 
 ### Inactive entries — 13
 
@@ -907,11 +908,11 @@ The historical evidence remains valid.
 
 ### Next maintainer actions
 
-1. Round 10 passed 5 of 5 at 200/200 on `270b37b0`; keep it. In the next
-   round, check the early-stop rate at goal review and the time to the
-   assessment (OI-060), and whether a round or a replay without the startup
-   invariance sentence keeps the pass rate at a lower time. The no-recipe
-   experiment is prepared and parked (see Current state).
+1. Round 10 (`270b37b0`) is the reference harness: 5 of 5 at 200/200 with the
+   cause identified (OI-060 closed). Open cost question: the startup invariance
+   sentence showed no benefit; a round without it can test whether the time to
+   the assessment falls back toward round 7's 82 min with the same result. The
+   no-recipe experiment is prepared and parked (see Current state).
 2. Classify OI-024 reruns by their actual information gain or corrected
    defect. Do not equate all repetition with waste.
 3. Earlier check, still unanswered: whether frozen-weight runtime tests lead to
@@ -931,6 +932,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-28 | OI-059 and OI-060 closed | OI-059 on rounds 7 (4 of 4) and 10 (5 of 5), both on the corrected text; OI-060 on round 10 and the replay. |
 | 2026-10-28 | Round 10 cause analysis and fixed-evidence replay (OI-043, OI-060) | Across rounds 7-10, all 12 assessed candidates with reflection-canonicalized I/O passed and all 3 without it failed 195/200. Two decisions lead there: no assessment at 196-198/200 with unexplained failures, and keeping the explanation when a correction fails. Replay of the exact old and new prompts at five recorded decision points, blinded, 37 runs: the goal-review sentence shifted `c0b3ef41`'s decision (0 of 6 against 4 of 6 assessment requests), not `f9317c37`'s; the closure, development-step and startup sentences showed no effect. See [Round 10](#parallel-round-10-28-october-cause-of-the-passes). |
 | 2026-10-28 | Parallel round 10 | Five campaigns from the TUI on `270b37b0`: 5 of 5 passed, each 200/200, in 110-144 min and 27.2-44.3 AIU. |
 | 2026-10-28 | Key-moment wording (`270b37b0`, OI-060) | From the semantic analysis of 17 campaigns. `contracts/program.md`: the official assessment "ends the campaign with its pass or fail result" (replaces "terminal commitment"); the single-change attribution sentence applies to the first comparison, later change sizes follow the explanation tested; an inquiry closed with unresolved causes states the open explanations and the evidence that can separate them. `runner/launcher/prompts.py`: the goal-review guidance compares the assessment risk, given the residual failures not explained, with what one more inquiry can learn; operations state the explanation or distinction that they test, and a development step states the explanation that motivates it; startup states which predictions of the scientific model, including its invariances, the first measurements check. |
