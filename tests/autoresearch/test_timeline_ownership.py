@@ -203,6 +203,24 @@ def test_a_thinned_progress_row_carries_the_time_of_its_latest_sample():
     assert rows[0].ts == _at(5)
 
 
+def test_a_failure_that_belongs_to_no_session_opens_the_campaign_group_until_a_new_launch():
+    reducer = TimelineReducer()
+    reducer.ingest(_event("campaign_started", 0, {"summary": "goal"}))
+    reducer.ingest(
+        _event(
+            "error",
+            5,
+            {"text": "the launcher stopped", "code": "launcher_failed"},
+            severity="error",
+        )
+    )
+    assert _find(reducer, "campaign:root")[0].default_expanded is True
+    reducer.ingest(
+        _event("session_start", 9, {}, session_id="S2", attempt="inv-2", actor="pi")
+    )
+    assert _find(reducer, "campaign:root")[0].default_expanded is False
+
+
 def test_the_widget_follows_a_change_of_parent_even_when_the_rows_look_equal():
     first = TimelineItem(item_id="a", kind="session", title="A", is_group=True)
     second = TimelineItem(item_id="b", kind="session", title="B", is_group=True)

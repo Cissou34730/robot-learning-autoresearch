@@ -33,6 +33,7 @@ from textual.widgets import DataTable, Input, Static
 
 from runner import paths
 from runner import reporting as console
+from runner.event_contract import LAUNCH_KINDS, LAUNCHER_STOP_CODES
 from tui import projector
 from tui.event_log import EventLog, FilterScreen, RawEventScreen
 from tui.journal import JournalFeed, journal_path_for
@@ -54,10 +55,6 @@ COMPACT_WIDTH = 100
 COMPACT_HEIGHT = 30
 LIVENESS_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
 PROGRESS_STALE_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
-# The launcher's own error codes that end a launch (runner/launcher/assembly.py).
-_LAUNCHER_STOP_CODES = frozenset({"launcher_failed", "stop_deadline_exceeded"})
-# Events that only a newly started launch writes.
-_LAUNCH_KINDS = frozenset({"campaign_started", "session_start", "operation_started"})
 
 
 # The log is display-only. These tokens are the single palette used by the
@@ -1485,7 +1482,7 @@ class CampaignPanel(Widget):
     def _process_events(self, events: list[Observation], render: bool = True) -> None:
         for event in events:
             self._timeline.ingest(event)
-            if self._launcher_stopped and event.kind in _LAUNCH_KINDS:
+            if self._launcher_stopped and event.kind in LAUNCH_KINDS:
                 # A new launch began after the stop: its failure no longer stands.
                 self._launcher_stopped = False
                 self._note("")
@@ -1498,7 +1495,7 @@ class CampaignPanel(Widget):
             self._apply_layout()
 
     def _event_error(self, event: Observation) -> None:
-        if event.fields.get("code") not in _LAUNCHER_STOP_CODES:
+        if event.fields.get("code") not in LAUNCHER_STOP_CODES:
             return
         reason = _clean_text(
             str(event.fields.get("text") or event.fields.get("message") or "")

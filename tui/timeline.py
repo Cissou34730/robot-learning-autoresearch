@@ -15,7 +15,12 @@ from pathlib import Path
 
 from runner import reporting as console
 from runner.copilot.reporting import tool_detail, tool_result_lines
-from runner.event_contract import PREPARATION_SESSION, missing_identity
+from runner.event_contract import (
+    LAUNCH_KINDS,
+    LAUNCHER_STOP_CODES,
+    PREPARATION_SESSION,
+    missing_identity,
+)
 from tui.observations import Observation
 from tui.projector import training_eta_seconds
 
@@ -310,6 +315,7 @@ class TimelineReducer:
         # Who spoke and in which invocation, for the handler about to run.
         self._attempt = event.attempt
         self._actor = event.actor
+        self._campaign_group_follows(kind, fields, session_id)
         if kind == "session_start":
             self._attempt_event(ts, session_id, fields)
             return
@@ -418,6 +424,24 @@ class TimelineReducer:
         self._items[item.item_id] = item
         self._roots.append(item)
         return item
+
+    def _campaign_group_follows(self, kind: str, fields: dict, session_id: str) -> None:
+        """Keep the Campaign group open while a launcher failure stands in it.
+
+        A failure owned by a session shows in that session. One that belongs to
+        no session (between sessions, or recorded without an owner) would
+        otherwise hide in the folded Campaign group.
+        """
+        if kind in LAUNCH_KINDS:
+            group = self._items.get("campaign:root")
+            if group is not None:
+                group.default_expanded = False
+        elif (
+            kind == "error"
+            and not session_id
+            and fields.get("code") in LAUNCHER_STOP_CODES
+        ):
+            self._campaign_group().default_expanded = True
 
     def _campaign_group(self) -> TimelineItem:
         item = self._items.get("campaign:root")

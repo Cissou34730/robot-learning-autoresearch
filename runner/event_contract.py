@@ -25,6 +25,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 SCHEMA_VERSION = 2
+# Error codes of the event that says the launcher stopped (runner/launcher/assembly.py).
+LAUNCHER_STOP_CODES = frozenset({"launcher_failed", "stop_deadline_exceeded"})
+# Events that only a newly started launch writes.
+LAUNCH_KINDS = frozenset({"campaign_started", "session_start", "operation_started"})
 JOURNAL_SUFFIX = ".events.v2.jsonl"
 PREPARATION_SESSION = "preparation"
 OFFICIAL_OPERATION = "official"
