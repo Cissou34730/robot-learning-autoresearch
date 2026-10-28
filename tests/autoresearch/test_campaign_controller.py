@@ -67,6 +67,9 @@ class FakeMachinery:
         self.wait_exit_code: int | None = 130  # cooperative stop succeeds by default
         self.fail_start: str | None = None
         self.reason = ""
+        self.detached: list[FakeChild] = []
+        self.killed_external: list[Path] = []
+        self.external_kill_result = True
 
     # ProcessMachinery protocol -------------------------------------------
     def start(
@@ -109,6 +112,16 @@ class FakeMachinery:
 
     def finish(self, child: FakeChild) -> None:
         pass
+
+    def detach(self, child: FakeChild) -> None:
+        self.detached.append(child)
+        for folder, owned in list(self.children.items()):
+            if owned is child:
+                del self.children[folder]
+
+    def kill_external(self, folder: Path) -> bool:
+        self.killed_external.append(folder)
+        return self.external_kill_result
 
     def failure_reason(self, child: FakeChild) -> str:
         return self.reason
@@ -1036,3 +1049,210 @@ def test_owned_launch_has_a_private_hidden_console_not_the_owners_console(tmp_pa
         check=False,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
+# --- kill, detach and a stop that is waited for, never forced ----------------
+
+
+def test_kill_terminates_an_owned_launcher_and_ends_its_state(tmp_path):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    controller.execute("start", [1], settings=control.LaunchSettings())
+    child = machinery.children[layout.folder(1)]
+    outcome = controller.execute("kill", [1], settings=control.LaunchSettings())
+    assert machinery.forced == [child]
+    state = controller.state("campaign-1")
+    assert state.stage == "stopped" and state.child is None
+    assert "killed" in state.detail
+    assert outcome.ok and outcome.steps[0].action == "kill"
+
+
+def test_kill_reaches_a_campaign_this_console_did_not_start(tmp_path):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    controller._external = SimpleNamespace(running=lambda folder: True)
+    outcome = controller.execute("kill", [2], settings=control.LaunchSettings())
+    assert machinery.killed_external == [layout.folder(2)]
+    assert outcome.ok
+    machinery.external_kill_result = False
+    outcome = controller.execute("kill", [2], settings=control.LaunchSettings())
+    assert not outcome.ok
+    assert "use stop" in outcome.steps[0].detail
+
+
+def test_kill_has_nothing_to_do_for_an_idle_campaign(tmp_path):
+    controller, machinery, _, _ = _controller(tmp_path)
+    controller._external = SimpleNamespace(running=lambda folder: False)
+    outcome = controller.execute("kill", [1], settings=control.LaunchSettings())
+    assert machinery.forced == [] and machinery.killed_external == []
+    assert outcome.steps[0].status == control.SKIPPED
+
+
+def test_kill_all_is_allowed_but_start_all_is_not():
+    assert control.parse_command("kill all") == ("kill", [1, 2, 3, 4, 5])
+    with pytest.raises(control.CommandError, match="stop and kill only"):
+        control.parse_command("start all")
+
+
+def test_detach_leaves_every_launcher_running_and_stops_new_actions(tmp_path):
+    controller, machinery, layout, _ = _controller(tmp_path)
+    controller.execute("start", [1, 2], settings=control.LaunchSettings())
+    children = [machinery.children[layout.folder(slot)] for slot in (1, 2)]
+    assert controller.detach_all() == ["campaign-1", "campaign-2"]
+    assert machinery.detached == children
+    assert all(child.stop_requests == 0 for child in children)
+    assert machinery.forced == []
+    assert controller.state("campaign-1").child is None
+    with pytest.raises(control.ControllerError, match="shutting down"):
+        controller.execute("start", [3], settings=control.LaunchSettings())
+
+
+def test_wait_stopped_waits_but_never_forces(tmp_path):
+    controller, machinery, _, _ = _controller(tmp_path)
+    machinery.wait_exit_code = None
+    controller.execute("start", [1], settings=control.LaunchSettings())
+    controller.execute("stop", [1], settings=control.LaunchSettings())
+    assert controller.wait_stopped("campaign-1", 0.01) is False
+    assert machinery.forced == []
+    assert controller.state("campaign-1").child is not None
+    machinery.wait_exit_code = 130
+    assert controller.wait_stopped("campaign-1", 0.01) is True
+    assert controller.state("campaign-1").stage == "stopped"
+    assert controller.wait_stopped("campaign-2", 0.01) is True
+
+
+@requires_windows
+def test_a_detached_launcher_keeps_running_and_its_record_ends_it(
+    tmp_path, native_shell, monkeypatch
+):
+    import ctypes
+
+    from tui import process
+    from tui.process import (
+        _WAIT_OBJECT_0,
+        _WAIT_TIMEOUT,
+        LauncherBuilder,
+        kernel32,
+        kill_recorded_launcher,
+        launcher_record_path,
+        write_launcher_record,
+    )
+
+    monkeypatch.setattr(process, "control_root", lambda: tmp_path / "control-root")
+    folder = tmp_path / "campaign-1"
+    folder.mkdir()
+    script = tmp_path / "spawner.ps1"
+    pidfile = tmp_path / "child.pid"
+    script.write_text(
+        "$p = Start-Process ping.exe -ArgumentList '-n','120','127.0.0.1' -PassThru\n"
+        f"$p.Id | Set-Content -LiteralPath '{pidfile}'\nStart-Sleep -Seconds 120\n",
+        encoding="utf-8",
+    )
+    launcher = LauncherBuilder(tmp_path).start_command(
+        _script(native_shell, script), tmp_path / "control", kill_on_close=False
+    )
+    write_launcher_record(folder, launcher)
+    assert launcher_record_path(folder).is_file()
+    kernel32.OpenProcess.restype = ctypes.c_void_p
+    kernel32.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+    deadline = time.monotonic() + 15
+    while (
+        not pidfile.exists() or not pidfile.read_text(encoding="utf-8-sig").strip()
+    ) and time.monotonic() < deadline:
+        time.sleep(0.05)
+    descendant = int(pidfile.read_text(encoding="utf-8-sig").strip())
+    handles = [
+        kernel32.OpenProcess(0x100000, False, pid) for pid in (launcher.pid, descendant)
+    ]
+    assert all(handles)
+    try:
+        launcher.detach()
+        assert kernel32.WaitForSingleObject(handles[0], 700) == _WAIT_TIMEOUT
+        # Another console, with no handle to the old job, ends the whole tree.
+        assert kill_recorded_launcher(folder) is True
+        for handle in handles:
+            assert kernel32.WaitForSingleObject(handle, 10000) == _WAIT_OBJECT_0
+        assert not launcher_record_path(folder).exists()
+        assert kill_recorded_launcher(folder) is False
+    finally:
+        for handle in handles:
+            kernel32.CloseHandle(handle)
+        if launcher.job:
+            launcher.close()
+
+
+@requires_windows
+def test_a_helper_job_cannot_be_detached_and_dies_with_its_owner(
+    tmp_path, native_shell
+):
+    from tui.process import LauncherBuilder
+
+    script = tmp_path / "long.ps1"
+    script.write_text("Start-Sleep -Seconds 120\n", encoding="utf-8")
+    helper = LauncherBuilder(tmp_path).start_command(
+        _script(native_shell, script), tmp_path / "control"
+    )
+    try:
+        with pytest.raises(RuntimeError, match="kills its processes"):
+            helper.detach()
+    finally:
+        helper.force_stop(timeout=10.0)
+        helper.close()
+
+
+@requires_windows
+def test_a_launcher_record_never_kills_a_process_that_reused_the_pid(
+    tmp_path, native_shell, monkeypatch
+):
+    import json
+
+    from tui import process
+    from tui.process import (
+        LauncherBuilder,
+        kill_recorded_launcher,
+        launcher_record_path,
+    )
+
+    monkeypatch.setattr(process, "control_root", lambda: tmp_path / "control-root")
+    folder = tmp_path / "campaign-1"
+    folder.mkdir()
+    script = tmp_path / "long.ps1"
+    script.write_text("Start-Sleep -Seconds 120\n", encoding="utf-8")
+    bystander = LauncherBuilder(tmp_path).start_command(
+        _script(native_shell, script), tmp_path / "control"
+    )
+    try:
+        path = launcher_record_path(folder)
+        path.parent.mkdir(parents=True)
+        # A live process whose creation time is not the one that was recorded.
+        path.write_text(json.dumps({"pid": bystander.pid, "created": 1}), "utf-8")
+        assert kill_recorded_launcher(folder) is False
+        assert bystander.poll() is False
+        assert not path.exists()
+    finally:
+        bystander.force_stop(timeout=10.0)
+        bystander.close()
+
+
+@requires_windows
+def test_a_missing_or_unreadable_launcher_record_is_not_an_error(tmp_path, monkeypatch):
+    from tui import process
+    from tui.process import kill_recorded_launcher, launcher_record_path
+
+    monkeypatch.setattr(process, "control_root", lambda: tmp_path / "control-root")
+    folder = tmp_path / "campaign-1"
+    folder.mkdir()
+    assert kill_recorded_launcher(folder) is False
+    path = launcher_record_path(folder)
+    path.parent.mkdir(parents=True)
+    path.write_text("not json", encoding="utf-8")
+    assert kill_recorded_launcher(folder) is False
+
+
+@requires_windows
+def test_the_launcher_record_is_per_campaign_folder(tmp_path):
+    from tui.process import launcher_record_path
+
+    first, second = tmp_path / "campaign-1", tmp_path / "campaign-2"
+    first.mkdir()
+    second.mkdir()
+    assert launcher_record_path(first) == launcher_record_path(first)
+    assert launcher_record_path(first) != launcher_record_path(second)

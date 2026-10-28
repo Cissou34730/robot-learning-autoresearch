@@ -21,6 +21,7 @@ silently degrading containment guarantees.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -50,6 +51,8 @@ _PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE = 0x02
 
 # Job limits
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
+_PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+_SYNCHRONIZE = 0x00100000
 _JobObjectExtendedLimitInformation = 9
 # JobObjectBasicProcessIdList per QueryInformationJobObject docs (winnt.h
 # list struct: two DWORD counters, then pointer-sized ids).
@@ -409,7 +412,11 @@ def create_stop_request(stop_request_path: Path) -> bool:
 
 @dataclass
 class SupervisedLauncher:
-    """One launcher invocation under kill-on-close Job containment."""
+    """One launcher invocation under Job containment.
+
+    A launcher job is named and does not kill on close, so the console can leave
+    it running (``detach``). A helper job (reset, initialize) kills on close.
+    """
 
     pid: int
     job: wintypes.HANDLE
@@ -419,6 +426,7 @@ class SupervisedLauncher:
     stop_request: Path | None = None
     stop_requested: bool = False
     _exit_code: int | None = None
+    kill_on_close: bool = True
 
     # -- Observations ------------------------------------------------------
     def poll(self) -> bool:
@@ -480,44 +488,20 @@ class SupervisedLauncher:
 
     def job_process_ids(self) -> list[int]:
         """Processes currently assigned to the containment job."""
-        # JOBOBJECT_BASIC_PROCESS_ID_LIST: two DWORD counters followed by
-        # pointer-sized process ids. A too-small buffer fails with
-        # ERROR_MORE_DATA; the process count can grow between queries.
-        attempted = 8 + 64 * ctypes.sizeof(ctypes.c_size_t)
-        for _ in range(8):
-            buffer = ctypes.create_string_buffer(attempted)
-            returned = wintypes.DWORD(0)
-            if kernel32.QueryInformationJobObject(
-                self.job,
-                _JobObjectBasicProcessIdList,
-                buffer,
-                attempted,
-                ctypes.byref(returned),
-            ):
-                break
-            if ctypes.get_last_error() != 234:  # ERROR_MORE_DATA
-                _raise_winerror("querying the campaign job processes")
-            attempted = max(attempted * 2, returned.value)
-        else:
-            raise RuntimeError("The campaign job process list kept growing.")
-        listed = int.from_bytes(buffer.raw[4:8], "little")
-        ids: list[int] = []
-        for index in range(listed):
-            offset = 8 + index * ctypes.sizeof(ctypes.c_size_t)
-            if offset + ctypes.sizeof(ctypes.c_size_t) > returned.value:
-                raise RuntimeError(
-                    "The campaign job returned a truncated process list."
-                )
-            ids.append(
-                int.from_bytes(
-                    buffer.raw[offset : offset + ctypes.sizeof(ctypes.c_size_t)],
-                    "little",
-                )
-            )
-        return ids
+        return _job_process_ids(self.job)
+
+    def detach(self) -> None:
+        """Let the launcher and everything it started keep running without us.
+
+        Only a launcher job can be left: a helper job kills on close.
+        """
+        if self.kill_on_close:
+            raise RuntimeError("This job kills its processes when it closes.")
+        self.close()
 
     def close(self) -> None:
-        """Release all owned handles. Closing the job kills any remaining member."""
+        """Release all owned handles. A kill-on-close job kills what remains in
+        it; a launcher job leaves it running."""
         for name in ("job", "_thread", "_process"):
             handle = getattr(self, name)
             if handle:
@@ -526,16 +510,138 @@ class SupervisedLauncher:
         self._log.close()
 
 
+def _job_process_ids(job) -> list[int]:
+    """Processes assigned to a job object."""
+    # JOBOBJECT_BASIC_PROCESS_ID_LIST: two DWORD counters followed by
+    # pointer-sized process ids. A too-small buffer fails with
+    # ERROR_MORE_DATA; the process count can grow between queries.
+    attempted = 8 + 64 * ctypes.sizeof(ctypes.c_size_t)
+    for _ in range(8):
+        buffer = ctypes.create_string_buffer(attempted)
+        returned = wintypes.DWORD(0)
+        if kernel32.QueryInformationJobObject(
+            job,
+            _JobObjectBasicProcessIdList,
+            buffer,
+            attempted,
+            ctypes.byref(returned),
+        ):
+            break
+        if ctypes.get_last_error() != 234:  # ERROR_MORE_DATA
+            _raise_winerror("querying the campaign job processes")
+        attempted = max(attempted * 2, returned.value)
+    else:
+        raise RuntimeError("The campaign job process list kept growing.")
+    listed = int.from_bytes(buffer.raw[4:8], "little")
+    ids: list[int] = []
+    for index in range(listed):
+        offset = 8 + index * ctypes.sizeof(ctypes.c_size_t)
+        if offset + ctypes.sizeof(ctypes.c_size_t) > returned.value:
+            raise RuntimeError("The campaign job returned a truncated process list.")
+        ids.append(
+            int.from_bytes(
+                buffer.raw[offset : offset + ctypes.sizeof(ctypes.c_size_t)],
+                "little",
+            )
+        )
+    return ids
+
+
+def _process_creation_time(process) -> int:
+    """The creation time of a process handle as a 64-bit FILETIME value."""
+    created, exited, kernel, user = (wintypes.FILETIME() for _ in range(4))
+    if not kernel32.GetProcessTimes(
+        process,
+        ctypes.byref(created),
+        ctypes.byref(exited),
+        ctypes.byref(kernel),
+        ctypes.byref(user),
+    ):
+        _raise_winerror("reading a process creation time")
+    return (created.dwHighDateTime << 32) | created.dwLowDateTime
+
+
+def launcher_record_path(folder: Path) -> Path:
+    """Where the console that started a campaign's launcher noted its process.
+
+    It lives outside the campaign and the harness, keyed by the campaign folder,
+    so any console can find it. Windows destroys a job object when its last
+    handle closes, so a launcher left running has no job another console could
+    open; its process, checked against this record, is what a later ``kill`` ends.
+    """
+    from runner.launcher.campaign_lock import mutex_name
+
+    digest = mutex_name(Path(folder)).rsplit("-", 1)[1]
+    return control_root() / "launchers" / f"{digest}.json"
+
+
+def write_launcher_record(folder: Path, child: SupervisedLauncher) -> None:
+    path = launcher_record_path(folder)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    record = {"pid": child.pid, "created": _process_creation_time(child._process)}
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+
+def remove_launcher_record(folder: Path) -> None:
+    try:
+        launcher_record_path(folder).unlink()
+    except OSError:
+        pass
+
+
+def kill_recorded_launcher(folder: Path, timeout: float = 15.0) -> bool:
+    """End the launcher recorded for ``folder`` and everything it started.
+
+    ``False`` when no console recorded one, or the recorded process is gone or
+    is not the same process any more (its PID was reused).
+    """
+    path = launcher_record_path(folder)
+    try:
+        record = json.loads(path.read_text(encoding="utf-8"))
+        pid, created = int(record["pid"]), int(record["created"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    handle = kernel32.OpenProcess(
+        _PROCESS_QUERY_LIMITED_INFORMATION | _SYNCHRONIZE, False, pid
+    )
+    if not handle:
+        remove_launcher_record(folder)
+        return False
+    try:
+        if kernel32.WaitForSingleObject(handle, 0) != _WAIT_TIMEOUT:
+            remove_launcher_record(folder)
+            return False
+        if _process_creation_time(handle) != created:
+            remove_launcher_record(folder)
+            return False
+        subprocess.run(
+            ["taskkill", "/PID", str(pid), "/T", "/F"],
+            capture_output=True,
+            check=False,
+            timeout=timeout,
+        )
+        if kernel32.WaitForSingleObject(handle, int(timeout * 1000)) != _WAIT_OBJECT_0:
+            raise TimeoutError("The launcher did not end after termination.")
+        remove_launcher_record(folder)
+        return True
+    finally:
+        kernel32.CloseHandle(handle)
+
+
 class JobHandle:
     """Handle wrapper for one Job Object; keep it open for containment."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, kill_on_close: bool = True) -> None:
         self.handle = kernel32.CreateJobObjectW(None, None)
         if not self.handle:
             _raise_winerror("creating the campaign job object")
         limits = _JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
         ctypes.memset(ctypes.byref(limits), 0, ctypes.sizeof(limits))
-        limits.BasicLimitInformation.LimitFlags = _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+        limits.BasicLimitInformation.LimitFlags = (
+            _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE if kill_on_close else 0
+        )
         if not kernel32.SetInformationJobObject(
             self.handle,
             _JobObjectExtendedLimitInformation,
@@ -543,7 +649,7 @@ class JobHandle:
             ctypes.sizeof(limits),
         ):
             kernel32.CloseHandle(self.handle)
-            _raise_winerror("configuring kill-on-close job limits")
+            _raise_winerror("configuring the campaign job limits")
 
     def close(self) -> None:
         if self.handle:
@@ -590,6 +696,7 @@ class LauncherBuilder:
             ],
             control_directory,
             env=env,
+            kill_on_close=False,
         )
         child.stop_request = stop_request
         return child
@@ -599,8 +706,10 @@ class LauncherBuilder:
         command: list[str],
         control_directory: Path,
         env: dict[str, str] | None = None,
+        *,
+        kill_on_close: bool = True,
     ) -> SupervisedLauncher:
-        """The same contained boundary for initializer/reset helpers."""
+        """The contained boundary for a launcher or an initializer/reset helper."""
         control_directory.mkdir(parents=True, exist_ok=True)
         environment = dict(env if env is not None else os.environ)
         command_line = subprocess.list2cmdline(command)
@@ -608,7 +717,7 @@ class LauncherBuilder:
         job = None
         process_information = _PROCESS_INFORMATION()
         try:
-            job = JobHandle()
+            job = JobHandle(kill_on_close=kill_on_close)
             extended_startup = _STARTUPINFOEXW()
             startup = extended_startup.StartupInfo
             startup.cb = ctypes.sizeof(extended_startup)
@@ -661,6 +770,7 @@ class LauncherBuilder:
                 _process=process_information.hProcess,
                 _thread=process_information.hThread,
                 _log=log,
+                kill_on_close=kill_on_close,
             )
         except Exception:
             if process_information.hProcess:
@@ -726,8 +836,23 @@ class LauncherMachinery:
             stop_request=stop_request_path(Path(folder)),
             env=self._launch_environment(),
         )
+        try:
+            write_launcher_record(Path(folder), child)
+        except OSError:
+            pass  # only a later kill from another console needs it
         self._children[Path(folder)] = child
         return child
+
+    def detach(self, child: SupervisedLauncher) -> None:
+        """Leave a launcher running and forget it."""
+        child.detach()
+        for folder, owned in list(self._children.items()):
+            if owned is child:
+                del self._children[folder]
+
+    def kill_external(self, folder: Path) -> bool:
+        """End the launcher a console recorded for this campaign folder."""
+        return kill_recorded_launcher(Path(folder))
 
     def poll(self, child: SupervisedLauncher) -> bool:
         return child.poll()
@@ -758,6 +883,7 @@ class LauncherMachinery:
         for folder, owned in list(self._children.items()):
             if owned is child:
                 del self._children[folder]
+                remove_launcher_record(folder)
 
     def run(self, arguments: list[str]) -> subprocess.CompletedProcess[str]:
         """Execute command helpers without orphaning them on console exit."""
@@ -821,5 +947,9 @@ __all__ = [
     "control_root",
     "create_stop_request",
     "instance_lock_name",
+    "kill_recorded_launcher",
+    "launcher_record_path",
     "new_control_directory",
+    "remove_launcher_record",
+    "write_launcher_record",
 ]

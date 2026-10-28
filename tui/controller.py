@@ -195,7 +195,7 @@ class BatchOutcome:
         )
 
 
-COMMANDS = ("run", "start", "reset", "stop", "help", "models", "diagnostics")
+COMMANDS = ("run", "start", "reset", "stop", "kill", "help", "models", "diagnostics")
 
 
 def _unknown_command_message(word: str) -> str:
@@ -222,9 +222,9 @@ def parse_command(text: str) -> tuple[str, list[int]]:
         return verb, []
     selection = tokens[1:]
     if selection == ["all"]:
-        if verb != "stop":
+        if verb not in {"stop", "kill"}:
             raise CommandError(
-                "Use campaign numbers, ranges or folder names; all is stop-only."
+                "Use campaign numbers, ranges or folder names; all is for stop and kill only."
             )
         return verb, list(range(1, MAX_SLOTS + 1))
     slots: list[int] = []
@@ -346,6 +346,14 @@ class ProcessMachinery(Protocol):
     def request_stop(self, child: object) -> bool: ...
 
     def force_stop(self, child: object, timeout: float | None = None) -> None: ...
+
+    def detach(self, child: object) -> None:
+        """Leave a launcher running without the console."""
+        ...
+
+    def kill_external(self, folder: Path) -> bool:
+        """Terminate the launcher of a campaign this console did not start."""
+        ...
 
     def finish(self, child: object) -> None: ...
 
@@ -576,7 +584,7 @@ class CampaignController:
             )
         if len(set(slots)) != len(slots):
             raise CommandError("Duplicate campaign targets.")
-        if verb not in {"start", "stop", "reset", "run"}:
+        if verb not in {"start", "stop", "kill", "reset", "run"}:
             raise CommandError(f"Unknown command: {verb!r}")
         settings.launcher_arguments()
         reset = reset or ResetConfig()
@@ -584,15 +592,19 @@ class CampaignController:
             reset.arguments()
         outcome = BatchOutcome(action=verb)
         self._outcomes.append(outcome)
-        targets = self._targets(slots, allow_missing=verb in {"run", "stop"})
-        if verb != "stop":
-            # Stopping a busy campaign is the point of `stop`; every other
-            # action refuses to touch a busy target.
+        targets = self._targets(slots, allow_missing=verb in {"run", "stop", "kill"})
+        if verb not in {"stop", "kill"}:
+            # Stopping or killing a busy campaign is the point of those commands;
+            # every other action refuses to touch a busy target.
             for target in targets:
                 self._refuse_busy(target, verb)
         if verb == "stop":
             for target in targets:
                 self._stop_one(outcome, target)
+            return outcome
+        if verb == "kill":
+            for target in targets:
+                self._kill_one(outcome, target)
             return outcome
         check_runtime = getattr(self._machinery, "preflight", None)
         if check_runtime is not None:
@@ -838,6 +850,55 @@ class CampaignController:
         with target.cleanup_lock:
             self._request_stop(outcome, target)
 
+    def _kill_one(self, outcome: BatchOutcome, target: CampaignFolderState) -> None:
+        """End a campaign now: terminate its launcher and everything it started."""
+        with target.cleanup_lock:
+            if target.child is not None:
+                try:
+                    self._machinery.force_stop(target.child)
+                    self._machinery.finish(target.child)
+                except (OSError, RuntimeError, TimeoutError) as error:
+                    self._record(outcome, "kill", target.label, FAILED, str(error))
+                    return
+                target.child = None
+                target.stage = "stopped"
+                target.detail = "killed: the process tree was terminated"
+                self._record(outcome, "kill", target.label, SUCCESS, "terminated")
+                return
+            if not self._layout.is_installed(target.slot) or not self._external.running(
+                target.folder
+            ):
+                self._record(
+                    outcome,
+                    "kill",
+                    target.label,
+                    SKIPPED,
+                    f"campaign is {target.stage}",
+                )
+                return
+            kill = getattr(self._machinery, "kill_external", None)
+            try:
+                killed = kill(target.folder) if kill is not None else False
+            except (OSError, RuntimeError, TimeoutError) as error:
+                self._record(outcome, "kill", target.label, FAILED, str(error))
+                return
+            if killed:
+                self._record(
+                    outcome,
+                    "kill",
+                    target.label,
+                    SUCCESS,
+                    "terminated a campaign this console did not start",
+                )
+            else:
+                self._record(
+                    outcome,
+                    "kill",
+                    target.label,
+                    FAILED,
+                    "no launcher job found: it was not started by a console; use stop",
+                )
+
     def _stop_external(
         self, outcome: BatchOutcome, target: CampaignFolderState
     ) -> None:
@@ -966,6 +1027,43 @@ class CampaignController:
             target.child = None
             return target
         return self.reap(label)
+
+    def wait_stopped(self, label: str, timeout: float) -> bool:
+        """Wait for one stopping launcher without ever forcing it.
+
+        ``True`` once it has exited (and was classified), ``False`` when it is
+        still running after ``timeout`` seconds.
+        """
+        with self.state(label).cleanup_lock:
+            target = self._folders[label]
+            if target.child is None:
+                return True
+            if self._machinery.wait(target.child, timeout) is None:
+                return False
+            self.reap(label)
+            return True
+
+    def detach_all(self) -> list[str]:
+        """Leave every owned launcher running and stop managing it.
+
+        No campaign process is stopped. The console no longer starts anything.
+        """
+        with self._launch_lock:
+            self._shutdown = True
+        detached = []
+        for label in self._layout.installed():
+            target = self._folders.get(label)
+            if target is None:
+                continue
+            with target.cleanup_lock:
+                if target.child is None:
+                    continue
+                self._machinery.detach(target.child)
+                target.child = None
+                target.stage = "idle"
+                target.detail = "detached: still running without this console"
+                detached.append(label)
+        return detached
 
     def force_all(self, timeout: float | None = None) -> None:
         errors = []
