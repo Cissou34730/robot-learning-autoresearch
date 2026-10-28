@@ -14,6 +14,7 @@ import json
 import subprocess
 import time
 
+from runner import typed_events
 from runner.copilot.coding_contracts import (
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
@@ -64,6 +65,7 @@ from runner.copilot.session_events import (
 from runner.copilot.system_prompt import system_message
 from runner.copilot.tool_policy import scoped_tool_hook
 from runner.copilot.usage import record_usage
+from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import stop_requested, wait_for_stop_request
 
 RESUMED_STATE_PROMPT = (
@@ -618,26 +620,37 @@ async def serve_session(args, client, channel, command: dict) -> int:
     started = time.monotonic()
     exit_code = EXIT_RUNTIME_FAILURE
     error = None
+    # The journal owner of everything this invocation reports: the durable
+    # session (S<n>, or the preparation), pinned once here so the failure and
+    # accounting paths carry it too. The backend conversation id is not an owner.
+    owner = typed_events.bind(
+        session_id=command.get("scientific_session_id") or PREPARATION_SESSION,
+        attempt=command["invocation_id"],
+        actor="pi",
+    )
     try:
-        exit_code = await run(
-            invocation_args, client=client, channel=channel, binding=command
-        )
-    except Exception as exc:  # noqa: BLE001 - preserve bounded runtime failure
-        error = f"{type(exc).__name__}: {exc}"
-    finally:
         try:
-            record_usage(
-                invocation_args,
-                invocation_args.usage_console.usage,
-                time.monotonic() - started,
-                exit_code,
+            exit_code = await run(
+                invocation_args, client=client, channel=channel, binding=command
             )
-            announce_usage(invocation_args)
-        except (OSError, ValueError) as exc:
-            invocation_args.usage_console.diagnostic(
-                f"Session usage could not be recorded: {exc}",
-                code="usage_recording_failed",
-            )
+        except Exception as exc:  # noqa: BLE001 - preserve bounded runtime failure
+            error = f"{type(exc).__name__}: {exc}"
+        finally:
+            try:
+                record_usage(
+                    invocation_args,
+                    invocation_args.usage_console.usage,
+                    time.monotonic() - started,
+                    exit_code,
+                )
+                announce_usage(invocation_args)
+            except (OSError, ValueError) as exc:
+                invocation_args.usage_console.diagnostic(
+                    f"Session usage could not be recorded: {exc}",
+                    code="usage_recording_failed",
+                )
+    finally:
+        typed_events.reset_context(owner)
     status, message = session_outcome(exit_code, invocation_args, error)
     await channel.send(
         {
@@ -710,7 +723,6 @@ def announce_usage(args) -> None:
             "text": summary,
         },
         scope="usage",
-        session_id=args.session_id,
         event_id=(
             f"domain:session_usage:{args.session_id}:{args.phase or ''}:{args.attempt}"
         ),

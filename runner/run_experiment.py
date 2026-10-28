@@ -25,6 +25,7 @@ from runner import (
     typed_events,
 )
 from runner import reporting as console
+from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import interrupt_on_stop_request, stop_requested
 
 PROPOSAL_ERRORS = (
@@ -1984,6 +1985,7 @@ def _announce_consequential_completion(presentation: dict) -> None:
                 },
                 scope="inquiry",
                 operation_id=operation_id,
+                session_id=str(presentation["session_id"]),
                 inquiry_id=inquiry_id,
                 event_id=f"domain:inquiry:{inquiry_id}:closed",
             )
@@ -1999,6 +2001,7 @@ def _announce_consequential_completion(presentation: dict) -> None:
                 },
                 scope="inquiry",
                 operation_id=operation_id,
+                session_id=str(presentation["session_id"]),
                 inquiry_id=inquiry_id,
                 event_id=(
                     f"domain:inquiry:{inquiry_id}:reframed"
@@ -2087,16 +2090,21 @@ def _announce_consequential_completion(presentation: dict) -> None:
 def _announce_completed_operation(presentation: dict) -> None:
     pending = copy.deepcopy(presentation["pending"])
     kind = pending["kind"]
-    typed_events.emit(
-        "operation_completed",
-        pending,
-        scope=str(kind or "operation"),
-        operation_id=str(pending.get("id") or ""),
-        session_id=str(pending.get("session_id") or ""),
-        inquiry_id=str(pending.get("inquiry_id") or ""),
-        event_id=f"domain:operation:{pending.get('id') or ''}:completed",
-    )
-    _announce_consequential_completion(presentation)
+    with typed_events.context(
+        operation_id=pending.get("id"),
+        session_id=pending.get("session_id"),
+        inquiry_id=pending.get("inquiry_id"),
+    ):
+        typed_events.emit(
+            "operation_completed",
+            pending,
+            scope=str(kind or "operation"),
+            operation_id=str(pending.get("id") or ""),
+            session_id=str(pending.get("session_id") or ""),
+            inquiry_id=str(pending.get("inquiry_id") or ""),
+            event_id=f"domain:operation:{pending.get('id') or ''}:completed",
+        )
+        _announce_consequential_completion(presentation)
 
 
 def _campaign_resource_summary(state: dict) -> str:
@@ -2598,6 +2606,7 @@ def main() -> int:
             "scientific_model_validated",
             {"commit": commit, "path": "pi_workspace/scientific_model.md"},
             scope="validation",
+            session_id=PREPARATION_SESSION,
             event_id=f"domain:scientific_model:{commit}",
         )
         return 0

@@ -110,7 +110,11 @@ class Phases:
             validation_error=validation_error,
         )
         if prompt.context_note:
-            self.events.status(prompt.context_note, scope="session")
+            self.events.status(
+                prompt.context_note,
+                scope="session",
+                session_id=pstext.text(session.get("id")),
+            )
         return prompt.text
 
     def pending_operation(self, state: dict) -> int:
@@ -202,7 +206,14 @@ class Phases:
         problem = _joined(check.validation_message)
         if check.exit_code != 0:
             reason = problem.removeprefix("OPERATION_INVALID:").lstrip()
-            self.events.card("OPERATION INVALID", scope="error", lines=(reason,))
+            self.events.card(
+                "OPERATION INVALID",
+                scope="error",
+                lines=(reason,),
+                session_id=pstext.text(
+                    pstext.field(failed.get("scientific_session"), "id")
+                ),
+            )
         return PROCEED, problem
 
     def scientific_session(self, state: dict, validation_error: str) -> int:

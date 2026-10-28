@@ -18,6 +18,7 @@ from tui.journal import JournalFeed
 def _isolate(monkeypatch, tmp_path):
     typed_events.reset()
     monkeypatch.setenv("TUI_TYPED_EVENTS", str(tmp_path / "typed.events.jsonl"))
+    monkeypatch.setattr(typed_events, "strict", True)
     typed_events.set_campaign("campaign-1")
     yield
     typed_events.reset()
@@ -60,7 +61,7 @@ def test_typed_emit_writes_schema_and_full_payload(tmp_path):
         operation_id="T4",
     )
     (event,) = _events(tmp_path / "typed.events.jsonl")
-    assert event["schema_version"] == 1
+    assert event["schema_version"] == 2
     assert event["event_id"]
     assert event["campaign_id"] == "campaign-1"
     assert event["kind"] == "notice"
@@ -129,29 +130,29 @@ def test_context_merges_session_and_operation_identity():
             assert typed_events.current_context() == {
                 "operation_id": "T4",
                 "session_id": "S7",
-                "inquiry_id": "",
             }
-        assert typed_events.current_context()["operation_id"] == ""
+        assert "operation_id" not in typed_events.current_context()
     assert typed_events.current_context() == {}
 
 
-def test_session_domain_events_carry_session_identity(tmp_path, capsys):
+def test_session_domain_events_carry_the_bound_session(tmp_path, capsys):
     session = SessionReporter(session_id="backend-1")
-    session.tool("read_file", {"path": "robot_learning/x.py"}, "call-1")
-    session.tool_result(
-        "artifact_evidence_query",
-        json.dumps({"status": "computed", "value": 3}),
-        tool_call_id="call-1",
-    )
-    session.file_changed("created", "robot_learning/x.py")
-    session.coding(
-        "request",
-        "  > scientific_coding: request | scope | intent",
-        status="started",
-        detail={"scope": "x"},
-    )
-    session.operation_submitted("accepted")
-    session.warning("context compacted", code="compaction")
+    with typed_events.context(session_id="S7", attempt="inv-1", actor="pi"):
+        session.tool("read_file", {"path": "robot_learning/x.py"}, "call-1")
+        session.tool_result(
+            "artifact_evidence_query",
+            json.dumps({"status": "computed", "value": 3}),
+            tool_call_id="call-1",
+        )
+        session.file_changed("created", "robot_learning/x.py")
+        session.coding(
+            "request",
+            "  > scientific_coding: request | scope | intent",
+            status="started",
+            detail={"scope": "x"},
+        )
+        session.operation_submitted("accepted")
+        session.warning("context compacted", code="compaction")
     assert capsys.readouterr().out == ""
     events = _events(tmp_path / "typed.events.jsonl")
     kinds = [event["kind"] for event in events]
@@ -163,7 +164,9 @@ def test_session_domain_events_carry_session_identity(tmp_path, capsys):
         "operation_submitted",
         "warning",
     } <= set(kinds)
-    assert {event["session_id"] for event in events} == {"backend-1"}
+    assert {event["session_id"] for event in events} == {"S7"}
+    assert {event["attempt"] for event in events} == {"inv-1"}
+    assert {event["actor"] for event in events} == {"pi"}
     completed = next(
         event for event in events if event["kind"] == "tool_call_completed"
     )
@@ -216,16 +219,13 @@ def test_session_domain_events_carry_session_identity(tmp_path, capsys):
         ),
     ],
 )
-@pytest.mark.xfail(
-    strict=True,
-    reason="the Runner still writes schema 1; it moves to the v2 journal next",
-)
 def test_tool_result_numbers_reach_the_timeline(tmp_path, name, result, number):
     from tui.timeline import TimelineReducer
 
     session = SessionReporter(session_id="backend-1")
-    session.tool(name, {}, "result-call")
-    session.tool_result(name, json.dumps(result), tool_call_id="result-call")
+    with typed_events.context(session_id="S1", attempt="inv-1", actor="pi"):
+        session.tool(name, {}, "result-call")
+        session.tool_result(name, json.dumps(result), tool_call_id="result-call")
     reducer = TimelineReducer()
     for event in JournalFeed(
         tmp_path / "typed.events.jsonl", campaign_id="campaign-1"
@@ -245,8 +245,9 @@ def test_tool_result_numbers_reach_the_timeline(tmp_path, name, result, number):
 
 def test_domain_event_closes_the_pi_message_first(tmp_path):
     session = SessionReporter(session_id="backend-1")
-    session.delta("PI answer\n\n")
-    session.warning("context compacted", code="compaction")
+    with typed_events.context(session_id="S1"):
+        session.delta("PI answer\n\n")
+        session.warning("context compacted", code="compaction")
     events = _events(tmp_path / "typed.events.jsonl")
     final_message = next(
         index
@@ -304,7 +305,8 @@ def test_training_results_are_a_domain_event(monkeypatch, tmp_path):
         lambda record: " | reward 12.5 | success 75%",
     )
     announced: set[str] = set()
-    execution.announce_training_checkpoints(tmp_path, "T9", announced)
+    with typed_events.context(session_id="S1"):
+        execution.announce_training_checkpoints(tmp_path, "T9", announced)
     events = _events(tmp_path / "typed.events.jsonl")
     assert [event["kind"] for event in events] == ["training_checkpoints"]
     (candidate,) = events[0]["payload"]["candidates"]
@@ -317,10 +319,11 @@ def test_training_results_are_a_domain_event(monkeypatch, tmp_path):
 
 def test_pi_message_is_published_before_the_turn_ends(tmp_path):
     session = SessionReporter(session_id="backend-1")
-    session.delta("First paragraph is ready.\n\n")
-    session.delta("Second paragraph continues ")
-    session.delta("to the end.")
-    session.warning("context compacted", code="compaction")
+    with typed_events.context(session_id="S1"):
+        session.delta("First paragraph is ready.\n\n")
+        session.delta("Second paragraph continues ")
+        session.delta("to the end.")
+        session.warning("context compacted", code="compaction")
     messages = [
         event["payload"]
         for event in _events(tmp_path / "typed.events.jsonl")
@@ -344,7 +347,8 @@ def test_default_feed_is_one_file_per_campaign(monkeypatch, tmp_path):
     monkeypatch.setattr(paths, "ROOT", tmp_path)
     path = typed_events.default_path("campaign-abc")
     assert (
-        path == tmp_path / "reports" / "tui_observations" / "campaign-abc.events.jsonl"
+        path
+        == tmp_path / "reports" / "tui_observations" / "campaign-abc.events.v2.jsonl"
     )
 
 

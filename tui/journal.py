@@ -16,11 +16,10 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from runner.event_contract import ENVELOPE_FIELDS, SCHEMA_VERSION
+from runner.event_contract import ENVELOPE_FIELDS, JOURNAL_SUFFIX, SCHEMA_VERSION
 from tui.observations import Observation
 from tui.projector import parse_timestamp
 
-JOURNAL_SUFFIX = ".events.v2.jsonl"
 _ENVELOPE_KEYS = frozenset(ENVELOPE_FIELDS)
 
 

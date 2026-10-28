@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 from pathlib import Path
 
+from runner.event_contract import PREPARATION_SESSION
 from runner.launcher import pstext
 from runner.launcher.copilot_runtime import CopilotRuntime
 from runner.launcher.events import LauncherEvents
@@ -76,22 +77,32 @@ class PISessions:
         self._advance_identity(resume=resume, preliminary=preliminary)
         state = load_state(self._campaign_root)
         stage = self._stage(state, phase, preliminary=preliminary)
-        self._events.card(f"PI | {stage}", scope="pi")
+        owner = (
+            PREPARATION_SESSION
+            if preliminary
+            else pstext.text(pstext.field(state.get("scientific_session"), "id"))
+        )
+        invocation_id = str(uuid.uuid4())
+        self._events.card(f"PI | {stage}", scope="pi", session_id=owner)
         self._events.observe(
             "session_start",
             fields={
-                "session_id": self.session_id,
+                "backend_session_id": self.session_id,
                 "stage": stage,
                 "phase": phase,
                 "resumed": resume,
                 "preliminary": preliminary,
             },
+            session_id=owner,
+            attempt=invocation_id,
+            actor="pi",
         )
         self.exit_code = self._converse(
             self._arguments(state, phase, resume=resume, preliminary=preliminary),
             prompt,
             state,
             preliminary=preliminary,
+            invocation_id=invocation_id,
         )
         return self.exit_code
 
@@ -159,14 +170,20 @@ class PISessions:
         return arguments
 
     def _converse(
-        self, arguments: list[str], prompt: str, state: dict, *, preliminary: bool
+        self,
+        arguments: list[str],
+        prompt: str,
+        state: dict,
+        *,
+        preliminary: bool,
+        invocation_id: str,
     ) -> int:
         self._runtime.start()
         if self._stop.requested():
             return STOPPED
         binding = {
             "type": "session",
-            "invocation_id": str(uuid.uuid4()),
+            "invocation_id": invocation_id,
             "session_id": self.session_id,
             "scientific_session_id": None
             if preliminary

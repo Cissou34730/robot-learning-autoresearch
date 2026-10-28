@@ -120,7 +120,7 @@ def record_usage(
         "usage_update",
         {**row},
         scope="usage",
-        session_id=str(row.get("session_id") or ""),
+        actor=str(row.get("role") or ""),
         event_id=(
             f"domain:usage:{campaign_id}:{row.get('session_id') or ''}:"
             f"{row.get('role') or ''}:{args.phase}:{args.attempt}:{row['recorded_at']}"

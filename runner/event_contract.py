@@ -25,6 +25,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 SCHEMA_VERSION = 2
+JOURNAL_SUFFIX = ".events.v2.jsonl"
 PREPARATION_SESSION = "preparation"
 OFFICIAL_OPERATION = "official"
 
@@ -66,6 +67,7 @@ RULES: dict[str, KindRule] = {
     "campaign_concluded": _CAMPAIGN,
     "campaign_usage": _CAMPAIGN,
     "run_state": _CAMPAIGN,
+    "liveness": _CAMPAIGN,
     "notice": _NAMED_OWNER,
     "warning": _NAMED_OWNER,
     "error": _NAMED_OWNER,

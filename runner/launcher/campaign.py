@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from runner import typed_events
+from runner.event_contract import PREPARATION_SESSION
 from runner.launcher import pstext
 from runner.launcher.phases import PROCEED, Phases, inquiry_cap_reached
 from runner.launcher.pi_session import STOPPED
@@ -51,10 +53,11 @@ def step(phases: Phases) -> int | None:
     """One loop iteration; ``None`` continues, a status ends the loop."""
     state = load_state(phases.campaign_root)
     if pstext.same(pstext.field(state.get("scientific_model"), "status"), "pending"):
-        phases.events.status("START | campaign preparation", scope="session")
-        if phases.scientific_model(state) == STOPPED:
-            return STOPPED
-        phases.events.status("END | campaign preparation", scope="session")
+        with typed_events.context(session_id=PREPARATION_SESSION):
+            phases.events.status("START | campaign preparation", scope="session")
+            if phases.scientific_model(state) == STOPPED:
+                return STOPPED
+            phases.events.status("END | campaign preparation", scope="session")
         phases.update_brief()
         return None
     if state.get("pending_operation"):

@@ -375,7 +375,8 @@ def test_a_long_operation_is_awaited_in_slices(monkeypatch, tmp_path, capsys):
         assert json.loads(await waiting)["status"] == "completed"
         assert not operations.locked and len(channel.sent) == 1
 
-    asyncio.run(exercise())
+    with typed_events.context(session_id="S1"):
+        asyncio.run(exercise())
     events = [
         json.loads(line) for line in feed.read_text(encoding="utf-8").splitlines()
     ]
@@ -385,7 +386,7 @@ def test_a_long_operation_is_awaited_in_slices(monkeypatch, tmp_path, capsys):
     ]
     assert [event["payload"]["status"] for event in events] == ["running", "completed"]
     assert all(
-        event["campaign_id"] == "c" and event["session_id"] == "s" for event in events
+        event["campaign_id"] == "c" and event["session_id"] == "S1" for event in events
     )
     assert capsys.readouterr().out == ""
 

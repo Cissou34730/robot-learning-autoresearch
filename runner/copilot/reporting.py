@@ -452,11 +452,18 @@ def tool_result_parts(name: str, result: object) -> list[tuple[str, str]]:
 
 
 class SessionReporter:
-    """Own one session's facts and publish them to the typed event feed."""
+    """Own one session's facts and publish them to the event journal.
 
-    def __init__(self, *, session_id: str = "") -> None:
+    The owning session, attempt and actor come from the journal context the
+    caller bound for the invocation; the reporter does not stamp identities
+    itself. ``session_id`` is the backend conversation id, used only for the
+    coding child's parent link and never as an event owner.
+    """
+
+    def __init__(self, *, session_id: str = "", actor: str = "") -> None:
         self.usage = SessionUsage()
         self.session_id = str(session_id or "")
+        self.actor = actor
         self._mid_stream = False
         self._message_text = ""
         self._message_emitted = 0
@@ -487,7 +494,7 @@ class SessionReporter:
             payload,
             scope=scope,
             severity=severity,
-            session_id=self.session_id,
+            actor=self.actor,
             event_id=event_id,
         )
 
@@ -811,7 +818,9 @@ class CodingReporter(SessionReporter):
     """Collect child accounting; forward only file names of child patches to the parent."""
 
     def __init__(self, parent: SessionReporter | None = None, agent: str = "") -> None:
-        super().__init__(session_id=parent.session_id if parent is not None else "")
+        super().__init__(
+            session_id=parent.session_id if parent is not None else "", actor=agent
+        )
         self.parent = parent
         self.agent = agent
 

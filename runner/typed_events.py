@@ -1,8 +1,10 @@
-"""Maintainer-only typed event feed for the structured operator log.
+"""Writer of the campaign event journal (schema version 2).
 
-The feed is one JSON object per line, one file per campaign, best-effort and
-one-way. It is the only live source of the operator TUI and carries full
-payloads. The campaign state and results are never modified.
+The journal is one append-only JSON-lines file per campaign. Every event names
+its owners explicitly (``runner.event_contract``); components bind their
+identity once with ``context``/``bind`` instead of repeating it at each call.
+Writing is best effort and one way: it never raises into the research code and
+never changes campaign state. Each record is appended with one binary write.
 """
 
 from __future__ import annotations
@@ -12,22 +14,31 @@ import os
 import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
-from contextvars import ContextVar, Token
 from datetime import UTC, datetime
 from pathlib import Path
 
+from runner.event_contract import JOURNAL_SUFFIX, SCHEMA_VERSION, validate_record
+
 FEED_ENV = "TUI_TYPED_EVENTS"
-SCHEMA_VERSION = 1
 _FEED_DIR = Path("reports") / "tui_observations"
 _DISABLED_VALUES = frozenset({"", "0", "off", "none", "false"})
+_IDENTITY_KEYS = ("operation_id", "session_id", "inquiry_id", "attempt", "actor")
 
 _path: Path | None = None
 _resolved = False
 _campaign_id: str | None = None
-_context: ContextVar[dict[str, str] | None] = ContextVar(
-    "typed_event_context", default=None
-)
+# Each process owns one piece of work at a time (one PI invocation, one
+# operation). The owner is process-wide, not task-local: the Copilot SDK calls
+# its handlers from its own tasks, which would not see a task-local value.
+_owner: dict[str, str] = {}
 failures = 0
+# Tests set this so an emitter that breaks the identity contract fails loudly.
+# In a campaign the event is still written and the reader reports it.
+strict = False
+
+
+class ContractViolation(Exception):
+    """An event does not carry the identities its kind requires."""
 
 
 def feed_directory() -> Path:
@@ -37,7 +48,7 @@ def feed_directory() -> Path:
 
 
 def default_path(campaign_id: str) -> Path:
-    return feed_directory() / f"{campaign_id}.events.jsonl"
+    return feed_directory() / f"{campaign_id}{JOURNAL_SUFFIX}"
 
 
 def _state_campaign_id() -> str | None:
@@ -83,7 +94,7 @@ def reset() -> None:
     _path = None
     _resolved = False
     _campaign_id = None
-    _context.set(None)
+    _owner.clear()
 
 
 def set_campaign(campaign_id: object) -> None:
@@ -98,16 +109,22 @@ def context(
     operation_id: object = "",
     session_id: object = "",
     inquiry_id: object = "",
+    attempt: object = "",
+    actor: object = "",
 ) -> Iterator[None]:
-    """Attach the current operation to every event emitted in this scope.
+    """Attach identities to every event emitted in this scope.
 
-    Handlers call this around one operation so console fallbacks and domain
-    events share the same identity without threading it through presentation
-    functions. Non-empty values override the enclosing scope; empty values
-    inherit it, so an operation inside a session keeps both identities.
+    A component calls this once where it takes ownership of a piece of work (a
+    PI invocation, an operation) so every event it emits names its owners
+    without threading them through presentation functions. Non-empty values
+    override the enclosing scope; empty values inherit it.
     """
     token = bind(
-        operation_id=operation_id, session_id=session_id, inquiry_id=inquiry_id
+        operation_id=operation_id,
+        session_id=session_id,
+        inquiry_id=inquiry_id,
+        attempt=attempt,
+        actor=actor,
     )
     try:
         yield
@@ -120,27 +137,44 @@ def bind(
     operation_id: object = "",
     session_id: object = "",
     inquiry_id: object = "",
-) -> Token:
-    """Return a token for a caller that cannot wrap the scope in ``with``."""
-    current = dict(_context.get() or {})
+    attempt: object = "",
+    actor: object = "",
+) -> dict[str, str]:
+    """Bind identities until ``reset_context``; returns the previous owner."""
+    previous = dict(_owner)
     for key, value in (
         ("operation_id", operation_id),
         ("session_id", session_id),
         ("inquiry_id", inquiry_id),
+        ("attempt", attempt),
+        ("actor", actor),
     ):
         text = str(value or "").strip()
         if text:
-            current[key] = text
-        current.setdefault(key, "")
-    return _context.set(current)
+            _owner[key] = text
+    return previous
 
 
-def reset_context(token: Token) -> None:
-    _context.reset(token)
+def reset_context(previous: dict[str, str]) -> None:
+    _owner.clear()
+    _owner.update(previous)
 
 
 def current_context() -> dict[str, str]:
-    return dict(_context.get() or {})
+    return dict(_owner)
+
+
+def _append(path: Path, data: bytes) -> None:
+    """Append one whole record with a single binary write."""
+    descriptor = os.open(
+        path, os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_BINARY", 0), 0o666
+    )
+    try:
+        view = memoryview(data)
+        while view:
+            view = view[os.write(descriptor, view) :]
+    finally:
+        os.close(descriptor)
 
 
 def emit(
@@ -152,16 +186,25 @@ def emit(
     operation_id: str = "",
     session_id: str = "",
     inquiry_id: str = "",
+    attempt: str = "",
+    actor: str = "",
     event_id: str | None = None,
 ) -> None:
-    """Append one typed event; never raise, never block, never answer."""
+    """Append one event; never raise, never block, never answer."""
     global failures
     try:
         if not _resolved:
             configure()
         if _path is None:
             return
-        current = _context.get() or {}
+        current = _owner
+        explicit = {
+            "operation_id": operation_id,
+            "session_id": session_id,
+            "inquiry_id": inquiry_id,
+            "attempt": attempt,
+            "actor": actor,
+        }
         record = {
             "schema_version": SCHEMA_VERSION,
             "event_id": event_id or str(uuid.uuid4()),
@@ -170,13 +213,18 @@ def emit(
             "kind": kind,
             "scope": scope,
             "severity": severity,
-            "operation_id": operation_id or current.get("operation_id", ""),
-            "session_id": session_id or current.get("session_id", ""),
-            "inquiry_id": inquiry_id or current.get("inquiry_id", ""),
+            **{key: explicit[key] or current.get(key, "") for key in _IDENTITY_KEYS},
             "payload": payload or {},
         }
-        line = json.dumps(record, ensure_ascii=False, default=str)
-        with open(_path, "a", encoding="utf-8") as handle:
-            handle.write(line + "\n")
+        if strict:
+            problems = validate_record(record)
+            if problems:
+                raise ContractViolation("; ".join(problems))
+        line = json.dumps(record, ensure_ascii=False, default=str) + "\n"
+        _append(_path, line.encode("utf-8"))
+    except ContractViolation:
+        if strict:
+            raise
+        failures += 1
     except Exception:  # noqa: BLE001 - presentation must not affect execution
         failures += 1
