@@ -106,12 +106,18 @@ implements this contract:
 - every owned launcher runs through `tui/process.py`: `uv` on PATH starts
   `python -m runner.launcher`, created suspended in a new process group with a
   private hidden console (`CREATE_NEW_CONSOLE`, `SW_HIDE`), assigned to a
-  `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` job, then resumed. The Windows
+  job, then resumed. A launcher job does not kill on close; a reset or
+  initializer job uses `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`. The Windows
   desktop-app child policy
   (`PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_DISABLE_PROCESS_TREE`) keeps native
   descendants of packaged executables in the job; attribute failure aborts
   before the child runs. Standard output and error go to a per-run control
   directory under `%TEMP%\robot-learning\tui`;
+- a job object is destroyed when its last handle closes, so another console
+  cannot open the job of a launcher that was left running. Each launcher's
+  process id and creation time are therefore recorded under the control root
+  (`launchers\<digest>.json`), and `/kill` ends the process tree from that
+  record with `taskkill /T /F` after it checks the creation time;
 - initializer and reset helpers (`python -m tools.initialize_campaign`,
   `python -m runner.launcher.reset`) use the same contained boundary. An
   unfinished helper may finish during console shutdown, but no later reset or
@@ -129,11 +135,12 @@ implements this contract:
   wait. The deadline belongs to the invocation: changing shared settings does
   not change an existing campaign's deadline. A successful cooperative stop
   does not call forced termination;
-- closing the console or pressing `Ctrl+Q` asks every owned launcher to stop
-  concurrently, waits up to its stop timeout plus five seconds from request
-  creation, escalates only when needed to the forced fallback and only then
-  exits, so an owned campaign cannot outlive the console (the kill-on-close
-  job handle is the backstop);
+- `Ctrl+Q` or `/quit stop` asks every owned launcher to stop concurrently and
+  waits. A launcher that has not exited after 30 s is put to the operator: kill
+  (forced job termination), leave running, or keep waiting. `Alt+Q` or `/quit`
+  leaves every owned launcher running and exits. Closing or crashing the console
+  also leaves launchers running (only reset and initializer helpers die with it);
+  `/kill` ends a launcher from any console;
 - `Ctrl+C` copies the current text selection or does nothing; it never
   reaches the campaign processes because the launchers are in their own
   process group with redirected input;

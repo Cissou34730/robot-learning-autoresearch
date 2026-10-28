@@ -574,7 +574,9 @@ cooperative stop for all owned campaigns and exits after cleanup.
 Ctrl+C copies selection only, with no stop or exit fallback.
 Do not reinterpret Ctrl+C as a new cooperative-stop protocol.
 Preserve the existing launcher and external-controller shutdown contracts.
-Do not claim that closing Windows Terminal leaves its processes alive.
+Do not claim that closing Windows Terminal stops the campaigns: launchers run
+in their own hidden console and survive the console (see
+`docs/external-campaign-stop.md`).
 
 ## 10. Persistence and authority invariants
 

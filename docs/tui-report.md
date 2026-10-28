@@ -63,26 +63,31 @@ nothing; campaigns run only when a command is submitted.
 
 Controlled execution starts `python -m runner.launcher`, the reset and the
 initializer with `uv` on PATH; no PowerShell host is involved. Each child gets
-a private hidden console in a kill-on-close Job; the inherited Windows
-desktop-app child policy keeps packaged native descendants contained. Missing
+a private hidden console in a Job; the inherited Windows
+desktop-app child policy keeps packaged native descendants contained. A launcher
+job does not kill on close, so the console can leave campaigns running; a reset
+or initializer job does kill on close. Missing
 `uv` fails preflight before initialization, reset or launch, without preventing
 the interface from opening.
 
-- The bottom command composer has a permanent label, an editable field,
-  **Execute** and **Settings**, plus a one-line target/status preview. Press
-  Enter or click Execute to submit. `start` resumes the active campaign without
-  resetting; `run` resets and starts it. The destructive preview leads with a
-  warning and the no-backup consequence. No action runs just from typing.
-- **F2 / Settings** opens one labelled, scrollable dialog for Model, Provider,
+- The bottom of the console is one information line: the active campaign's
+  state, then the keys that matter. Press **`/`** (or **Ctrl+L**) to open the
+  command panel above it: a prompt and a list of every command. Typing filters
+  the list; Up/Down choose; Tab completes the highlighted name; Enter runs a
+  complete command or completes a part of a name; Esc closes the panel and
+  returns focus to where it was. While the panel is open, the information line
+  previews what the command would do, leading with a warning for the destructive
+  ones. Nothing runs just from typing. The commands are `start`, `run`, `stop`,
+  `kill`, `reset`, `settings`, `models`, `diagnostics`, `history`, `search`,
+  `filter`, `help` and `quit`; `tui/commands.py` defines them once for the
+  parser, the list, the help and the unknown-command message. `start` resumes
+  the active campaign without resetting; `run` resets and starts it.
+- **F2** (or `/settings`) opens one labelled, scrollable dialog for Model, Provider,
   Reasoning, Timesteps, MaxTimesteps, MaxInquiries and StopTimeoutSeconds, plus
   reset options. Apply affects future commands only; Cancel/Esc discards edits.
   Empty launch fields preserve launcher defaults and argument omission.
   Every campaign in one batch receives the same settings snapshot.
-- **Ctrl+L** toggles the bottom command area in every campaign tab. It starts
-  open; opening focuses the input, and closing returns focus and four rows to
-  the active report. The command draft and shared settings survive the toggle.
-  The footer remains visible. Tab changes and applying/cancelling settings do
-  not reopen a collapsed command area; toggling is inactive inside a dialog.
+- **Ctrl+F** (or `/search`) searches the log of the active campaign.
   Untargeted campaign actions select that folder only. A number selects that
   identity (`start 2` means only campaign-2); inclusive ranges (`start 1-2`,
   `start 2-3`, `run 1-3`) or folder lists select batches. Overlapping/duplicate,
@@ -115,11 +120,22 @@ the interface from opening.
 - Campaign tabs are the single-campaign report (above) bound to that
   folder explicitly.
 - `Ctrl+C` copies the current text selection or does nothing; it never
-  stops campaigns. `Ctrl+Q` sends the cooperative stop request to every
-  console-owned launcher, waits up to its stop timeout (default 180 s) plus
-  five seconds from request creation, and exits promptly when cleanup finishes.
-  Only failed/timed-out cleanup requires forced termination. Closing the
-  console process triggers the kill-on-close Job Object directly.
+  stops campaigns.
+- **Leave:** `Alt+Q` or `/quit` closes the console and leaves every owned
+  campaign running (a reset or start still running refuses it). The console
+  prints the campaigns it left. Closing or crashing the console also leaves
+  launchers running; only reset and initializer jobs end with it. Open the
+  console again to watch them: it follows their journals and stops them with
+  `stop`.
+- **Stop and exit:** `Ctrl+Q` or `/quit stop` sends the cooperative stop request
+  to every console-owned launcher and waits. A campaign that has not stopped
+  after 30 s opens a prompt: **k** kills it, **l** leaves it running, **w**
+  waits 60 s more. Nothing is killed unless the operator chooses it.
+- **Kill:** `/kill 1`, `/kill 1-3` or `/kill all` ends the launcher and everything
+  it started. The launcher's process id and creation time are recorded under the
+  control root (`launchers\<digest>.json`), so a new console can kill a launcher
+  an earlier console started; a reused process id is refused. A launcher started
+  by `tools.run_parallel` has no record and only takes the cooperative `stop`.
 - One console per harness directory: a second console instance refuses to
   start. Campaign processes owned by the console run in separate job
   objects (see `docs/external-campaign-stop.md`). A campaign launched outside

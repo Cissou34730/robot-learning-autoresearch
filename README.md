@@ -80,30 +80,34 @@ Launcher logs, the monitor log and one report per campaign go to
 ### Operator console
 
 The console starts the launcher, the reset and the initializer with `uv` on
-PATH, each in a hidden private console inside a kill-on-close Windows Job, so
-native descendants remain contained. No PowerShell host is needed for campaign
+PATH, each in a hidden private console inside a Windows Job, so native
+descendants remain contained. A launcher survives the console (see below); a
+reset or initializer does not. No PowerShell host is needed for campaign
 work. Missing `uv` fails preflight before initialization/reset; opening the
 interface still starts nothing.
 
 `.\campaign_tui.ps1` (or `uv run python -m tui`) opens the first installed campaign report (normally
-campaign-1), with a visible **Command / Execute / Settings** row below it.
-There is no separate Commands tab. Other installed campaigns have their own
-report tabs. Campaigns only run when a
+campaign-1) with one information line below it. Press **`/`** to open the
+command list: type to filter, Up/Down to choose, Tab to complete, Enter to run,
+Esc to close. There is no separate Commands tab. Other installed campaigns have
+their own report tabs. Campaigns only run when a
 command is submitted (`run 1-3`, `reset campaign-1 campaign-2`,
 `start campaign-2`, `stop all`); each batch sends the exact same shared
 launcher options to every selected campaign, defaulting to the launcher's
 own defaults for any field left empty. `run` initializes a missing standard
 folder, resets it to the v3 recipe and launches it, skipping the rest of the
-batch if a step fails. `Ctrl+C` copies text selection only; `Ctrl+Q` stops
-every console-owned campaign before exiting (no campaign survives a closed
-console). Only one console may run against a harness directory, and the
+batch if a step fails. `Ctrl+C` copies text selection only. `Alt+Q` (or `/quit`)
+leaves the console and keeps every campaign running; `Ctrl+Q` (or `/quit stop`)
+stops every console-owned campaign first and, for one that does not stop in 30 s,
+asks whether to kill it or leave it running. `/kill 1` ends a launcher
+immediately. Only one console may run against a harness directory, and the
 launcher's dirty-worktree refusal applies. See
 [console details](docs/tui-report.md#operator-console-multi-campaign-control)
 and the [stop contract](docs/external-campaign-stop.md).
 
-Press **F2** or click **Settings** for labelled shared launch/reset settings;
+Press **F2** (or `/settings`) for labelled shared launch/reset settings;
 **F1** opens help and **F3** shows recent commands and their step outcomes.
-Type `start` and press Enter or click Execute to resume the active campaign
+Type `/start` and press Enter to resume the active campaign
 without resetting it. Untargeted commands follow the active campaign tab;
 an explicit range or folder list selects a batch. Numbers are identities:
 `start 2` starts only campaign-2, `start 1-2` selects campaigns 1 and 2, and
@@ -112,11 +116,10 @@ an explicit range or folder list selects a batch. Numbers are identities:
 start (for example one launched by `tools.run_parallel`) can be stopped too:
 the console writes the campaign's stop request and the launcher ends
 cooperatively.
-**Ctrl+L** opens/closes the bottom command area, preserving the draft. Opening
-focuses the input; closing returns focus and four rows to the campaign report.
-The footer remains visible so commands can always be reopened.
-**Tab / Shift+Tab** switch campaign tabs. Inside dialogs they navigate fields
-normally. F6/Shift+F6 move focus between report controls; Ctrl+L toggles commands.
+**Ctrl+F** (or `/search`) searches the log.
+**Tab / Shift+Tab** switch campaign tabs; inside the command list, Tab completes,
+and inside dialogs it navigates fields normally. F6/Shift+F6 move focus between
+report controls.
 Ctrl+Tab remains an optional alias when the terminal passes it through.
 Stop commands remain available while another batch is preparing/resetting.
 A reset that stops after it starts changing the campaign leaves a

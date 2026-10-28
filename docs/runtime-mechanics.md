@@ -75,7 +75,8 @@ The maintainer console orchestrates explicit initialize/reset/start/stop command
 through `tui/controller.py`; it does not add scientific execution or recovery
 logic. Each tab has an explicit campaign root and independent readers.
 `tui/process.py` starts launchers and command helpers with `uv` inside Windows
-kill-on-close jobs. A Windows desktop-app creation policy keeps native
+jobs (helpers kill on close; launchers do not, so the console can leave them
+running). A Windows desktop-app creation policy keeps native
 descendants of packaged executables in the same boundary. Normal stopping uses
 the campaign's stop request in its Git directory; timeout/failure cleanup is
 separate. See [the stop contract](external-campaign-stop.md) for deadlines and
