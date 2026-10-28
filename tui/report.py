@@ -887,6 +887,12 @@ class CampaignPanel(Widget):
             return "official"
         return self._timeline.phase()
 
+    def official_outcome(self) -> str:
+        """``passed`` or ``failed`` once the final benchmark has a result, from the
+        durable state, so it holds after a restart and for any way of starting."""
+        status = self.snapshot.official_status if self.snapshot is not None else ""
+        return status if status in {"passed", "failed"} else ""
+
     def progress_stalled(self) -> bool:
         """True while a live training or evaluation counter has stopped advancing."""
         if self._paused_at is not None:

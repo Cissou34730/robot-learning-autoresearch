@@ -270,7 +270,12 @@ stopping, resetting or stale counters, grey-blue for completed, muted for idle
 or stopped. While a campaign runs, the dot shows its phase: blue for training,
 cyan for evaluating, magenta for coding, gold for the official assessment (these
 four pulse between a full and a half dot once a second), violet for the campaign
-preparation, and green for the PI working or waiting between operations. A tab
+preparation, and green for the PI working or waiting between operations. When the
+campaign is not running and the final benchmark has a result, the dot becomes a
+diamond: bright green (`◆`) when the goal was reached, orange (`◆`) when it was
+not. It comes from the durable `official_assessment` status, so it holds after a
+restart, and the status line adds `official assessment: goal reached` or `goal
+not reached`. A tab
 that is not shown keeps reading its events and draws nothing until you open it.
 A hidden tab also follows a new campaign that appears in its folder (a reset or
 a new run), and a campaign started outside the console (for example with
@@ -338,7 +343,20 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   `-`) and whether the PI operation request changed;
 - measurement panel rows show episodes, seed and instrument on start, and
   episodes, duration and success on completion;
-- the sticky `Now` line names the active or pending operation and its summary.
+- the sticky `Now` line names the active or pending operation and its summary;
+- the official assessment is a top-level group of its own, last, open by
+  default, shown where it happened. Its header carries the model and, once done,
+  the outcome (`passed`/`failed`, success rate over the episodes, the required
+  cutoff and the margin). Its rows are the start, the progress, a result row
+  (red when the goal was not reached, green when it was), the campaign
+  conclusion and the final usage. The benchmark adapter reports the required
+  cutoff and the Runner copies it into the official events;
+- campaign usage and the PI's request to conclude show in the session that wrote
+  them. A usage row also shows how many AIU the campaign used since the last one,
+  for example `33.57 AIU (+5.70)`;
+- a run-state change adds no row (each one repeats an operation row); it drives
+  the `Now` line and the tab. The pinned Campaign group keeps only the start of
+  the campaign and notices that no session owns.
 
 `Enter`/`Space` toggles the selected row, `Left`/`Right` collapse or expand,
 `/` searches the full event text (including collapsed detail), `f` filters by
@@ -539,7 +557,7 @@ kind is listed; strict mode rejects an event without its owner), concurrent
 writers, the absence of console output from every producer, the real panel
 following a journal written by the real writer in several chunk sizes (one
 group per session, operations under their own session, the official assessment
-under the Campaign group, every row timed and unique, a step unknown to the
+as its own last group, every row timed and unique, a step unknown to the
 panel still shown, panel equal to a fresh fold), the projector contracts, the
 timeline reducer, the launcher's exclusion, stop and external-stop behaviour,
 and the headless rendering behavior:

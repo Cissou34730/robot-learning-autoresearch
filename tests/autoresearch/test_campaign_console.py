@@ -335,6 +335,64 @@ def test_a_campaign_started_elsewhere_still_colours_and_pulses_its_tab(tmp_path)
     asyncio.run(scenario())
 
 
+def test_the_tab_shows_the_final_benchmark_outcome_once_the_campaign_stopped(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import projector
+    from tui.console import OUTCOME_TAGS, TAB_TAG_COLOURS, tab_tag
+    from tui.demo import demo_snapshot_args
+
+    assert tab_tag("completed", False, "none", "passed") == "official_passed"
+    assert tab_tag("idle", False, "none", "failed") == "official_failed"
+    assert tab_tag("stopped", False, "none", "failed") == "official_failed"
+    # A running campaign shows its phase; a failed launcher keeps its red dot.
+    assert tab_tag("running", False, "training", "failed") == "training"
+    assert tab_tag("failed", False, "none", "passed") == "failed"
+    assert tab_tag("completed", False, "none", "") == "completed"
+    assert OUTCOME_TAGS == {"official_passed", "official_failed"}
+
+    app, _ = _console(tmp_path, FakeMachinery())
+
+    def label_of(tab):
+        return tab.label.plain, str(tab.label.spans[0].style)
+
+    def with_outcome(status):
+        state, records, usage = demo_snapshot_args()
+        state["official_assessment"] = {
+            "status": status,
+            "model": "T1:checkpoint-10",
+            "summary": "goal not reached; success 97.5%; 200 episodes",
+        }
+        return projector.build_snapshot(state, records, usage)
+
+    async def scenario():
+        async with app.run_test(size=(120, 45)) as pilot:
+            await pilot.pause()
+            tabs = app.query_one(TabbedContent)
+            for label, status in (("campaign-1", "passed"), ("campaign-2", "failed")):
+                panel = app.query_one(f"#panel-{label}", CampaignPanel)
+                panel.snapshot = with_outcome(status)
+                app._controller.state(label).stage = "completed"
+            app._pulse_on = False
+            app._refresh_tab_tags()
+            assert label_of(tabs.get_tab("campaign-1")) == (
+                "◆ campaign-1",
+                TAB_TAG_COLOURS["official_passed"],
+            )
+            assert label_of(tabs.get_tab("campaign-2")) == (
+                "◆ campaign-2",
+                TAB_TAG_COLOURS["official_failed"],
+            )
+            assert "official assessment: goal not reached" in app._status_line() or (
+                "official assessment: goal reached" in app._status_line()
+            )
+            app._pulse_tabs()
+            assert label_of(tabs.get_tab("campaign-2"))[0] == "◆ campaign-2"
+
+    asyncio.run(scenario())
+
+
 def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
     from textual.widgets import Button, Input
 

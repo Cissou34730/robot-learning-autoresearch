@@ -76,6 +76,9 @@ TAB_PHASE_COLOURS = {
     "official": ("#ffd54a", "#946b00"),
     "preparing": ("#a58bff", "#5b3fc7"),
     "completed": ("#8aa4c8", "#4b6584"),
+    # The final benchmark's outcome, once the campaign is no longer running.
+    "official_passed": ("#3ddc84", "#0a7d3b"),
+    "official_failed": ("#ff9a3c", "#b35900"),
 }
 TAB_TAG_COLOURS = {
     **TAB_STATE_COLOURS,
@@ -83,11 +86,14 @@ TAB_TAG_COLOURS = {
 }
 # These phases show a dot that pulses once a second.
 PULSING_TAGS = frozenset({"training", "evaluating", "coding", "official"})
+# A diamond, not a dot, so the outcome differs from a running dot without colour.
+OUTCOME_TAGS = frozenset({"official_passed", "official_failed"})
 
 
-def tab_tag(stage: str, stalled: bool, phase: str = "none") -> str:
+def tab_tag(stage: str, stalled: bool, phase: str = "none", outcome: str = "") -> str:
     """The tag for one campaign tab. State beats phase: a failed or stalled
-    campaign keeps its warning colour whatever it was doing."""
+    campaign keeps its warning colour whatever it was doing. Once the campaign
+    is not running, the final benchmark's outcome is what the tab shows."""
     if stage == "failed":
         return "failed"
     if stage in {"stopping", "resetting"}:
@@ -96,6 +102,8 @@ def tab_tag(stage: str, stalled: bool, phase: str = "none") -> str:
         if stalled:
             return "attention"
         return phase if phase in TAB_PHASE_COLOURS else "running"
+    if outcome in {"passed", "failed"}:
+        return f"official_{outcome}"
     if stage == "completed":
         return "completed"
     return "quiet"
@@ -749,7 +757,9 @@ class CampaignConsole(App):
             stage = (
                 "running" if state.stage == "idle" and state.external else state.stage
             )
-            tag = tab_tag(stage, panel.progress_stalled(), panel.phase())
+            tag = tab_tag(
+                stage, panel.progress_stalled(), panel.phase(), panel.official_outcome()
+            )
             self._tag_tab(tabs, label, tag)
 
     def _pulse_tabs(self) -> None:
@@ -760,7 +770,9 @@ class CampaignConsole(App):
 
     def _tag_tab(self, tabs: TabbedContent, label: str, tag: str) -> None:
         """Colour the dot in front of a tab label; relabel only on a change."""
-        glyph = "●" if tag not in PULSING_TAGS or self._pulse_on else "◐"
+        glyph = "◆" if tag in OUTCOME_TAGS else "●"
+        if tag in PULSING_TAGS and not self._pulse_on:
+            glyph = "◐"
         colour = self._tag_colour(tag)
         shown = (tag, glyph, colour)
         if self._tab_tags.get(label) == shown:
@@ -771,6 +783,21 @@ class CampaignConsole(App):
             return
         self._tab_tags[label] = shown
         tab.label = Content.from_markup(f"[{colour}]{glyph}[/] $name", name=label)
+
+    def _official_note(self, label: str, stage: str) -> str:
+        """The final benchmark's outcome, for a campaign that is not running."""
+        if stage in {"launching", "running", "stopping", "resetting"}:
+            return ""
+        try:
+            outcome = self.query_one(
+                f"#panel-{label}", CampaignPanel
+            ).official_outcome()
+        except Exception:  # noqa: BLE001 - the tab is not mounted yet
+            return ""
+        return {
+            "passed": " | official assessment: goal reached",
+            "failed": " | official assessment: goal not reached",
+        }.get(outcome, "")
 
     def _status_line(self) -> str:
         active = self.query_one(TabbedContent).active
@@ -789,7 +816,7 @@ class CampaignConsole(App):
                 return f"{active}: stopping, {elapsed:.0f}s elapsed, {max(0, state.stop_timeout + 5 - elapsed):.0f}s remaining"
             if state.stage == "failed" and state.detail:
                 return f"{active}: failed ({state.detail[:240]})"
-            return f"{active}: {stage}"
+            return f"{active}: {stage}{self._official_note(active, state.stage)}"
         parts = []
         for state in self._controller.folder_states():
             detail = state.detail[:60]
