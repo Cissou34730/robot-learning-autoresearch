@@ -228,6 +228,59 @@ def test_tab_phase_dot_follows_a_hidden_tab_and_pulses(tmp_path):
     assert PULSING_TAGS == {"training", "evaluating", "coding", "official"}
 
 
+def test_a_hidden_tab_follows_a_new_campaign_in_its_folder(tmp_path):
+    import json
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.journal import journal_path_for
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+    folder = layout.folder(2)
+
+    def publish_state(campaign_id: str) -> None:
+        path = folder / "runner" / "state" / "research_state.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"campaign": {"id": campaign_id}}), "utf-8")
+
+    def publish_event(campaign_id: str, event_kind: str, **fields) -> None:
+        path = journal_path_for(campaign_id, folder)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        record = {
+            "schema_version": 2,
+            "event_id": f"{event_kind}-{campaign_id}",
+            "campaign_id": campaign_id,
+            "ts": datetime.now(tz=UTC).isoformat(),
+            "kind": event_kind,
+            "scope": "",
+            "severity": "info",
+            "session_id": "S1",
+            "operation_id": "T1",
+            "inquiry_id": "",
+            "attempt": "",
+            "actor": "runner",
+            "payload": fields,
+        }
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record) + "\n")
+
+    publish_state("old-campaign")
+
+    async def scenario():
+        async with app.run_test(size=(120, 45)) as pilot:
+            await pilot.pause()
+            hidden = app.query_one("#panel-campaign-2", CampaignPanel)
+            hidden._master_tick()
+            assert hidden._hidden and hidden.phase() == "none"
+            # A new run gives the folder a new campaign while this tab is hidden.
+            publish_state("new-campaign")
+            publish_event("new-campaign", "operation_started", kind="training")
+            hidden._master_tick()
+            assert hidden.phase() == "training"
+
+    asyncio.run(scenario())
+
+
 def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
     from textual.widgets import Button, Input
 

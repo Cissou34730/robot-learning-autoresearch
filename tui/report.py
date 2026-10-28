@@ -303,6 +303,14 @@ class CampaignSources:
             modified_ns(self._usage_path),
         )
 
+    def campaign_id(self) -> str | None:
+        """The campaign this folder holds now; reads the state file only."""
+        from tui.sources import read_json
+
+        state = read_json(self._locations()[0])
+        value = ((state or {}).get("campaign") or {}).get("id")
+        return str(value) if value else None
+
     def read(self) -> tuple[dict | None, list[dict], list[dict]]:
         from tui.sources import read_json, read_jsonl
 
@@ -492,6 +500,7 @@ class CampaignPanel(Widget):
         self._last_liveness: datetime | None = None
         self._last_error: str = ""
         self._launcher_stopped = False
+        self._identity_stamp: tuple | None = None
         self._feed_campaign: str | None = None
         self._campaign_id: str | None = None
         self._timeline = TimelineReducer(self._campaign_root)
@@ -596,6 +605,7 @@ class CampaignPanel(Widget):
             # An inactive console tab keeps its state current (so its tab can
             # show the phase) but draws nothing; it catches up when shown.
             self._hidden = True
+            self._follow_campaign()
             self.drain_feed(render=False)
             return
         if self._hidden:
@@ -604,6 +614,27 @@ class CampaignPanel(Widget):
         self.drain_feed(render=False)
         self._refresh_durable_if_changed()
         self.tick_clock()
+
+    def _follow_campaign(self) -> None:
+        """Keep a hidden tab on its folder's current campaign.
+
+        A reset or a new run gives the folder a new campaign with its own
+        journal. A shown tab learns it from the durable refresh; a hidden tab
+        reads only the campaign identity, and only when a durable file changed.
+        """
+        stamp_of = getattr(self._sources, "stamp", None)
+        identity_of = getattr(self._sources, "campaign_id", None)
+        if stamp_of is None or identity_of is None:
+            return
+        stamp = stamp_of()
+        if stamp == self._identity_stamp:
+            return
+        self._identity_stamp = stamp
+        campaign = identity_of()
+        self._switch_campaign(campaign)
+        self._ensure_feed(campaign)
+        if isinstance(self._feed, JournalFeed) and campaign:
+            self._feed.campaign_id = campaign
 
     def _refresh_durable_if_changed(self) -> None:
         stamp_of = getattr(self._sources, "stamp", None)
