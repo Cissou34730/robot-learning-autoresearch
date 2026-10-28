@@ -65,7 +65,7 @@ def refusal(target: object) -> str | None:
     if paths.SPLIT:
         relative = _relative(path, str(paths.HARNESS_ROOT))
         if relative is not None and not is_excluded(relative):
-            return f"PI code cannot change harness files: {path}"
+            return f"PI code cannot change reserved files: {path}"
     relative = _relative(path, str(paths.ROOT))
     if relative is not None and not _allowed_in_campaign(relative):
         return (

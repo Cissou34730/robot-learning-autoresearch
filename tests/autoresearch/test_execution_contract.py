@@ -122,7 +122,7 @@ def test_startup_training_requests_respect_maintainer_ceiling(
         assert run_experiment.check_operation() == 0
         assert repository.read_state() == pending_state
     else:
-        with pytest.raises(ValueError, match="maintainer-owned"):
+        with pytest.raises(ValueError, match="fixes the training allocation"):
             run_experiment.accept_operation(request, state)
         assert repository.read_state() == before
         assert state == before
@@ -143,8 +143,9 @@ def test_inquiry_training_requests_stay_between_allocation_and_maximum(
     if accepted:
         assert run_experiment._training_allocation(request, state) == steps
     else:
-        with pytest.raises(ValueError, match="maintainer-owned"):
+        with pytest.raises(ValueError, match="fixes the training allocation") as error:
             run_experiment._training_allocation(request, state)
+        assert "maintainer" not in str(error.value)
 
 
 def test_changed_maintainer_allocation_refuses_pending_training_without_mutation(
@@ -158,7 +159,7 @@ def test_changed_maintainer_allocation_refuses_pending_training_without_mutation
     before = repository.read_state()
     monkeypatch.setattr(run_experiment, "TIMESTEPS", 120_000)
 
-    with pytest.raises(ValueError, match="maintainer-owned"):
+    with pytest.raises(ValueError, match="fixes the training allocation"):
         run_experiment.execute_pending_operation()
     assert repository.read_state() == before
 

@@ -394,13 +394,14 @@ def _training_allocation(request: dict, state: dict) -> int:
     if session["kind"] == "startup":
         if request["steps"] > allocation:
             raise ValueError(
-                f"training allocation is maintainer-owned: startup steps must "
-                f"not exceed {allocation:,}; got {request['steps']!r}"
+                f"The Runner fixes the training allocation. Startup steps must "
+                f"not exceed {allocation:,}. The request has {request['steps']!r}."
             )
     elif not allocation <= request["steps"] <= MAX_TIMESTEPS:
         raise ValueError(
-            f"training allocation is maintainer-owned: steps must be between "
-            f"{allocation:,} and {MAX_TIMESTEPS:,}, not {request['steps']!r}"
+            f"The Runner fixes the training allocation. A request needs between "
+            f"{allocation:,} and {MAX_TIMESTEPS:,} steps. The request has "
+            f"{request['steps']!r}."
         )
     return request["steps"]
 

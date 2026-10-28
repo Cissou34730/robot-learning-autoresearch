@@ -1264,7 +1264,8 @@ def operation_body_schema(kind: str) -> dict:
                         "type": "array",
                         "description": (
                             "One string per literal module argument. Do not include "
-                            "the module name or a launcher command. Use concrete output paths."
+                            "the module name or a command prefix such as `python -m`. "
+                            "Use concrete output paths."
                         ),
                         "items": {"type": "string"},
                     },
