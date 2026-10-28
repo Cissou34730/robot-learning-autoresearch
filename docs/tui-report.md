@@ -272,6 +272,10 @@ cyan for evaluating, magenta for coding, gold for the official assessment (these
 four pulse between a full and a half dot once a second), violet for the campaign
 preparation, and green for the PI working or waiting between operations. A tab
 that is not shown keeps reading its events and draws nothing until you open it.
+A hidden tab also follows a new campaign that appears in its folder (a reset or
+a new run), and a campaign started outside the console (for example with
+`tools.run_parallel`) is detected through its campaign lock every two seconds,
+so its tab shows the same phase colour and pulse as a console-started one.
 Every row has exactly one owner, named by the event itself (see "Event journal"
 below): the log is a fold of the journal alone and never infers, merges or
 reorders. Siblings are shown in the order the journal recorded them.

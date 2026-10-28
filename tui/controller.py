@@ -299,6 +299,9 @@ class CampaignFolderState:
     stop_timeout: float = DEFAULT_STOP_TIMEOUT
     stop_started: float | None = None
     control_directory: Path | None = None
+    # A launcher this console did not start holds the campaign (seen through the
+    # campaign lock); refreshed with the other process checks.
+    external: bool = False
     cleanup_lock: object = field(default_factory=threading.RLock, repr=False)
 
     @property
@@ -882,6 +885,11 @@ class CampaignController:
     def _reap(self, label: str) -> CampaignFolderState:
         target = self._folders[label]
         if target.child is None:
+            target.external = (
+                target.stage not in {"resetting", "launching"}
+                and self._layout.is_installed(target.slot)
+                and self._external.running(target.folder)
+            )
             return target
         if not self._machinery.poll(target.child):
             if (

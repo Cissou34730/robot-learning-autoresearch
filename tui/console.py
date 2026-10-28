@@ -687,9 +687,11 @@ class CampaignConsole(App):
     def _refresh_status_now(self) -> None:
         for panel in self.query(CampaignPanel):
             target = self._controller.state(panel.id.removeprefix("panel-"))
-            if target.stage in {"launching", "running", "stopping"}:
+            if target.stage in {"launching", "running", "stopping"} or (
+                target.stage == "idle" and target.external
+            ):
                 panel.set_process_running(True)
-            elif target.stage in {"stopped", "failed", "completed"}:
+            elif target.stage in {"stopped", "failed", "completed", "idle"}:
                 panel.set_process_running(False)
         self._refresh_tab_tags()
         command = self.query_one("#commands-input", Input)
@@ -743,7 +745,10 @@ class CampaignConsole(App):
         tabs = found.first()
         for panel in self.query(CampaignPanel):
             label = panel.id.removeprefix("panel-")
-            stage = self._controller.state(label).stage
+            state = self._controller.state(label)
+            stage = (
+                "running" if state.stage == "idle" and state.external else state.stage
+            )
             tag = tab_tag(stage, panel.progress_stalled(), panel.phase())
             self._tag_tab(tabs, label, tag)
 
@@ -771,7 +776,14 @@ class CampaignConsole(App):
         active = self.query_one(TabbedContent).active
         if active:
             state = self._controller.state(active)
-            stage = "not started here" if state.stage == "idle" else state.stage
+            if state.stage == "idle":
+                stage = (
+                    "running (started elsewhere)"
+                    if state.external
+                    else "not started here"
+                )
+            else:
+                stage = state.stage
             if state.stage == "stopping" and state.stop_started is not None:
                 elapsed = time.monotonic() - state.stop_started
                 return f"{active}: stopping, {elapsed:.0f}s elapsed, {max(0, state.stop_timeout + 5 - elapsed):.0f}s remaining"

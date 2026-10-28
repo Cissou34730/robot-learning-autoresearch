@@ -281,6 +281,60 @@ def test_a_hidden_tab_follows_a_new_campaign_in_its_folder(tmp_path):
     asyncio.run(scenario())
 
 
+def test_a_campaign_started_elsewhere_still_colours_and_pulses_its_tab(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.console import TAB_TAG_COLOURS
+    from tui.observations import Observation
+
+    class _Feed:
+        rejected = None
+
+        def __init__(self, events) -> None:
+            self.events = events
+
+        def poll(self):
+            events, self.events = self.events, []
+            return events
+
+    app, _ = _console(tmp_path, FakeMachinery())
+    app._controller._external = SimpleNamespace(running=lambda folder: True)
+
+    def label_of(tab):
+        return tab.label.plain, str(tab.label.spans[0].style)
+
+    async def scenario():
+        async with app.run_test(size=(120, 45)) as pilot:
+            await pilot.pause()
+            tabs = app.query_one(TabbedContent)
+            hidden = app.query_one("#panel-campaign-2", CampaignPanel)
+            hidden._feed = _Feed(
+                [
+                    Observation(
+                        "operation_started",
+                        datetime.now(tz=UTC),
+                        {"kind": "training"},
+                        operation_id="T1",
+                        session_id="S1",
+                    )
+                ]
+            )
+            hidden._master_tick()
+            state = app._controller.state("campaign-2")
+            assert state.stage == "idle"
+            app._controller.reap("campaign-2")
+            assert state.external
+            app._pulse_on = True
+            app._refresh_tab_tags()
+            tab = tabs.get_tab("campaign-2")
+            assert label_of(tab) == ("● campaign-2", TAB_TAG_COLOURS["training"])
+            app._pulse_tabs()
+            assert label_of(tab)[0] == "◐ campaign-2"
+
+    asyncio.run(scenario())
+
+
 def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
     from textual.widgets import Button, Input
 
