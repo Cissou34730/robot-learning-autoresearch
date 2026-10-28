@@ -51,10 +51,9 @@ use the current harness with the selected campaign's scientific code.
 The launcher and reset are Python processes (`runner.launcher` and
 `runner.launcher.reset`); they change folder only inside their own process, so
 the calling terminal's folder never changes.
-The launcher writes no console output. The campaign's typed event feed, read by
-the [terminal report](docs/tui-report.md), is its only progress output; errors
-that end a launch go to standard error and to the launcher log
-`<campaign>\reports\launcher\<UTC time>-<pid>.log`.
+Errors that end a launch go to standard error and to the launcher log
+`<campaign>\reports\launcher\<UTC time>-<pid>.log`. The
+[terminal report](docs/tui-report.md) shows the progress of a campaign.
 The harness has its own Git storage and no longer depends on the old reference
 repository or its worktrees. Existing historical branches remain on GitHub.
 

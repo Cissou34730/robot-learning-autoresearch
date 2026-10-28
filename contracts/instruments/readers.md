@@ -137,9 +137,7 @@ The tool rejects fields that it does not support. It does not silently ignore
 them. Do not give `select` when you want complete rows. A supplied pointer
 cannot be empty.
 
-The console shows the operation and the artifact index of each request for
-artifact content. Larger explicit pages and complete reads of the original file
-stay available.
+Larger explicit pages and complete reads of the original file stay available.
 
 For `read`, `offset` and `max_bytes` refer to bytes of the original file.
 `encoding` selects readable UTF-8, or base64 for other byte encodings. UTF-8
@@ -178,8 +176,7 @@ attempt.
 A records request requires explicit `metrics` or `all_metrics: true`, but not
 both. The default pages of rows and bytes are small. `max_bytes` bounds the
 selected record values and the raw pages. You can explicitly increase it and
-continue. The console
-shows the operation, the action and the selectors that you gave.
+continue.
 
 When there are several logs, `raw` selects one attempt. Its `offset`,
 `max_bytes`, `encoding` and `expected_fingerprint` follow the same continuation

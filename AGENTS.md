@@ -70,9 +70,7 @@ interactive campaign console without starting work; its explicit commands
 reuse the existing initialization, reset and launch entry points. The launcher
 (`python -m runner.launcher`, wrapped by `run_research.ps1`) and the reset
 (`python -m runner.launcher.reset`) accept `--campaign-root` and default to
-`campaign-1`. The launcher writes no console output: progress goes to the
-campaign's typed event feed and errors to standard error and its launcher log.
-Runner invocations return data to the launcher in a structured result file
+`campaign-1`. Runner invocations return data to the launcher in a structured result file
 (`--result-path`), never on standard output. Direct maintainer Python commands select a campaign
 with `ROBOT_LEARNING_CAMPAIGN_ROOT` and use the harness Python environment.
 Campaign Git operations run only in the campaign repository and never push.
