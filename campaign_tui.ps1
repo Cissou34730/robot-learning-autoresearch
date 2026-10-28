@@ -12,7 +12,7 @@
 #   .\campaign_tui.ps1                     # console (commands + campaigns)
 #   .\campaign_tui.ps1 -Console            # console explicitly
 #   .\campaign_tui.ps1 -CampaignRoot D:\path\to\campaign   # legacy report
-#   .\campaign_tui.ps1 -EventsPath D:\path\to\<campaign-id>.events.jsonl
+#   .\campaign_tui.ps1 -EventsPath D:\path\to\<campaign-id>.events.v2.jsonl
 #   .\campaign_tui.ps1 -Demo
 [CmdletBinding()]
 param(

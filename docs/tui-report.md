@@ -14,8 +14,8 @@ execution.
   - `tui/projector.py` - pure projection of research state, accepted
     transactions and usage rows into a display snapshot.
   - `tui/observations.py` - the observation record the report consumes, plus
-    the synthetic feed used by `--demo`; `tui/events.py` follows the typed
-    event file (see below).
+    the synthetic feed used by `--demo`; `tui/journal.py` follows the event
+    journal (see below).
   - `tui/report.py` - the single-screen report application.
   - `tui/demo.py` - synthetic campaign material for `--demo` and tests.
 - `campaign_tui.ps1` - launcher helper in the harness root.
@@ -272,19 +272,18 @@ cyan for evaluating, magenta for coding, gold for the official assessment (these
 four pulse between a full and a half dot once a second), violet for the campaign
 preparation, and green for the PI working or waiting between operations. A tab
 that is not shown keeps reading its events and draws nothing until you open it.
-The PI backend session and the Runner's `S<n>` name for the same session share
-one group. Each fact (an opened inquiry, an
-operation lifecycle step) shows once, from the best source (live event, then
-durable record, then state snapshot). Siblings are shown in time order.
+Every row has exactly one owner, named by the event itself (see "Event journal"
+below): the log is a fold of the journal alone and never infers, merges or
+reorders. Siblings are shown in the order the journal recorded them.
 
 ## Data the report reads now
 
 | Facts | Source (read-only) |
 |---|---|
-| Campaign, human goal, counters, stage IDs, inquiry, session, synthesis, roles, pending operation | `runner/state/research_state.json` |
-| Completed operations, training dynamics, measurement panels, last-training proxy | `campaigns/results.jsonl` |
+| Campaign, human goal, counters, stage IDs, inquiry, session, synthesis, roles, pending operation (header and model table only) | `runner/state/research_state.json` |
+| Completed operations, training dynamics, measurement panels, last-training proxy (header only) | `campaigns/results.jsonl` |
 | Recorded usage (AIU / token rows) | `reports/session_usage/<campaign-id>.jsonl` |
-| Live training reward/success, progress and every other live fact | `reports/tui_observations/<campaign-id>.events.jsonl` (typed feed, `runner/typed_events.py`) |
+| The event log, live training reward/success, progress and every other live fact | `reports/tui_observations/<campaign-id>.events.v2.jsonl` (event journal, `runner/typed_events.py`) |
 
 Projection rules follow the specification: roles come only from
 `model_roles`; development success is the latest completed evaluation for a
@@ -346,40 +345,67 @@ log, the marker returns to the keyboard cursor. There is no underline or pane
 outline. Dragging across output text paints a text-selection background that
 remains after release; `Ctrl+C` copies that selection.
 
-The log renders the typed events of
-`reports/tui_observations/<campaign-id>.events.jsonl` together with the durable
-history synthesized from `research_state.json` and `results.jsonl`. The
-reducer (`tui/timeline.py`) is terminal-free and tested with synthetic events.
+The log renders the events of
+`reports/tui_observations/<campaign-id>.events.v2.jsonl` and nothing else. The
+durable files feed the header and the model table only. The reducer
+(`tui/timeline.py`) is terminal-free, deterministic and tested with events
+written by the real writer.
 
-## Observation feed (producer and consumer)
+## Event journal (producer and consumer)
 
-`runner/typed_events.py` writes the maintainer-only typed stream to
-`reports/tui_observations/<campaign-id>.events.jsonl` under the campaign root
+`runner/typed_events.py` writes the maintainer-only journal to
+`reports/tui_observations/<campaign-id>.events.v2.jsonl` under the campaign root
 (that directory is presentation-only, ignored by campaign Git, and refused to PI
 and analyst reads). One file per campaign means a reset cannot surface earlier
-events. The writer is best-effort: it appends one JSON object per line, binds
-the campaign identity from durable state (also in the Copilot adapter process),
-and swallows every failure so presenting can never alter acceptance,
-execution, publication or recovery. `TUI_TYPED_EVENTS` moves the file or
-disables it with `off`. The report follows the current campaign's file by byte
-offset: only appended complete lines are read, and a shrunken or replaced file
-restarts from the beginning. It is the only observation stream; nothing is
-written to a console.
+events; the version in the file name means an older runner's file is never read
+as this one (a campaign started before this schema shows "waiting for events").
+The writer is best-effort: it appends each record with one binary write to a
+file opened for append, binds the campaign identity from durable state (also in
+the Copilot adapter process), and swallows every failure so presenting can never
+alter acceptance, execution, publication or recovery. `TUI_TYPED_EVENTS` moves
+the file or disables it with `off`. The report follows the current campaign's
+file by byte offset: only appended complete lines are read, an unfinished last
+line waits for its newline, and a shrunken or replaced file restarts from the
+beginning. A complete line that cannot be decoded, a foreign campaign and a
+wrong schema are reported in the header, never in the log. It is the only
+observation stream; nothing is written to a console.
+
+### Identity contract
+
+`runner/event_contract.py` is the one statement of the contract, shared by the
+writer, the reader and the tests. Every record has the envelope
+`schema_version, event_id, campaign_id, ts, kind, scope, severity, session_id,
+operation_id, inquiry_id, attempt, actor, payload`.
+
+| Field | Meaning |
+|---|---|
+| `session_id` | The durable session key: `S<n>`, or `preparation` for the campaign preparation (one group, whatever the number of PI restarts). Never a backend conversation id; that id stays in the payload. |
+| `operation_id` | `T3`, `M2`, `E5`, or `official` for the official assessment (an operation of the campaign, with no session). |
+| `inquiry_id` | The inquiry. An inquiry spans sessions, so it never owns an operation by itself. |
+| `attempt`, `actor` | The PI invocation and the speaker (`pi`, `coder`, `reviewer`, `runner`, `launcher`). They keep rows of different invocations apart. |
+
+`RULES` in that module lists, for each event kind, the identities it must carry
+and whether it belongs to a session, an operation or the campaign. The reducer
+attaches a row to the owner the event names and to nothing else. An event that
+lacks a required identity is not guessed: it shows as a diagnostic row. A kind
+that is not in `RULES` has no requirement and shows under the most specific
+owner it names, or under the Campaign group, so a new step appears without any
+change to the reducer.
 
 ```json
-{"schema_version": 1, "event_id": "...", "campaign_id": "...",
+{"schema_version": 2, "event_id": "...", "campaign_id": "...",
  "ts": "2026-10-24T12:41:04+00:00", "kind": "training_progress",
  "scope": "training", "severity": "info", "operation_id": "T4",
- "session_id": "S7", "inquiry_id": "I3",
+ "session_id": "S7", "inquiry_id": "I3", "attempt": "", "actor": "runner",
  "payload": {"steps": 72000, "target": 120000, "ep_rew_mean": 86.3,
              "scenario_metric": "success 97%"}}
 ```
 
 Emitters:
 
-- launcher (`runner/launcher/events.py`): `session_start` (live stage timer and
-  resume identity), launcher status lines and cards as `notice`, and `error`
-  when a launch ends in failure;
+- launcher (`runner/launcher/events.py`): `session_start` (live stage timer; it
+  carries the backend id in its payload), launcher status lines and cards as
+  `notice`, and `error` when a launch ends in failure;
 - `runner/reporting.py` `announce()`, `card()` and `boundary()`: `notice`
   events (`{text, scope}` or `{title, body, scope}`), with the scope (`pi`,
   `operation`, `warning`, `error`, ...) as the colour channel; `diagnostic()`
@@ -405,30 +431,38 @@ Emitters:
 - `runner/copilot/usage.py`: `usage_update` per durable accounting row;
 - `runner/copilot/copilot_adapter.py`: `session_usage` at session end.
 
-`typed_events.context()` binds `operation_id`, `session_id` and `inquiry_id`
-for one execution scope, so progress and publication events inherit identity
-without threading it through presentation functions. Lifecycle event IDs are
-deterministic (`domain:<kind>:<id>:<state>`), so a resumed operation or a
-replayed feed does not duplicate a fact the reducer has already seen.
+`typed_events.context()` binds the owner (`session_id`, `operation_id`,
+`inquiry_id`, `attempt`, `actor`) for one scope, so progress, publication and
+PI events inherit it without threading it through presentation functions. The
+owner is process-wide, not task-local: the Copilot SDK calls its handlers from
+its own tasks, and each process owns one piece of work at a time. The adapter
+binds the durable session, the invocation and the actor once per PI invocation,
+before anything is reported, so the failure and accounting paths carry them too.
+Lifecycle event IDs are deterministic (`domain:<kind>:<id>:<state>`), so a
+resumed operation or a replayed journal does not duplicate a fact the reducer
+has already seen.
 
 Training progress carries the scenario-owned metric as the rendered
 `scenario_metric` fragment; the Runner and the live progress path never read
 the scenario's success field directly.
 
-Without an event file the report still renders the durable state, the
-reconstructed operation timeline and recorded usage; the output states the
-live-observation limitation on attachment. Durable history is folded into the
-same reducer, so a late attach still rebuilds the campaign timeline.
-Foreign-campaign events are rejected; replayed events are deduplicated.
+Without a journal file the report renders the header and the model table from
+durable state and the log states "Now: waiting for events". It rebuilds no
+history from durable records.
 
 ## Validation
 
 ```powershell
-uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresearch/test_observation_feed.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py tests/autoresearch/test_campaign_controller.py tests/autoresearch/test_campaign_console.py tests/autoresearch/test_launcher.py tests/autoresearch/test_stop_control.py
+uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresearch/test_observation_feed.py tests/autoresearch/test_event_journal_contract.py tests/autoresearch/test_journal_panel_rules.py tests/autoresearch/test_timeline_ownership.py tests/autoresearch/test_report_projector.py tests/autoresearch/test_report_app.py tests/autoresearch/test_report_timeline.py tests/autoresearch/test_campaign_controller.py tests/autoresearch/test_campaign_console.py tests/autoresearch/test_launcher.py tests/autoresearch/test_stop_control.py
 ```
 
-The tests cover the typed feed writer and reader, the absence of console
-output from every producer, context merging, the projector contracts, the
+The tests cover the writer and reader, the identity contract (every emitted
+kind is listed; strict mode rejects an event without its owner), concurrent
+writers, the absence of console output from every producer, the real panel
+following a journal written by the real writer in several chunk sizes (one
+group per session, operations under their own session, the official assessment
+under the Campaign group, every row timed and unique, a step unknown to the
+panel still shown, panel equal to a fresh fold), the projector contracts, the
 timeline reducer, the launcher's exclusion, stop and external-stop behaviour,
 and the headless rendering behavior:
 single-screen composition, stage IDs, goal gap, counters, pending chip,

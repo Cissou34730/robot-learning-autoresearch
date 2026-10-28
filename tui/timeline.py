@@ -1847,6 +1847,8 @@ class TimelineReducer:
             return f"Now: {state} | {latest}"
         if self._run_state:
             return f"Now: {self._run_state}"
+        if not self._seen:
+            return "Now: waiting for events"
         return "Now: waiting for the first operation"
 
     def active_ids(self) -> set[str]:
