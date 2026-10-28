@@ -61,9 +61,9 @@ human-owned paths have priority over a PI-owned prefix:
 - `runner/` - the Runner source code and state
 - `campaigns/` - the campaign evidence that the Runner writes
 - `tests/` - the validation suite
-- `docs/` and `tools/` - the maintainer documents and tools
+- `docs/` and `tools/` - the documents and the tools
 - `run_research.ps1`, `researcher_session.ps1` and `researcher_mutex.ps1` -
-  the launch scripts
+  the scripts
 - `pyproject.toml` and `uv.lock` - the fixed dependencies
 - `robot_learning/__init__.py` and `robot_learning/scenario/__init__.py` -
   the protected package initializers
@@ -92,10 +92,10 @@ executes the operations that you request through `submit_operation`.
 
 Campaign roles can read `contracts/`, `campaigns/`, `pi_workspace/` and the
 PI-owned scientific files. The analyst can also read all of `robot_learning/`.
-Runner, benchmark, test, maintainer and launch files are reserved in every
-session. A readable folder does not make the reserved files in it readable.
-Read `campaigns/results.jsonl` through `artifact_evidence_query` by operation,
-not through `view` or a search.
+Runner, benchmark, test, document, tool and script files are reserved in
+every session. A readable folder does not make the reserved files in it
+readable. Read `campaigns/results.jsonl` through `artifact_evidence_query` by
+operation, not through `view` or a search.
 
 ## Campaign files
 
