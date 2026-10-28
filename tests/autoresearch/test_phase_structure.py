@@ -142,7 +142,10 @@ def test_launcher_trust_snapshot_protects_the_separate_harness(tmp_path):
     (harness / "benchmark" / "adapters" / "final_benchmark.py").write_text(
         "VALUE = 'changed'\n", encoding="utf-8"
     )
-    assert "outside the PI-owned paths" in _violation(snapshot)
+    with pytest.raises(TrustViolation) as raised:
+        snapshot.verify()
+    assert "benchmark/adapters/final_benchmark.py" in str(raised.value)
+    assert "benchmark/" not in raised.value.pi_message
 
 
 def test_launcher_trust_snapshot_ignores_harness_documents_and_commits(tmp_path):

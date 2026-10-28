@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 
 from runner import paths, repository
@@ -267,22 +268,39 @@ def validate_research_delta_ownership(code_changes: list[str]) -> None:
 
 def validate_clean_human_owned_worktree() -> None:
     changed = repository.status_paths((".",))
+    harness_changed = []
     if paths.SPLIT:
-        changed.extend(
+        harness_changed = sorted(
             path
             for path in repository.status_paths((".",), harness=True)
             if paths.is_harness_runtime(path)
+            and is_human_owned(path)
+            and not repository.is_runner_owned(path)
         )
     rejected = sorted(
         path
         for path in changed
         if is_human_owned(path) and not repository.is_runner_owned(path)
     )
+    problems = []
+    if harness_changed:
+        print(
+            f"Harness runtime files have uncommitted changes: {harness_changed}",
+            file=sys.stderr,
+        )
+        problems.append(
+            "the harness that runs this campaign has uncommitted changes; the "
+            "maintainer must restore it"
+        )
     if rejected:
+        problems.append(
+            f"protected or human-owned campaign files have uncommitted changes: "
+            f"{rejected}; restore them"
+        )
+    if problems:
         raise ValueError(
-            "protected or human-owned files have uncommitted changes: "
-            f"{rejected}; restore them before a research evaluation, a "
-            "task-reference evaluation or the official assessment"
+            "; ".join(problems) + ". A research evaluation, a task-reference "
+            "evaluation or the official assessment cannot run until then"
         )
 
 

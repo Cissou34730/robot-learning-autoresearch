@@ -21,7 +21,7 @@ def split_roots(monkeypatch, tmp_path):
 
 
 def test_harness_document_changes_do_not_block_protected_evaluation(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, capsys
 ):
     import os
     import shutil
@@ -43,8 +43,10 @@ def test_harness_document_changes_do_not_block_protected_evaluation(
         protocol.validate_clean_human_owned_worktree()
         (harness / "runner").mkdir()
         (harness / "runner" / "execution.py").write_text("changed\n", encoding="utf-8")
-        with pytest.raises(ValueError, match="runner/execution.py"):
+        with pytest.raises(ValueError, match="maintainer must restore") as raised:
             protocol.validate_clean_human_owned_worktree()
+        assert "runner/execution.py" not in str(raised.value)
+        assert "runner/execution.py" in capsys.readouterr().err
     finally:
         shutil.rmtree(base, ignore_errors=True)
 

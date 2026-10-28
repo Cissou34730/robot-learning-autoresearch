@@ -87,7 +87,11 @@ _RUNNER_STATE_PREFIXES = (
 
 
 class TrustViolation(RuntimeError):
-    """PI work changed content outside its paths; mutable code must not load."""
+    """Content outside the PI-owned paths changed; mutable code must not load."""
+
+    def __init__(self, message: str, *, pi_message: str | None = None) -> None:
+        super().__init__(message)
+        self.pi_message = pi_message or message
 
 
 def is_pi_writable(relative: str, *, preliminary: bool) -> bool:
@@ -250,9 +254,20 @@ class TrustSnapshot:
             relative for relative in self.files if relative not in current
         )
         if violations:
+            listed = ", ".join(sorted(violations, key=str.lower))
+            if self.head is None:
+                raise TrustViolation(
+                    f"Harness runtime files changed during the campaign: {listed}. "
+                    "Refusing to load mutable Runner or adapter code.",
+                    pi_message=(
+                        "The harness that runs this campaign changed during the "
+                        "session. The Runner cannot execute operations until the "
+                        "maintainer restores it."
+                    ),
+                )
             raise TrustViolation(
                 "PI work changed repository content outside the PI-owned paths "
-                f"in contracts/authority.md: {', '.join(sorted(violations, key=str.lower))}. "
+                f"in contracts/authority.md: {listed}. "
                 "Refusing to load mutable Runner or adapter code."
             )
 

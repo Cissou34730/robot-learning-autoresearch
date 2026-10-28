@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 import uuid
 from pathlib import Path
 
@@ -13,7 +14,7 @@ from runner.launcher.operation_bridge import OperationBridge, operation_state
 from runner.launcher.runner_client import LauncherError
 from runner.launcher.stop import StopControl
 from runner.launcher.summaries import load_state
-from runner.launcher.trust import TrustGuard
+from runner.launcher.trust import TrustGuard, TrustViolation
 
 STOPPED = 130
 
@@ -209,11 +210,15 @@ class PISessions:
             try:
                 response = self._bridge.submit(message, binding)
             except Exception as error:  # noqa: BLE001 - the PI receives the controller failure
+                text = str(error)
+                if isinstance(error, TrustViolation):
+                    print(text, file=sys.stderr)
+                    text = error.pi_message
                 response = {
                     "type": "operation_result",
                     "invocation_id": binding["invocation_id"],
                     "call_id": message.get("call_id"),
                     "status": "controller_fatal",
-                    "error": str(error),
+                    "error": text,
                 }
             self._runtime.send(response)
