@@ -33,7 +33,7 @@ GIT_DENIAL = "Mutating or unsupported Git commands are unavailable in PI session
 
 
 EXECUTION_DENIAL = (
-    "Direct execution of reserved harness and protected entry points is unavailable."
+    "Direct execution of reserved and protected entry points is unavailable."
 )
 
 

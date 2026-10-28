@@ -20,8 +20,8 @@ CODING_SCOPE_DENIAL = "This action is outside this coding session's exact file s
 
 
 CODING_PERMISSION_DENIAL = (
-    "Harness authorization failure: the permission request has no matching active "
-    "coder, reviewer or PI identity. No file access was authorized."
+    "The Runner denied the permission request. It does not belong to an active "
+    "coder, reviewer or PI. No file access was authorized."
 )
 
 
@@ -31,7 +31,7 @@ FILE_EDIT_DENIAL = (
 
 
 FILE_READ_DENIAL = (
-    "Reserved harness, maintainer, and protected scientific files are unavailable "
+    "Reserved files and protected scientific files are unavailable "
     "for inspection in this phase."
 )
 

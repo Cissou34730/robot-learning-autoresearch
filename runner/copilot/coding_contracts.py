@@ -63,8 +63,7 @@ class ScientificCodingParams(BaseModel):
         min_length=1,
         max_length=16_000,
         description=(
-            "State the expected output precisely. "
-            "The coder chooses the implementation."
+            "State the expected output precisely. The coder chooses the implementation."
         ),
     )
     allowed_paths: list[str] | None = Field(
@@ -84,7 +83,7 @@ class ScientificCodingParams(BaseModel):
         description=(
             "Supporting facts, caller context and observed errors. "
             "The coder does not receive your conversation. "
-            "The harness gives the glossary, the current contracts/scenario.md and "
+            "The Runner gives the glossary, the current contracts/scenario.md and "
             "excerpts of the authority and operation contracts. Select additional "
             "source files in read_paths."
         ),
@@ -156,7 +155,7 @@ CODING_TOOL_DESCRIPTION = (
     "Select the exact files that the coder can write in allowed_paths, and "
     "additional source and caller files that it can read in read_paths.\n\n"
     "Put the supporting facts, the caller context and the observed errors in "
-    "source_context. The coder does not receive your conversation. The harness "
+    "source_context. The coder does not receive your conversation. The Runner "
     "gives the glossary, the current contracts/scenario.md and excerpts of the "
     "authority and operation contracts to the coder and the reviewer. This does "
     "not expand their file permissions. When the change reads recorded measurement artifacts, "
@@ -190,7 +189,7 @@ REVIEWER_START_CONTEXT = (
     "Installed APIs: native MuJoCo 3.12.0, Gymnasium 1.3.0 and "
     "Stable-Baselines3 2.9.0. The dependencies are fixed. "
     "Review only the supplied change and the exact readable files. "
-    "The harness denies all writes, execution, delegation and operations. "
+    "All writes, execution, delegation and operations are denied. "
     "Do not trust an expectation that the coder wrote until you check it. "
     "Request all engineering repairs as one complete batch in your handoff. "
     "Set validation to false only for defects that the coder can repair within "

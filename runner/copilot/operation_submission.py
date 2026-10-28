@@ -35,7 +35,8 @@ class ControllerChannel:
         line = await self.reader.readline()
         if not line:
             raise ConnectionError(
-                "Launcher channel closed; recover durable Runner state, never resubmit blindly."
+                "The channel to the Runner closed. Recover the durable Runner "
+                "state. Do not resubmit blindly."
             )
         message = json.loads(line)
         if not isinstance(message, dict):
