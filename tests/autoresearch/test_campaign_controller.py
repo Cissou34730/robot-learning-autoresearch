@@ -197,6 +197,22 @@ def test_parse_command_rejects_invalid(text):
         control.parse_command(text)
 
 
+def test_an_unknown_command_names_the_valid_ones_and_suggests_the_close_one():
+    with pytest.raises(control.CommandError) as error:
+        control.parse_command("diagnotics")
+    message = str(error.value)
+    assert "Did you mean diagnostics?" in message
+    assert "start, reset" in message or "run, start, reset, stop" in message
+    # A word near nothing gets the list, never a wild guess.
+    with pytest.raises(control.CommandError) as error:
+        control.parse_command("deploy 2")
+    assert "Did you mean" not in str(error.value)
+    assert "Commands:" in str(error.value)
+    # A near miss of a destructive command is suggested, never run.
+    with pytest.raises(control.CommandError):
+        control.parse_command("rset 1")
+
+
 def test_settings_preserve_omitted_arguments():
     assert control.LaunchSettings().launcher_arguments() == []
     settings = control.LaunchSettings(

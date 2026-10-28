@@ -10,6 +10,7 @@ stop-request contract in ``docs/external-campaign-stop.md``.
 
 from __future__ import annotations
 
+import difflib
 import json
 import os
 import re
@@ -194,6 +195,16 @@ class BatchOutcome:
         )
 
 
+COMMANDS = ("run", "start", "reset", "stop", "help", "models", "diagnostics")
+
+
+def _unknown_command_message(word: str) -> str:
+    """Name the valid commands, and the one the word was probably meant to be."""
+    close = difflib.get_close_matches(word.lower(), COMMANDS, n=1, cutoff=0.6)
+    guess = f" Did you mean {close[0]}?" if close else ""
+    return f"Unknown command: {word!r}.{guess} Commands: {', '.join(COMMANDS)}."
+
+
 def parse_command(text: str) -> tuple[str, list[int]]:
     """Parse one command line into ``(verb, slots)``.
 
@@ -205,8 +216,8 @@ def parse_command(text: str) -> tuple[str, list[int]]:
     if not tokens:
         raise CommandError("Empty command.")
     verb = tokens[0].lower()
-    if verb not in {"run", "start", "reset", "stop", "help", "models", "diagnostics"}:
-        raise CommandError(f"Unknown command: {tokens[0]!r}")
+    if verb not in COMMANDS:
+        raise CommandError(_unknown_command_message(tokens[0]))
     if len(tokens) == 1:
         return verb, []
     selection = tokens[1:]
