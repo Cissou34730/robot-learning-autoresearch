@@ -1,23 +1,24 @@
 """The multi-campaign operator console (issue #68).
 
 One Textual application with one report tab per installed campaign folder
-(campaign-1 .. campaign-5) and a persistent command composer. The console never starts
-anything on its own: campaigns run only when the operator submits a run,
-reset, start or stop command. Every lifecycle action is delegated to
-:class:`tui.controller.CampaignController`, which in turn reuses the
-existing launch, reset and cooperative-stop entry points.
+(campaign-1 .. campaign-5) and a command panel that ``/`` opens. The console
+never starts anything on its own: campaigns run only when the operator submits a
+run, reset, start or stop command. Every lifecycle action is delegated to
+:class:`tui.controller.CampaignController`, which in turn reuses the existing
+launch, reset and cooperative-stop entry points.
 
 Process ownership follows ``docs/external-campaign-stop.md``:
 
-- each launcher invocation runs inside a kill-on-close Job Object
-  (:class:`tui.process.LauncherMachinery`), so closing or crashing the
-  console cannot leave campaign descendants behind;
-- stop requests are cooperative files, and a missed cooperative deadline
-  escalates to a forced job termination;
+- each launcher invocation runs inside a Job Object that does not kill on close,
+  so the console can leave campaigns running (``/quit``, ``Alt+Q``) and closing
+  or crashing the console does not stop them. Short helpers (reset, initialize)
+  run in kill-on-close jobs. Each launcher's process is recorded outside the
+  campaign, so ``/kill`` can end it from any console;
+- stop requests are cooperative files;
 - ``Ctrl+C`` copies the current selection (or does nothing); it never
-  stops campaigns. ``Ctrl+Q`` asks every owned launcher to stop
-  concurrently, waits up to the configured stop timeout, escalates to a
-  forced stop, and only then exits.
+  stops campaigns. ``Ctrl+Q`` asks every owned launcher to stop concurrently,
+  waits, and offers to kill, leave or keep waiting for any that has not stopped
+  after 30 s; it kills nothing the operator did not choose.
 """
 
 from __future__ import annotations
@@ -38,14 +39,17 @@ from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
     Checkbox,
-    Footer,
     Input,
+    OptionList,
     Select,
     Static,
     TabbedContent,
     TabPane,
 )
+from textual.widgets.option_list import Option
 
+from tui import commands
+from tui.commands import Command
 from tui.controller import (
     DEFAULT_STOP_TIMEOUT,
     CampaignController,
@@ -59,6 +63,17 @@ from tui.process import LauncherMachinery
 from tui.report import REPORT_CSS, CampaignPanel, CampaignSources
 
 HELPER_SHUTDOWN_GRACE_SECONDS = 15.0
+# After Ctrl+Q, a campaign that has not stopped by then is put to the operator.
+STOP_PROMPT_SECONDS = 30.0
+# What "keep waiting" adds before the prompt comes back.
+STOP_WAIT_MORE_SECONDS = 60.0
+# How long a command's result replaces the key hints on the info line.
+FEEDBACK_SECONDS = 8.0
+KEY_HINTS = (
+    "/ commands · Alt+Q leave running · Ctrl+Q stop & exit · F1 help · "
+    "F2 settings · Tab campaign"
+)
+PANEL_HINTS = "Enter run · Tab complete · Up/Down choose · Esc close"
 
 # Colour of the dot in front of each campaign tab label. State colours come
 # from the theme; phase colours are fixed (dark, light) because the theme has
@@ -167,27 +182,36 @@ class CommandInputs:
         )
 
 
-HELP_TEXT = (
-    "Start / resume (preserves work): start 1\n"
-    "Fresh reset and start (destructive): run 1\n"
-    "Stop cooperatively: stop 1 | stop all\n"
-    "Reset without starting (destructive): reset 1\n\n"
-    "Numbers select one campaign: start 2 starts only campaign-2.\n"
-    "Ranges are inclusive: start 1-2 | start 2-3 | run 1-3.\n"
-    "Explicit folders also work: start campaign-1 campaign-3.\n"
-    "Without a target, start/run/reset/stop selects the active campaign tab.\n"
-    "Reset/run may delete measurements and logs. There is no reset backup.\n\n"
-    "F2 Settings: shared launch parameters and Fresh/Baseline reset options.\n"
-    "Empty launch fields use launcher defaults, including high reasoning,\n"
-    "120000 timesteps, 360000 max timesteps, 15 inquiries and 180s stop timeout.\n"
-    "Model/provider remain launcher-selected unless explicitly supplied.\n"
-    "models: list available models | diagnostics: this campaign's console logs | help: this text\n\n"
-    "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L show/hide commands\n"
-    "Tab / Shift+Tab: next/previous campaign; move focus inside dialogs\n"
-    "Ctrl+Tab: next campaign if the terminal passes it through\n"
-    "F6 / Shift+F6: move focus between report controls | Ctrl+C: copy only\n"
-    "Ctrl+Q: stop all owned campaigns and exit"
-)
+def help_text() -> str:
+    """The help screen: the commands from the registry, then the keys."""
+    return (
+        "Press / to open the command list: type to filter, Up/Down to choose,\n"
+        "Tab to complete, Enter to run, Esc to close.\n\n"
+        + "\n".join(commands.help_lines())
+        + "\n\n"
+        "Numbers select one campaign: start 2 starts only campaign-2.\n"
+        "Ranges are inclusive: start 1-2 | start 2-3 | run 1-3.\n"
+        "Explicit folders also work: start campaign-1 campaign-3.\n"
+        "Without a target, a campaign command acts on the active campaign tab.\n"
+        "run and reset may delete measurements and logs. There is no reset backup.\n"
+        "kill ends the launcher of a campaign any console started (stop is the "
+        "clean way).\n\n"
+        "F2 Settings: shared launch parameters and Fresh/Baseline reset options.\n"
+        "Empty launch fields use launcher defaults, including high reasoning,\n"
+        "120000 timesteps, 360000 max timesteps, 15 inquiries and 180s stop timeout.\n"
+        "Model/provider remain launcher-selected unless explicitly supplied.\n\n"
+        "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L open the commands\n"
+        "Ctrl+F search the log | f filter | r raw event | End follow live\n"
+        "Tab / Shift+Tab: next/previous campaign; move focus inside dialogs\n"
+        "Ctrl+Tab: next campaign if the terminal passes it through\n"
+        "F6 / Shift+F6: move focus between report controls | Ctrl+C: copy only\n"
+        "Alt+Q (or /quit): leave the console; the campaigns keep running\n"
+        "Ctrl+Q (or /quit stop): stop all owned campaigns and exit. A campaign that\n"
+        "has not stopped after 30 s is offered a kill, or is left running."
+    )
+
+
+HELP_TEXT = help_text()
 
 
 class SharedSettings(ModalScreen[dict | None]):
@@ -361,6 +385,54 @@ class ConsoleDetail(ModalScreen):
             yield Static("Esc: close")
 
 
+class StopPrompt(ModalScreen[str]):
+    """Ctrl+Q asked campaigns to stop and some did not: kill, leave or wait."""
+
+    BINDINGS: ClassVar[list] = [
+        ("k", "choose('kill')", "Kill"),
+        ("l", "choose('leave')", "Leave"),
+        ("w", "choose('wait')", "Wait"),
+        ("escape", "choose('wait')", "Wait"),
+    ]
+    CSS = """
+    StopPrompt { align: center middle; background: $background 65%; }
+    #stop-prompt { width: 80; max-width: 95%; height: auto; padding: 1 2; background: $surface; }
+    #stop-prompt-title { text-style: bold; color: $warning; }
+    #stop-prompt-actions { height: 3; margin-top: 1; }
+    #stop-prompt-actions Button { margin-right: 1; }
+    """
+
+    def __init__(self, labels: list[str], seconds: float) -> None:
+        super().__init__()
+        self._labels = labels
+        self._seconds = seconds
+
+    def compose(self) -> ComposeResult:
+        names = ", ".join(self._labels)
+        with Vertical(id="stop-prompt"):
+            yield Static(f"{names} did not stop", id="stop-prompt-title")
+            yield Static(
+                f"The stop request was sent {self._seconds:.0f} s ago and the "
+                "launcher is still running.\n"
+                "k  kill it now (ends the launcher and everything it started)\n"
+                "l  leave it running and exit the console\n"
+                "w  keep waiting",
+                markup=False,
+            )
+            with Horizontal(id="stop-prompt-actions"):
+                yield Button("Kill now (k)", variant="error", id="stop-kill")
+                yield Button("Leave running (l)", id="stop-leave")
+                yield Button("Keep waiting (w)", variant="primary", id="stop-wait")
+
+    def action_choose(self, choice: str) -> None:
+        self.dismiss(choice)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.dismiss(
+            {"stop-kill": "kill", "stop-leave": "leave"}.get(event.button.id, "wait")
+        )
+
+
 class CampaignConsole(App):
     """Command console for up to five standard campaign folders."""
 
@@ -368,6 +440,7 @@ class CampaignConsole(App):
 
     BINDINGS: ClassVar[list] = [
         Binding("ctrl+q", "shutdown_all", "Stop & exit", priority=True),
+        Binding("alt+q", "detach", "Leave running", priority=True),
         Binding("ctrl+l", "command", "Commands", priority=True),
         Binding("f1", "help", "Help", priority=True),
         Binding("f2", "settings", "Settings", priority=True),
@@ -380,35 +453,34 @@ class CampaignConsole(App):
         Binding("f6", "focus_next", "Focus next control", show=False),
         Binding("shift+f6", "focus_previous", "Focus previous control", show=False),
         Binding("ctrl+c", "copy_selection", "Copy", priority=True, show=False),
-        Binding("/", "search_log", "Search events", show=False),
+        Binding("slash", "open_commands", "Commands", show=False),
+        Binding("ctrl+f", "search_log", "Search events", show=False),
         Binding("f", "filter_log", "Filter events", show=False),
         Binding("r", "raw_event", "Raw event", show=False),
         Binding("escape", "clear_log_filter", "Clear filter", show=False),
         Binding("end", "follow_log", "Follow live", show=False),
+        Binding("down", "command_next", "Next command", show=False),
+        Binding("up", "command_previous", "Previous command", show=False),
     ]
 
     CSS = (
         REPORT_CSS
         + """
     Screen { layout: vertical; overflow: hidden; }
-    #console-controls { dock: bottom; height: 5; }
-    #console-controls.collapsed { height: 1; }
-    #console-controls.collapsed #command-row,
-    #console-controls.collapsed #commands-summary { display: none; }
-    #command-row { height: 3; padding: 0 1; }
-    #command-label { width: 8; height: 3; content-align: left middle; text-style: bold; }
-    #commands-input { width: 1fr; min-width: 8; height: 3; border: solid $panel; }
-    #commands-input:focus { border: solid $accent; }
-    #command-row Button { min-width: 0; height: 3; margin-left: 1; border: none; padding: 1 0; }
-    #execute-command { width: 9; }
-    #show-settings { width: 10; }
+    #console-controls { dock: bottom; height: auto; }
+    #command-panel { display: none; height: auto; max-height: 12; padding: 0 1; background: $boost; }
+    #command-panel.open { display: block; }
+    #command-prompt { height: 1; }
+    #command-slash { width: 2; color: $accent; text-style: bold; }
+    #commands-input { width: 1fr; min-width: 8; height: 1; border: none; padding: 0; background: $boost; }
+    #commands-input:focus { border: none; }
+    #command-list { height: auto; max-height: 10; border: none; padding: 0; background: $boost; }
     #commands-summary { height: 1; padding: 0 1; color: $text-muted; }
     #commands-floor { display: none; height: 1fr; content-align: center middle; }
     #empty-campaigns { display: none; height: 1fr; padding: 1 2; }
     TabbedContent { height: 1fr; min-height: 0; }
     TabbedContent > ContentSwitcher { height: 1fr; }
     TabPane { height: 100%; padding: 0; }
-    #console-controls Footer { dock: none; height: 1; background: $surface; }
     """
     )
 
@@ -437,12 +509,17 @@ class CampaignConsole(App):
         self._command_running = False
         self._shutting_down = False
         self._shutdown_complete = False
+        self._detached: list[str] = []
         self._status_refreshing = False
         self._command_history: list[str] = []
         self._feedback = ""
+        self._feedback_at = 0.0
         self._summary = ""
         self._tab_tags: dict[str, tuple] = {}
         self._pulse_on = True
+        self._panel_open = False
+        self._listed: list[Command] = []
+        self._return_focus = None
 
     # ------------------------------------------------------------------
     # Composition
@@ -451,16 +528,12 @@ class CampaignConsole(App):
     def compose(self) -> ComposeResult:
         # Docked controls reserve real rows; the report cannot push them off-screen.
         with Vertical(id="console-controls"):
+            with Vertical(id="command-panel"):
+                with Horizontal(id="command-prompt"):
+                    yield Static("/", id="command-slash")
+                    yield Input(placeholder="type a command", id="commands-input")
+                yield OptionList(id="command-list")
             yield Static("", id="commands-summary", markup=False)
-            with Horizontal(id="command-row"):
-                yield Static("Command", id="command-label")
-                yield Input(
-                    placeholder="start (resume) | run (fresh) | stop | reset | models | diagnostics | help",
-                    id="commands-input",
-                )
-                yield Button("Execute", variant="primary", id="execute-command")
-                yield Button("Settings", id="show-settings")
-            yield Footer(show_command_palette=False)
         installed = self._layout.installed()
         with TabbedContent(initial=installed[0] if installed else ""):
             for slot in range(1, 6):
@@ -471,11 +544,12 @@ class CampaignConsole(App):
                     yield CampaignPanel(
                         sources=CampaignSources(campaign_root=folder),
                         campaign_root=folder,
+                        show_hints=False,
                         id=f"panel-campaign-{slot}",
                     )
         yield Static("Terminal too small - need 48x16", id="commands-floor")
         yield Static(
-            "No campaign folders are installed.\nUse run 1 to initialize, reset and start campaign-1 from an existing recipe source.\nF2: shared settings | F1: command help. Nothing runs automatically.",
+            "No campaign folders are installed.\nUse /run 1 to initialize, reset and start campaign-1 from an existing recipe source.\nPress / for commands, F2 for settings. Nothing runs automatically.",
             id="empty-campaigns",
         )
 
@@ -485,8 +559,8 @@ class CampaignConsole(App):
         for label in self._layout.installed():
             self._controller.state(label)
         self._refresh_status_now()
-        self.query_one("#commands-input", Input).focus()
         self._update_campaign_visibility()
+        self._focus_campaign()
 
     # ------------------------------------------------------------------
     # Console log
@@ -497,6 +571,7 @@ class CampaignConsole(App):
         del self._command_history[:-100]
         lines = message.splitlines()
         self._feedback = " ".join(lines[:2])
+        self._feedback_at = time.monotonic()
         self._refresh_status_now()
 
     async def _refresh_status(self) -> None:
@@ -525,30 +600,138 @@ class CampaignConsole(App):
     def on_input_submitted(self, event: Input.Submitted) -> None:
         if event.input.id != "commands-input":
             return  # panel-local search inputs handle themselves
-        text = event.value.strip()
+        event.stop()
+        text = self._panel_text(event.value)
+        command = commands.find(text.split()[0]) if text else None
+        exact = command is not None
+        listed = self._listed
+        if not exact:
+            # Nothing typed, or a part of a name: take the highlighted command.
+            chosen = self._highlighted_command() if listed else None
+            if chosen is None:
+                self._close_commands()
+                self.submit_command(text)
+                return
+            if chosen.takes_argument:
+                self.query_one("#commands-input", Input).value = chosen.name + " "
+                return
+            text = chosen.name
+        self._close_commands()
         self.submit_command(text)
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "execute-command":
-            self.submit_command(self.query_one("#commands-input", Input).value.strip())
-        elif event.button.id == "show-settings":
-            self.action_settings()
+    @staticmethod
+    def _panel_text(value: str) -> str:
+        return value.strip().lstrip("/").strip()
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "commands-input" and self.is_mounted:
+            self._fill_command_list(event.value)
             self._refresh_status_now()
-            self._update_execute_state()
 
-    def _update_execute_state(self) -> None:
-        try:
-            verb, _ = parse_command(self.query_one("#commands-input", Input).value)
-        except CommandError:
-            verb = None
-        self.query_one("#execute-command", Button).disabled = self._shutting_down or (
-            self._command_running and verb != "stop"
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        if event.option_list.id != "command-list":
+            return
+        event.stop()
+        chosen = self._listed[event.option_index]
+        if chosen.takes_argument:
+            field = self.query_one("#commands-input", Input)
+            field.value = chosen.name + " "
+            field.focus()
+            field.cursor_position = len(field.value)
+            return
+        self._close_commands()
+        self.submit_command(chosen.name)
+
+    # ------------------------------------------------------------------
+    # The command panel
+    # ------------------------------------------------------------------
+
+    def check_action(self, action: str, parameters: tuple) -> bool | None:
+        """The panel's arrow keys exist only while it is open, so the log keeps its own."""
+        if action in {"command_next", "command_previous"}:
+            return self._panel_open
+        return True
+
+    def action_open_commands(self, text: str = "") -> None:
+        """``/`` and Ctrl+L: open the panel, ready to type a command."""
+        if isinstance(self.screen, ModalScreen) or self._shutting_down:
+            return
+        if not self._panel_open:
+            self._return_focus = self.focused
+        self._panel_open = True
+        self.query_one("#command-panel").add_class("open")
+        field = self.query_one("#commands-input", Input)
+        field.value = text
+        self._fill_command_list(text)
+        field.focus()
+        field.cursor_position = len(text)
+        self._refresh_status_now()
+
+    def _close_commands(self) -> None:
+        if not self._panel_open:
+            return
+        self._panel_open = False
+        self.query_one("#command-panel").remove_class("open")
+        self.query_one("#commands-input", Input).value = ""
+        self._listed = []
+        previous, self._return_focus = self._return_focus, None
+        if previous is not None and previous.is_attached and previous.display:
+            previous.focus()
+        else:
+            self._focus_campaign()
+        self._refresh_status_now()
+
+    def _fill_command_list(self, value: str) -> None:
+        text = self._panel_text(value)
+        word = text.split()[0] if text else ""
+        if " " in text.strip():
+            command = commands.find(word)
+            self._listed = [command] if command is not None else []
+        else:
+            self._listed = commands.matching(word)
+        options = self.query_one("#command-list", OptionList)
+        options.clear_options()
+        width = max((len(c.name) for c in commands.COMMANDS), default=8)
+        options.add_options(
+            [
+                Option(
+                    Text.assemble(
+                        (f"/{c.name:<{width}}", "bold"),
+                        (f" {c.argument:<9}" if c.argument else " " * 10, "dim"),
+                        f" {c.summary}",
+                    ),
+                    id=c.name,
+                )
+                for c in self._listed
+            ]
         )
+        if self._listed:
+            options.highlighted = 0
+
+    def _highlighted_command(self) -> Command | None:
+        index = self.query_one("#command-list", OptionList).highlighted
+        if index is None or not 0 <= index < len(self._listed):
+            return None
+        return self._listed[index]
+
+    def action_command_next(self) -> None:
+        self.query_one("#command-list", OptionList).action_cursor_down()
+
+    def action_command_previous(self) -> None:
+        self.query_one("#command-list", OptionList).action_cursor_up()
+
+    def _complete_command(self) -> bool:
+        """Tab inside the panel: fill in the highlighted command."""
+        chosen = self._highlighted_command()
+        if chosen is None:
+            return False
+        field = self.query_one("#commands-input", Input)
+        field.value = chosen.name + " "
+        field.cursor_position = len(field.value)
+        return True
 
     def submit_command(self, text: str) -> None:
+        text = self._panel_text(text)
         if not text:
             return
         if self._shutting_down:
@@ -559,11 +742,37 @@ class CampaignConsole(App):
         except CommandError as error:
             self._log(f"> {text}\nerror: {error}")
             return
-        if self._command_running and verb != "stop":
-            self._log("> " + text + "\nrefused: a previous command is still running")
-            return
+        if self._command_running and verb not in {"stop", "kill"}:
+            if verb in {"help", "settings", "history", "search", "filter"}:
+                pass  # they only open a view
+            else:
+                self._log(
+                    "> " + text + "\nrefused: a previous command is still running"
+                )
+                return
+        argument = text.split(None, 1)[1].strip() if " " in text else ""
         if verb == "help":
             self.action_help()
+            return
+        if verb == "settings":
+            self.action_settings()
+            return
+        if verb == "history":
+            self.action_command_history()
+            return
+        if verb == "search":
+            self.action_search_log()
+            return
+        if verb == "filter":
+            self.action_filter_log()
+            return
+        if verb == "quit":
+            if argument.lower() == "stop":
+                self.action_shutdown_all()
+            elif argument:
+                self._log(f"> {text}\nerror: quit takes no argument, or stop.")
+            else:
+                self.action_detach()
             return
         active = self.query_one(TabbedContent).active
         if not slots and active:
@@ -588,9 +797,16 @@ class CampaignConsole(App):
                     if step.detail:
                         message += "\n  " + step.target + ": " + step.detail
                 self._log(message)
-                self.query_one("#commands-input", Input).value = ""
             except (OSError, RuntimeError, ValueError) as error:
                 self._log(f"> {text}\nstop failed: {error}")
+            return
+        if verb == "kill":
+            threading.Thread(
+                target=self._kill_worker,
+                args=(slots, text),
+                daemon=True,
+                name="console-kill",
+            ).start()
             return
         try:
             settings = (
@@ -629,8 +845,6 @@ class CampaignConsole(App):
                 + "\nDestructive reset: measurements/logs may be deleted; no reset backup."
             )
         self._command_running = True
-        self.query_one("#commands-input", Input).value = ""
-        self._update_execute_state()
         self._command_thread = threading.Thread(
             target=self._execute_batch,
             args=(verb, slots, settings, reset, text),
@@ -638,6 +852,21 @@ class CampaignConsole(App):
             name=f"console-command-{verb}",
         )
         self._command_thread.start()
+
+    def _kill_worker(self, slots: list[int], text: str) -> None:
+        """End campaigns off the UI thread: a kill waits for the process tree."""
+        try:
+            outcome = self._controller.execute("kill", slots, settings=LaunchSettings())
+            message = "> " + text + "\n" + outcome.summary()
+            for step in outcome.steps:
+                if step.detail:
+                    message += "\n  " + step.target + ": " + step.detail
+        except Exception as error:  # noqa: BLE001 - every refusal reaches the log
+            message = f"> {text}\nkill failed: {error}"
+        try:
+            self.call_from_thread(self._log, message)
+        except RuntimeError:
+            pass  # the console closed first
 
     def _execute_batch(
         self,
@@ -702,38 +931,41 @@ class CampaignConsole(App):
             elif target.stage in {"stopped", "failed", "completed", "idle"}:
                 panel.set_process_running(False)
         self._refresh_tab_tags()
-        command = self.query_one("#commands-input", Input)
-        active = self.query_one(TabbedContent).active
-        command.border_title = active or "Explicit target required"
-        if command.value.strip():
-            try:
-                verb, slots = parse_command(command.value)
-                if not slots and active:
-                    slots = [self._layout.slot_for(active)]
-                targets = ", ".join(f"campaign-{slot}" for slot in slots)
-                if verb in {"run", "reset"} and targets:
-                    reset = self._settings_reader.reset_config()
-                    action = "reset + start" if verb == "run" else "reset only"
-                    self._log_updatable(
-                        f"DESTRUCTIVE {action} (no backup): {targets} | {reset.mode}"
-                    )
-                    return
-                if verb in {"start", "stop"} and targets:
-                    action = (
-                        "Start/resume (preserve work)"
-                        if verb == "start"
-                        else "Cooperative stop"
-                    )
-                    self._log_updatable(f"{action}: {targets}")
-                    return
-            except CommandError:
-                pass  # Do not flash validation errors while a command is incomplete.
+        if self._panel_open:
+            preview = self._command_preview(
+                self.query_one("#commands-input", Input).value
+            )
+            self._log_updatable(preview or PANEL_HINTS)
+            return
         status = self._status_line()
-        self._log_updatable(
-            status
-            + " | "
-            + (self._feedback or "start resumes; run resets + starts; F1 help")
+        fresh = (
+            self._feedback and time.monotonic() - self._feedback_at < FEEDBACK_SECONDS
         )
+        self._log_updatable(
+            f"{status} | {self._feedback}" if fresh else f"{status} · {KEY_HINTS}"
+        )
+
+    def _command_preview(self, value: str) -> str:
+        """What the command being typed would do, before it is run."""
+        text = self._panel_text(value)
+        if not text:
+            return ""
+        try:
+            verb, slots = parse_command(text)
+        except CommandError:
+            return ""  # do not flash validation errors while a command is incomplete
+        active = self.query_one(TabbedContent).active
+        if not slots and active:
+            slots = [self._layout.slot_for(active)]
+        targets = ", ".join(f"campaign-{slot}" for slot in slots)
+        command = commands.find(verb)
+        if command is None or not command.campaign or not targets:
+            return command.summary if command is not None else ""
+        if verb in {"run", "reset"}:
+            reset = self._settings_reader.reset_config()
+            action = "reset + start" if verb == "run" else "reset only"
+            return f"DESTRUCTIVE {action} (no backup): {targets} | {reset.mode}"
+        return f"{command.summary}: {targets}"
 
     def _tag_colour(self, tag: str) -> str:
         pair = TAB_PHASE_COLOURS.get(tag)
@@ -840,6 +1072,7 @@ class CampaignConsole(App):
                         CampaignPanel(
                             sources=CampaignSources(campaign_root=folder),
                             campaign_root=folder,
+                            show_hints=False,
                             id=f"panel-{label}",
                         ),
                         id=label,
@@ -847,11 +1080,10 @@ class CampaignConsole(App):
                 )
         self._command_running = False
         self._command_thread = None
-        self._update_execute_state()
         self._update_campaign_visibility()
 
     def action_help(self) -> None:
-        self.push_screen(ConsoleDetail("Campaign commands", HELP_TEXT))
+        self.push_screen(ConsoleDetail("Campaign commands", help_text()))
 
     def action_settings(self) -> None:
         if not isinstance(self.screen, SharedSettings):
@@ -865,10 +1097,10 @@ class CampaignConsole(App):
             self._log(
                 "Shared settings updated for future commands. Active runs are unchanged."
             )
-        if self.query_one("#console-controls").has_class("collapsed"):
-            self._focus_campaign()
-        else:
+        if self._panel_open:
             self.query_one("#commands-input", Input).focus()
+        else:
+            self._focus_campaign()
 
     def action_command_history(self) -> None:
         self.push_screen(
@@ -915,15 +1147,13 @@ class CampaignConsole(App):
             self.copy_to_clipboard(text)
 
     def action_command(self) -> None:
-        """Ctrl+L toggles the command area without discarding its draft."""
+        """Ctrl+L opens the command panel, or closes it when it is open."""
         if isinstance(self.screen, ModalScreen):
             return
-        controls = self.query_one("#console-controls")
-        controls.toggle_class("collapsed")
-        if controls.has_class("collapsed"):
-            self._focus_campaign()
+        if self._panel_open:
+            self._close_commands()
         else:
-            self.query_one("#commands-input", Input).focus()
+            self.action_open_commands()
 
     def _focus_campaign(self) -> None:
         if isinstance(self.screen, ModalScreen):
@@ -946,6 +1176,9 @@ class CampaignConsole(App):
         self._panel_action("action_raw_event")
 
     def action_clear_log_filter(self) -> None:
+        if self._panel_open:
+            self._close_commands()
+            return
         self._panel_action("action_clear_log_filter")
 
     def action_follow_log(self) -> None:
@@ -985,13 +1218,15 @@ class CampaignConsole(App):
     def action_next_tab(self) -> None:
         if isinstance(self.screen, ModalScreen):
             self.action_focus_next()
+        elif self._panel_open:
+            self._complete_command()
         else:
             self._cycle_campaign(1)
 
     def action_previous_tab(self) -> None:
         if isinstance(self.screen, ModalScreen):
             self.action_focus_previous()
-        else:
+        elif not self._panel_open:
             self._cycle_campaign(-1)
 
     def _cycle_campaign(self, direction: int) -> None:
@@ -1005,31 +1240,33 @@ class CampaignConsole(App):
             tabs.active = panes[0]
             return
         index = (panes.index(tabs.active) + direction) % len(panes)
-        controls = self.query_one("#console-controls")
-        focus_report = controls.has_class(
-            "collapsed"
-        ) or self.focused not in controls.query("*")
-        if focus_report:
-            self.screen.set_focus(None)
+        self.screen.set_focus(None)
         tabs.active = panes[index]
-        if focus_report:
-            self.call_after_refresh(self._focus_campaign)
+        self.call_after_refresh(self._focus_campaign)
 
     # ------------------------------------------------------------------
     # Shutdown
     # ------------------------------------------------------------------
 
     def action_shutdown_all(self) -> None:
-        """Ctrl+Q: stop every owned campaign, wait, then exit."""
+        """Ctrl+Q: ask every owned campaign to stop, then exit.
+
+        A campaign that has not stopped after ``STOP_PROMPT_SECONDS`` is put to the
+        operator: kill it, leave it running, or keep waiting. Nothing is killed
+        unless the operator says so.
+        """
         if self._shutting_down:
             return
         self._shutting_down = True
+        if self._panel_open:
+            self._close_commands()
         controller = self._controller
         controller.latch_shutdown()
         self._log("Shutting down: stop requests sent to all owned campaigns...")
 
         def job() -> None:
             cleanup_failed = False
+            left_running = False
             try:
                 thread = self._command_thread
                 if thread is not None:
@@ -1043,37 +1280,26 @@ class CampaignConsole(App):
                                 self._log, f"Helper cleanup failed: {error}"
                             )
                         thread.join(5)
-                busy = [
-                    state.label
-                    for state in controller.folder_states()
-                    if state.child is not None
-                ]
-
-                def settle(label):
-                    state = controller.state(label)
-                    remaining = max(
-                        0.0,
-                        (state.stop_started or time.monotonic())
-                        + state.stop_timeout
-                        + 5
-                        - time.monotonic(),
-                    )
-                    return controller.settle(label, remaining)
-
-                if busy:
-                    with ThreadPoolExecutor(max_workers=len(busy)) as pool:
-                        for future in [pool.submit(settle, label) for label in busy]:
-                            try:
-                                future.result()
-                            except (OSError, RuntimeError) as error:
-                                cleanup_failed = True
-                                self.call_from_thread(
-                                    self._log, f"Campaign cleanup failed: {error}"
-                                )
-                # A missed cooperative deadline must never survive the console.
-                controller.force_all(timeout=15.0)
+                stuck = self._wait_for_stop(
+                    [
+                        state.label
+                        for state in controller.folder_states()
+                        if state.child is not None
+                    ],
+                    STOP_PROMPT_SECONDS,
+                )
+                while stuck:
+                    choice = self._ask_after_stop(stuck)
+                    if choice == "kill":
+                        controller.force_all(timeout=15.0)
+                        break
+                    if choice == "leave":
+                        self._detached = controller.detach_all()
+                        left_running = True
+                        break
+                    stuck = self._wait_for_stop(stuck, STOP_WAIT_MORE_SECONDS)
                 controller.reap_all()
-                self._shutdown_complete = not cleanup_failed
+                self._shutdown_complete = not cleanup_failed or left_running
             except (OSError, RuntimeError) as error:
                 self.call_from_thread(self._log, f"Shutdown cleanup failed: {error}")
             finally:
@@ -1083,6 +1309,63 @@ class CampaignConsole(App):
                     pass
 
         threading.Thread(target=job, daemon=True, name="console-shutdown").start()
+
+    def _wait_for_stop(self, labels: list[str], seconds: float) -> list[str]:
+        """Wait for stopping campaigns together; return those still running."""
+        if not labels:
+            return []
+        with ThreadPoolExecutor(max_workers=len(labels)) as pool:
+            futures = {
+                label: pool.submit(self._controller.wait_stopped, label, seconds)
+                for label in labels
+            }
+        still_running = []
+        for label, future in futures.items():
+            try:
+                stopped = future.result()
+            except (OSError, RuntimeError) as error:
+                self.call_from_thread(
+                    self._log, f"Campaign cleanup failed: {label}: {error}"
+                )
+                continue
+            if not stopped:
+                still_running.append(label)
+        return still_running
+
+    def _ask_after_stop(self, labels: list[str]) -> str:
+        """Put stuck campaigns to the operator; block this worker for the answer."""
+        answer: dict[str, str] = {}
+        answered = threading.Event()
+
+        def done(choice: str | None) -> None:
+            answer["choice"] = choice or "wait"
+            answered.set()
+
+        self.call_from_thread(
+            self.push_screen, StopPrompt(labels, STOP_PROMPT_SECONDS), done
+        )
+        answered.wait()
+        return answer["choice"]
+
+    def action_detach(self) -> None:
+        """Alt+Q and /quit: leave the console, the campaigns keep running."""
+        if self._shutting_down:
+            return
+        if self._command_running:
+            self._log("quit refused: a reset or start is still running")
+            return
+        if self._panel_open:
+            self._close_commands()
+        self._shutting_down = True
+        try:
+            self._detached = self._controller.detach_all()
+        except (OSError, RuntimeError) as error:
+            self._shutting_down = False
+            self._log(f"quit failed: {error}")
+            return
+        # Nothing is left for the exit path to stop.
+        self._shutdown_complete = True
+        self.exit()
 
     def action_quit(self) -> None:
         self.action_shutdown_all()
@@ -1121,6 +1404,13 @@ def run_console(light: bool = False) -> int:
                         app._controller.force_all()
         finally:
             lock.release()
+    if "app" in locals() and app._detached:
+        print(
+            "Left running without this console: "
+            + ", ".join(app._detached)
+            + ". Open the console again to watch them, /stop to stop them, "
+            "/kill to end them."
+        )
     return 0
 
 

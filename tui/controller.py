@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Protocol
 
 from runner.paths import reset_marker_path, stop_request_path
+from tui import commands
 
 DEFAULT_RECIPE_REF = "baseline-distinct-episodes-v3-robot"
 DEFAULT_STOP_TIMEOUT = 180
@@ -195,7 +196,7 @@ class BatchOutcome:
         )
 
 
-COMMANDS = ("run", "start", "reset", "stop", "kill", "help", "models", "diagnostics")
+COMMANDS = commands.NAMES
 
 
 def _unknown_command_message(word: str) -> str:
@@ -208,16 +209,22 @@ def _unknown_command_message(word: str) -> str:
 def parse_command(text: str) -> tuple[str, list[int]]:
     """Parse one command line into ``(verb, slots)``.
 
-    A bare number selects that campaign; ``1-3`` selects an inclusive range.
-    ``campaign-k`` tokens also select explicit folders. Campaign actions without a target are allowed only
-    inside a campaign tab, where the caller supplies that campaign.
+    A leading ``/`` is allowed. A bare number selects that campaign; ``1-3``
+    selects an inclusive range. ``campaign-k`` tokens also select explicit
+    folders. Campaign actions without a target are allowed only inside a campaign
+    tab, where the caller supplies that campaign. A command that is not about
+    campaigns (``settings``, ``search``, ``quit`` ...) keeps its words for the
+    caller and selects none.
     """
-    tokens = text.strip().split()
+    tokens = text.strip().lstrip("/").split()
     if not tokens:
         raise CommandError("Empty command.")
     verb = tokens[0].lower()
-    if verb not in COMMANDS:
+    command = commands.find(verb)
+    if command is None:
         raise CommandError(_unknown_command_message(tokens[0]))
+    if not command.campaign:
+        return verb, []
     if len(tokens) == 1:
         return verb, []
     selection = tokens[1:]

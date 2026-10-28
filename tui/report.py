@@ -471,10 +471,13 @@ class CampaignPanel(Widget):
         events_path: Path | None = None,
         demo: bool = False,
         campaign_root: Path | None = None,
+        show_hints: bool = True,
         id: str | None = None,
     ) -> None:
         super().__init__(id=id)
         self._demo = demo
+        # The console shows its own keys on one line; it hides this row.
+        self._show_hints = show_hints
         self._campaign_root = Path(campaign_root) if campaign_root else None
         if self._campaign_root is None and not demo:
             from runner import paths
@@ -1212,7 +1215,11 @@ class CampaignPanel(Widget):
         height = self._view_size.height
         reserved = self._context_rows + 1
         if not self._output_hidden:
-            reserved += 2 + self._now_rows + (1 if self._search_visible else 0)
+            reserved += (
+                (2 if self._show_hints else 1)
+                + self._now_rows
+                + (1 if self._search_visible else 0)
+            )
         reserved += self._progress_rows + self._training_rows
         output_min = 0 if self._output_hidden else self._output_min_rows()
         return max(1, min(20, height - reserved - output_min))
@@ -1699,7 +1706,7 @@ class CampaignPanel(Widget):
             event.stop()
 
     def _render_reading(self) -> None:
-        if self._output_hidden:
+        if self._output_hidden or not self._show_hints:
             return
         widget = self.query_one("#reading", Static)
         out = self._output()
@@ -1778,7 +1785,7 @@ class CampaignPanel(Widget):
         self.query_one("#log-search", Input).display = (
             not compact and self._search_visible
         )
-        self.query_one("#reading", Static).display = not compact
+        self.query_one("#reading", Static).display = not compact and self._show_hints
         self._now_rows = 0 if compact else 1
         if compact and self.app.focused is output:
             self.query_one("#models", DataTable).focus()

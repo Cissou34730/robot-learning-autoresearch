@@ -56,6 +56,22 @@ def _clean(machinery) -> None:
     machinery.wait_exit_code = 130
 
 
+async def _type(pilot, text: str) -> None:
+    await pilot.press(*("space" if char == " " else char for char in text))
+
+
+async def _run_from_panel(app, pilot, text: str) -> None:
+    """Run a command the way the operator does: ``/``, type, Enter."""
+    await pilot.press("slash")
+    await _type(pilot, text)
+    await pilot.press("enter")
+    for _ in range(100):
+        await pilot.pause()
+        if not app._command_running:
+            break
+    await pilot.pause()
+
+
 async def _run_batch(app, pilot, text: str) -> None:
     app.submit_command(text)
     for _ in range(100):
@@ -65,7 +81,7 @@ async def _run_batch(app, pilot, text: str) -> None:
     await pilot.pause()
 
 
-def test_console_opens_first_campaign_with_report_and_visible_command_composer(
+def test_console_opens_first_campaign_with_report_and_one_info_line(
     tmp_path,
 ):
     from tests.autoresearch.test_campaign_controller import FakeMachinery
@@ -394,8 +410,6 @@ def test_the_tab_shows_the_final_benchmark_outcome_once_the_campaign_stopped(tmp
 
 
 def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
-    from textual.widgets import Button, Input
-
     from tests.autoresearch.test_campaign_controller import FakeMachinery
 
     machinery = FakeMachinery()
@@ -416,10 +430,9 @@ def test_stop_is_not_queued_behind_an_unrelated_reset(tmp_path):
             try:
                 assert await asyncio.to_thread(entered.wait, 5)
                 worker = app._command_thread
-                app.query_one("#commands-input", Input).value = "stop 1"
-                await pilot.pause()
-                assert not app.query_one("#execute-command", Button).disabled
-                await pilot.click("#execute-command")
+                await pilot.press("slash")
+                await _type(pilot, "stop 1")
+                await pilot.press("enter")
                 await pilot.pause()
                 assert next(iter(machinery.children.values())).stop_requests == 1
                 assert app._command_thread is worker
@@ -562,8 +575,8 @@ def test_console_ctrl_q_stops_everything_then_exits(tmp_path):
 
 
 @pytest.mark.parametrize("size", [(160, 45), (178, 33), (80, 24), (60, 24), (48, 16)])
-def test_compact_console_contextual_command_and_copy_only(tmp_path, size):
-    from textual.widgets import Footer, Input, TabbedContent
+def test_compact_console_one_info_line_and_copy_only(tmp_path, size):
+    from textual.widgets import Input, TabbedContent
 
     from tests.autoresearch.test_campaign_controller import FakeMachinery
 
@@ -574,21 +587,19 @@ def test_compact_console_contextual_command_and_copy_only(tmp_path, size):
         async with app.run_test(size=size) as pilot:
             await pilot.pause()
             assert not machinery.started
+            summary = app.query_one("#commands-summary")
+            assert summary.region.height == 1
+            assert summary.region.bottom == size[1]
+            assert app.query_one("#command-panel").region.height == 0
+            assert not app.query("#execute-command") and not app.query("#show-settings")
+            await pilot.press("slash")
+            await pilot.pause()
             command = app.query_one("#commands-input", Input)
             assert command.content_region.height >= 1
             assert command.content_region.width >= 8
-            assert command.region.bottom <= size[1]
-            assert command.region.y >= 0
-            summary = app.query_one("#commands-summary")
-            footer = app.query_one(Footer)
-            assert summary.region.bottom <= command.region.y
-            assert command.region.bottom <= footer.region.y
-            for selector in ("#execute-command", "#show-settings"):
-                button = app.query_one(selector)
-                assert button.region.height >= 1
-                assert 0 <= button.region.y < button.region.bottom <= size[1]
-                assert button.region.right <= size[0]
-            await pilot.press("tab")
+            assert 0 <= command.region.y and command.region.bottom <= summary.region.y
+            assert app.focused is command
+            await pilot.press("escape", "tab")
             assert app.query_one(TabbedContent).active == "campaign-2"
             await _run_batch(app, pilot, "start")
             assert machinery.started[0][0] == layout.folder(2)
@@ -685,7 +696,7 @@ def test_initialized_campaign_gets_one_real_tab(tmp_path):
     asyncio.run(scenario())
 
 
-def test_execute_button_submits_from_first_campaign_and_settings_cancel_is_read_only(
+def test_settings_cancel_is_read_only_and_a_command_uses_applied_settings(
     tmp_path,
 ):
     from textual.widgets import Input, TabbedContent
@@ -699,8 +710,7 @@ def test_execute_button_submits_from_first_campaign_and_settings_cancel_is_read_
         async with app.run_test(size=(80, 24)) as pilot:
             await pilot.pause()
             assert app.query_one(TabbedContent).active == "campaign-1"
-            await pilot.click("#show-settings")
-            await pilot.pause()
+            await _run_from_panel(app, pilot, "settings")
             app.screen.query_one("#cmd-model", Input).value = "must-not-apply"
             await pilot.press("escape")
             await pilot.pause()
@@ -712,12 +722,7 @@ def test_execute_button_submits_from_first_campaign_and_settings_cancel_is_read_
             await pilot.click("#settings-apply")
             await pilot.pause()
             assert machinery.started == []
-            app.query_one("#commands-input", Input).value = "start"
-            await pilot.click("#execute-command")
-            for _ in range(100):
-                await pilot.pause()
-                if not app._command_running:
-                    break
+            await _run_from_panel(app, pilot, "start")
             assert len(machinery.started) == 1
             assert machinery.started[0][0] == layout.folder(1)
             assert "must-not-apply" not in machinery.started[0][1]
@@ -741,17 +746,22 @@ def test_empty_console_has_no_fake_campaign_or_commands_tab(tmp_path):
             await pilot.pause()
             assert not list(app.query_one(TabbedContent).query("TabPane"))
             assert app.query_one("#empty-campaigns").display
-            assert app.query_one("#commands-input", Input).content_region.height >= 1
             assert not app._command_running
-            await pilot.press("ctrl+l", "ctrl+l")
+            await pilot.press("ctrl+l")
             await pilot.pause()
             assert app.focused is app.query_one("#commands-input", Input)
+            assert app.query_one("#command-panel").region.height > 1
+            await pilot.press("escape")
+            await pilot.pause()
+            assert app.query_one("#command-panel").region.height == 0
             assert not app._command_running
 
     asyncio.run(scenario())
 
 
-def test_tab_switches_campaigns_but_navigates_fields_inside_settings(tmp_path):
+def test_tab_switches_campaigns_completes_in_the_panel_and_navigates_settings(
+    tmp_path,
+):
     from textual.widgets import Input, TabbedContent
 
     from tests.autoresearch.test_campaign_controller import FakeMachinery
@@ -762,13 +772,10 @@ def test_tab_switches_campaigns_but_navigates_fields_inside_settings(tmp_path):
     async def scenario():
         async with app.run_test(size=(160, 45)) as pilot:
             tabs = app.query_one(TabbedContent)
-            command = app.query_one("#commands-input", Input)
-            command.value = "start 2"
             await pilot.press("tab")
             assert tabs.active == "campaign-2"
             await pilot.press("shift+tab")
             assert tabs.active == "campaign-1"
-            assert command.value == "start 2"
             app.query_one("#panel-campaign-1 #output").focus()
             await pilot.pause()
             await pilot.press("tab")
@@ -777,10 +784,14 @@ def test_tab_switches_campaigns_but_navigates_fields_inside_settings(tmp_path):
             await pilot.press("shift+tab")
             await pilot.pause()
             assert tabs.active == "campaign-1"
-            await pilot.press("ctrl+l", "tab")
+            # In the panel, Tab completes the highlighted command and keeps the tab.
+            await pilot.press("slash", "s", "t", "tab")
             await pilot.pause()
-            assert tabs.active == "campaign-2"
-            assert app.query_one("#console-controls").has_class("collapsed")
+            command = app.query_one("#commands-input", Input)
+            assert command.value == "start "
+            assert tabs.active == "campaign-1"
+            await pilot.press("escape")
+            await pilot.pause()
             await pilot.press("f2")
             await pilot.pause()
             settings = app.screen
@@ -788,22 +799,20 @@ def test_tab_switches_campaigns_but_navigates_fields_inside_settings(tmp_path):
             focused = app.focused
             await pilot.press("tab")
             assert app.screen is settings and app.focused is not focused
-            assert tabs.active == "campaign-2"
+            assert tabs.active == "campaign-1"
             await pilot.press("shift+tab")
             assert app.focused is focused
-            await pilot.press("escape", "shift+tab")
+            await pilot.press("escape", "tab")
             await pilot.pause()
-            assert tabs.active == "campaign-1"
+            assert tabs.active == "campaign-2"
             assert not machinery.started
 
     asyncio.run(scenario())
 
 
 @pytest.mark.parametrize("size", [(160, 45), (60, 24)])
-def test_ctrl_l_toggles_commands_preserves_draft_and_reclaims_report_space(
-    tmp_path, size
-):
-    from textual.widgets import Footer, Input, TabbedContent
+def test_the_command_panel_opens_closes_and_returns_the_space_and_focus(tmp_path, size):
+    from textual.widgets import Input
 
     from tests.autoresearch.test_campaign_controller import FakeMachinery
 
@@ -813,43 +822,26 @@ def test_ctrl_l_toggles_commands_preserves_draft_and_reclaims_report_space(
     async def scenario():
         async with app.run_test(size=size) as pilot:
             await pilot.pause()
-            command = app.query_one("#commands-input", Input)
-            command.value = "start campaign-2"
             panel = app.query_one("#panel-campaign-1", CampaignPanel)
-            expanded_height = panel.region.height
-            await pilot.press("ctrl+l")
+            closed_height = panel.region.height
+            before = app.focused
+            await pilot.press("slash")
             await pilot.pause()
-            assert app.query_one("#console-controls").has_class("collapsed")
-            assert app.query_one("#command-row").region.height == 0
-            assert app.query_one(Footer).region.height == 1
-            assert panel.region.height == expanded_height + 4
-            assert app.focused is not command
-            assert app.focused in list(panel.query("*"))
-
-            # A tab change or settings dialog must not reopen a hidden composer.
-            await pilot.press("ctrl+tab")
-            await pilot.pause()
-            assert app.query_one(TabbedContent).active == "campaign-2"
-            await pilot.press("f2")
-            await pilot.pause()
-            app.screen.query_one("#cmd-model", Input).value = "future-model"
-            await pilot.click("#settings-apply")
-            await pilot.pause()
-            assert app.query_one("#console-controls").has_class("collapsed")
-            assert app._settings_reader.settings().model == "future-model"
-            await pilot.press("f2", "escape")
-            await pilot.pause()
-            assert app.query_one("#console-controls").has_class("collapsed")
-
-            await pilot.press("ctrl+l")
-            await pilot.pause()
-            assert not app.query_one("#console-controls").has_class("collapsed")
+            command = app.query_one("#commands-input", Input)
             assert app.focused is command
-            assert command.value == "start campaign-2"
-            assert (
-                app.query_one("#panel-campaign-2", CampaignPanel).region.height
-                == expanded_height
-            )
+            assert panel.region.height < closed_height
+            # "/" typed inside the open panel is text, not a second open.
+            await pilot.press("slash")
+            assert command.value == "/"
+            await pilot.press("escape")
+            await pilot.pause()
+            assert app.query_one("#command-panel").region.height == 0
+            assert panel.region.height == closed_height
+            assert app.focused is before
+            assert command.value == ""
+            await pilot.press("ctrl+l", "ctrl+l")
+            await pilot.pause()
+            assert app.query_one("#command-panel").region.height == 0
             assert machinery.started == []
 
     asyncio.run(scenario())
@@ -883,3 +875,212 @@ def test_settings_remain_scrollable_with_visible_apply_and_cancel_at_the_floor(
             assert machinery.started == []
 
     asyncio.run(scenario())
+
+
+def test_the_list_filters_and_enter_completes_a_name_or_runs_a_command(tmp_path):
+    from textual.widgets import Input, OptionList
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            await pilot.press("slash")
+            options = app.query_one("#command-list", OptionList)
+            assert [c.name for c in app._listed][:2] == ["start", "run"]
+            await pilot.press("k", "i")
+            assert [c.name for c in app._listed] == ["kill"]
+            await pilot.press("backspace", "backspace", "s", "t")
+            assert [c.name for c in app._listed][:2] == ["start", "stop"]
+            await pilot.press("down")
+            assert options.highlighted == 1
+            await pilot.press("up", "enter")
+            command = app.query_one("#commands-input", Input)
+            # A part of a name completes; nothing runs yet.
+            assert command.value == "start "
+            assert app._panel_open and machinery.started == []
+            await pilot.press("enter")
+            for _ in range(100):
+                await pilot.pause()
+                if not app._command_running:
+                    break
+            assert not app._panel_open
+            assert machinery.started[-1][0] == layout.folder(1)
+
+    asyncio.run(scenario())
+
+
+def test_slash_search_opens_the_log_search_and_help_lists_the_commands(tmp_path):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.console import help_text
+
+    app, _ = _console(tmp_path, FakeMachinery())
+
+    async def scenario():
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            panel = app.query_one("#panel-campaign-1", CampaignPanel)
+            assert not panel._search_visible
+            await _run_from_panel(app, pilot, "search")
+            assert panel._search_visible
+            await pilot.press("escape")
+            await pilot.press("ctrl+f")
+            await pilot.pause()
+            assert panel._search_visible
+            await pilot.press("escape")
+            for name in control.COMMANDS:
+                assert f"/{name}" in help_text()
+
+    asyncio.run(scenario())
+
+
+def test_quit_leaves_the_campaigns_running(tmp_path):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            await _run_batch(app, pilot, "start 1")
+            child = machinery.children[layout.folder(1)]
+            await _run_from_panel(app, pilot, "quit")
+            await pilot.pause()
+            assert not app.is_running
+            assert machinery.detached == [child]
+            assert child.stop_requests == 0 and not child.forced
+            assert app._shutdown_complete
+            assert app._detached == ["campaign-1"]
+
+    asyncio.run(scenario())
+
+
+def test_alt_q_leaves_the_campaigns_running_and_quit_stop_stops_them(tmp_path):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            await _run_batch(app, pilot, "start 1")
+            await pilot.press("alt+q")
+            await pilot.pause()
+            assert not app.is_running
+            assert len(machinery.detached) == 1
+
+    asyncio.run(scenario())
+
+    machinery = FakeMachinery()
+    (tmp_path / "second").mkdir()
+    app, layout = _console(tmp_path / "second", machinery)
+
+    async def stopping():
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            await _run_batch(app, pilot, "start 1")
+            await _run_from_panel(app, pilot, "quit stop")
+            deadline = time.monotonic() + 5
+            while app.is_running and time.monotonic() < deadline:
+                await pilot.pause()
+            assert machinery.children[layout.folder(1)].stop_requests == 1
+            assert machinery.detached == []
+
+    asyncio.run(stopping())
+
+
+def test_a_quit_is_refused_while_a_start_or_reset_runs(tmp_path):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+    entered, release = threading.Event(), threading.Event()
+
+    def reset(arguments):
+        entered.set()
+        assert release.wait(10)
+        return subprocess.CompletedProcess(arguments, 0, stdout="", stderr="")
+
+    app._controller._runner = reset
+
+    async def scenario():
+        async with app.run_test(size=(120, 40)) as pilot:
+            app.submit_command("reset 2")
+            try:
+                assert await asyncio.to_thread(entered.wait, 5)
+                await pilot.press("alt+q")
+                await pilot.pause()
+                assert app.is_running and not app._shutting_down
+                assert machinery.detached == []
+            finally:
+                release.set()
+                for _ in range(100):
+                    await pilot.pause()
+                    if not app._command_running:
+                        break
+
+    asyncio.run(scenario())
+
+
+def test_kill_ends_an_external_launcher_and_an_owned_one(tmp_path):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            await _run_batch(app, pilot, "start 1")
+            child = machinery.children[layout.folder(1)]
+            await _run_from_panel(app, pilot, "kill 1")
+            deadline = time.monotonic() + 5
+            while not child.forced and time.monotonic() < deadline:
+                await pilot.pause()
+            assert child.forced
+            assert app._controller.state("campaign-1").child is None
+
+    asyncio.run(scenario())
+
+
+def test_ctrl_q_asks_what_to_do_with_a_campaign_that_did_not_stop(
+    tmp_path, monkeypatch
+):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import console as console_module
+
+    monkeypatch.setattr(console_module, "STOP_PROMPT_SECONDS", 0.2)
+    monkeypatch.setattr(console_module, "STOP_WAIT_MORE_SECONDS", 0.2)
+
+    async def ask(key: str, expect: str):
+        machinery = FakeMachinery()
+        machinery.wait_exit_code = None  # the launcher never stops by itself
+        (tmp_path / key).mkdir()
+        app, layout = _console(tmp_path / key, machinery)
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            await _run_batch(app, pilot, "start 1")
+            await pilot.press("ctrl+q")
+            deadline = time.monotonic() + 5
+            while not isinstance(app.screen, console_module.StopPrompt):
+                assert time.monotonic() < deadline, "the prompt never opened"
+                await pilot.pause(0.05)
+            assert machinery.forced == [] and machinery.detached == []
+            child = machinery.children[layout.folder(1)]
+            await pilot.press(key)
+            deadline = time.monotonic() + 5
+            while app.is_running and time.monotonic() < deadline:
+                await pilot.pause(0.05)
+            assert not app.is_running
+        assert (child.forced, bool(machinery.detached)) == {
+            "k": (True, False),
+            "l": (False, True),
+        }[key], expect
+
+    asyncio.run(ask("k", "kill"))
+    asyncio.run(ask("l", "leave"))

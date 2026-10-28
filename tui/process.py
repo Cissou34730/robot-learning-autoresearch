@@ -3,7 +3,7 @@
 Owns the parts of the external-stop contract that must run inside the
 controller process (see ``docs/external-campaign-stop.md``):
 
-- a kill-on-close Job Object per launcher invocation;
+- a Job Object per launcher invocation (kill-on-close only for short helpers);
 - suspended child creation before Job assignment, new process groups, so a
   terminal Ctrl+C used for copying cannot reach the campaign;
 - per-run private control directories (diagnostic logs) kept outside campaign

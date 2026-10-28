@@ -215,7 +215,7 @@ def test_an_unknown_command_names_the_valid_ones_and_suggests_the_close_one():
         control.parse_command("diagnotics")
     message = str(error.value)
     assert "Did you mean diagnostics?" in message
-    assert "start, reset" in message or "run, start, reset, stop" in message
+    assert all(name in message for name in control.COMMANDS)
     # A word near nothing gets the list, never a wild guess.
     with pytest.raises(control.CommandError) as error:
         control.parse_command("deploy 2")
