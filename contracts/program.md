@@ -102,10 +102,10 @@ methods where you need them. These capabilities can support later inquiries.
 Choose the first useful scientific action and explain why it advances the
 direction.
 
-The inherited recipe is the reference for your first comparison. A first
-experiment that changes several parts of the recipe at once gives a result that
-you cannot attribute to any one of them. After the first comparison, choose the
-size of a change from the explanation that it tests.
+`contracts/scenario.md` describes the recipe that the campaign starts with.
+When a method exists, an experiment that changes several of its parts at once
+gives a result that you cannot attribute to any one part. Choose the size of
+a change from the explanation that it tests.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you

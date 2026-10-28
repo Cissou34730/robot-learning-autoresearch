@@ -66,8 +66,9 @@ TONE = (
 )
 
 ANALYST_EXPLORATION = (
-    "The PI starts the campaign from the inherited recipe and from this "
-    "physical model. Where the inherited recipe differs from the task, or where "
+    "The PI starts the campaign from the starting recipe that "
+    "contracts/scenario.md describes and from this physical model. Where the "
+    "starting recipe differs from the task, or where "
     "the model is silent, the campaign starts without that knowledge."
 )
 

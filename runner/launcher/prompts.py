@@ -503,10 +503,10 @@ def scientific_model_prompt(goal: str) -> str:
                 "the campaign reference."
             ),
             (
-                "The code in robot_learning/ is the inherited recipe. Its rewards, "
-                "training environments and observation construction are design "
-                "choices, not properties of the robot. Mark each statement that comes "
-                "from them as a design choice."
+                "The code in robot_learning/ is the starting recipe that "
+                "contracts/scenario.md describes. Its design choices are not "
+                "properties of the robot. Mark each statement that comes from them "
+                "as a design choice."
             ),
             (
                 "The document has four registers, with these headings: Established "

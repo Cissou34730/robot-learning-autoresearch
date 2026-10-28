@@ -2,8 +2,8 @@
 
 This file defines the official scientific task: the official situations, the
 success criterion, the official assessment and the immutable limits of the
-task. It does not define the research process or describe the research
-instruments.
+task. It also describes the recipe that the campaign starts with. It does not
+define the research process or describe the research instruments.
 
 ## Official task
 
@@ -46,3 +46,25 @@ Development measurements are not combined with the official result.
 The human-authored robot and benchmark contracts fix the official robot, the
 physics, the episode distribution, the interaction rules and the definition of
 success.
+
+## Starting recipe
+
+The campaign starts with a recipe skeleton in `robot_learning/`. The skeleton
+implements the interfaces that the Runner and the protected evaluators call:
+
+- the training and evaluation entry points
+- the files that a training run writes
+- the format of the saved runtime
+- a research environment that applies the task definitions
+
+The docstrings of the skeleton files state these interfaces.
+
+The skeleton contains no learning method. It has no observation, no
+transformation of the network output into the motor command, no reward, no
+training algorithm and no training parameters. These parts raise an error until
+you implement them. You design and build the method.
+
+The research environment starts each episode at zero joint angles and zero joint
+velocities, and it places the target in the plane of the arm. These are design
+choices of the skeleton. The protected evaluators define the official episode
+start and target placement.
