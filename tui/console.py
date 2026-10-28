@@ -173,7 +173,7 @@ HELP_TEXT = (
     "Empty launch fields use launcher defaults, including high reasoning,\n"
     "120000 timesteps, 360000 max timesteps, 15 inquiries and 180s stop timeout.\n"
     "Model/provider remain launcher-selected unless explicitly supplied.\n"
-    "models: list available models | diagnostics: this campaign's console logs\n\n"
+    "models: list available models | diagnostics: this campaign's console logs | help: this text\n\n"
     "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L show/hide commands\n"
     "Tab / Shift+Tab: next/previous campaign; move focus inside dialogs\n"
     "Ctrl+Tab: next campaign if the terminal passes it through\n"
@@ -447,7 +447,7 @@ class CampaignConsole(App):
             with Horizontal(id="command-row"):
                 yield Static("Command", id="command-label")
                 yield Input(
-                    placeholder="start (resume) | run (reset + start) | stop",
+                    placeholder="start (resume) | run (fresh) | stop | reset | models | diagnostics | help",
                     id="commands-input",
                 )
                 yield Button("Execute", variant="primary", id="execute-command")

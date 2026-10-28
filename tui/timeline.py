@@ -316,6 +316,7 @@ class TimelineReducer:
         self._attempt = event.attempt
         self._actor = event.actor
         self._campaign_group_follows(kind, fields, session_id)
+        self._resume_interrupted(kind, operation_id, fields)
         if kind == "session_start":
             self._attempt_event(ts, session_id, fields)
             return
@@ -424,6 +425,17 @@ class TimelineReducer:
         self._items[item.item_id] = item
         self._roots.append(item)
         return item
+
+    def _resume_interrupted(self, kind: str, operation_id: str, fields: dict) -> None:
+        """A run state "executing" for an interrupted operation means it runs again."""
+        if kind != "run_state" or fields.get("state") != "executing":
+            return
+        item = self._operations.get(operation_id)
+        if item is not None and item.status == "interrupted":
+            item.status = "running"
+            item.severity = "info"
+            self._active_operation = operation_id
+            item.summary = self._operation_summary(item)
 
     def _campaign_group_follows(self, kind: str, fields: dict, session_id: str) -> None:
         """Keep the Campaign group open while a launcher failure stands in it.
@@ -648,7 +660,9 @@ class TimelineReducer:
         operation_kind = str(fields.get("kind") or fields.get("scope") or "operation")
         item = self._operation(operation_id, inquiry_id, session_id, ts, operation_kind)
         status = str(fields.get("status") or "")
-        finished = item.status in {"completed", "failed", "interrupted"}
+        # An interrupted operation can run again: its resumed execution reports
+        # a start, a run state or progress.
+        finished = item.status in {"completed", "failed"}
         if kind == "operation_requested":
             item.status = item.status if finished else "requested"
             summary = "requested"
@@ -665,6 +679,7 @@ class TimelineReducer:
             summary = "interrupted"
         elif kind == "operation_completed":
             item.status = "completed"
+            item.severity = "info"
             summary = "completed"
             self._last_completed = operation_id
             self._last_completed_kind = operation_kind
@@ -721,7 +736,7 @@ class TimelineReducer:
     ) -> None:
         operation_kind = "training" if kind == "training_progress" else "measurement"
         item = self._operation(operation_id, inquiry_id, session_id, ts, operation_kind)
-        if item.status not in {"completed", "failed", "interrupted"}:
+        if item.status not in {"completed", "failed"}:
             item.status = "running"
             self._active_operation = operation_id
         previous_ts, previous_steps = self._progress.get(operation_id, (None, None))

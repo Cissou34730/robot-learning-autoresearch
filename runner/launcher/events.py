@@ -74,6 +74,10 @@ class LauncherEvents:
     ) -> None:
         self.observe("notice", scope=scope, text=message, session_id=session_id)
 
+    def stop_notice(self, message: str) -> None:
+        """The stop request, in the session it interrupts."""
+        self.status(message, scope="info", session_id=self._current_owner())
+
     def failure(self, message: str, *, code: str) -> None:
         """The launcher stops: say why, in the session where it happened."""
         self.observe(

@@ -141,6 +141,30 @@ def test_a_launcher_failure_is_owned_by_the_session_in_progress(tmp_path, state,
     assert record["payload"]["code"] == "launcher_failed"
 
 
+def test_a_launcher_failure_is_owned_by_the_session_in_progress_and_so_is_the_stop(
+    tmp_path,
+):
+    root = tmp_path / "campaign"
+    path = root / "runner" / "state" / "research_state.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        json.dumps(
+            {
+                "campaign": {"id": "campaign-1"},
+                "scientific_model": {"status": "ready"},
+                "scientific_session": {"id": "S1"},
+            }
+        )
+    )
+    events = LauncherEvents(root)
+    events._campaign_id = "campaign-1"
+    typed_events.configure(tmp_path / "journal.jsonl")
+    events.stop_notice("External stop requested; waiting up to 180 seconds.")
+    (record,) = _records(tmp_path)
+    assert record["kind"] == "notice" and record["session_id"] == "S1"
+    assert record["payload"]["text"].startswith("External stop requested")
+
+
 WRITER = """
 import sys
 from runner import typed_events

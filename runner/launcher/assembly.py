@@ -27,7 +27,7 @@ def build(options: LaunchOptions, *, started_at: float, log: RunLog) -> Phases:
         paths.stop_request_path(options.campaign_root),
         options.stop_timeout_seconds,
         started_at=started_at,
-        on_request=lambda message: events.status(message, scope="info"),
+        on_request=events.stop_notice,
     )
     stop.discard_stale()
     children = ChildRunner(cwd=options.campaign_root, stop=stop, log=log)

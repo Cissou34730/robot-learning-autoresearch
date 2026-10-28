@@ -221,6 +221,39 @@ def test_a_failure_that_belongs_to_no_session_opens_the_campaign_group_until_a_n
     assert _find(reducer, "campaign:root")[0].default_expanded is False
 
 
+def test_a_resumed_operation_is_running_again_and_a_completed_one_is_not_a_warning():
+    reducer = TimelineReducer()
+    ids = {"session_id": "S1", "operation_id": "T1"}
+    reducer.ingest(_event("operation_requested", 0, {"kind": "training"}, **ids))
+    reducer.ingest(_event("operation_started", 1, {"kind": "training"}, **ids))
+    reducer.ingest(
+        _event(
+            "operation_completed",
+            5,
+            {"kind": "training", "status": "interrupted"},
+            severity="warning",
+            **ids,
+        )
+    )
+    assert reducer.phase() != "training"
+    # The resumed execution reports itself with a run state, not a second start.
+    reducer.ingest(_event("run_state", 9, {"state": "executing"}, **ids))
+    assert reducer.phase() == "training"
+    assert _find(reducer, "operation:T1")[0].status == "running"
+    reducer.ingest(
+        _event(
+            "operation_completed",
+            20,
+            {"kind": "training", "status": "completed"},
+            **ids,
+        )
+    )
+    item = _find(reducer, "operation:T1")[0]
+    assert item.status == "completed"
+    assert item.severity == "info"
+    assert reducer.phase() != "training"
+
+
 def test_the_widget_follows_a_change_of_parent_even_when_the_rows_look_equal():
     first = TimelineItem(item_id="a", kind="session", title="A", is_group=True)
     second = TimelineItem(item_id="b", kind="session", title="B", is_group=True)
