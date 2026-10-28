@@ -127,7 +127,7 @@ def test_a_session_group_is_never_backdated_to_the_campaign_start():
     assert session.ts == _at(90)
 
 
-def test_official_assessment_is_owned_by_the_campaign_not_by_a_guessed_session():
+def test_official_assessment_is_a_top_level_group_not_under_a_guessed_session():
     reducer = TimelineReducer()
     reducer.ingest(
         _event(
@@ -142,8 +142,156 @@ def test_official_assessment_is_owned_by_the_campaign_not_by_a_guessed_session()
             operation_id="official",
         )
     )
-    chain = _ancestors(reducer, "operation:official")
-    assert chain == ["campaign:root"]
+    assert _ancestors(reducer, "operation:official") == []
+    roots, _ = reducer.view()
+    assert [root.item_id for root in roots] == ["session:S9", "operation:official"]
+
+
+def _official_run(passed: bool, *, figures: bool = True):
+    reducer = TimelineReducer()
+    reducer.ingest(
+        _event(
+            "session_started", 0, {"id": "S12", "kind": "goal_review"}, session_id="S12"
+        )
+    )
+    reducer.ingest(
+        _event(
+            "campaign_concluded",
+            10,
+            {"status": "official_assessment_requested", "reason": "Request it"},
+            session_id="S12",
+            operation_id="E26",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "operation_started",
+            20,
+            {"id": "official", "kind": "measurement", "model": "T4:checkpoint-95232"},
+            operation_id="official",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "eval_progress",
+            25,
+            {"operation_id": "official", "episodes": 100, "episodes_total": 200},
+            operation_id="official",
+        )
+    )
+    result = {
+        "id": "official",
+        "kind": "measurement",
+        "status": "passed" if passed else "failed",
+        "model": "T4:checkpoint-95232",
+        "summary": "goal reached" if passed else "goal not reached; success 97.5%",
+    }
+    if figures:
+        result |= {
+            "success_percent": 98.5 if passed else 97.5,
+            "episodes": 200,
+            "required_success_percent": 98.0,
+        }
+    reducer.ingest(_event("operation_completed", 40, result, operation_id="official"))
+    reducer.ingest(
+        _event(
+            "campaign_concluded",
+            41,
+            {
+                "status": result["status"],
+                "reason": result["summary"],
+                "next": "End the campaign.",
+            },
+            operation_id="official",
+        )
+    )
+    reducer.ingest(
+        _event(
+            "campaign_usage",
+            42,
+            {"totals": {"aiu": 35.33}, "text": "56m20s | 35.33 AIU | prompt 9.3m"},
+            operation_id="official",
+        )
+    )
+    return reducer
+
+
+def test_a_failed_official_assessment_is_visible_with_its_figures():
+    reducer = _official_run(passed=False)
+    roots, _ = reducer.view()
+    # The group sits last, where the events happened, and is open.
+    assert [root.item_id for root in roots] == ["session:S12", "operation:official"]
+    official = roots[-1]
+    assert official.default_expanded and official.title.endswith("T4:checkpoint-95232")
+    assert official.severity == "error" and official.status == "failed"
+    assert "97.5% over 200 episodes" in official.summary
+    assert "0.5 points below the 98.0% required" in official.summary
+    rows = {child.title: child for child in official.children}
+    assert rows["goal not reached"].severity == "error"
+    assert "Required: 98.0%" in rows["goal not reached"].detail
+    concluded = next(
+        c for c in official.children if c.title.startswith("campaign concluded")
+    )
+    assert (
+        concluded.title == "campaign concluded | failed"
+        and concluded.severity == "error"
+    )
+    assert any(child.kind == "usage" for child in official.children)
+    # The PI's request stays in the session that made it, not in a pinned group.
+    session = roots[0]
+    assert [c.title for c in session.children if c.title == "campaign concluded"]
+    assert not [root for root in roots if root.item_id == "campaign:root"]
+
+
+def test_a_passed_official_assessment_reads_as_a_success():
+    roots, _ = _official_run(passed=True).view()
+    official = roots[-1]
+    assert official.severity == "info" and official.status == "passed"
+    assert official.summary.startswith("passed | goal reached | 98.5%")
+    assert "0.5 points above the 98.0% required" in official.summary
+    result = next(c for c in official.children if c.title == "goal reached")
+    assert result.kind == "result" and result.severity == "info"
+
+
+def test_an_official_result_without_figures_still_shows_its_summary():
+    roots, _ = _official_run(passed=False, figures=False).view()
+    official = roots[-1]
+    assert official.summary == "failed | goal not reached; success 97.5%"
+
+
+def test_campaign_usage_shows_the_aiu_change_in_the_session_that_wrote_it():
+    reducer = TimelineReducer()
+    for number, (session, aiu) in enumerate((("S2", 4.15), ("S4", 8.79))):
+        reducer.ingest(
+            _event("session_started", number * 10, {"id": session}, session_id=session)
+        )
+        reducer.ingest(
+            _event(
+                "campaign_usage",
+                number * 10 + 5,
+                {
+                    "totals": {"aiu": aiu},
+                    "text": f"7m12s | {aiu:.2f} AIU | prompt 567k",
+                },
+                session_id=session,
+                operation_id=f"session:{session}",
+            )
+        )
+    roots, _ = reducer.view()
+    first, second = (
+        next(c for c in root.children if c.kind == "usage") for root in roots
+    )
+    assert first.summary == "7m12s | 4.15 AIU | prompt 567k"
+    assert second.summary == "7m12s | 8.79 AIU (+4.64) | prompt 567k"
+
+
+def test_a_run_state_adds_no_row_but_still_drives_the_now_line():
+    reducer = TimelineReducer()
+    reducer.ingest(_event("campaign_started", 0, {"summary": "goal"}))
+    reducer.ingest(_event("run_state", 5, {"state": "executing"}, session_id="S1"))
+    roots, _ = reducer.view()
+    assert [child.title for child in roots[0].children] == ["campaign started"]
+    assert reducer.now_text == "Now: executing"
 
 
 def test_an_event_missing_a_required_identity_is_reported_not_guessed():

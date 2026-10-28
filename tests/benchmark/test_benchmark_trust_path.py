@@ -135,6 +135,7 @@ def test_protected_scenario_adapter_applies_the_official_threshold(
 
     assert result["success_percent"] == success_percent
     assert result["goal_reached"] is goal_reached
+    assert result["required_success_percent"] == 98.0
     assert observed == {
         "model": tmp_path / "model.zip",
         "algorithm": "ppo",

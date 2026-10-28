@@ -18,6 +18,7 @@ from runner.copilot.reporting import tool_detail, tool_result_lines
 from runner.event_contract import (
     LAUNCH_KINDS,
     LAUNCHER_STOP_CODES,
+    OFFICIAL_OPERATION,
     PREPARATION_SESSION,
     missing_identity,
 )
@@ -191,6 +192,13 @@ def _percent(value: object) -> str:
     return "unavailable"
 
 
+def _as_percent(value: object) -> float | None:
+    """A percentage as a number, or ``None`` when the event did not carry it."""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
+    return None
+
+
 @dataclass
 class TimelineItem:
     """One group or leaf in the operator timeline."""
@@ -251,6 +259,7 @@ class TimelineReducer:
         self._current_inquiry: tuple[str, str] | None = None
         self._active_operation = ""
         self._run_state = ""
+        self._last_campaign_aiu: float | None = None
         self._last_completed = ""
         self._last_completed_kind = ""
         self._last_completed_ts: datetime | None = None
@@ -383,7 +392,7 @@ class TimelineReducer:
             "campaign_usage",
             "session_usage",
         }:
-            self._usage_event(kind, ts, session_id, fields)
+            self._usage_event(kind, ts, session_id, operation_id, fields)
             return
         if kind in {"warning", "error", "publication_retry"}:
             self._warning_event(kind, ts, session_id, inquiry_id, operation_id, fields)
@@ -396,7 +405,7 @@ class TimelineReducer:
             "publication_recovered",
             "scientific_model_validated",
         }:
-            self._root_event(kind, ts, fields, session_id)
+            self._root_event(kind, ts, fields, session_id, operation_id)
             return
         if kind == "operation_submitted":
             self._operation_submitted_event(
@@ -547,11 +556,15 @@ class TimelineReducer:
         ts: datetime | None,
         kind: str,
     ) -> TimelineItem:
-        """The group of one operation: its session's, or the campaign's when it
-        has no session (the official assessment)."""
+        """The group of one operation: its session's, or its own top-level group
+        when it has no session (the official assessment, shown where it happened,
+        after the last session)."""
         item = self._operations.get(operation_id)
         if item is None:
-            if not session_id:
+            official = operation_id == OFFICIAL_OPERATION
+            if official:
+                parent = None
+            elif not session_id:
                 parent = self._campaign_group()
             elif inquiry_id:
                 parent = self._inquiry(inquiry_id, session_id, ts, {})
@@ -560,14 +573,19 @@ class TimelineReducer:
             item = TimelineItem(
                 item_id=f"operation:{operation_id}",
                 kind=kind or "operation",
-                title=f"{operation_id} {kind or 'operation'}",
+                title="Official assessment"
+                if official
+                else f"{operation_id} {kind or 'operation'}",
                 ts=ts,
                 is_group=True,
-                default_expanded=False,
+                default_expanded=official,
                 status="requested",
             )
             self._items[item.item_id] = item
-            parent.children.append(item)
+            if parent is None:
+                self._roots.append(item)
+            else:
+                parent.children.append(item)
             self._operations[operation_id] = item
             self._operation_session[operation_id] = session_id
         elif session_id != self._operation_session.get(operation_id, session_id):
@@ -660,9 +678,15 @@ class TimelineReducer:
         operation_kind = str(fields.get("kind") or fields.get("scope") or "operation")
         item = self._operation(operation_id, inquiry_id, session_id, ts, operation_kind)
         status = str(fields.get("status") or "")
+        if operation_id == OFFICIAL_OPERATION:
+            if kind == "operation_started" and fields.get("model"):
+                item.title = f"Official assessment | {fields['model']}"
+            if kind == "operation_completed":
+                self._official_result(item, ts, fields)
+                return
         # An interrupted operation can run again: its resumed execution reports
         # a start, a run state or progress.
-        finished = item.status in {"completed", "failed"}
+        finished = item.status in {"completed", "failed", "passed"}
         if kind == "operation_requested":
             item.status = item.status if finished else "requested"
             summary = "requested"
@@ -725,6 +749,65 @@ class TimelineReducer:
             self._active_operation = operation_id
         item.summary = self._operation_summary(item)
 
+    def _official_result(
+        self, item: TimelineItem, ts: datetime | None, fields: dict
+    ) -> None:
+        """The result of the official assessment, in words and figures."""
+        passed = str(fields.get("status") or "") == "passed"
+        success = _as_percent(fields.get("success_percent"))
+        required = _as_percent(fields.get("required_success_percent"))
+        episodes = fields.get("episodes")
+        outcome = "goal reached" if passed else "goal not reached"
+        figures = ""
+        if success is not None:
+            figures = f"{success:.1f}%"
+            if isinstance(episodes, int):
+                figures += f" over {episodes} episodes"
+        margin = ""
+        if success is not None and required is not None:
+            gap = success - required
+            margin = (
+                f"{abs(gap):.1f} points {'above' if gap >= 0 else 'below'} "
+                f"the {required:.1f}% required"
+            )
+        item.status = "passed" if passed else "failed"
+        item.severity = "info" if passed else "error"
+        item.payload = dict(fields)
+        item.end_ts = ts or item.end_ts
+        parts = (item.status, outcome, figures, margin)
+        if success is None:
+            parts = (item.status, str(fields.get("summary") or outcome))
+        item.summary = " | ".join(part for part in parts if part)
+        detail = tuple(
+            line
+            for line in (
+                f"Model: {fields['model']}" if fields.get("model") else "",
+                f"Success: {figures}" if figures else "",
+                f"Required: {required:.1f}%" if required is not None else "",
+                f"Margin: {margin}" if margin else "",
+                f"Summary: {fields['summary']}" if fields.get("summary") else "",
+            )
+            if line
+        )
+        leaf = TimelineItem(
+            item_id=f"leaf:operation_completed:official:{ts}",
+            kind="result" if passed else "measurement",
+            title=outcome,
+            summary=" | ".join(part for part in (figures, margin) if part),
+            ts=ts,
+            severity=item.severity,
+            detail=detail,
+            payload=dict(fields),
+            default_expanded=True,
+        )
+        item.children.append(leaf)
+        self._items[leaf.item_id] = leaf
+        self._last_completed = OFFICIAL_OPERATION
+        self._last_completed_kind = "official assessment"
+        self._last_completed_ts = ts
+        if self._active_operation == OFFICIAL_OPERATION:
+            self._active_operation = ""
+
     def _progress_event(
         self,
         kind: str,
@@ -736,7 +819,7 @@ class TimelineReducer:
     ) -> None:
         operation_kind = "training" if kind == "training_progress" else "measurement"
         item = self._operation(operation_id, inquiry_id, session_id, ts, operation_kind)
-        if item.status not in {"completed", "failed"}:
+        if item.status not in {"completed", "failed", "passed"}:
             item.status = "running"
             self._active_operation = operation_id
         previous_ts, previous_steps = self._progress.get(operation_id, (None, None))
@@ -1425,7 +1508,12 @@ class TimelineReducer:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
 
     def _usage_event(
-        self, kind: str, ts: datetime | None, session_id: str, fields: dict
+        self,
+        kind: str,
+        ts: datetime | None,
+        session_id: str,
+        operation_id: str,
+        fields: dict,
     ) -> None:
         totals = fields.get("totals") if isinstance(fields.get("totals"), dict) else {}
         if kind in {"campaign_usage", "session_usage"}:
@@ -1448,6 +1536,8 @@ class TimelineReducer:
                     )
                     if part
                 )
+            if kind == "campaign_usage":
+                summary = self._with_aiu_change(summary, totals)
             detail = (_json_text(totals),) if totals else ()
         else:
             role = str(fields.get("role") or "usage")
@@ -1481,11 +1571,30 @@ class TimelineReducer:
             detail=detail,
             payload=dict(fields),
         )
-        # Campaign usage totals belong to the campaign, whatever session ran last.
-        owner = "" if kind == "campaign_usage" else session_id
-        self._attach(leaf, "", "", owner)
+        # Campaign usage totals show where they were written: in the official
+        # assessment, else in the session that wrote them, else in the campaign.
+        official = kind == "campaign_usage" and operation_id == OFFICIAL_OPERATION
+        self._attach(leaf, OFFICIAL_OPERATION if official else "", "", session_id)
         if ts is not None:
-            self._touch_groups(ts, "", "", owner)
+            self._touch_groups(
+                ts, OFFICIAL_OPERATION if official else "", "", session_id
+            )
+
+    def _with_aiu_change(self, summary: str, totals: dict) -> str:
+        """The usage line, with how many AIU the campaign used since the last one."""
+        aiu = totals.get("aiu")
+        if not isinstance(aiu, (int, float)) or isinstance(aiu, bool):
+            return summary
+        previous, self._last_campaign_aiu = self._last_campaign_aiu, float(aiu)
+        if previous is None or float(aiu) <= previous:
+            return summary
+        text = f"{float(aiu):.2f} AIU"
+        change = f"{text} (+{float(aiu) - previous:.2f})"
+        return (
+            summary.replace(text, change, 1)
+            if text in summary
+            else (f"{summary} | {change}" if summary else change)
+        )
 
     def _warning_event(
         self,
@@ -1514,37 +1623,60 @@ class TimelineReducer:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
 
     def _root_event(
-        self, kind: str, ts: datetime | None, fields: dict, session_id: str = ""
+        self,
+        kind: str,
+        ts: datetime | None,
+        fields: dict,
+        session_id: str = "",
+        operation_id: str = "",
     ) -> None:
         if kind == "run_state":
+            # The state drives the "Now" line and the tab; each change repeats an
+            # operation row, so it adds no row of its own.
             self._run_state = str(fields.get("state") or "")
+            return
         title = {
             "campaign_started": "campaign started",
             "campaign_concluded": "campaign concluded",
             "campaign_goal_review": "campaign goal review",
             "publication_recovered": "publication recovered",
             "scientific_model_validated": "scientific model validated",
-            "run_state": f"run state {fields.get('state') or ''}".strip(),
         }.get(kind, kind.replace("_", " "))
+        official = kind == "campaign_concluded" and operation_id == OFFICIAL_OPERATION
+        status = str(fields.get("status") or "")
+        if official:
+            title = f"campaign concluded | {status}".strip(" |")
         # A commit identifier is noise on the timeline; the raw event keeps it.
         shown = {key: value for key, value in fields.items() if key != "commit"}
         leaf = TimelineItem(
             item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
             kind="result"
             if kind in {"publication_recovered", "scientific_model_validated"}
+            or (official and status == "passed")
             else "campaign",
             title=title,
             summary=_first_line(
-                fields.get("summary")
+                (fields.get("next") if official else None)
+                or fields.get("summary")
                 or fields.get("state")
                 or fields.get("reason")
                 or (fields.get("path") if kind == "scientific_model_validated" else "")
                 or ""
             ),
             ts=ts,
+            severity="error" if official and status == "failed" else "info",
             detail=tuple(f"{key}: {_short(value)}" for key, value in shown.items()),
             payload=dict(fields),
         )
+        if kind == "campaign_concluded":
+            # The PI's request closes its session; the official outcome closes
+            # the assessment that produced it.
+            self._attach(leaf, OFFICIAL_OPERATION if official else "", "", session_id)
+            if ts is not None:
+                self._touch_groups(
+                    ts, OFFICIAL_OPERATION if official else "", "", session_id
+                )
+            return
         if kind in {
             "scientific_model_validated",
             "campaign_goal_review",

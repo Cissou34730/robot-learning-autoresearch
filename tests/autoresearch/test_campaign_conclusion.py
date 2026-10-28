@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
 import pytest
 
-from runner import paths, protocol, repository, run_experiment
+from runner import paths, protocol, repository, run_experiment, typed_events
 
 
 def _configure(monkeypatch, tmp_path: Path) -> dict:
@@ -198,13 +199,26 @@ def test_requested_official_assessment_is_runner_owned_and_recorded(
             "goal_reached": goal_reached,
             "success_percent": 99.0 if goal_reached else 75.0,
             "episodes": 200,
+            "required_success_percent": 98.0,
         }
 
     monkeypatch.setattr(run_experiment.assessment, "evaluate_official_model", evaluate)
     monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
     monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--run-official-assessment"])
+    journal = tmp_path / "journal.jsonl"
+    monkeypatch.setenv("TUI_TYPED_EVENTS", str(journal))
+    typed_events.reset()
 
     assert run_experiment.main() == 0
+    announced = {
+        record["kind"]: record["payload"]
+        for record in map(json.loads, journal.read_text(encoding="utf-8").splitlines())
+        if record.get("operation_id") == "official"
+    }
+    for kind in ("operation_completed", "campaign_concluded"):
+        assert announced[kind]["success_percent"] == (99.0 if goal_reached else 75.0)
+        assert announced[kind]["episodes"] == 200
+        assert announced[kind]["required_success_percent"] == 98.0
     persisted = repository.read_state()
     assert (
         persisted["terminal_state"]["status"]

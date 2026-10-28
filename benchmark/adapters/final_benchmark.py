@@ -44,4 +44,5 @@ def evaluate_final_model(
     return {
         **metrics,
         "goal_reached": float(metrics["success_percent"]) >= FINAL_SUCCESS_PERCENT,
+        "required_success_percent": FINAL_SUCCESS_PERCENT,
     }

@@ -212,8 +212,11 @@ def test_the_panel_shows_one_owner_per_fact(journal, tmp_path):
     assert by_session["session:S1"] == {"T1", "M1"}
     assert by_session["session:S2"] == {"M2"}
     assert not by_session[f"session:{PREPARATION_SESSION}"]
-    campaign = next(item for item in roots if not item.item_id.startswith("session:"))
-    assert operations_under(campaign) == {"official"}
+    campaign = next(item for item in roots if item.item_id == "campaign:root")
+    assert not operations_under(campaign)
+    # The official assessment is a top-level group, last, where it happened.
+    assert roots[-1].item_id == "operation:official"
+    assert roots[-1].default_expanded
     prep = next(item for item in sessions if item.item_id.endswith(PREPARATION_SESSION))
     drafts = [
         child.summary

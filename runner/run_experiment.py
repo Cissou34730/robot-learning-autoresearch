@@ -2489,6 +2489,11 @@ def _run_official_assessment(state: dict, candidate: dict) -> int:
         )
     if not repository.commit_runner_memory("record official assessment"):
         repository.push_head()
+    figures = {
+        "success_percent": metrics.get("success_percent"),
+        "episodes": metrics.get("episodes"),
+        "required_success_percent": metrics.get("required_success_percent"),
+    }
     typed_events.emit(
         "operation_completed",
         {
@@ -2497,6 +2502,7 @@ def _run_official_assessment(state: dict, candidate: dict) -> int:
             "status": "passed" if passed else "failed",
             "model": candidate.get("id"),
             "summary": summary,
+            **figures,
         },
         scope="measurement",
         severity="info" if passed else "error",
@@ -2510,6 +2516,7 @@ def _run_official_assessment(state: dict, candidate: dict) -> int:
             "reason": summary,
             "next": "End the campaign.",
             "official_assessment": True,
+            **figures,
         },
         scope="campaign",
         operation_id="official",

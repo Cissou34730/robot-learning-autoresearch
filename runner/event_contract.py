@@ -68,10 +68,12 @@ _NAMED_OWNER = KindRule(owner="session")
 
 RULES: dict[str, KindRule] = {
     "campaign_started": _CAMPAIGN,
-    "campaign_concluded": _CAMPAIGN,
-    "campaign_usage": _CAMPAIGN,
     "run_state": _CAMPAIGN,
     "liveness": _CAMPAIGN,
+    # Shown where they happened: in the session that wrote them, or in the
+    # official assessment, else in the Campaign group.
+    "campaign_concluded": _NAMED_OWNER,
+    "campaign_usage": _NAMED_OWNER,
     "notice": _NAMED_OWNER,
     "warning": _NAMED_OWNER,
     "error": _NAMED_OWNER,

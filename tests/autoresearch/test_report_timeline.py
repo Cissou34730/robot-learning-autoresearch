@@ -841,7 +841,9 @@ def test_goal_review_and_publication_recovery_sit_in_their_session():
     kept = [child.title for child in campaign.children]
     # A recovery that names no session, and the campaign-level kinds, stay here.
     assert kept.count("publication recovered") == 1
-    assert {"run state executing", "campaign concluded"} <= set(kept)
+    assert "campaign concluded" in kept
+    # A run state only drives the "Now" line; it adds no row of its own.
+    assert "run state executing" not in kept
     assert "campaign goal review" not in kept
 
 
