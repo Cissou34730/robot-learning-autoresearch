@@ -84,7 +84,7 @@ class OperationSubmission:
                 "define the body of each operation. Do not write "
                 "pi_workspace/operation_request.json: the Runner uses it internally. "
                 "The Runner validates and executes the operation with its existing "
-                "permissions and allocation. Then it returns a short factual result or "
+                "permissions and limits. Then it returns a short factual result or "
                 "the errors, and the current state, directly to this conversation. The "
                 "detailed evidence stays available through artifact_evidence_query.\n\n"
                 "Continue "

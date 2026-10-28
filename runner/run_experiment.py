@@ -38,8 +38,8 @@ PROPOSAL_ERRORS = (
 )
 ACCEPTED_REQUEST_KEY = "_runner_accepted_operation"
 ACCEPTED_REQUEST_VERSION = 1
-TIMESTEPS = 120_000
-MAX_TIMESTEPS = 360_000
+TIMESTEPS = 10_000
+MAX_TIMESTEPS = 500_000
 PUBLICATION_FAILURE_EXIT_CODE = 3
 REPEATS_FIELD = "repeats_earlier_measurements"
 EXPOSURE_FIELD = "episodes_seen_in_earlier_measurements"
@@ -387,21 +387,14 @@ def _validate_new_operation_scientific_delta(state: dict) -> None:
 
 
 def _training_allocation(request: dict, state: dict) -> int:
-    allocation = execution.training_budget(
+    shortest = execution.training_budget(
         TIMESTEPS, request["initialization"], False, 0
     )
-    session = protocol.require_active_session(state)
-    if session["kind"] == "startup":
-        if request["steps"] > allocation:
-            raise ValueError(
-                f"The Runner fixes the training allocation. Startup steps must "
-                f"not exceed {allocation:,}. The request has {request['steps']!r}."
-            )
-    elif not allocation <= request["steps"] <= MAX_TIMESTEPS:
+    protocol.require_active_session(state)
+    if not shortest <= request["steps"] <= MAX_TIMESTEPS:
         raise ValueError(
-            f"The Runner fixes the training allocation. A request needs between "
-            f"{allocation:,} and {MAX_TIMESTEPS:,} steps. The request has "
-            f"{request['steps']!r}."
+            f"A training request needs between {shortest:,} and "
+            f"{MAX_TIMESTEPS:,} steps. The request has {request['steps']!r}."
         )
     return request["steps"]
 

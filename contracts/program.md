@@ -246,7 +246,7 @@ decisions forward into the next goal-review session. The closure of an inquiry
 does not itself justify continuing the broader direction or requesting the
 official assessment.
 
-The session prompt gives the training allocation.
+The session prompt gives the permitted range of training steps.
 `contracts/instruments/training.md` defines how a training request uses it.
 
 An inquiry reframe is a session boundary. After you record the reframe, save the

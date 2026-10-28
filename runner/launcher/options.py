@@ -9,8 +9,9 @@ PROVIDERS = ("github-copilot", "opencode", "opencode-go")
 REASONING_LEVELS = ("low", "medium", "high", "xhigh", "max")
 DEFAULT_REASONING = "high"
 DEFAULT_MAX_INQUIRIES = 15
-DEFAULT_TIMESTEPS = 120000
-DEFAULT_MAX_TIMESTEPS = 360000
+# The PI chooses each run's steps in [DEFAULT_TIMESTEPS, DEFAULT_MAX_TIMESTEPS].
+DEFAULT_TIMESTEPS = 10000
+DEFAULT_MAX_TIMESTEPS = 500000
 DEFAULT_STOP_TIMEOUT_SECONDS = 180
 COPILOT_DEFAULT_MODEL = "gpt-6-luna"
 # One OpenCode key covers Zen and Go; the free Zen model is the default for both.

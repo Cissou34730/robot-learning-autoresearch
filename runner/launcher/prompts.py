@@ -329,13 +329,10 @@ def _training_allocation(
 ) -> str:
     if transition is not None or pstext.same(kind, "goal_review"):
         return ""
-    if pstext.same(kind, "startup"):
-        return (
-            f"Training allocation: up to {context.timesteps} requested steps per run."
-        )
     return (
-        f"Training allocation: {context.timesteps} steps per run. A run can extend to "
-        f"{context.max_timesteps} steps."
+        f"Training length: for each run, you choose `steps` between "
+        f"{context.timesteps:,} and {context.max_timesteps:,}. There is no standard "
+        "length. The time and AI usage of a run increase with its steps."
     )
 
 

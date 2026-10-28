@@ -23,14 +23,13 @@ Set `initialization` to `fresh` or `transfer`. The `seed`, `steps`,
 negative. The `description` and `rationale` strings must not be empty. The
 `steps` value must be a positive integer.
 
-The session prompt gives the training allocation and the longest permitted run.
-In a startup session, `steps` can be any positive value up to the allocation.
-In an inquiry session, `steps` is between the allocation and the longest run.
-You cannot change these values. The Runner rejects other values during
-validation, acceptance and the start of training.
+The session prompt gives the shortest and the longest permitted run. In a
+startup or an inquiry session, you choose `steps` in that range for each run.
+No length is standard. You cannot change the range. The Runner rejects other
+values during validation, acceptance and the start of training.
 
-A standard run uses the allocation. A longer run takes proportionally more
-time. Each run adds time and AI usage to the campaign.
+The time and AI usage of a run increase with its steps. Each run adds time and
+AI usage to the campaign.
 
 For `transfer` training, `parent` is required and must not be empty. For
 `fresh` training, do not give `parent`.
@@ -83,7 +82,7 @@ scientific independence of results or adequacy of a candidate. The integrity
 fingerprint of the complete artifact does not change.
 
 The learning algorithm can round the actual completed steps up to the end of
-its rollout. This rounding does not permit a different allocation.
+its rollout. This rounding does not permit a value outside the range.
 
 ## Role operation
 
