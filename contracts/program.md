@@ -104,7 +104,8 @@ direction.
 
 The inherited recipe is the reference for your first comparison. A first
 experiment that changes several parts of the recipe at once gives a result that
-you cannot attribute to any one of them.
+you cannot attribute to any one of them. After the first comparison, choose the
+size of a change from the explanation that it tests.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you
@@ -132,8 +133,8 @@ tested. A development result tends to overstate performance on new episodes
 when the same episodes also served to select the candidate or to design its
 changes.
 
-The official assessment is a terminal commitment. Its pass or fail result ends
-the campaign. It is not a development probe, and no inquiry follows it.
+The official assessment ends the campaign with its pass or fail result. It is
+not a development probe, and no inquiry follows it.
 
 An inquiry is a bounded scope of scientific work toward the goal. When you open
 an inquiry, you record its question, its connection to the goal, its closure
@@ -239,7 +240,8 @@ give. When you choose between useful actions, consider the effort to implement
 and execute them. Record the reason in the `rationale` field and in the session
 record.
 
-An inquiry can close with unresolved causes. Carry their consequences for
+An inquiry can close with unresolved causes. State which explanations remain
+open and which evidence can separate them. Carry their consequences for
 decisions forward into the next goal-review session. The closure of an inquiry
 does not itself justify continuing the broader direction or requesting the
 official assessment.

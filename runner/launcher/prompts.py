@@ -221,13 +221,14 @@ def _handoff_context(
 def _decision_guidance(state: dict, kind: object) -> list[str]:
     goal_review = pstext.same(kind, "goal_review")
     lines = [
-        "Compare the prospects of the strongest candidate on the official panel "
-        "with the prospects of one more inquiry. Use the completed evidence and its "
-        "limits for both actions. Explain why the chosen action is preferable now."
+        "Compare the risk of the official assessment, given the residual failures "
+        "that you have not explained, with what one more inquiry can learn about "
+        "them. Use the completed evidence and its limits for both actions. Explain "
+        "why the chosen action is preferable now."
         if goal_review
-        else "State the unresolved distinction or the development step that the "
-        "operation addresses. State how its result could produce or select a better "
-        "candidate.",
+        else "State the explanation or the unresolved distinction that the operation "
+        "tests. A development step states the explanation that motivates it. State "
+        "how its result could produce or select a better candidate.",
         (
             "Review the completed evidence, the relevant learning trajectory and the "
             "unmeasured candidates."
@@ -429,7 +430,9 @@ def scientific_session_prompt(
             "From the decision-relevant synthesis of the scientific model, select the "
             "scientific distinction or the capability question that should determine "
             "the initial direction. State which findings would change that decision, "
-            "and how the first action follows from it. Treat the interpretations of "
+            "and how the first action follows from it. State which predictions of the "
+            "scientific model, including its invariances, your first measurements "
+            "check. Treat the interpretations of "
             "the scientific model as revisable in light of evidence. Do not require a "
             "measurement only to restate the scientific model."
             if pstext.same(kind, "startup")
