@@ -288,10 +288,7 @@ def validate_clean_human_owned_worktree() -> None:
             f"Harness runtime files have uncommitted changes: {harness_changed}",
             file=sys.stderr,
         )
-        problems.append(
-            "the harness that runs this campaign has uncommitted changes; the "
-            "maintainer must restore it"
-        )
+        problems.append("the Runner files contain uncommitted changes")
     if rejected:
         problems.append(
             f"protected or human-owned campaign files have uncommitted changes: "

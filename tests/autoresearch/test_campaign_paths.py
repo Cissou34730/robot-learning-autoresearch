@@ -43,9 +43,11 @@ def test_harness_document_changes_do_not_block_protected_evaluation(
         protocol.validate_clean_human_owned_worktree()
         (harness / "runner").mkdir()
         (harness / "runner" / "execution.py").write_text("changed\n", encoding="utf-8")
-        with pytest.raises(ValueError, match="maintainer must restore") as raised:
+        with pytest.raises(ValueError, match="Runner files contain") as raised:
             protocol.validate_clean_human_owned_worktree()
-        assert "runner/execution.py" not in str(raised.value)
+        message = str(raised.value)
+        assert "runner/execution.py" not in message
+        assert "harness" not in message and "maintainer" not in message
         assert "runner/execution.py" in capsys.readouterr().err
     finally:
         shutil.rmtree(base, ignore_errors=True)

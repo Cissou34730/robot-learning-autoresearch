@@ -260,9 +260,8 @@ class TrustSnapshot:
                     f"Harness runtime files changed during the campaign: {listed}. "
                     "Refusing to load mutable Runner or adapter code.",
                     pi_message=(
-                        "The harness that runs this campaign changed during the "
-                        "session. The Runner cannot execute operations until the "
-                        "maintainer restores it."
+                        "The Runner changed during the session. It cannot "
+                        "execute operations until its files are restored."
                     ),
                 )
             raise TrustViolation(

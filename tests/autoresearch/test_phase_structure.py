@@ -146,6 +146,8 @@ def test_launcher_trust_snapshot_protects_the_separate_harness(tmp_path):
         snapshot.verify()
     assert "benchmark/adapters/final_benchmark.py" in str(raised.value)
     assert "benchmark/" not in raised.value.pi_message
+    assert "harness" not in raised.value.pi_message.lower()
+    assert "maintainer" not in raised.value.pi_message.lower()
 
 
 def test_launcher_trust_snapshot_ignores_harness_documents_and_commits(tmp_path):
