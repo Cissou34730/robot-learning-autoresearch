@@ -58,6 +58,175 @@ def _ancestors(reducer, item_id):
     return chain
 
 
+def test_interleaved_session_and_operation_rows_are_chronological_and_collapsible():
+    reducer = TimelineReducer()
+    events = [
+        _event("session_started", 0, {"kind": "inquiry"}, session_id="S5"),
+        _event(
+            "inquiry_opened",
+            1,
+            {"question": "Transfer?"},
+            session_id="S5",
+            inquiry_id="I2",
+        ),
+        _event(
+            "operation_started",
+            2,
+            {"kind": "training"},
+            session_id="S5",
+            inquiry_id="I2",
+            operation_id="T3",
+        ),
+        _event(
+            "operation_completed",
+            330,
+            {"kind": "training"},
+            session_id="S5",
+            inquiry_id="I2",
+            operation_id="T3",
+        ),
+        _event("operation_submitted", 333, {"status": "completed"}, session_id="S5"),
+        _event(
+            "tool_call_started",
+            366,
+            {"name": "training_log_query", "tool_call_id": "query"},
+            session_id="S5",
+        ),
+        _event(
+            "operation_requested",
+            516,
+            {"kind": "measurement"},
+            session_id="S5",
+            inquiry_id="I2",
+            operation_id="M7",
+        ),
+        _event(
+            "eval_progress",
+            600,
+            {"episodes": 100, "episodes_total": 400},
+            session_id="S5",
+            inquiry_id="I2",
+            operation_id="M7",
+        ),
+    ]
+    for event in events:
+        reducer.ingest(event)
+    roots, _ = reducer.view()
+    rows = [item for item, _ in _walk(roots)]
+    stamps = [item.ts for item in rows if item.ts is not None]
+    assert stamps == sorted(stamps)
+    inquiries = [item for item in rows if item.is_group and item.kind == "inquiry"]
+    assert len(inquiries) == 2
+    assert inquiries[1].title.endswith("(continued)")
+    assert inquiries[0].item_id != inquiries[1].item_id
+    assert all(item.children for item in inquiries)
+    submitted = next(i for i, item in enumerate(rows) if item.title == "submitted")
+    measurement = next(
+        i for i, item in enumerate(rows) if item.item_id == "operation:M7"
+    )
+    assert submitted < measurement
+    assert _ancestors(reducer, "operation:M7")[-1] == inquiries[1].item_id
+
+    class _Host(App):
+        def compose(self):
+            yield EventLog({}, id="log")
+
+    async def scenario():
+        app = _Host()
+        live = TimelineReducer()
+        async with app.run_test(size=(120, 40)) as pilot:
+            log = app.query_one("#log", EventLog)
+
+            async def refresh():
+                roots, _ = live.view()
+                log.set_view(roots, active_ids=live.active_ids())
+                for node in log._node_by_id.values():
+                    if node.data.is_group and node.data.item_id not in log._collapsed:
+                        node.expand()
+                await pilot.pause()
+                stamps = [
+                    line.node.data.ts
+                    for line in log._tree_lines
+                    if line.node.data is not None and line.node.data.ts is not None
+                ]
+                assert stamps == sorted(stamps)
+
+            for event in events[:-1]:
+                live.ingest(event)
+                await refresh()
+            first = log._node_by_id[inquiries[0].item_id]
+            first.collapse()
+            await pilot.pause()
+            assert not first.is_expanded
+            live.ingest(events[-1])
+            await refresh()
+            assert log._node_by_id[inquiries[0].item_id] is first
+            assert not first.is_expanded
+            continued = log._node_by_id[inquiries[1].item_id]
+            continued.collapse()
+            await pilot.pause()
+            assert not continued.is_expanded
+            continued.expand()
+            await pilot.pause()
+            assert log._node_by_id["operation:M7"].parent is continued
+
+    asyncio.run(scenario())
+
+
+def test_interleaving_progress_does_not_move_an_earlier_row_past_a_session_message():
+    reducer = TimelineReducer()
+    for event in [
+        _event(
+            "training_progress",
+            1,
+            {"steps": 10, "target": 100},
+            session_id="S1",
+            operation_id="T1",
+        ),
+        _event("pi_message", 2, {"text": "Still observing."}, session_id="S1"),
+        _event(
+            "training_progress",
+            3,
+            {"steps": 20, "target": 100},
+            session_id="S1",
+            operation_id="T1",
+        ),
+    ]:
+        reducer.ingest(event)
+    rows = [item for item, _ in _walk(reducer.view()[0])]
+    progress = [item for item in rows if item.kind == "training_progress"]
+    assert [item.ts for item in progress] == [_at(1), _at(3)]
+    stamps = [item.ts for item in rows if item.ts is not None]
+    assert stamps == sorted(stamps)
+
+
+def test_delayed_events_and_filtered_segments_still_read_in_time_order():
+    reducer = TimelineReducer()
+    for event in [
+        _event(
+            "training_progress",
+            5,
+            {"steps": 50, "target": 100},
+            session_id="S1",
+            operation_id="T1",
+        ),
+        _event(
+            "training_progress",
+            3,
+            {"steps": 30, "target": 100},
+            session_id="S1",
+            operation_id="T1",
+        ),
+        _event("pi_message", 4, {"text": "Observing training."}, session_id="S1"),
+    ]:
+        reducer.ingest(event)
+    for options in ({}, {"query": "training"}, {"categories": {"training"}}):
+        rows = [item for item, _ in _walk(reducer.view(**options)[0])]
+        stamps = [item.ts for item in rows if item.ts is not None]
+        assert stamps == sorted(stamps)
+        assert sum(item.kind == "training_progress" for item in rows) == 2
+
+
 def test_operation_belongs_to_the_session_that_ran_it_not_the_one_that_opened_its_inquiry():
     reducer = TimelineReducer()
     reducer.ingest(

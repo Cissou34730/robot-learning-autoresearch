@@ -269,13 +269,20 @@ feeds can estimate from two advancing observations in the same attempt. Missing,
 stale, stopped or non-advancing data does not produce a fabricated zero ETA.
 Live and reconstructed candidate announcements share a candidate identity, so
 each checkpoint appears once and its identifier is not repeated in the row.
+The expanded training-results group shows one row per checkpoint, with its
+recorded reward and training-success proxy in the row summary. Candidate
+publication enriches that same row instead of adding a second announcement.
+These are training metrics, not development or official-assessment results.
 
 The Runner publishes one training sample every 30 seconds. It polls evaluation
 progress every second and publishes a sample when the counters change, and at
 least every 15 seconds. PI text is
 published at most once per second. Timeline progress rows are kept one per
 30 seconds for training and one per 15 seconds for evaluation; the newest row
-updates in place. A widget is redrawn only when its content changes: a header
+updates in place.
+Progress samples share a row only while no other visible event intervenes.
+An interleaving PI message or tool event preserves the earlier progress row.
+A widget is redrawn only when its content changes: a header
 counter that ticks does not re-lay out the screen, and a refresh of unchanged
 durable data redraws nothing. A tick with no new event does no work on the log
 except the counter of a running tool, so its cost does not grow with the length
@@ -328,7 +335,14 @@ deferred and is not shown.
 
 The output region is a virtualized `Tree` of collapsible timeline items:
 
-- campaign → session → inquiry → operation → leaf event;
+- session → inquiry → operation → leaf event, or campaign-owned events when
+  no session is named. Ownership never overrides chronological reading order;
+- rows are ordered by their recorded timestamps, with journal order breaking
+  ties. A group contains only a contiguous run of its owner's events. When
+  another owner intervenes, the first group stops there; later events open a
+  separate `(continued)` segment at their position in time. Each segment has
+  its own collapse state and duration. Collapsing or expanding never moves
+  later rows above earlier rows;
 - backend PI sessions, scientific sessions, inquiries and operations are
   distinct groups, so a coding child never hides the operation that requested
   it;
@@ -359,6 +373,10 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   `-`) and whether the PI operation request changed;
 - measurement panel rows show episodes, seed and instrument on start, and
   episodes, duration and success on completion;
+- a measurement header accumulates episodes across its panels against the
+  total in the request (for example `1,200 / 1,600 episodes | 75% | panel 4/4`).
+  Individual progress rows still report the current panel's episodes. Starting
+  the next panel does not reset the header to zero;
 - the sticky `Now` line names the active or pending operation and its summary;
 - the official assessment is a top-level group of its own, last, open by
   default, shown where it happened. Its header carries the model and, once done,
@@ -371,8 +389,8 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   them. A usage row also shows how many AIU the campaign used since the last one,
   for example `33.57 AIU (+5.70)`;
 - a run-state change adds no row (each one repeats an operation row); it drives
-  the `Now` line and the tab. The pinned Campaign group keeps only the start of
-  the campaign and notices that no session owns.
+  the `Now` line and the tab. Campaign-owned notices follow the same chronological
+  segmentation rule; they are not pinned above earlier session events.
 
 `Enter`/`Space` toggles the selected row, `Left`/`Right` collapse or expand,
 `/` searches the full event text (including collapsed detail), `f` filters by
@@ -571,8 +589,8 @@ uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresear
 The tests cover the writer and reader, the identity contract (every emitted
 kind is listed; strict mode rejects an event without its owner), concurrent
 writers, the absence of console output from every producer, the real panel
-following a journal written by the real writer in several chunk sizes (one
-group per session, operations under their own session, the official assessment
+following a journal written by the real writer in several chunk sizes (contiguous
+owner segments, operations under their own session, the official assessment
 as its own last group, every row timed and unique, a step unknown to the
 panel still shown, panel equal to a fresh fold), the projector contracts, the
 timeline reducer, the launcher's exclusion, stop and external-stop behaviour,
@@ -581,7 +599,9 @@ single-screen composition, stage IDs, goal gap, counters, pending chip,
 last-training proxy, live training reward/success, streamed/final PI
 deduplication, timeline grouping, default collapse, search/filter, timestamps
 and training intervals, paired tool calls with duration, coding/file/usage
-rows, measurement-panel and training-checkpoint numbers, the progress lifecycle
+rows, cumulative measurement-panel counts and visible per-checkpoint reward and
+training success, strict timestamp order through interleaving and collapse/expand,
+the progress lifecycle
 (training and evaluation, official assessment label, module measurement with
 unavailable counters, end-of-execution removal), reading position while new
 output arrives, the 80x24 compact floor, the too-small fallback and stale

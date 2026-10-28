@@ -270,6 +270,11 @@ class TimelineReducer:
         self._leaf_counts: dict[str, tuple[tuple, int]] = {}
         self._progress_rows: dict[str, TimelineItem] = {}
         self._coding_open = False
+        self._last_fact: tuple[str, str] | None = None
+        self._coalesce_progress = False
+        self._chronological_version = -1
+        self._chronological: list[TimelineItem] = []
+        self._segments: dict[str, list[str]] = {}
 
     # ------------------------------------------------------------------
     # Ingest
@@ -307,6 +312,8 @@ class TimelineReducer:
         ts = event.ts
         if kind == "liveness":
             return
+        self._coalesce_progress = self._last_fact == (kind, event.operation_id)
+        self._last_fact = (kind, event.operation_id)
         # Any other new event may change the view; an idle tick must not.
         self.version = next(_VERSIONS)
         session_id = event.session_id
@@ -897,10 +904,12 @@ class TimelineReducer:
         current_row = self._progress_rows.get(operation_id)
         if (
             current_row is not None
+            and self._coalesce_progress
             and item.children
             and item.children[-1] is current_row
             and ts is not None
             and previous_ts is not None
+            and (current_row.ts is None or ts >= current_row.ts)
             and (ts - previous_ts).total_seconds() < PROGRESS_ROW_SECONDS[kind]
         ):
             # Samples can arrive every second. While no other row has followed
@@ -910,6 +919,8 @@ class TimelineReducer:
             current_row.payload = dict(fields)
             current_row.ts = ts
             item.end_ts = ts
+            if kind == "eval_progress":
+                item.summary = self._operation_summary(item)
             return
         self._progress[operation_id] = (ts, steps if isinstance(steps, int) else None)
         leaf = TimelineItem(
@@ -923,6 +934,8 @@ class TimelineReducer:
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
+        if kind == "eval_progress":
+            item.summary = self._operation_summary(item)
 
     def _attempt_event(
         self, ts: datetime | None, session_id: str, fields: dict
@@ -1247,53 +1260,57 @@ class TimelineReducer:
             if isinstance(fields.get("candidates"), list)
             else []
         )
-        lines = []
-        for candidate in candidates:
-            if not isinstance(candidate, dict):
-                continue
-            if candidate.get("summary"):
-                lines.append(
-                    " | ".join(
-                        part
-                        for part in (
-                            str(candidate.get("candidate") or ""),
-                            str(candidate.get("summary")),
-                        )
-                        if part
-                    )
-                )
-                continue
-            lines.append(
-                " | ".join(
-                    part
-                    for part in (
-                        str(candidate.get("candidate") or ""),
-                        f"{_number(candidate.get('steps'))} steps"
-                        if candidate.get("steps") is not None
-                        else "",
-                        f"reward {candidate.get('ep_rew_mean')}"
-                        if candidate.get("ep_rew_mean") is not None
-                        else "",
-                        f"success {round(float(candidate['training_success']) * 100)}%"
-                        if isinstance(candidate.get("training_success"), (int, float))
-                        and not isinstance(candidate.get("training_success"), bool)
-                        else "",
-                    )
-                    if part
-                )
-            )
         leaf = TimelineItem(
             item_id=f"leaf:training_checkpoints:{operation_id}:{ts}",
             kind="training",
             title="training results",
             summary=f"{len(candidates)} candidates",
             ts=ts,
-            detail=tuple(lines),
+            is_group=True,
+            default_expanded=True,
             payload=dict(fields),
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
+        for candidate in candidates:
+            if not isinstance(candidate, dict):
+                continue
+            name = str(candidate.get("candidate") or candidate.get("checkpoint") or "")
+            item_id = f"candidate:{name}"
+            existing = self._items.get(item_id)
+            if existing is not None:
+                existing.payload = {**existing.payload, **candidate}
+                existing.summary = self._candidate_summary(existing.payload)
+                continue
+            checkpoint = TimelineItem(
+                item_id=item_id,
+                kind="role",
+                title=f"candidate {name}",
+                summary=self._candidate_summary(candidate),
+                ts=ts,
+                payload=dict(candidate),
+            )
+            leaf.children.append(checkpoint)
+            self._items[item_id] = checkpoint
         if ts is not None:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
+
+    @staticmethod
+    def _candidate_summary(fields: dict) -> str:
+        parts = []
+        steps = fields.get("training_steps", fields.get("steps"))
+        if steps is not None:
+            parts.append(f"{_number(steps)} steps")
+        # Current journals carry the scenario's success metric in this summary.
+        summary = str(fields.get("summary") or "")
+        if summary:
+            parts.append(summary)
+        else:
+            if fields.get("ep_rew_mean") is not None:
+                parts.append(f"reward {fields['ep_rew_mean']:g}")
+            success = fields.get("training_success")
+            if isinstance(success, (int, float)) and not isinstance(success, bool):
+                parts.append(f"success {float(success) * 100:g}%")
+        return " | ".join(parts)
 
     def _operation_submitted_event(
         self,
@@ -1449,7 +1466,9 @@ class TimelineReducer:
             or ""
         )
         if candidate:
-            summary = _first_line(fields.get("summary") or fields.get("text") or "")
+            summary = self._candidate_summary(fields) or _first_line(
+                fields.get("text") or ""
+            )
             if summary == candidate:
                 summary = ""
         leaf = TimelineItem(
@@ -1836,17 +1855,10 @@ class TimelineReducer:
                                 f"success {round(float(last['training_success']) * 100)}%"
                             )
         elif item.kind in {"measurement", "measurement_progress"}:
-            latest = next(
-                (
-                    child
-                    for child in reversed(item.children)
-                    if child.kind == "eval_progress"
-                ),
-                None,
-            )
-            if latest is not None:
-                parts.append(latest.summary)
-            else:
+            progress = self._measurement_summary(item)
+            if progress:
+                parts.append(progress)
+            if item.status == "completed":
                 completed = next(
                     (
                         child
@@ -1881,6 +1893,70 @@ class TimelineReducer:
                             if metrics.get("episodes") is not None:
                                 parts.append(f"{metrics.get('episodes')} episodes")
         return " | ".join(part for part in parts if part)
+
+    @staticmethod
+    def _measurement_summary(item: TimelineItem) -> str:
+        """Accumulate each panel once; a new panel never resets the operation."""
+        planned: list[dict] = []
+        panels: dict[tuple[str, str, str], tuple[int, int]] = {}
+        current: tuple[str, str, str] | None = None
+        for child in item.children:
+            fields = child.payload
+            request = fields.get("request")
+            if isinstance(request, dict):
+                measurement = request.get("measurement")
+                if isinstance(measurement, dict) and isinstance(
+                    measurement.get("measurements"), list
+                ):
+                    planned = measurement["measurements"]
+            if child.item_id.startswith("leaf:measurement_panel_started:"):
+                current = (
+                    str(fields.get("artifact") or ""),
+                    str(fields.get("instrument") or ""),
+                    str(fields.get("seed", "")),
+                )
+                episodes = fields.get("episodes")
+                previous = panels.get(current, (0, 0))
+                panels[current] = (
+                    previous[0],
+                    episodes if isinstance(episodes, int) else previous[1],
+                )
+            elif child.kind == "eval_progress" or child.item_id.startswith(
+                "leaf:measurement_panel_completed:"
+            ):
+                if current is None:
+                    current = ("", str(fields.get("instrument") or ""), "")
+                episodes = fields.get("episodes")
+                total = fields.get("episodes_total")
+                previous = panels.get(current, (0, 0))
+                panels[current] = (
+                    max(previous[0], episodes)
+                    if isinstance(episodes, int)
+                    else previous[0],
+                    total if isinstance(total, int) else previous[1],
+                )
+
+        targets = [
+            panel.get("episodes") for panel in planned if isinstance(panel, dict)
+        ]
+        total = (
+            sum(targets)
+            if targets
+            and all(isinstance(n, int) and not isinstance(n, bool) for n in targets)
+            else sum(target for _, target in panels.values())
+        )
+        done = sum(episodes for episodes, _ in panels.values())
+        if not panels and not total:
+            return ""
+        return " | ".join(
+            part
+            for part in (
+                f"{_number(done)} / {_number(total)} episodes",
+                f"{100 * done / total:.0f}%" if total else "",
+                f"panel {len(panels)}/{len(planned)}" if planned else "",
+            )
+            if part
+        )
 
     def _operation_detail(self, fields: dict) -> tuple[str, ...]:
         request = (
@@ -2034,6 +2110,9 @@ class TimelineReducer:
             owner = self._operation_session.get(self._active_operation)
             if owner:
                 ids.add(f"session:{owner}")
+        self._chronological_roots()
+        for owner in tuple(ids):
+            ids.update(self._segments.get(owner, []))
         return ids
 
     @staticmethod
@@ -2098,6 +2177,58 @@ class TimelineReducer:
             return self._live_tool(item)
         return self._clone(item, [self._deep_clone(child) for child in item.children])
 
+    def _chronological_roots(self) -> list[TimelineItem]:
+        """Project ownership into contiguous, independently collapsible segments."""
+        if self._chronological_version == self.version:
+            return self._chronological
+        entries: list[tuple[datetime, int, tuple[TimelineItem, ...], TimelineItem]] = []
+        order = {item_id: n for n, item_id in enumerate(self._items)}
+        earliest = datetime.min.replace(tzinfo=UTC)
+
+        def collect(items: list[TimelineItem], path: tuple[TimelineItem, ...]) -> None:
+            for item in items:
+                owners = (*path, item) if item.is_group else path
+                if item.is_group and item.children:
+                    collect(item.children, owners)
+                else:
+                    entries.append(
+                        (item.ts or earliest, order[item.item_id], owners, item)
+                    )
+
+        collect(self._roots, ())
+        entries.sort(key=lambda entry: (entry[0], entry[1]))
+        roots: list[TimelineItem] = []
+        stack: list[tuple[str, TimelineItem]] = []
+        segments: dict[str, list[str]] = {}
+        for _, _, owners, item in entries:
+            shared = 0
+            while (
+                shared < min(len(stack), len(owners))
+                and stack[shared][0] == owners[shared].item_id
+            ):
+                shared += 1
+            del stack[shared:]
+            for owner in owners[shared:]:
+                segment = self._clone(owner, [])
+                previous = segments.setdefault(owner.item_id, [])
+                if previous:
+                    segment.item_id = f"{owner.item_id}:continued:{item.item_id}"
+                    segment.title += " (continued)"
+                segment.ts = item.ts
+                segment.end_ts = segment.ts
+                previous.append(segment.item_id)
+                (stack[-1][1].children if stack else roots).append(segment)
+                stack.append((owner.item_id, segment))
+            if not item.is_group:
+                (stack[-1][1].children if stack else roots).append(item)
+            for _, segment in stack:
+                if item.ts is not None:
+                    segment.end_ts = max(segment.end_ts or item.ts, item.ts)
+        self._segments = segments
+        self._chronological = roots
+        self._chronological_version = self.version
+        return roots
+
     def _leaf_count(self, item: TimelineItem) -> int:
         """Events inside a group; cached until the group itself changes."""
         key = (len(item.children), item.end_ts)
@@ -2139,7 +2270,7 @@ class TimelineReducer:
                 return folded
             return self._clone(item, [build(child) for child in item.children])
 
-        roots = [build(root) for root in self._roots]
+        roots = [build(root) for root in self._chronological_roots()]
         return roots, matches
 
     def view(
@@ -2181,7 +2312,7 @@ class TimelineReducer:
             return True, self._clone(item, child_items)
 
         roots: list[TimelineItem] = []
-        for root in self._roots:
+        for root in self._chronological_roots():
             keep, filtered = include(root)
             if keep and filtered is not None:
                 roots.append(filtered)
