@@ -450,6 +450,70 @@ Without a journal file the report renders the header and the model table from
 durable state and the log states "Now: waiting for events". It rebuilds no
 history from durable records.
 
+### Decision: one journal file, followed by the console; no live connection
+
+Decided 2026-10-28 by the maintainer. Asked again later? Start here.
+
+**Question.** The journal is a file that the TUI polls. Should the TUI instead
+receive events directly from the processes that produce them, with no file?
+
+**Decision.** Keep the file as the one journal. Producers append to it; the
+console follows its end. Do not add a second, live path from the producers to
+the console.
+
+**Options considered.**
+
+- *No file; the launcher runs inside the console.* Rejected: impossible. The
+  campaign folder is fixed once per process (`runner/paths.py`, read at import
+  by the launcher, the Runner and the adapter). The console shows up to five
+  campaigns, so five launchers in one process would share one folder. This is
+  why each campaign has its own launcher process.
+- *No file; each process sends its events to a listener in the console.*
+  Rejected: a campaign started with `tools.run_parallel` has no console, so
+  its processes have nobody to send to, and a console opened afterwards cannot
+  connect to processes that are already running. For such campaigns the file is
+  the only place the events exist, so the console must read it in any case.
+- *File as a record plus a live connection to the console.* Rejected for now:
+  the file reader must stay for the case above, so the connection would be a
+  second path for the same facts. It would add a local listener with a token,
+  a short settle-and-sort window (events of two processes can arrive a few
+  milliseconds apart), and a catch-up step at start-up that drops duplicates by
+  `event_id`. Its only gain is a delay of a few hundred milliseconds instead of
+  up to one second, for campaigns started from the console. The defects this
+  work removed came from several paths carrying the same fact.
+- *File only (chosen).* One writer path, one reader path, the same for a
+  campaign started by the console, by `run_parallel`, or before the console
+  opened. A restart of the console loses nothing, because the log is rebuilt
+  from the file.
+
+**What a file-only design already gives.** The source writes each event once,
+in order, with its owners named. The console is a subscriber that follows the
+end of an append-only log. Ordering is the file's order, so a replay is exact.
+
+**Facts behind the decision.**
+
+- Before the Python launcher (2026-10-27) the launcher and the Runner printed
+  to the terminal. That output was recorded nowhere: closing the terminal lost
+  it. The TUI of #67 and #68 already read a per-campaign `.jsonl` feed.
+- A closed console already stops the campaigns it started (they run in a
+  kill-on-close job object), but campaigns started elsewhere keep running and
+  must stay observable.
+- Measured on recorded campaigns before this change: records up to 253 KB,
+  no torn line seen, six concurrent writers kept every record intact. This is
+  an observation, not a guarantee of append atomicity on Windows.
+
+**If the one-second delay matters.** Replace the poll with a file-change
+notification so the console wakes when the file grows. It needs no server and
+no second path, and it works for every way of starting a campaign. The one
+second tick stays for the clocks (elapsed time, ETA, the running-tool counter,
+the tab dots), which change without any event.
+
+**When to reopen.** If campaigns are always started from the console, or if a
+console that is not on the same machine is needed. Then a live connection with
+the file kept as the record (catch-up from the file, drop by `event_id`) is the
+design to build; the identity contract and the fold do not change, because they
+work on events whatever the transport.
+
 ## Validation
 
 ```powershell
