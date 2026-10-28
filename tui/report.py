@@ -54,6 +54,10 @@ COMPACT_WIDTH = 100
 COMPACT_HEIGHT = 30
 LIVENESS_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
 PROGRESS_STALE_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
+# The launcher's own error codes that end a launch (runner/launcher/assembly.py).
+_LAUNCHER_STOP_CODES = frozenset({"launcher_failed", "stop_deadline_exceeded"})
+# Events that only a newly started launch writes.
+_LAUNCH_KINDS = frozenset({"campaign_started", "session_start", "operation_started"})
 
 
 # The log is display-only. These tokens are the single palette used by the
@@ -490,6 +494,7 @@ class CampaignPanel(Widget):
         self._last_session: str = ""
         self._last_liveness: datetime | None = None
         self._last_error: str = ""
+        self._launcher_stopped = False
         self._feed_campaign: str | None = None
         self._campaign_id: str | None = None
         self._timeline = TimelineReducer(self._campaign_root)
@@ -679,6 +684,7 @@ class CampaignPanel(Widget):
         self._last_session = ""
         self._last_liveness = None
         self._last_error = ""
+        self._launcher_stopped = False
         self._process_running = None
         self._paused_at = None
         self._paused_intervals = []
@@ -1069,12 +1075,10 @@ class CampaignPanel(Widget):
                 )
             )
         if self._last_error:
-            lines.append(
-                Text(
-                    f"Attention: {self._last_error}"[:width],
-                    style=f"bold {palette.error}",
-                )
-            )
+            attention = f"Attention: {self._last_error}"
+            if len(attention) > width:
+                attention = attention[: max(1, width - 1)] + "…"
+            lines.append(Text(attention, style=f"bold {palette.error}"))
         return lines[: self._context_budget() + 2]
 
     # ------------------------------------------------------------------
@@ -1481,6 +1485,10 @@ class CampaignPanel(Widget):
     def _process_events(self, events: list[Observation], render: bool = True) -> None:
         for event in events:
             self._timeline.ingest(event)
+            if self._launcher_stopped and event.kind in _LAUNCH_KINDS:
+                # A new launch began after the stop: its failure no longer stands.
+                self._launcher_stopped = False
+                self._note("")
             handler = getattr(self, f"_event_{event.kind}", None)
             if handler is None:
                 continue
@@ -1488,6 +1496,15 @@ class CampaignPanel(Widget):
         if render:
             self._render_log()
             self._apply_layout()
+
+    def _event_error(self, event: Observation) -> None:
+        if event.fields.get("code") not in _LAUNCHER_STOP_CODES:
+            return
+        reason = _clean_text(
+            str(event.fields.get("text") or event.fields.get("message") or "")
+        )
+        self._launcher_stopped = True
+        self._note(f"The launcher stopped: {reason}")
 
     def _event_liveness(self, event: Observation) -> None:
         self._last_liveness = event.ts or _now()

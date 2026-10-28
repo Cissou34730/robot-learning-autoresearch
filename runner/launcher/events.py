@@ -5,7 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from runner import typed_events
-from runner.event_contract import JOURNAL_SUFFIX
+from runner.event_contract import JOURNAL_SUFFIX, PREPARATION_SESSION
+from runner.launcher import pstext
 from runner.launcher.summaries import load_state
 
 _SEVERITY = {"error": "error", "warning": "warning"}
@@ -72,6 +73,28 @@ class LauncherEvents:
         self, message: str, *, scope: str = "info", session_id: str = ""
     ) -> None:
         self.observe("notice", scope=scope, text=message, session_id=session_id)
+
+    def failure(self, message: str, *, code: str) -> None:
+        """The launcher stops: say why, in the session where it happened."""
+        self.observe(
+            "error",
+            scope="error",
+            text=message,
+            fields={"code": code},
+            session_id=self._current_owner(),
+        )
+
+    def _current_owner(self) -> str:
+        """The session the durable state says is in progress, else the campaign."""
+        try:
+            state = load_state(self._campaign_root)
+        except (OSError, ValueError):
+            return ""
+        if pstext.same(
+            pstext.field(state.get("scientific_model"), "status"), "pending"
+        ):
+            return PREPARATION_SESSION
+        return pstext.text(pstext.field(state.get("scientific_session"), "id"))
 
     def card(
         self,

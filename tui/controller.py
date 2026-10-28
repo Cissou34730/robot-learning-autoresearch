@@ -323,6 +323,10 @@ class ProcessMachinery(Protocol):
 
     def exit_code(self, child: object) -> int | None: ...
 
+    def failure_reason(self, child: object) -> str:
+        """What the launcher said on standard error as it stopped, if anything."""
+        ...
+
     def wait(self, child: object, seconds: float) -> int | None: ...
 
     def request_stop(self, child: object) -> bool: ...
@@ -909,7 +913,10 @@ class CampaignController:
                 target.detail = f"Launcher returned normally, but campaign state is unreadable: {error}"
         else:
             target.stage = "failed"
-            target.detail = f"launcher exited with code {code}"
+            reason = self._machinery.failure_reason(target.child)
+            target.detail = f"launcher exited with code {code}" + (
+                f": {reason}" if reason else ""
+            )
         self._machinery.finish(target.child)
         target.exit_code = code
         target.child = None

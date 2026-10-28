@@ -450,6 +450,16 @@ Without a journal file the report renders the header and the model table from
 durable state and the log states "Now: waiting for events". It rebuilds no
 history from durable records.
 
+When the launcher stops on a failure (a trust refusal, a failed bounded session,
+a Runner error it cannot recover from), it writes an `error` event with code
+`launcher_failed` or `stop_deadline_exceeded`, owned by the session in progress
+(`preparation`, or `S<n>`) and carrying the full reason. The log shows it in
+that session. The header's attention line repeats it until a new launch writes
+`campaign_started`, `session_start` or `operation_started`. When the launcher
+stops before it can write events (a dirty harness, a busy lock, an argument
+error), the console tab shows the last line the launcher wrote to standard
+error after "launcher exited with code".
+
 ### Decision: one journal file, followed by the console; no live connection
 
 Decided 2026-10-28 by the maintainer. Asked again later? Start here.

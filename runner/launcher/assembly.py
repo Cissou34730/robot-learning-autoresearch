@@ -94,9 +94,7 @@ def run_campaign(options: LaunchOptions, *, started_at: float) -> int:
             if phases.stop.deadline_exceeded
             else "launcher_failed"
         )
-        phases.events.observe(
-            "error", scope="error", text=str(error), fields={"code": code}
-        )
+        phases.events.failure(str(error), code=code)
         if phases.stop.deadline_exceeded or isinstance(error, StopDeadlineExceeded):
             return STOP_DEADLINE_EXIT_CODE
         raise LauncherError(str(error)) from error

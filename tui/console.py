@@ -775,6 +775,8 @@ class CampaignConsole(App):
             if state.stage == "stopping" and state.stop_started is not None:
                 elapsed = time.monotonic() - state.stop_started
                 return f"{active}: stopping, {elapsed:.0f}s elapsed, {max(0, state.stop_timeout + 5 - elapsed):.0f}s remaining"
+            if state.stage == "failed" and state.detail:
+                return f"{active}: failed ({state.detail[:240]})"
             return f"{active}: {stage}"
         parts = []
         for state in self._controller.folder_states():

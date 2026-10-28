@@ -66,6 +66,7 @@ class FakeMachinery:
         self.next_exit_code = 0
         self.wait_exit_code: int | None = 130  # cooperative stop succeeds by default
         self.fail_start: str | None = None
+        self.reason = ""
 
     # ProcessMachinery protocol -------------------------------------------
     def start(
@@ -108,6 +109,9 @@ class FakeMachinery:
 
     def finish(self, child: FakeChild) -> None:
         pass
+
+    def failure_reason(self, child: FakeChild) -> str:
+        return self.reason
 
 
 def _machine(tmp_path: Path) -> FakeMachinery:
@@ -548,6 +552,21 @@ def test_reap_classifies_exit_codes(tmp_path):
     controller.reap(third.label)
     assert third.stage == "failed"
     assert "code 7" in third.detail
+    assert third.detail == "launcher exited with code 7"
+
+
+def test_a_failed_launcher_reports_why_it_stopped(tmp_path):
+    controller, machinery, *_ = _controller(tmp_path)
+    machinery.reason = "Copilot bounded session failed: files changed"
+    controller.execute("start", [1], settings=control.LaunchSettings())
+    state = controller.state("campaign-1")
+    machinery.children[state.folder].pending_stop = False
+    machinery.next_exit_code = 1
+    controller.reap(state.label)
+    assert state.stage == "failed"
+    assert state.detail == (
+        "launcher exited with code 1: Copilot bounded session failed: files changed"
+    )
 
 
 def test_settle_escalates_to_forced_stop(tmp_path):
@@ -698,7 +717,13 @@ def test_supervised_launcher_captures_output_and_reports_exit(tmp_path, native_s
     from tui.process import LauncherBuilder
 
     script = tmp_path / "dummy.ps1"
-    script.write_text("Write-Output 'child-alive'\nexit 3\n", encoding="utf-8")
+    script.write_text(
+        "Write-Output 'child-alive'\n"
+        "[Console]::Error.WriteLine('first')\n"
+        "[Console]::Error.WriteLine('the reason it stopped')\n"
+        "exit 3\n",
+        encoding="utf-8",
+    )
     builder = LauncherBuilder(tmp_path)
     launcher = builder.start_command(
         _script(native_shell, script), tmp_path / "control"
@@ -708,6 +733,7 @@ def test_supervised_launcher_captures_output_and_reports_exit(tmp_path, native_s
     exit_code = launcher.wait(20.0)
     assert exit_code == 3
     assert launcher.poll() is True
+    assert launcher.last_error_line() == "the reason it stopped"
     assert "child-alive" in (tmp_path / "control" / "console.out.log").read_text(
         encoding="utf-8", errors="replace"
     )

@@ -438,6 +438,15 @@ class SupervisedLauncher:
     def exit_code(self) -> int | None:
         return self._exit_code
 
+    def last_error_line(self, limit: int = 400) -> str:
+        """The last line the launcher wrote to standard error, if any."""
+        try:
+            text = self._log.stderr_path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            return ""
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        return lines[-1][:limit] if lines else ""
+
     def wait(self, seconds: float) -> int:
         """Block until the launcher exits or ``seconds`` elapse."""
         deadline = time.monotonic() + max(0.0, seconds)
@@ -725,6 +734,9 @@ class LauncherMachinery:
 
     def exit_code(self, child: SupervisedLauncher) -> int | None:
         return child.exit_code
+
+    def failure_reason(self, child: SupervisedLauncher) -> str:
+        return child.last_error_line()
 
     def wait(self, child: SupervisedLauncher, seconds: float) -> int | None:
         code = child.wait(seconds)

@@ -243,6 +243,85 @@ def test_a_step_unknown_to_the_panel_still_renders_under_its_session(journal, tm
     )
 
 
+async def follow_attention(path, tmp_path, extra=()):
+    """What the panel says is wrong after reading ``path`` (then ``extra`` lines)."""
+    live = tmp_path / "attention.events.v2.jsonl"
+    live.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+    app = CampaignReport(demo=False, sources=DemoSources(), events_path=live)
+    async with app.run_test(size=(170, 50)) as pilot:
+        await pilot.pause()
+        app._master_tick()
+        await pilot.pause()
+        before = app._last_error
+        if extra:
+            with live.open("a", encoding="utf-8") as handle:
+                handle.write("".join(extra))
+            app._master_tick()
+            await pilot.pause()
+        roots, _ = app._timeline.view()
+        return before, app._last_error, roots
+
+
+def failed_launch(monkeypatch, tmp_path):
+    path = tmp_path / f"{CAMPAIGN}.events.v2.jsonl"
+    typed_events.reset()
+    monkeypatch.setenv("TUI_TYPED_EVENTS", str(path))
+    monkeypatch.setattr(typed_events, "strict", True)
+    typed_events.set_campaign(CAMPAIGN)
+    _emit("session_started", {"id": "S2"}, session_id="S2", actor="runner")
+    _emit("pi_message", {"text": "asking", "final": True}, session_id="S2", actor="pi")
+    _emit(
+        "error",
+        {
+            "text": "PI work changed repository content: runner/x.py",
+            "code": "launcher_failed",
+        },
+        scope="error",
+        severity="error",
+        session_id="S2",
+        actor="launcher",
+    )
+    typed_events.reset()
+    return path
+
+
+def test_a_launcher_failure_is_shown_with_its_reason_in_its_session(
+    monkeypatch, tmp_path
+):
+    path = failed_launch(monkeypatch, tmp_path)
+    _, attention, roots = asyncio.run(follow_attention(path, tmp_path))
+    session = next(item for item in roots if item.item_id == "session:S2")
+    failure = [row for row in walk(session.children) if row.severity == "error"]
+    assert len(failure) == 1
+    assert "runner/x.py" in " ".join((failure[0].summary, *failure[0].detail))
+    assert attention == (
+        "The launcher stopped: PI work changed repository content: runner/x.py"
+    )
+
+
+def test_the_failure_stops_standing_once_a_new_launch_begins(monkeypatch, tmp_path):
+    path = failed_launch(monkeypatch, tmp_path)
+    typed_events.reset()
+    again = tmp_path / "again.events.v2.jsonl"
+    monkeypatch.setenv("TUI_TYPED_EVENTS", str(again))
+    typed_events.set_campaign(CAMPAIGN)
+    _emit(
+        "session_start",
+        {"backend_session_id": "uuid"},
+        session_id="S2",
+        attempt="inv-2",
+        actor="pi",
+    )
+    typed_events.reset()
+    before, after, _ = asyncio.run(
+        follow_attention(
+            path, tmp_path, extra=again.read_text(encoding="utf-8").splitlines(True)
+        )
+    )
+    assert before.startswith("The launcher stopped")
+    assert after == ""
+
+
 def test_the_panel_equals_a_fresh_fold_whatever_the_chunking(journal, tmp_path):
     expected = signature(fold(journal))
     assert signature(fold(journal)) == expected

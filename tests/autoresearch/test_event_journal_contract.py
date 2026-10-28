@@ -111,6 +111,36 @@ def test_launcher_events_name_their_owner(tmp_path):
     )
 
 
+@pytest.mark.parametrize(
+    ("state", "owner"),
+    [
+        ({"scientific_model": {"status": "pending"}}, PREPARATION_SESSION),
+        (
+            {
+                "scientific_model": {"status": "ready"},
+                "scientific_session": {"id": "S2"},
+            },
+            "S2",
+        ),
+        ({"scientific_model": {"status": "ready"}, "scientific_session": None}, ""),
+    ],
+)
+def test_a_launcher_failure_is_owned_by_the_session_in_progress(tmp_path, state, owner):
+    root = tmp_path / "campaign"
+    path = root / "runner" / "state" / "research_state.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"campaign": {"id": "campaign-1"}, **state}))
+    events = LauncherEvents(root)
+    events._campaign_id = "campaign-1"
+    typed_events.configure(tmp_path / "journal.jsonl")
+    events.failure("the reason", code="launcher_failed")
+    (record,) = _records(tmp_path)
+    assert record["kind"] == "error" and record["severity"] == "error"
+    assert record["session_id"] == owner and record["actor"] == "launcher"
+    assert record["payload"]["text"] == "the reason"
+    assert record["payload"]["code"] == "launcher_failed"
+
+
 WRITER = """
 import sys
 from runner import typed_events
