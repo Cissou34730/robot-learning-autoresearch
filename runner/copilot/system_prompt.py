@@ -112,9 +112,11 @@ REMOVED_TOOL_BLOCKS = (
     "gh_cli_preference",
     "github-mcp-server-*",
     "code_search_tools",
-    # These sessions have no shell, so its usage rules would only mislead.
-    "powershell",
 )
+
+# The main PI has no shell, so its usage rules would only mislead. The analyst
+# has a shell under a command policy and keeps them.
+PI_ONLY_REMOVED_TOOL_BLOCKS = ("powershell",)
 
 REFERENCE_HEADER = (
     "# Campaign reference\n"
@@ -222,10 +224,17 @@ def _identity_transform(content: str) -> str:
     return re.sub(r"[ \t]*\n(?:[ \t]*\n)+", "\n\n", content).strip()
 
 
-def _tools_transform(content: str) -> str:
-    for tag in REMOVED_TOOL_BLOCKS:
-        content = _block(tag).sub("", content, count=1)
-    return content.rstrip()
+def _tools_transform(preliminary: bool) -> Callable[[str], str]:
+    removed = REMOVED_TOOL_BLOCKS
+    if not preliminary:
+        removed += PI_ONLY_REMOVED_TOOL_BLOCKS
+
+    def transform(content: str) -> str:
+        for tag in removed:
+            content = _block(tag).sub("", content, count=1)
+        return content.rstrip()
+
+    return transform
 
 
 def system_message(preliminary: bool, warn: Callable[[str], None]) -> dict:
@@ -242,7 +251,7 @@ def system_message(preliminary: bool, warn: Callable[[str], None]) -> dict:
             "code_change_rules": {"action": "remove"},
             "guidelines": {"action": "remove"},
             "last_instructions": {"action": "remove"},
-            "tool_instructions": {"action": _tools_transform},
+            "tool_instructions": {"action": _tools_transform(preliminary)},
             "custom_instructions": {
                 "action": "replace",
                 "content": campaign_reference(preliminary),
