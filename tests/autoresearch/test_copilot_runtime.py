@@ -294,6 +294,21 @@ def test_runtime_blocks_are_replaced_or_removed_and_missing_ones_reported():
     assert len(warnings) == 1 and "exploration_and_reading_files" in warnings[0]
 
 
+def test_the_shell_usage_rules_are_removed_from_the_tool_instructions():
+    sections = system_message(False, lambda _: None)["sections"]
+    text = sections["tool_instructions"]["action"](
+        "<tools>\n"
+        "<powershell>\nPay attention to the following when using the powershell "
+        "tool:\n<example>\nrun it\n</example>\n</powershell>\n"
+        "<view>\nPut independent reads in one call.\n</view>\n"
+        "</tools>\n"
+        "<gh_cli_preference>\nprefer gh\n</gh_cli_preference>\n"
+    )
+    assert "powershell" not in text and "run it" not in text
+    assert "gh_cli_preference" not in text and "prefer gh" not in text
+    assert "<view>" in text and "independent reads" in text
+
+
 def test_coder_is_confined_to_its_binding():
     scope = {"coding_paths": frozenset({SOURCE}), "read_paths": frozenset({SOURCE})}
     assert (

@@ -112,6 +112,8 @@ REMOVED_TOOL_BLOCKS = (
     "gh_cli_preference",
     "github-mcp-server-*",
     "code_search_tools",
+    # These sessions have no shell, so its usage rules would only mislead.
+    "powershell",
 )
 
 REFERENCE_HEADER = (
