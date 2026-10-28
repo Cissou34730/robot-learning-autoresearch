@@ -314,9 +314,14 @@ result did not change).
 - Cost: continuing past 196-198/200 adds 1-4 inquiries; the mean time to the
   assessment rose from 82 min (round 7) to 129 min.
 
-Five campaigns cannot separate 98% from 100% pass rate. The replay and the
-split by reflection I/O are the causal evidence; the round counts alone are
-not.
+**Why the result is not chance.** The five passes are one reproduced
+mechanism, not five independent draws. Every campaign followed the same route
+and closed the same gap the same way. The failure modes of rounds 8 and 9 are
+known (early stop at 197/200; the asymmetry explained by the shoulder limit),
+and none occurred in round 10. The decisive step, reflection-canonicalized
+I/O, gave 199-200/200 in all 12 campaigns that reached it, and the replay
+shows that the round-10 goal-review sentence moves the PI away from the early
+stop that ended `c0b3ef41`.
 
 ### Parallel rounds 7-9 (27-28 October)
 
