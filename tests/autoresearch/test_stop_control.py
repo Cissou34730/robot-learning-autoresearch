@@ -209,7 +209,7 @@ def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tm
             "training": {
                 "initialization": "fresh",
                 "seed": 4,
-                "steps": 10,
+                "steps": 10_000,
                 "description": "Train the current scientific recipe.",
                 "rationale": "Learning dynamics inform the next decision.",
             }

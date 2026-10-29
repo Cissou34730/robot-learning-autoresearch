@@ -236,7 +236,7 @@ def test_committed_human_harness_delta_does_not_block_scientific_operation(
             "training": {
                 "initialization": "fresh",
                 "seed": 1,
-                "steps": 10,
+                "steps": 10_000,
                 "description": "Train after a legitimate harness update.",
                 "rationale": "The result informs the next goal decision.",
             }

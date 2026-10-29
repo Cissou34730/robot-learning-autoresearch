@@ -83,29 +83,22 @@ def _write_request(request: dict) -> None:
     paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
 
 
-def test_training_allocation_default_and_maintainer_override(monkeypatch):
+def test_training_range_default_and_maintainer_override(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
-    assert run_experiment.parse_args().timesteps == 120_000
+    arguments = run_experiment.parse_args()
+    assert (arguments.timesteps, arguments.max_timesteps) == (10_000, 500_000)
     monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--timesteps", "60000"])
     assert run_experiment.parse_args().timesteps == 60_000
 
 
 @pytest.mark.parametrize(
-    ("allocation", "steps", "accepted"),
-    [
-        (120_000, 1, True),
-        (120_000, 60_000, True),
-        (120_000, 120_000, True),
-        (120_000, 120_001, False),
-        (60_000, 30_000, True),
-        (60_000, 60_001, False),
-    ],
+    ("steps", "accepted"), [(5, False), (10, True), (30, True), (31, False)]
 )
-def test_startup_training_requests_respect_maintainer_ceiling(
-    monkeypatch, tmp_path, allocation, steps, accepted
+def test_startup_training_requests_stay_within_the_range(
+    monkeypatch, tmp_path, steps, accepted
 ):
     state = _configure(monkeypatch, tmp_path)
-    monkeypatch.setattr(run_experiment, "TIMESTEPS", allocation)
+    monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 30)
     request = _training()
     request["training"]["steps"] = steps
     _write_request(request)
@@ -122,7 +115,7 @@ def test_startup_training_requests_respect_maintainer_ceiling(
         assert run_experiment.check_operation() == 0
         assert repository.read_state() == pending_state
     else:
-        with pytest.raises(ValueError, match="fixes the training allocation"):
+        with pytest.raises(ValueError, match="needs between 10 and 30 steps"):
             run_experiment.accept_operation(request, state)
         assert repository.read_state() == before
         assert state == before
@@ -131,7 +124,7 @@ def test_startup_training_requests_respect_maintainer_ceiling(
 @pytest.mark.parametrize(
     ("steps", "accepted"), [(5, False), (10, True), (30, True), (31, False)]
 )
-def test_inquiry_training_requests_stay_between_allocation_and_maximum(
+def test_inquiry_training_requests_stay_within_the_range(
     monkeypatch, steps, accepted
 ):
     monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
@@ -143,23 +136,22 @@ def test_inquiry_training_requests_stay_between_allocation_and_maximum(
     if accepted:
         assert run_experiment._training_allocation(request, state) == steps
     else:
-        with pytest.raises(ValueError, match="fixes the training allocation") as error:
+        with pytest.raises(ValueError, match="needs between") as error:
             run_experiment._training_allocation(request, state)
         assert "maintainer" not in str(error.value)
 
 
-def test_changed_maintainer_allocation_refuses_pending_training_without_mutation(
+def test_changed_maintainer_range_refuses_pending_training_without_mutation(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    monkeypatch.setattr(run_experiment, "TIMESTEPS", 500_000)
     request = _training()
     request["training"]["steps"] = 500_000
     run_experiment.accept_operation(request, state)
     before = repository.read_state()
-    monkeypatch.setattr(run_experiment, "TIMESTEPS", 120_000)
+    monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 120_000)
 
-    with pytest.raises(ValueError, match="fixes the training allocation"):
+    with pytest.raises(ValueError, match="needs between"):
         run_experiment.execute_pending_operation()
     assert repository.read_state() == before
 
@@ -415,7 +407,7 @@ def test_transfer_parent_is_revalidated_at_execution(monkeypatch, tmp_path):
         "resumed_finalization",
     ],
 )
-@pytest.mark.parametrize("requested_steps", [5, 10])
+@pytest.mark.parametrize("requested_steps", [10, 20])
 def test_completed_training_transaction_retries_publication_without_retraining(
     monkeypatch, tmp_path, failure_point, requested_steps
 ):
