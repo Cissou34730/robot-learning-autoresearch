@@ -1120,7 +1120,8 @@
                 files); the CLI <code>&lt;system_notifications&gt;</code> text, word for word (OI-061); our
                 <code>&lt;messages&gt;</code> text (a progress note goes with a tool call, a message without a tool
                 call ends the session); the analyst exploration text (analyst only); our autonomy text. No other CLI
-                text remains. PI about 99k characters, analyst about 32k.</td>
+                text remains. PI about 99k characters, analyst about 32k.
+              </td>
               <td><code>runner/copilot/system_prompt.py</code></td>
             </tr>
             <tr>
@@ -2228,7 +2229,8 @@
               <td>The fixed system prompt (branch <code>system-prompt-replace</code>) keeps the Copilot CLI
                 <code>&lt;system_notifications&gt;</code> text word for word. It is generic Copilot text and contains an
                 example. The PI receives these notifications when the scientific coder or reviewer becomes idle (258 of
-                601 recorded campaign sessions).</td>
+                601 recorded campaign sessions).
+              </td>
               <td><span class="tag">Open</span></td>
               <td>Decide whether the PI needs this text, and rewrite it in campaign terms or remove it. Consider whether
                 the console can use the notifications.</td>
@@ -2242,7 +2244,8 @@
                 (<code>target_radius_cm</code>, <code>target_angle_degrees</code>); 1-3
                 <code>artifact_evidence_query</code> traversal-budget refusals; the DeepSeek analyst read
                 <code>contracts/robots/robot.xml</code> relative to the campaign folder (the file is in the harness)
-                and then sent 5 shell commands that were refused. All are pre-existing.</td>
+                and then sent 5 shell commands that were refused. All are pre-existing.
+              </td>
               <td><span class="tag">Open</span></td>
               <td>The analyst shell was removed on 29 October. Options, none approved: refusal text that lists what
                 exists (paths, fields); a sentence in the reference header that the files exist only in the system
@@ -2959,7 +2962,8 @@
                 goal, time and AI usage. See <a href="#architecture">agents and data flow</a>.</td>
               <td>On branch <code>system-prompt</code>, <code>a969f07b</code>. One campaign, <code>f83fca4d</code>,
                 passed at 200/200; one run gives no effect estimate. Replace mode with one fixed text on branch
-                <code>system-prompt-replace</code>, <code>471574a0</code> (29 October).</td>
+                <code>system-prompt-replace</code>, <code>471574a0</code> (29 October).
+              </td>
             </tr>
             <tr>
               <td>Scientific-model phase: analyst persona, four headings</td>
@@ -3255,7 +3259,8 @@
           <code>&lt;system_notifications&gt;</code>, OI-061). The same branch labels each PI message note or end from
           the SDK message and removes duplicated PI messages (<code>5debe009</code>, <code>c15733ea</code>), gives each
           campaign its own pytest folder after parallel validations refused trainings (<code>c15733ea</code>) and
-          removes the analyst shell (<code>bede6a9d</code>, OI-062). Not merged into <code>harness</code>.</p>
+          removes the analyst shell (<code>bede6a9d</code>, OI-062). Not merged into <code>harness</code>.
+        </p>
       </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">28 October: startup sentence removed; no-recipe experiment running</h3>
