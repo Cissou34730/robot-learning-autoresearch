@@ -74,6 +74,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=_stop_timeout,
         default=defaults.DEFAULT_STOP_TIMEOUT_SECONDS,
     )
+    # Ends the run once the scientific model is published, before the startup session.
+    parser.add_argument("--stop-after-preparation", action="store_true")
     arguments = parser.parse_args(argv)
     if arguments.model is not None and not arguments.model:
         parser.error("--model must not be empty")
@@ -112,6 +114,7 @@ def launch_options(arguments: argparse.Namespace, campaign_root: Path) -> Launch
         timesteps=arguments.timesteps,
         max_timesteps=arguments.max_timesteps,
         stop_timeout_seconds=arguments.stop_timeout_seconds,
+        stop_after_preparation=arguments.stop_after_preparation,
     )
 
 

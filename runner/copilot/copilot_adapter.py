@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import subprocess
 import time
 
@@ -69,8 +70,9 @@ from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import stop_requested, wait_for_stop_request
 
 # The scientific-model analysis runs on its own Copilot model; PI sessions keep the launcher's.
-ANALYST_MODEL = "gpt-6.1-terra"
-ANALYST_REASONING = "medium"
+# Maintainer-only environment overrides allow a model comparison of the analysis.
+ANALYST_MODEL = os.environ.get("ROBOT_LEARNING_ANALYST_MODEL", "gpt-6.1-terra")
+ANALYST_REASONING = os.environ.get("ROBOT_LEARNING_ANALYST_REASONING", "medium")
 
 RESUMED_STATE_PROMPT = (
     "\n\nRecovered current Runner state (factual metadata, not new "

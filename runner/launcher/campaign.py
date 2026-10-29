@@ -59,6 +59,12 @@ def step(phases: Phases) -> int | None:
                 return STOPPED
             phases.events.status("END | campaign preparation", scope="session")
         phases.update_brief()
+        if phases.options.stop_after_preparation:
+            phases.events.status(
+                "PAUSE | scientific model published | stop after preparation",
+                scope="info",
+            )
+            return 0
         return None
     if state.get("pending_operation"):
         status = phases.pending_operation(state)

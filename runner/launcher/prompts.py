@@ -51,6 +51,8 @@ The PI trains the policy with reinforcement learning, from the starting recipe t
 * the quantities in the training log that show progress before task success occurs.
 * for each reward term that you consider, the behavior that the term makes cheapest for the policy, including behavior that collects reward without task success.
 * the relation between the reward, the end of the episode, the hold requirement and the discount factor.
+* the design choices of the starting recipe and of the proposed reward that have more than one credible option.
+* the training evidence that can choose between those options.
 
 Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI implements the reward. Do not write code.
 
@@ -342,7 +344,10 @@ def _training_allocation(
     return (
         f"Training length: for each run, you choose `steps` between "
         f"{context.timesteps:,} and {context.max_timesteps:,}. There is no standard "
-        "length. The time and AI usage of a run increase with its steps."
+        "length. The time and AI usage of a run increase with its steps. One "
+        "training operation can train 2 to 4 variants of the parameters at the "
+        "same time. When more than one design is credible, variants compare "
+        "them in one operation."
     )
 
 

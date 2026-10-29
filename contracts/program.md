@@ -107,6 +107,12 @@ When a method exists, an experiment that changes several of its parts at once
 gives a result that you cannot attribute to any one part. Choose the size of
 a change from the explanation that it tests.
 
+When two or more designs are credible, one training operation can train them
+as variants. The variants train at the same time, with the same seed and steps,
+and each design gets a result. A variant changes only parameters. Thus the
+parameters must select the design. `contracts/instruments/training.md`
+describes variants.
+
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you
 chose. After the startup session, a goal-review session starts.

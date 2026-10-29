@@ -55,6 +55,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--provider", default="github-copilot")
     # 0 pauses each campaign after its startup session.
     parser.add_argument("--max-inquiries", type=int)
+    parser.add_argument("--stop-after-preparation", action="store_true")
     parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--no-reset", action="store_true")
     parser.add_argument("--control-directory", type=Path)
@@ -323,6 +324,11 @@ def launch(arguments: argparse.Namespace) -> int:
                     []
                     if arguments.max_inquiries is None
                     else ["--max-inquiries", str(arguments.max_inquiries)]
+                ),
+                *(
+                    ["--stop-after-preparation"]
+                    if arguments.stop_after_preparation
+                    else []
                 ),
                 group="researcher",
             ),

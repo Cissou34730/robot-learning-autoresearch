@@ -47,3 +47,4 @@ class LaunchOptions:
     timesteps: int
     max_timesteps: int
     stop_timeout_seconds: int
+    stop_after_preparation: bool = False
