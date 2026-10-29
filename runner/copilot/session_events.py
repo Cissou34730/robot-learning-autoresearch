@@ -49,9 +49,14 @@ def event_handler(
             return
         # Reasoning events are deliberately not shown: the console reports work done.
         if isinstance(data, AssistantMessageDeltaData):
-            console.delta(data.delta_content or "")
+            console.delta(data.delta_content or "", data.message_id)
         elif isinstance(data, AssistantMessageData):
-            console.message(data.content or "")
+            # A message that requests a tool continues the work; one without ends it.
+            console.message(
+                data.content or "",
+                data.message_id,
+                "note" if data.tool_requests else "end",
+            )
         elif isinstance(data, ToolExecutionStartData):
             console.tool(data.tool_name, data.arguments, data.tool_call_id)
         elif isinstance(data, ToolExecutionCompleteData):

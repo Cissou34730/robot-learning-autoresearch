@@ -469,6 +469,8 @@ class SessionReporter:
         self._message_emitted = 0
         self._message_emitted_at = 0.0
         self._pi_turn = 0
+        self._message_id: str | None = None
+        self._closed_message_id: str | None = None
         self.changed_files: dict[str, str] = {}
         self.session_error: str | None = None
         self.denied_calls: set[str] = set()
@@ -487,7 +489,8 @@ class SessionReporter:
         event_id: str | None = None,
     ) -> None:
         """One domain fact owned by this PI session."""
-        if kind != "pi_message":
+        # A usage fact arrives before the SDK's complete message; it must not end it.
+        if kind not in {"pi_message", "pi_context"}:
             self._close_message()
         typed_events.emit(
             kind,
@@ -498,30 +501,29 @@ class SessionReporter:
             event_id=event_id,
         )
 
-    def _close_message(self) -> None:
+    def _close_message(self, message_kind: str | None = None) -> None:
         """End the model's block before the next fact."""
         if not self._mid_stream:
             return
         message = self._message_text
         if message.strip():
-            self._emit(
-                "pi_message",
-                {
-                    "text": message,
-                    "final": True,
-                    "turn": self._pi_turn,
-                },
-                scope="pi",
-            )
+            payload = {"text": message, "final": True, "turn": self._pi_turn}
+            if message_kind:
+                payload["message_kind"] = message_kind
+            self._emit("pi_message", payload, scope="pi")
+        self._closed_message_id = self._message_id
         self._message_text = ""
         self._message_emitted = 0
         self._mid_stream = False
 
-    def delta(self, text: str) -> None:
+    def delta(self, text: str, message_id: str | None = None) -> None:
         if not text:
             return
+        if self._mid_stream and message_id and message_id != self._message_id:
+            self._close_message()
         if not self._mid_stream:
             self._mid_stream = True
+            self._message_id = message_id
             self._message_text = ""
             self._message_emitted = 0
             self._message_emitted_at = 0.0
@@ -552,11 +554,20 @@ class SessionReporter:
             scope="pi",
         )
 
-    def message(self, text: str) -> None:
-        if self._mid_stream or not text:
-            return
-        self.delta(text)
-        self._close_message()
+    def message(
+        self,
+        text: str,
+        message_id: str | None = None,
+        message_kind: str | None = None,
+    ) -> None:
+        """The SDK's complete message: it ends and labels the streamed one."""
+        if not self._mid_stream:
+            if not text or (message_id and message_id == self._closed_message_id):
+                return
+            self.delta(text, message_id)
+        elif text:
+            self._message_text = text
+        self._close_message(message_kind)
 
     def tool(
         self, name: str, arguments: object, tool_call_id: str | None = None
@@ -843,8 +854,13 @@ class CodingReporter(SessionReporter):
         self.model_calls += 1
         self.last_input_tokens = input_tokens or 0
 
-    def delta(self, text: str) -> None:
+    def delta(self, text: str, message_id: str | None = None) -> None:
         pass
 
-    def message(self, text: str) -> None:
+    def message(
+        self,
+        text: str,
+        message_id: str | None = None,
+        message_kind: str | None = None,
+    ) -> None:
         pass

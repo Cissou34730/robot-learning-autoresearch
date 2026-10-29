@@ -282,6 +282,22 @@ def test_the_system_message_replaces_the_cli_prompt_with_one_fixed_text():
     assert ANALYST_EXPLORATION not in system_prompt(False)
 
 
+def test_an_assistant_message_is_a_note_when_it_requests_a_tool():
+    from copilot.session_events import AssistantMessageData
+
+    from runner.copilot.session_events import event_handler
+
+    calls = []
+    console = SimpleNamespace(message=lambda *values: calls.append(values))
+    handler = event_handler(console, asyncio.Event())
+    for message_id, requests in (("m1", [object()]), ("m2", None)):
+        data = AssistantMessageData(
+            content="text", message_id=message_id, tool_requests=requests
+        )
+        handler(SimpleNamespace(agent_id=None, data=data))
+    assert calls == [("text", "m1", "note"), ("text", "m2", "end")]
+
+
 def test_coder_is_confined_to_its_binding():
     scope = {"coding_paths": frozenset({SOURCE}), "read_paths": frozenset({SOURCE})}
     assert (

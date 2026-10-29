@@ -940,6 +940,32 @@ def test_event_log_uses_a_fixed_time_column():
     assert log._column(untimed, False)[1].text == "        "
 
 
+def test_event_log_labels_pi_notes_and_end_messages():
+    _run(_pi_message_labels())
+
+
+async def _pi_message_labels():
+    app = _demo_app()
+    async with app.run_test(size=(160, 45)) as pilot:
+        await pilot.pause()
+        stamp = datetime(2026, 10, 26, 9, 8, 13, tzinfo=UTC)
+        for turn, kind in (("label-1", "note"), ("label-2", "end"), ("label-3", None)):
+            fields = {"turn": turn, "text": f"text {turn}", "final": True}
+            if kind:
+                fields["message_kind"] = kind
+            app._process_events([Observation("pi_message", stamp, fields)])
+        await pilot.pause()
+        out = app.query_one("#output")
+        labels = {}
+        for item in _timeline_items(app):
+            if item.kind == "pi" and str(item.payload.get("turn")).startswith("label"):
+                node = out._node_by_id[item.item_id]
+                labels[item.payload["turn"]] = out._flow_lines(node, item)[0].plain
+        assert labels["label-1"].startswith("PI note")
+        assert labels["label-2"].startswith("PI end")
+        assert labels["label-3"].startswith("PI ") and "note" not in labels["label-3"]
+
+
 def test_selected_row_uses_a_gutter_marker():
     _run(_gutter_marker())
 
