@@ -716,6 +716,11 @@ def test_stop_without_target_requires_selection(tmp_path):
 requires_windows = pytest.mark.skipif(
     os.name != "nt", reason="Job Objects are Windows-only"
 )
+# A long-lived grandchild: the containment tests check it dies with the tree.
+_SLEEPING_DESCENDANT = (
+    "powershell.exe -WindowStyle Hidden "
+    "-ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 120'"
+)
 
 
 @pytest.fixture(params=["installed", "windows-powershell"])
@@ -863,7 +868,7 @@ def test_force_stop_terminates_the_whole_contained_tree(tmp_path, native_shell):
     script = tmp_path / "spawner.ps1"
     pidfile = tmp_path / "child.pid"
     script.write_text(
-        "$p = Start-Process ping.exe -ArgumentList '-n','60','127.0.0.1' -PassThru\n"
+        f"$p = Start-Process {_SLEEPING_DESCENDANT} -PassThru\n"
         f"$p.Id | Set-Content -LiteralPath '{pidfile}'\nStart-Sleep -Seconds 60\n",
         encoding="utf-8",
     )
@@ -899,7 +904,7 @@ def test_kill_on_close_contains_native_descendants_after_owner_crash(
     script = tmp_path / "spawner.ps1"
     pidfile = tmp_path / "child.pid"
     script.write_text(
-        "$p = Start-Process ping.exe -ArgumentList '-n','60','127.0.0.1' -PassThru\n"
+        f"$p = Start-Process {_SLEEPING_DESCENDANT} -PassThru\n"
         f"$p.Id | Set-Content -LiteralPath '{pidfile}'\nStart-Sleep 60\n",
         encoding="utf-8",
     )
@@ -1142,7 +1147,7 @@ def test_a_detached_launcher_keeps_running_and_its_record_ends_it(
     script = tmp_path / "spawner.ps1"
     pidfile = tmp_path / "child.pid"
     script.write_text(
-        "$p = Start-Process ping.exe -ArgumentList '-n','120','127.0.0.1' -PassThru\n"
+        f"$p = Start-Process {_SLEEPING_DESCENDANT} -PassThru\n"
         f"$p.Id | Set-Content -LiteralPath '{pidfile}'\nStart-Sleep -Seconds 120\n",
         encoding="utf-8",
     )

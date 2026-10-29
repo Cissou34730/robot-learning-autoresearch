@@ -125,6 +125,10 @@ def _first_line(text: object, limit: int = 120) -> str:
     return value if len(value) <= limit else value[: limit - 1].rstrip() + "..."
 
 
+def _full_text(text: object) -> str:
+    return str(text or "").strip()
+
+
 def _short(value: object, limit: int = 160) -> str:
     text = str(value)
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "..."
@@ -659,10 +663,10 @@ class TimelineReducer:
             detail=tuple(
                 line
                 for line in (
-                    f"Question: {_first_line(fields.get('question'))}"
+                    f"Question: {_full_text(fields.get('question'))}"
                     if fields.get("question")
                     else "",
-                    f"Closure: {_first_line(fields.get('closure_condition'))}"
+                    f"Closure: {_full_text(fields.get('closure_condition'))}"
                     if fields.get("closure_condition")
                     else "",
                 )
@@ -728,7 +732,7 @@ class TimelineReducer:
         }:
             detail = self._operation_detail(fields)
             if fields.get("error"):
-                detail = (f"Error: {_first_line(fields.get('error'))}", *detail)
+                detail = (f"Error: {_full_text(fields.get('error'))}", *detail)
             leaf = TimelineItem(
                 item_id=f"leaf:{kind}:{operation_id}:{ts}",
                 kind=operation_kind,
@@ -969,7 +973,7 @@ class TimelineReducer:
             detail = tuple(
                 line
                 for line in (
-                    f"Objective: {_first_line(fields.get('objective'))}"
+                    f"Objective: {_full_text(fields.get('objective'))}"
                     if fields.get("objective")
                     else "",
                 )
@@ -984,13 +988,13 @@ class TimelineReducer:
             detail = tuple(
                 line
                 for line in (
-                    f"Summary: {_first_line(fields.get('summary'))}"
+                    f"Summary: {_full_text(fields.get('summary'))}"
                     if fields.get("summary")
                     else "",
-                    f"Next question: {_first_line(fields.get('next_question'))}"
+                    f"Next question: {_full_text(fields.get('next_question'))}"
                     if fields.get("next_question")
                     else "",
-                    f"Next: {_first_line(fields.get('next'))}"
+                    f"Next: {_full_text(fields.get('next'))}"
                     if fields.get("next")
                     else "",
                 )
@@ -1333,7 +1337,7 @@ class TimelineReducer:
             if status
             not in {"completed", "accepted", "running", "needs_pi", "checkpointed"}
             else "info",
-            detail=(f"Error: {_first_line(fields.get('error'))}",)
+            detail=(f"Error: {_full_text(fields.get('error'))}",)
             if fields.get("error")
             else (),
             payload=dict(fields),
@@ -1484,13 +1488,13 @@ class TimelineReducer:
             detail=tuple(
                 line
                 for line in (
-                    f"Current synthesis: {_first_line(fields.get('current_synthesis'))}"
+                    f"Current synthesis: {_full_text(fields.get('current_synthesis'))}"
                     if fields.get("current_synthesis")
                     else "",
-                    f"Next question: {_first_line(fields.get('next_question'))}"
+                    f"Next question: {_full_text(fields.get('next_question'))}"
                     if fields.get("next_question")
                     else "",
-                    f"Next: {_first_line(fields.get('next_direction_or_closure'))}"
+                    f"Next: {_full_text(fields.get('next_direction_or_closure'))}"
                     if fields.get("next_direction_or_closure")
                     else "",
                     f"Scientific commit: {fields.get('scientific_commit')}"
@@ -1500,7 +1504,7 @@ class TimelineReducer:
                     if fields.get("candidate")
                     else "",
                     f"Role: {fields.get('role')}" if fields.get("role") else "",
-                    f"Evidence: {_first_line(fields.get('evidence'))}"
+                    f"Evidence: {_full_text(fields.get('evidence'))}"
                     if fields.get("evidence")
                     else "",
                     f"Steps: {_number(fields.get('training_steps'))}"
