@@ -532,3 +532,11 @@ def demo_snapshot_args() -> tuple[dict, list[dict], list[dict]]:
         demo_records(now),
         demo_usage_rows(now),
     )
+
+
+class DemoSources:
+    """Synthetic material so the demo never touches real campaign files."""
+
+    def read(self) -> tuple[dict | None, list[dict], list[dict]]:
+        args = demo_snapshot_args()
+        return args

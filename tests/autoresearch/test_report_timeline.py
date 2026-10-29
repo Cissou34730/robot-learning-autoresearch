@@ -5,11 +5,135 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime, timedelta
 
+import pytest
+
 from runner.event_contract import rule_for
 from tui.demo import demo_schedule
 from tui.journal import JournalFeed
 from tui.observations import Observation
 from tui.timeline import TimelineReducer
+
+
+@pytest.mark.parametrize(
+    ("kind", "category", "fields"),
+    [
+        ("pi_message", "pi", {"text": "reasoning"}),
+        ("pi_context", "pi", {"input_tokens": 10}),
+        ("file_changed", "tools", {"path": "train.py"}),
+        ("checkpoint_saved", "roles", {"current_synthesis": "checkpoint"}),
+        ("operation_failed", "warnings", {"kind": "training", "error": "failed"}),
+    ],
+)
+def test_filters_use_source_and_display_classification(kind, category, fields):
+    reducer = TimelineReducer()
+    reducer.ingest(
+        Observation(
+            kind, None, fields, event_id="fact", session_id="S1", operation_id="T1"
+        )
+    )
+    roots, matches = reducer.view(categories={category})
+    leaves = [item for item in _walk(roots) if not item.is_group]
+    assert len(leaves) == matches == 1
+
+
+def test_group_search_respects_categories_and_counts_displayed_leaves():
+    reducer = TimelineReducer()
+    for kind, fields in (
+        ("operation_started", {"kind": "training"}),
+        ("pi_message", {"text": "unrelated"}),
+    ):
+        reducer.ingest(
+            Observation(kind, None, fields, session_id="S1", operation_id="T1")
+        )
+    roots, matches = reducer.view(query="T1", categories={"training"})
+    assert matches == 1
+    assert all(item.kind != "pi" for item in _walk(roots))
+    assert reducer.view(query="T1", categories={"warnings"}) == ([], 0)
+
+
+@pytest.mark.parametrize(
+    ("progress_kind", "operation_kind"),
+    [
+        ("measurement_panel_completed", "measurement"),
+        ("eval_progress", "measurement"),
+        ("operation_progress", "measurement"),
+        ("training_progress", "training"),
+    ],
+)
+def test_delayed_progress_does_not_reopen_completed_operation(
+    progress_kind, operation_kind
+):
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, tzinfo=UTC)
+    for kind, seconds in (
+        ("operation_started", 0),
+        ("operation_completed", 20),
+        (progress_kind, 10),
+    ):
+        reducer.ingest(
+            Observation(
+                kind,
+                start + timedelta(seconds=seconds),
+                {
+                    "kind": operation_kind,
+                    "episodes": 10,
+                    "episodes_total": 10,
+                    "steps": 10,
+                    "target": 10,
+                },
+                session_id="S1",
+                operation_id="M1",
+            )
+        )
+    operation = next(
+        item for item in _walk(reducer.view()[0]) if item.item_id == "operation:M1"
+    )
+    assert operation.status == "completed"
+    assert reducer.phase() not in {"evaluating", "training"}
+    assert operation.summary.startswith("completed")
+
+
+def test_operation_placeholder_is_promoted_without_changing_owner():
+    reducer = TimelineReducer()
+    for kind, fields in (
+        ("warning", {"message": "early reference"}),
+        ("operation_started", {"kind": "training"}),
+    ):
+        reducer.ingest(
+            Observation(kind, None, fields, session_id="S1", operation_id="T1")
+        )
+    operation = next(
+        item for item in _walk(reducer.view()[0]) if item.item_id == "operation:T1"
+    )
+    assert operation.kind == "training"
+    assert reducer.phase() == "training"
+
+
+def test_distinct_event_ids_keep_distinct_rows_at_the_same_timestamp():
+    reducer = TimelineReducer()
+    for number in range(2):
+        reducer.ingest(
+            Observation(
+                "operation_progress",
+                None,
+                {"kind": "training", "text": str(number)},
+                event_id=f"fact-{number}",
+                session_id="S1",
+                operation_id="T1",
+            )
+        )
+    leaves = [item for item in _walk(reducer.view()[0]) if not item.is_group]
+    assert len({item.item_id for item in leaves}) == 2
+    assert {item.event_id for item in leaves} == {"fact-0", "fact-1"}
+
+
+def test_legacy_event_identity_includes_its_owner():
+    reducer = TimelineReducer()
+    for session in ("S1", "S2"):
+        reducer.ingest(
+            Observation("pi_message", None, {"text": "same"}, session_id=session)
+        )
+    assert sum(item.kind == "pi" for item in _walk(reducer.view()[0])) == 2
 
 
 def _demo_reducer() -> TimelineReducer:

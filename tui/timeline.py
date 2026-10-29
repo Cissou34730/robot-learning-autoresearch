@@ -9,12 +9,11 @@ from __future__ import annotations
 
 import itertools
 import json
-from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime
+from hashlib import sha256
 from pathlib import Path
 
 from runner import reporting as console
-from runner.copilot.reporting import tool_detail, tool_result_lines
 from runner.event_contract import (
     LAUNCH_KINDS,
     LAUNCHER_STOP_CODES,
@@ -22,79 +21,23 @@ from runner.event_contract import (
     PREPARATION_SESSION,
     missing_identity,
 )
+from tui.activity import LiveActivity, training_eta_seconds
 from tui.observations import Observation
-from tui.projector import training_eta_seconds
-
-KIND_GLYPHS = {
-    "campaign": "[C]",
-    "session": "[S]",
-    "inquiry": "[I]",
-    "training": "[T]",
-    "measurement": "[M]",
-    "event": "[E]",
-    "operation": "[E]",
-    "pi": "[P]",
-    "tool": "[>]",
-    "coding": "[>]",
-    "file": "[~]",
-    "result": "[=]",
-    "checkpoint": "[#]",
-    "role": "[R]",
-    "warning": "[!]",
-    "error": "[x]",
-    "usage": "[U]",
-    "log": "[.]",
-}
-
-FILTER_CATEGORIES = {
-    "sessions": {"session"},
-    "inquiries": {"inquiry"},
-    "training": {"training", "training_progress", "training_checkpoints"},
-    "measurements": {
-        "measurement",
-        "eval_progress",
-        "measurement_panel_started",
-        "measurement_panel_completed",
-    },
-    "tools": {
-        "tool",
-        "tool_call",
-        "tool_call_started",
-        "tool_call_completed",
-        "tool_call_failed",
-        "tool_denied",
-        "coding",
-        "file_changed",
-    },
-    "pi": {"pi_message", "pi_context"},
-    "roles": {"role", "role_assigned", "candidate_created", "checkpoint_saved"},
-    "usage": {"usage", "usage_update", "campaign_usage", "session_usage"},
-    "warnings": {
-        "warning",
-        "error",
-        "operation_failed",
-        "publication_retry",
-    },
-    "operations": {
-        "operation",
-        "operation_requested",
-        "operation_started",
-        "operation_completed",
-        "operation_failed",
-        "operation_submitted",
-        "campaign_started",
-        "campaign_concluded",
-        "campaign_goal_review",
-        "run_state",
-        "scientific_model_validated",
-        "notice",
-    },
-}
-
-
-def _now() -> datetime:
-    return datetime.now(tz=UTC)
-
+from tui.timeline_formatting import as_percent as _as_percent
+from tui.timeline_formatting import candidate_summary as _candidate_summary
+from tui.timeline_formatting import clock as _clock
+from tui.timeline_formatting import first_line as _first_line
+from tui.timeline_formatting import full_text as _full_text
+from tui.timeline_formatting import json_text as _json_text
+from tui.timeline_formatting import now as _now
+from tui.timeline_formatting import number as _number
+from tui.timeline_formatting import operation_detail as _operation_detail
+from tui.timeline_formatting import operation_summary as _operation_summary
+from tui.timeline_formatting import short as _short
+from tui.timeline_formatting import tool_details as _tool_details
+from tui.timeline_formatting import tool_summary as _tool_summary
+from tui.timeline_items import KIND_GLYPHS, TimelineItem
+from tui.timeline_view import TimelineView
 
 _VERSIONS = itertools.count()
 PROGRESS_ROW_SECONDS = {"training_progress": 30.0, "eval_progress": 15.0}
@@ -106,144 +49,12 @@ def _lower_ts(item: TimelineItem, ts: datetime | None) -> None:
         item.ts = ts
 
 
-def _clock(stamp: datetime | None) -> str:
-    if stamp is None:
-        return ""
-    return f"{stamp.astimezone():%H:%M:%S}"
-
-
-def _duration(start: datetime | None, end: datetime | None) -> str:
-    if start is None:
-        return ""
-    finish = end or _now()
-    seconds = max(0.0, (finish - start).total_seconds())
-    return console.format_duration(seconds)
-
-
-def _first_line(text: object, limit: int = 120) -> str:
-    value = " ".join(str(text or "").split())
-    return value if len(value) <= limit else value[: limit - 1].rstrip() + "..."
-
-
-def _full_text(text: object) -> str:
-    return str(text or "").strip()
-
-
-def _short(value: object, limit: int = 160) -> str:
-    text = str(value)
-    return text if len(text) <= limit else text[: limit - 1].rstrip() + "..."
-
-
-def _json_text(value: object) -> str:
-    try:
-        return json.dumps(value, ensure_ascii=False, indent=2, default=str)
-    except (TypeError, ValueError):
-        return str(value)
-
-
-def _tool_context(fields: dict, root: Path | None = None) -> str:
-    text = str(
-        fields.get("detail")
-        or tool_detail(str(fields.get("name") or "tool"), fields.get("arguments"))
-    )
-    if root is not None:
-        for prefix in {str(root), root.as_posix()}:
-            text = text.replace(prefix + "\\", "").replace(prefix + "/", "")
-    return " ".join(text.split())
-
-
-def _tool_summary(
-    fields: dict, status: str, seconds: float | None = None, *, root: Path | None = None
-) -> str:
-    state = "running" if status == "started" else status
-    return " | ".join(
-        part
-        for part in (
-            state if state not in {"ok", "completed", ""} else "",
-            _tool_context(fields, root),
-            console.format_duration(seconds)
-            if seconds is not None and seconds >= 1
-            else "",
-        )
-        if part
-    )
-
-
-def _tool_details(fields: dict) -> tuple[str, ...]:
-    details = [
-        text.strip()
-        for text, _ in tool_result_lines(
-            str(fields.get("name") or "tool"), fields.get("result")
-        )
-    ]
-    error = fields.get("error") or fields.get("reason")
-    if error:
-        details.append(f"Error: {error}")
-    return tuple(details)
-
-
-def _number(value: object) -> str:
-    if isinstance(value, int) and not isinstance(value, bool):
-        return f"{value:,}"
-    if isinstance(value, float):
-        return f"{value:,.1f}"
-    return "unavailable"
-
-
-def _percent(value: object) -> str:
-    if isinstance(value, (int, float)) and not isinstance(value, bool):
-        return f"{float(value):g}%"
-    return "unavailable"
-
-
-def _as_percent(value: object) -> float | None:
-    """A percentage as a number, or ``None`` when the event did not carry it."""
-    if isinstance(value, (int, float)) and not isinstance(value, bool):
-        return float(value)
-    return None
-
-
-@dataclass
-class TimelineItem:
-    """One group or leaf in the operator timeline."""
-
-    item_id: str
-    kind: str
-    title: str
-    summary: str = ""
-    ts: datetime | None = None
-    end_ts: datetime | None = None
-    severity: str = "info"
-    detail: tuple[str, ...] = ()
-    children: list[TimelineItem] = field(default_factory=list)
-    default_expanded: bool = False
-    is_group: bool = False
-    event_id: str = ""
-    payload: dict = field(default_factory=dict)
-    status: str = ""
-    role: str = ""
-    # Number of events hidden in a closed group that is shown folded.
-    lazy: int = 0
-
-    @property
-    def glyph(self) -> str:
-        return KIND_GLYPHS.get(self.kind, "[.]")
-
-    def duration_text(self) -> str:
-        return _duration(self.ts, self.end_ts) if self.is_group else ""
-
-    def searchable(self) -> str:
-        parts = [self.title, self.summary, self.kind, self.status, *self.detail]
-        if self.payload:
-            parts.append(_json_text(self.payload))
-        return "\n".join(parts).casefold()
-
-
 class TimelineReducer:
     """Events in, grouped timeline out. No terminal and no campaign writes."""
 
     def __init__(self, campaign_root: Path | None = None) -> None:
         self._campaign_root = campaign_root
+        self.activity = LiveActivity()
         self._items: dict[str, TimelineItem] = {}
         self._roots: list[TimelineItem] = []
         self._seen: set[str] = set()
@@ -269,23 +80,25 @@ class TimelineReducer:
         self._last_completed_ts: datetime | None = None
         self._attempt = ""
         self._actor = ""
+        self._event_id = ""
+        self._event_kind = ""
         self.version = next(_VERSIONS)
         self._running_tools: set[str] = set()
-        self._leaf_counts: dict[str, tuple[tuple, int]] = {}
         self._progress_rows: dict[str, TimelineItem] = {}
         self._coding_open = False
         self._last_fact: tuple[str, str] | None = None
         self._coalesce_progress = False
-        self._chronological_version = -1
-        self._chronological: list[TimelineItem] = []
-        self._segments: dict[str, list[str]] = {}
+        self._view = TimelineView(self._roots, self._items, campaign_root)
+        self._view_version = self.version
 
     # ------------------------------------------------------------------
     # Ingest
     # ------------------------------------------------------------------
 
     def clear(self) -> None:
+        clock = self.activity.clock
         self.__init__(self._campaign_root)
+        self.activity.clock = clock
 
     def _diagnostic(self, event: Observation, missing: tuple[str, ...]) -> None:
         """An event that lacks a required identity is reported, never guessed."""
@@ -302,6 +115,8 @@ class TimelineReducer:
                 f"missing: {', '.join(missing)}",
             ),
             payload=dict(event.fields or {}),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._items[leaf.item_id] = leaf
         self._campaign_group().children.append(leaf)
@@ -311,15 +126,20 @@ class TimelineReducer:
         if event_id in self._seen:
             return
         self._seen.add(event_id)
+        self._event_id = event_id
+        self._event_kind = event.kind
         kind = event.kind
         fields = event.fields or {}
         ts = event.ts
         if kind == "liveness":
+            self.activity.ingest(event)
             return
         self._coalesce_progress = self._last_fact == (kind, event.operation_id)
         self._last_fact = (kind, event.operation_id)
         # Any other new event may change the view; an idle tick must not.
         self.version = next(_VERSIONS)
+        if kind != "run_state":
+            self._view_version = self.version
         session_id = event.session_id
         inquiry_id = event.inquiry_id
         operation_id = event.operation_id
@@ -332,11 +152,13 @@ class TimelineReducer:
         if missing:
             self._diagnostic(event, missing)
             return
+        self.activity.ingest(event)
         # Who spoke and in which invocation, for the handler about to run.
         self._attempt = event.attempt
         self._actor = event.actor
         self._campaign_group_follows(kind, fields, session_id)
-        self._resume_interrupted(kind, operation_id, fields)
+        if self._resume_interrupted(kind, operation_id, fields):
+            self._view_version = self.version
         if kind == "session_start":
             self._attempt_event(ts, session_id, fields)
             return
@@ -435,7 +257,19 @@ class TimelineReducer:
 
     @staticmethod
     def _fallback_id(event: Observation) -> str:
-        return f"legacy:{event.kind}:{event.ts}:{hash(json.dumps(event.fields, default=str))}"
+        identity = (
+            event.kind,
+            event.ts,
+            event.session_id,
+            event.inquiry_id,
+            event.operation_id,
+            event.campaign_id,
+            event.attempt,
+            event.actor,
+            event.fields,
+        )
+        encoded = json.dumps(identity, default=str, sort_keys=True).encode("utf-8")
+        return "legacy:" + sha256(encoded).hexdigest()
 
     # ------------------------------------------------------------------
     # Groups
@@ -446,16 +280,18 @@ class TimelineReducer:
         self._roots.append(item)
         return item
 
-    def _resume_interrupted(self, kind: str, operation_id: str, fields: dict) -> None:
+    def _resume_interrupted(self, kind: str, operation_id: str, fields: dict) -> bool:
         """A run state "executing" for an interrupted operation means it runs again."""
         if kind != "run_state" or fields.get("state") != "executing":
-            return
+            return False
         item = self._operations.get(operation_id)
         if item is not None and item.status == "interrupted":
             item.status = "running"
             item.severity = "info"
             self._active_operation = operation_id
-            item.summary = self._operation_summary(item)
+            item.summary = _operation_summary(item)
+            return True
+        return False
 
     def _campaign_group_follows(self, kind: str, fields: dict, session_id: str) -> None:
         """Keep the Campaign group open while a launcher failure stands in it.
@@ -484,6 +320,8 @@ class TimelineReducer:
                 title="Campaign",
                 is_group=True,
                 default_expanded=False,
+                event_id=self._event_id,
+                event_kind=self._event_kind,
             )
             self._items[item.item_id] = item
             self._roots.insert(0, item)
@@ -510,6 +348,8 @@ class TimelineReducer:
                     is_group=True,
                     default_expanded=False,
                     payload={"session_id": session_id, **fields},
+                    event_id=self._event_id,
+                    event_kind=self._event_kind,
                 )
             )
             self._sessions[session_id] = item
@@ -547,6 +387,8 @@ class TimelineReducer:
                 is_group=True,
                 default_expanded=True,
                 payload=dict(fields),
+                event_id=self._event_id,
+                event_kind=self._event_kind,
             )
             self._items[item.item_id] = item
             self._session(session_id, ts, {}).children.append(item)
@@ -591,6 +433,8 @@ class TimelineReducer:
                 is_group=True,
                 default_expanded=official,
                 status="requested",
+                event_id=self._event_id,
+                event_kind=self._event_kind,
             )
             self._items[item.item_id] = item
             if parent is None:
@@ -601,6 +445,10 @@ class TimelineReducer:
             self._operation_session[operation_id] = session_id
         elif session_id != self._operation_session.get(operation_id, session_id):
             self._report_conflict(operation_id, session_id, ts)
+        if item.kind == "operation" and kind and kind != "operation":
+            item.kind = kind
+            if operation_id != OFFICIAL_OPERATION:
+                item.title = f"{operation_id} {kind}"
         if ts is not None:
             item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
         _lower_ts(item, ts)
@@ -621,6 +469,8 @@ class TimelineReducer:
             summary=f"{operation_id}: first {owner}, now {session_id or 'none'}",
             ts=ts,
             severity="warning",
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._items[key] = leaf
         self._campaign_group().children.append(leaf)
@@ -649,7 +499,7 @@ class TimelineReducer:
         else:
             self._current_inquiry = (session_id, inquiry_id)
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{session_id}:{inquiry_id}:{ts}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="inquiry",
             title=(
                 "inquiry opened"
@@ -673,6 +523,8 @@ class TimelineReducer:
                 if line
             ),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
@@ -722,7 +574,8 @@ class TimelineReducer:
             if self._active_operation == operation_id:
                 self._active_operation = ""
         else:
-            item.status = "running"
+            if not finished:
+                item.status = "running"
             summary = _first_line(fields.get("text") or "running")
         if kind in {
             "operation_completed",
@@ -730,11 +583,11 @@ class TimelineReducer:
             "operation_requested",
             "operation_started",
         }:
-            detail = self._operation_detail(fields)
+            detail = _operation_detail(fields)
             if fields.get("error"):
                 detail = (f"Error: {_full_text(fields.get('error'))}", *detail)
             leaf = TimelineItem(
-                item_id=f"leaf:{kind}:{operation_id}:{ts}",
+                item_id=f"leaf:{self._event_kind}:{self._event_id}",
                 kind=operation_kind,
                 title=summary,
                 summary="",
@@ -742,23 +595,27 @@ class TimelineReducer:
                 severity=item.severity,
                 detail=detail,
                 payload=dict(fields),
+                event_id=self._event_id,
+                event_kind=self._event_kind,
             )
         else:
             text = _first_line(fields.get("text") or summary)
             leaf = TimelineItem(
-                item_id=f"leaf:{kind}:{operation_id}:{ts}",
+                item_id=f"leaf:{self._event_kind}:{self._event_id}",
                 kind=operation_kind,
                 title=text,
                 ts=ts,
                 severity=item.severity,
                 payload=dict(fields),
+                event_id=self._event_id,
+                event_kind=self._event_kind,
             )
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
         if item.status in {"running", "requested"}:
             self._active_operation = operation_id
-        item.summary = self._operation_summary(item)
+        item.summary = _operation_summary(item)
 
     def _official_result(
         self, item: TimelineItem, ts: datetime | None, fields: dict
@@ -801,7 +658,7 @@ class TimelineReducer:
             if line
         )
         leaf = TimelineItem(
-            item_id=f"leaf:operation_completed:official:{ts}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="result" if passed else "measurement",
             title=outcome,
             summary=" | ".join(part for part in (figures, margin) if part),
@@ -810,6 +667,8 @@ class TimelineReducer:
             detail=detail,
             payload=dict(fields),
             default_expanded=True,
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
@@ -883,7 +742,11 @@ class TimelineReducer:
                 scenario_metric,
             ]
             summary = "  ".join(part for part in parts if part)
-            item.summary = summary
+            item.summary = (
+                _operation_summary(item)
+                if item.status in {"completed", "failed", "passed"}
+                else summary
+            )
             title = summary
         else:
             episodes = fields.get("episodes")
@@ -903,7 +766,11 @@ class TimelineReducer:
                 interval,
             ]
             summary = "  ".join(part for part in parts if part)
-            item.summary = summary
+            item.summary = (
+                _operation_summary(item)
+                if item.status in {"completed", "failed", "passed"}
+                else summary
+            )
             title = summary
         current_row = self._progress_rows.get(operation_id)
         if (
@@ -924,22 +791,24 @@ class TimelineReducer:
             current_row.ts = ts
             item.end_ts = ts
             if kind == "eval_progress":
-                item.summary = self._operation_summary(item)
+                item.summary = _operation_summary(item)
             return
         self._progress[operation_id] = (ts, steps if isinstance(steps, int) else None)
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{operation_id}:{ts}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind=kind,
             title=title,
             ts=ts,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._progress_rows[operation_id] = leaf
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
         if kind == "eval_progress":
-            item.summary = self._operation_summary(item)
+            item.summary = _operation_summary(item)
 
     def _attempt_event(
         self, ts: datetime | None, session_id: str, fields: dict
@@ -950,12 +819,14 @@ class TimelineReducer:
         stage = _first_line(fields.get("stage") or "")
         resumed = " | resumed" if fields.get("resumed") else ""
         leaf = TimelineItem(
-            item_id=f"leaf:attempt:{session_id}:{self._attempt}:{ts}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="session",
             title="PI started",
             summary=f"{stage}{resumed}".strip(" |"),
             ts=ts,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
@@ -1001,13 +872,15 @@ class TimelineReducer:
                 if line
             )
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{sid}:{ts}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="session",
             title=title,
             summary=summary,
             ts=ts,
             detail=detail,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
@@ -1042,6 +915,8 @@ class TimelineReducer:
                 default_expanded=True,
                 detail=_tool_details(fields),
                 payload=dict(fields),
+                event_id=self._event_id,
+                event_kind=self._event_kind,
             )
             self._tools[key] = item
             self._running_tools.add(key)
@@ -1055,6 +930,8 @@ class TimelineReducer:
                     ts=ts,
                     payload=dict(fields),
                     default_expanded=True,
+                    event_id=self._event_id,
+                    event_kind=self._event_kind,
                 )
                 self._tools[key] = item
                 self._attach(item, operation_id, inquiry_id, session_id)
@@ -1105,7 +982,7 @@ class TimelineReducer:
         )
         severity = str(fields.get("severity") or "")
         leaf = TimelineItem(
-            item_id=f"leaf:coding:{phase}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="coding",
             title=f"coding {phase}".strip(),
             summary=summary,
@@ -1117,6 +994,8 @@ class TimelineReducer:
             else "info",
             detail=(_json_text(detail),) if detail else (),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
@@ -1137,13 +1016,15 @@ class TimelineReducer:
             " | PI operation request updated" if fields.get("operation_request") else ""
         )
         leaf = TimelineItem(
-            item_id=f"leaf:file:{path}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="file",
             title=f"{marker} {path}",
             summary=operation + suffix,
             ts=ts,
             detail=(f"Path: {fields.get('path')}",) if fields.get("path") else (),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
@@ -1168,12 +1049,14 @@ class TimelineReducer:
             if part
         )
         leaf = TimelineItem(
-            item_id=f"leaf:pi_context:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="pi",
             title="context",
             summary=summary,
             ts=ts,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
@@ -1190,9 +1073,8 @@ class TimelineReducer:
     ) -> None:
         op_id = operation_id or "official"
         item = self._operation(op_id, inquiry_id, session_id, ts, "measurement")
-        if item is None:
-            return
-        item.status = "running"
+        if item.status not in {"completed", "failed", "passed"}:
+            item.status = "running"
         artifact = str(fields.get("artifact") or fields.get("instrument") or "")
         if kind == "measurement_panel_started":
             title = f"panel {artifact}".strip()
@@ -1232,7 +1114,7 @@ class TimelineReducer:
             )
             severity = "info"
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{op_id}:{ts}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="measurement",
             title=title,
             summary=summary,
@@ -1244,12 +1126,15 @@ class TimelineReducer:
                 if key not in {"operation_id", "instrument"}
             ),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         item.children.append(leaf)
         self._items[leaf.item_id] = leaf
         item.end_ts = ts or item.end_ts
-        self._active_operation = op_id
-        item.summary = self._operation_summary(item)
+        if item.status == "running":
+            self._active_operation = op_id
+        item.summary = _operation_summary(item)
 
     def _training_checkpoints_event(
         self,
@@ -1265,7 +1150,7 @@ class TimelineReducer:
             else []
         )
         leaf = TimelineItem(
-            item_id=f"leaf:training_checkpoints:{operation_id}:{ts}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="training",
             title="training results",
             summary=f"{len(candidates)} candidates",
@@ -1273,6 +1158,8 @@ class TimelineReducer:
             is_group=True,
             default_expanded=True,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         for candidate in candidates:
@@ -1283,38 +1170,22 @@ class TimelineReducer:
             existing = self._items.get(item_id)
             if existing is not None:
                 existing.payload = {**existing.payload, **candidate}
-                existing.summary = self._candidate_summary(existing.payload)
+                existing.summary = _candidate_summary(existing.payload)
                 continue
             checkpoint = TimelineItem(
                 item_id=item_id,
                 kind="role",
                 title=f"candidate {name}",
-                summary=self._candidate_summary(candidate),
+                summary=_candidate_summary(candidate),
                 ts=ts,
                 payload=dict(candidate),
+                event_id=self._event_id,
+                event_kind=self._event_kind,
             )
             leaf.children.append(checkpoint)
             self._items[item_id] = checkpoint
         if ts is not None:
             self._touch_groups(ts, operation_id, inquiry_id, session_id)
-
-    @staticmethod
-    def _candidate_summary(fields: dict) -> str:
-        parts = []
-        steps = fields.get("training_steps", fields.get("steps"))
-        if steps is not None:
-            parts.append(f"{_number(steps)} steps")
-        # Current journals carry the scenario's success metric in this summary.
-        summary = str(fields.get("summary") or "")
-        if summary:
-            parts.append(summary)
-        else:
-            if fields.get("ep_rew_mean") is not None:
-                parts.append(f"reward {fields['ep_rew_mean']:g}")
-            success = fields.get("training_success")
-            if isinstance(success, (int, float)) and not isinstance(success, bool):
-                parts.append(f"success {float(success) * 100:g}%")
-        return " | ".join(parts)
 
     def _operation_submitted_event(
         self,
@@ -1326,7 +1197,7 @@ class TimelineReducer:
     ) -> None:
         status = str(fields.get("status") or "")
         leaf = TimelineItem(
-            item_id=f"leaf:operation_submitted:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="operation",
             title="submitted",
             summary=status,
@@ -1341,6 +1212,8 @@ class TimelineReducer:
             if fields.get("error")
             else (),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
@@ -1372,7 +1245,7 @@ class TimelineReducer:
             existing.payload = dict(fields)
             return
         leaf = TimelineItem(
-            item_id=f"leaf:pi:{who}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="pi",
             title="PI",
             summary=_first_line(text),
@@ -1380,6 +1253,8 @@ class TimelineReducer:
             detail=detail,
             default_expanded=True,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._pi_items[key] = leaf
         self._attach(leaf, operation_id, inquiry_id, session_id)
@@ -1420,7 +1295,7 @@ class TimelineReducer:
             root=self._campaign_root,
         )
         leaf = TimelineItem(
-            item_id=f"leaf:tool:{name}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="tool",
             title=name,
             summary=summary,
@@ -1428,6 +1303,8 @@ class TimelineReducer:
             detail=_tool_details({**fields, "detail": detail}),
             default_expanded=True,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
@@ -1450,7 +1327,7 @@ class TimelineReducer:
         item_id = (
             f"candidate:{candidate}"
             if candidate
-            else f"leaf:{kind}:{ts}:{len(self._seen)}"
+            else f"leaf:{self._event_kind}:{self._event_id}"
         )
         existing = self._items.get(item_id) if candidate else None
         if existing is not None:
@@ -1470,7 +1347,7 @@ class TimelineReducer:
             or ""
         )
         if candidate:
-            summary = self._candidate_summary(fields) or _first_line(
+            summary = _candidate_summary(fields) or _first_line(
                 fields.get("text") or ""
             )
             if summary == candidate:
@@ -1518,6 +1395,8 @@ class TimelineReducer:
                 if line
             ),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         if existing is not None:
             existing.title = leaf.title
@@ -1586,13 +1465,15 @@ class TimelineReducer:
             )
             detail = (_json_text(fields),)
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="usage",
             title=title,
             summary=summary,
             ts=ts,
             detail=detail,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         # Campaign usage totals show where they were written: in the official
         # assessment, else in the session that wrote them, else in the campaign.
@@ -1631,7 +1512,7 @@ class TimelineReducer:
         code = fields.get("code") or fields.get("id") or ""
         message = fields.get("message") or fields.get("text") or ""
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="error" if kind == "error" else "warning",
             title=(f"{code} {kind}".strip() if code else kind.replace("_", " ")),
             summary=_first_line(message),
@@ -1640,6 +1521,8 @@ class TimelineReducer:
             detail=(_json_text(fields),),
             default_expanded=True,
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
@@ -1672,7 +1555,7 @@ class TimelineReducer:
         # A commit identifier is noise on the timeline; the raw event keeps it.
         shown = {key: value for key, value in fields.items() if key != "commit"}
         leaf = TimelineItem(
-            item_id=f"leaf:{kind}:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind="result"
             if kind in {"publication_recovered", "scientific_model_validated"}
             or (official and status == "passed")
@@ -1690,6 +1573,8 @@ class TimelineReducer:
             severity="error" if official and status == "failed" else "info",
             detail=tuple(f"{key}: {_short(value)}" for key, value in shown.items()),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         if kind == "campaign_concluded":
             # The PI's request closes its session; the official outcome closes
@@ -1759,7 +1644,7 @@ class TimelineReducer:
             if len(text) > len(title):
                 detail.insert(0, text)
         leaf = TimelineItem(
-            item_id=f"leaf:notice:{ts}:{len(self._seen)}",
+            item_id=f"leaf:{self._event_kind}:{self._event_id}",
             kind=kind,
             title=title or "log",
             summary="",
@@ -1767,6 +1652,8 @@ class TimelineReducer:
             severity=severity,
             detail=tuple(line for line in detail if line.strip()),
             payload=dict(fields),
+            event_id=self._event_id,
+            event_kind=self._event_kind,
         )
         self._attach(leaf, operation_id, inquiry_id, session_id)
         if ts is not None:
@@ -1818,261 +1705,21 @@ class TimelineReducer:
             if item is not None:
                 item.end_ts = ts if item.end_ts is None else max(item.end_ts, ts)
 
-    def _operation_summary(self, item: TimelineItem) -> str:
-        parts = [item.status] if item.status else []
-        if item.kind == "training":
-            latest = next(
-                (
-                    child
-                    for child in reversed(item.children)
-                    if child.kind == "training_progress"
-                ),
-                None,
-            )
-            if latest is not None and item.status in {"running", "requested"}:
-                parts.append(latest.title)
-            else:
-                completed = next(
-                    (
-                        child
-                        for child in reversed(item.children)
-                        if child.kind == "training"
-                    ),
-                    None,
-                )
-                if completed is not None:
-                    result = (
-                        completed.payload.get("result")
-                        if isinstance(completed.payload.get("result"), dict)
-                        else {}
-                    )
-                    steps = result.get("completed_steps", result.get("requested_steps"))
-                    dynamics = result.get("learning_dynamics")
-                    if isinstance(steps, int):
-                        parts.append(f"{_number(steps)} steps")
-                    if isinstance(dynamics, list) and dynamics:
-                        last = dynamics[-1] if isinstance(dynamics[-1], dict) else {}
-                        if last.get("ep_rew_mean") is not None:
-                            parts.append(f"reward {last.get('ep_rew_mean')}")
-                        if last.get("training_success") is not None:
-                            parts.append(
-                                f"success {round(float(last['training_success']) * 100)}%"
-                            )
-        elif item.kind in {"measurement", "measurement_progress"}:
-            progress = self._measurement_summary(item)
-            if progress:
-                parts.append(progress)
-            if item.status == "completed":
-                completed = next(
-                    (
-                        child
-                        for child in reversed(item.children)
-                        if child.kind == "measurement"
-                    ),
-                    None,
-                )
-                if completed is not None:
-                    result = (
-                        completed.payload.get("result")
-                        if isinstance(completed.payload.get("result"), dict)
-                        else {}
-                    )
-                    panels = result.get("measurements")
-                    if isinstance(panels, list) and panels:
-                        best = max(
-                            (
-                                panel
-                                for panel in panels
-                                if isinstance(panel, dict)
-                                and isinstance(panel.get("metrics"), dict)
-                            ),
-                            key=lambda panel: float(
-                                panel["metrics"].get("success_percent") or 0
-                            ),
-                            default=None,
-                        )
-                        if best is not None:
-                            metrics = best["metrics"]
-                            parts.append(_percent(metrics.get("success_percent")))
-                            if metrics.get("episodes") is not None:
-                                parts.append(f"{metrics.get('episodes')} episodes")
-        return " | ".join(part for part in parts if part)
-
-    @staticmethod
-    def _measurement_summary(item: TimelineItem) -> str:
-        """Accumulate each panel once; a new panel never resets the operation."""
-        planned: list[dict] = []
-        panels: dict[tuple[str, str, str], tuple[int, int]] = {}
-        current: tuple[str, str, str] | None = None
-        for child in item.children:
-            fields = child.payload
-            request = fields.get("request")
-            if isinstance(request, dict):
-                measurement = request.get("measurement")
-                if isinstance(measurement, dict) and isinstance(
-                    measurement.get("measurements"), list
-                ):
-                    planned = measurement["measurements"]
-            if child.item_id.startswith("leaf:measurement_panel_started:"):
-                current = (
-                    str(fields.get("artifact") or ""),
-                    str(fields.get("instrument") or ""),
-                    str(fields.get("seed", "")),
-                )
-                episodes = fields.get("episodes")
-                previous = panels.get(current, (0, 0))
-                panels[current] = (
-                    previous[0],
-                    episodes if isinstance(episodes, int) else previous[1],
-                )
-            elif child.kind == "eval_progress" or child.item_id.startswith(
-                "leaf:measurement_panel_completed:"
-            ):
-                if current is None:
-                    current = ("", str(fields.get("instrument") or ""), "")
-                episodes = fields.get("episodes")
-                total = fields.get("episodes_total")
-                previous = panels.get(current, (0, 0))
-                panels[current] = (
-                    max(previous[0], episodes)
-                    if isinstance(episodes, int)
-                    else previous[0],
-                    total if isinstance(total, int) else previous[1],
-                )
-
-        targets = [
-            panel.get("episodes") for panel in planned if isinstance(panel, dict)
-        ]
-        total = (
-            sum(targets)
-            if targets
-            and all(isinstance(n, int) and not isinstance(n, bool) for n in targets)
-            else sum(target for _, target in panels.values())
-        )
-        done = sum(episodes for episodes, _ in panels.values())
-        if not panels and not total:
-            return ""
-        return " | ".join(
-            part
-            for part in (
-                f"{_number(done)} / {_number(total)} episodes",
-                f"{100 * done / total:.0f}%" if total else "",
-                f"panel {len(panels)}/{len(planned)}" if planned else "",
-            )
-            if part
-        )
-
-    def _operation_detail(self, fields: dict) -> tuple[str, ...]:
-        request = (
-            fields.get("request") if isinstance(fields.get("request"), dict) else {}
-        )
-        result = fields.get("result") if isinstance(fields.get("result"), dict) else {}
-        lines: list[str] = []
-        for key in (
-            "description",
-            "rationale",
-            "seed",
-            "parent",
-            "steps",
-            "initialization",
-        ):
-            if request.get(key) not in (None, ""):
-                lines.append(f"{key.title()}: {_short(request[key])}")
-        for key in (
-            "status",
-            "completed_steps",
-            "requested_steps",
-            "instrument",
-            "summary",
-        ):
-            if result.get(key) not in (None, ""):
-                lines.append(f"{key.replace('_', ' ').title()}: {_short(result[key])}")
-        candidates = result.get("candidates")
-        if isinstance(candidates, list) and candidates:
-            lines.append("Candidates: " + ", ".join(str(item) for item in candidates))
-        dynamics = result.get("learning_dynamics")
-        if isinstance(dynamics, list):
-            for packet in dynamics:
-                if not isinstance(packet, dict):
-                    continue
-                lines.append(
-                    "Learning: "
-                    + " | ".join(
-                        part
-                        for part in (
-                            str(packet.get("candidate") or ""),
-                            f"steps {_number(packet.get('training_steps'))}"
-                            if packet.get("training_steps") is not None
-                            else "",
-                            f"reward {packet.get('ep_rew_mean')}"
-                            if packet.get("ep_rew_mean") is not None
-                            else "",
-                            f"success {round(float(packet['training_success']) * 100)}%"
-                            if isinstance(packet.get("training_success"), (int, float))
-                            and not isinstance(packet.get("training_success"), bool)
-                            else "",
-                        )
-                        if part
-                    )
-                )
-        measurements = result.get("measurements")
-        if isinstance(measurements, list):
-            for panel in measurements:
-                if not isinstance(panel, dict):
-                    continue
-                metrics = (
-                    panel.get("metrics")
-                    if isinstance(panel.get("metrics"), dict)
-                    else {}
-                )
-                lines.append(
-                    "Panel: "
-                    + " | ".join(
-                        part
-                        for part in (
-                            str(
-                                panel.get("candidate")
-                                or panel.get("candidate_id")
-                                or ""
-                            ),
-                            str(panel.get("instrument") or ""),
-                            _percent(metrics.get("success_percent")),
-                            f"{metrics.get('episodes')} episodes"
-                            if metrics.get("episodes") is not None
-                            else "",
-                        )
-                        if part
-                    )
-                )
-        if not lines:
-            lines.append(_short(_json_text(fields), 400))
-        return tuple(lines)
-
     # ------------------------------------------------------------------
     # View
     # ------------------------------------------------------------------
 
     def phase(self) -> str:
-        """What the campaign is doing now: official, training, evaluating,
-        coding, preparing, pi or none."""
-        operation = (
-            self._operations.get(self._active_operation)
-            if self._active_operation
-            else None
-        )
-        if operation is not None and operation.status in {"running", "requested"}:
-            if self._active_operation == "official":
-                return "official"
-            if operation.kind == "training":
-                return "training"
-            if operation.kind == "measurement":
-                return "evaluating"
-        if self._coding_open:
-            return "coding"
+        operation = self._operations.get(self._active_operation)
         session = self._sessions.get(self._current_session)
-        if session is not None and session.status != "closed":
-            return "preparing" if self._current_session == PREPARATION_SESSION else "pi"
-        return "none"
+        return self.activity.phase(
+            self._active_operation,
+            operation.kind if operation else "",
+            operation.status if operation else "",
+            self._current_session if session is not None else "",
+            session.status == "closed" if session else True,
+            self._coding_open,
+        )
 
     @property
     def now_text(self) -> str:
@@ -2102,7 +1749,7 @@ class TimelineReducer:
             return "Now: waiting for events"
         return "Now: waiting for the first operation"
 
-    def active_ids(self) -> set[str]:
+    def _active_ids(self) -> set[str]:
         ids = set()
         if self._current_session:
             ids.add(f"session:{self._current_session}")
@@ -2114,38 +1761,24 @@ class TimelineReducer:
             owner = self._operation_session.get(self._active_operation)
             if owner:
                 ids.add(f"session:{owner}")
-        self._chronological_roots()
-        for owner in tuple(ids):
-            ids.update(self._segments.get(owner, []))
         return ids
 
-    @staticmethod
-    def _category_match(kind: str, categories: set[str]) -> bool:
-        if not categories:
-            return True
-        return any(
-            kind in FILTER_CATEGORIES.get(category, set()) for category in categories
-        )
+    def active_ids(self) -> set[str]:
+        return self._view.expand_active(self._view_version, self._active_ids())
 
-    @staticmethod
-    def _clone(item: TimelineItem, children: list[TimelineItem]) -> TimelineItem:
-        return TimelineItem(
-            item_id=item.item_id,
-            kind=item.kind,
-            title=item.title,
-            summary=item.summary,
-            ts=item.ts,
-            end_ts=item.end_ts,
-            severity=item.severity,
-            detail=item.detail,
-            children=children,
-            default_expanded=item.default_expanded,
-            is_group=item.is_group,
-            event_id=item.event_id,
-            payload=item.payload,
-            status=item.status,
-            role=item.role,
-            lazy=item.lazy,
+    def view(
+        self,
+        *,
+        query: str = "",
+        categories: set[str] | None = None,
+        open_ids: set[str] | None = None,
+    ) -> tuple[list[TimelineItem], int]:
+        return self._view.project(
+            self._view_version,
+            self._active_ids(),
+            query=query,
+            categories=categories,
+            open_ids=open_ids,
         )
 
     def live_summaries(self) -> dict[str, str]:
@@ -2162,162 +1795,3 @@ class TimelineReducer:
                     tool.payload, tool.status, seconds, root=self._campaign_root
                 )
         return summaries
-
-    def _live_tool(self, item: TimelineItem) -> TimelineItem:
-        """A running tool shows how long it has been running."""
-        if item.kind != "tool" or item.status != "started" or item.ts is None:
-            return item
-        seconds = max(0.0, (_now() - item.ts).total_seconds())
-        if seconds < 1:
-            return item
-        live = self._clone(item, item.children)
-        live.summary = _tool_summary(
-            item.payload, item.status, seconds, root=self._campaign_root
-        )
-        return live
-
-    def _deep_clone(self, item: TimelineItem) -> TimelineItem:
-        if not item.is_group:
-            return self._live_tool(item)
-        return self._clone(item, [self._deep_clone(child) for child in item.children])
-
-    def _chronological_roots(self) -> list[TimelineItem]:
-        """Project ownership into contiguous, independently collapsible segments."""
-        if self._chronological_version == self.version:
-            return self._chronological
-        entries: list[tuple[datetime, int, tuple[TimelineItem, ...], TimelineItem]] = []
-        order = {item_id: n for n, item_id in enumerate(self._items)}
-        earliest = datetime.min.replace(tzinfo=UTC)
-
-        def collect(items: list[TimelineItem], path: tuple[TimelineItem, ...]) -> None:
-            for item in items:
-                owners = (*path, item) if item.is_group else path
-                if item.is_group and item.children:
-                    collect(item.children, owners)
-                else:
-                    entries.append(
-                        (item.ts or earliest, order[item.item_id], owners, item)
-                    )
-
-        collect(self._roots, ())
-        entries.sort(key=lambda entry: (entry[0], entry[1]))
-        roots: list[TimelineItem] = []
-        stack: list[tuple[str, TimelineItem]] = []
-        segments: dict[str, list[str]] = {}
-        for _, _, owners, item in entries:
-            shared = 0
-            while (
-                shared < min(len(stack), len(owners))
-                and stack[shared][0] == owners[shared].item_id
-            ):
-                shared += 1
-            del stack[shared:]
-            for owner in owners[shared:]:
-                segment = self._clone(owner, [])
-                previous = segments.setdefault(owner.item_id, [])
-                if previous:
-                    segment.item_id = f"{owner.item_id}:continued:{item.item_id}"
-                    segment.title += " (continued)"
-                segment.ts = item.ts
-                segment.end_ts = segment.ts
-                previous.append(segment.item_id)
-                (stack[-1][1].children if stack else roots).append(segment)
-                stack.append((owner.item_id, segment))
-            if not item.is_group:
-                (stack[-1][1].children if stack else roots).append(item)
-            for _, segment in stack:
-                if item.ts is not None:
-                    segment.end_ts = max(segment.end_ts or item.ts, item.ts)
-        self._segments = segments
-        self._chronological = roots
-        self._chronological_version = self.version
-        return roots
-
-    def _leaf_count(self, item: TimelineItem) -> int:
-        """Events inside a group; cached until the group itself changes."""
-        key = (len(item.children), item.end_ts)
-        cached = self._leaf_counts.get(item.item_id)
-        if cached is not None and cached[0] == key:
-            return cached[1]
-
-        def count(node: TimelineItem) -> int:
-            if not node.is_group:
-                return 1
-            return sum(count(child) for child in node.children)
-
-        total = count(item)
-        self._leaf_counts[item.item_id] = (key, total)
-        return total
-
-    def _fast_view(self, open_ids: set[str] | None) -> tuple[list[TimelineItem], int]:
-        """The unfiltered view in one pass. A finished session that nobody has
-        opened is shown folded, so the cost follows what is open, not how long
-        the campaign has run."""
-        active = self.active_ids()
-        matches = 0
-
-        def build(item: TimelineItem) -> TimelineItem:
-            nonlocal matches
-            if not item.is_group:
-                matches += 1
-                return self._live_tool(item)
-            if (
-                open_ids is not None
-                and item.kind == "session"
-                and item.status == "closed"
-                and item.item_id not in active
-                and item.item_id not in open_ids
-            ):
-                folded = self._clone(item, [])
-                folded.lazy = self._leaf_count(item)
-                matches += folded.lazy
-                return folded
-            return self._clone(item, [build(child) for child in item.children])
-
-        roots = [build(root) for root in self._chronological_roots()]
-        return roots, matches
-
-    def view(
-        self,
-        *,
-        query: str = "",
-        categories: set[str] | None = None,
-        open_ids: set[str] | None = None,
-    ) -> tuple[list[TimelineItem], int]:
-        query = query.strip().casefold()
-        categories = categories or set()
-        if not query and not categories:
-            return self._fast_view(open_ids)
-        matches = 0
-
-        def include(item: TimelineItem) -> tuple[bool, TimelineItem | None]:
-            nonlocal matches
-            text_match = not query or query in item.searchable()
-            if not item.is_group:
-                keep = text_match and self._category_match(item.kind, categories)
-                if keep:
-                    matches += 1
-                return keep, self._live_tool(item) if keep else None
-            child_items: list[TimelineItem] = []
-            for child in item.children:
-                keep, filtered = include(child)
-                if keep and filtered is not None:
-                    child_items.append(filtered)
-            group_category_match = self._category_match(item.kind, categories)
-            if (not query and group_category_match) or (
-                query and text_match and not child_items
-            ):
-                child_items = [self._deep_clone(child) for child in item.children]
-            keep = bool(child_items) or (
-                not query and group_category_match and not item.children
-            )
-            if not keep:
-                return False, None
-            return True, self._clone(item, child_items)
-
-        roots: list[TimelineItem] = []
-        for root in self._chronological_roots():
-            keep, filtered = include(root)
-            if keep and filtered is not None:
-                roots.append(filtered)
-        return roots, matches

@@ -15,11 +15,8 @@ focus changes never touch campaign execution.
 
 from __future__ import annotations
 
-import re
-import textwrap
 import time
-from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import ClassVar
 
@@ -31,14 +28,56 @@ from textual.geometry import Size
 from textual.widget import Widget
 from textual.widgets import DataTable, Input, Static
 
-from runner import paths
-from runner import reporting as console
 from runner.event_contract import LAUNCH_KINDS, LAUNCHER_STOP_CODES
 from tui import projector
+from tui.activity import (
+    LIVENESS_SECONDS,
+    PROGRESS_STALE_SECONDS,
+    RUNNER_HEARTBEAT_SECONDS,
+    LiveActivity,
+)
+from tui.demo import DemoSources
 from tui.event_log import EventLog, FilterScreen, RawEventScreen
 from tui.journal import JournalFeed, journal_path_for
 from tui.observations import Observation
+from tui.report_presentation import (
+    PALETTES,
+    Palette,
+    context_budget,
+    context_lines,
+    contrast_ratio,
+    model_budget,
+    output_min_rows,
+)
+from tui.report_presentation import assessment_style as _assessment_style
+from tui.report_presentation import clean_text as _clean_text
+from tui.report_presentation import display_text as _display_text
+from tui.report_presentation import evaluation_lines as _evaluation_lines
+from tui.report_presentation import fit_text as _fit_text
+from tui.report_presentation import metric_cell as _metric_cell
+from tui.report_presentation import progress_bar_line as _progress_bar_line
+from tui.report_presentation import progress_title as _progress_title
+from tui.report_presentation import relative_luminance as _relative_luminance
+from tui.report_presentation import role_style as _role_style
+from tui.report_presentation import training_lines as _training_lines
+from tui.sources import CampaignSources
 from tui.timeline import TimelineReducer
+
+__all__ = [
+    "LIVENESS_SECONDS",
+    "PALETTES",
+    "PROGRESS_STALE_SECONDS",
+    "REPORT_CSS",
+    "RUNNER_HEARTBEAT_SECONDS",
+    "CampaignPanel",
+    "CampaignReport",
+    "CampaignSources",
+    "DemoSources",
+    "Palette",
+    "_display_text",
+    "_relative_luminance",
+    "contrast_ratio",
+]
 
 MIN_COLUMNS = 48
 MIN_ROWS = 16
@@ -50,288 +89,16 @@ TICK_SECONDS = 1.0
 DURABLE_FALLBACK_SECONDS = 15.0
 # The Runner publishes progress when counters change and at least this often
 # (runner.execution.STATUS_INTERVAL_SECONDS). Staleness limits derive from it.
-RUNNER_HEARTBEAT_SECONDS = 15.0
 COMPACT_WIDTH = 100
 COMPACT_HEIGHT = 30
-LIVENESS_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
-PROGRESS_STALE_SECONDS = 20 * RUNNER_HEARTBEAT_SECONDS
 
 
 # The log is display-only. These tokens are the single palette used by the
 # report; CSS picks its structural colours from the active Textual theme.
-@dataclass(frozen=True)
-class Palette:
-    """Semantic colour tokens for one terminal background."""
-
-    name: str
-    background: str
-    log_bg: str
-    column_bg: str
-    text: str
-    muted: str
-    heading: str
-    accent: str
-    success: str
-    warning: str
-    error: str
-    pi: str
-    pi_text: str
-    tool: str
-    section: str
-    result: str
-
-
-PALETTES: dict[str, Palette] = {
-    "dark": Palette(
-        name="dark",
-        background="#1e1e1e",
-        log_bg="#000000",
-        column_bg="#262626",
-        text="#e6e6e6",
-        muted="#b0b0b0",
-        heading="#f0f0f0",
-        accent="#7cc7ff",
-        success="#6ee7a8",
-        warning="#ffd166",
-        error="#ff8a9b",
-        pi="#e0aaff",
-        pi_text="#7de3e8",
-        tool="#b8c0cc",
-        section="#d7d7d7",
-        result="#6ee7a8",
-    ),
-    "light": Palette(
-        name="light",
-        background="#f5f5f5",
-        log_bg="#ffffff",
-        column_bg="#e2e2e2",
-        text="#1a1a1a",
-        muted="#4a4a4a",
-        heading="#111111",
-        accent="#0b5fa5",
-        success="#0f6b3d",
-        warning="#8a5a00",
-        error="#b3261e",
-        pi="#6b2d8f",
-        pi_text="#00656b",
-        tool="#3f4a5a",
-        section="#2a2a2a",
-        result="#0f6b3d",
-    ),
-}
-
-_FLOAT_RE = re.compile(r"(?<![\w.])-?\d+\.\d{4,}(?![\w.])")
-_PATH_RE = re.compile(
-    r"(?<![\w:/])(?:[A-Za-z]:[\\/][^\s,;:)\]}\"']*|/[^\s,;:)\]}\"']*)"
-)
-
-
-def _relative_luminance(color: str) -> float:
-    value = color.lstrip("#")
-    channels = [int(value[index : index + 2], 16) / 255 for index in (0, 2, 4)]
-
-    def linear(channel: float) -> float:
-        if channel <= 0.04045:
-            return channel / 12.92
-        return ((channel + 0.055) / 1.055) ** 2.4
-
-    red, green, blue = (linear(channel) for channel in channels)
-    return 0.2126 * red + 0.7152 * green + 0.0722 * blue
-
-
-def contrast_ratio(foreground: str, background: str) -> float:
-    """WCAG contrast ratio between two #RRGGBB colours."""
-    first = _relative_luminance(foreground)
-    second = _relative_luminance(background)
-    lighter, darker = max(first, second), min(first, second)
-    return (lighter + 0.05) / (darker + 0.05)
-
-
-def _status_style(status: str, palette: Palette) -> str:
-    """Pair the campaign status text with a semantic token."""
-    if status.startswith("RUNNING") and "unknown" not in status:
-        return f"bold {palette.success}"
-    if status.startswith("RUNNING"):
-        return f"bold {palette.warning}"
-    if status.startswith("ENDED") or status == "Loading":
-        return palette.muted
-    return palette.text
-
-
-def _display_text(value: str) -> str:
-    """Round long floats and compact absolute paths for display only."""
-    text = _clean_text(value)
-
-    def rounded(match: re.Match) -> str:
-        return f"{float(match.group(0)):.3f}"
-
-    text = _FLOAT_RE.sub(rounded, text)
-
-    def compact(match: re.Match) -> str:
-        token = match.group(0)
-        suffix = ""
-        while token and token[-1] in ".,;:":
-            suffix = token[-1] + suffix
-            token = token[:-1]
-        return f"{console.compact_path(token)}{suffix}"
-
-    return _PATH_RE.sub(compact, text)
 
 
 def _now() -> datetime:
     return datetime.now(tz=UTC)
-
-
-def _clean_text(value: object) -> str:
-    """Untrusted source text renders as text, never as markup or controls."""
-    if value is None:
-        return ""
-    return str(value).replace("\r", "")
-
-
-def _ts(stamp: datetime | None) -> str:
-    if stamp is None:
-        return "--:--"
-    return f"{stamp.astimezone():%H:%M}"
-
-
-def _start_time(stamp: datetime | None, now: datetime) -> str:
-    if stamp is None:
-        return "unavailable"
-    local = stamp.astimezone()
-    today = now.astimezone()
-    if local.year != today.year:
-        return local.strftime("%Y-%m-%d %H:%M:%S")
-    return local.strftime(
-        "%H:%M:%S" if local.date() == today.date() else "%d %b %H:%M:%S"
-    )
-
-
-def _hang_styled(
-    prefix: str,
-    text: str,
-    width: int,
-    prefix_style: str = "dim",
-    body_style: str | None = None,
-) -> list[Text]:
-    """Wrap text under a fixed prefix, styling the prefix and the body."""
-    width = max(width, 20)
-    out: list[Text] = []
-    indent = " " * len(prefix)
-    current_prefix = prefix
-    for paragraph in text.split("\n") or [""]:
-        if not paragraph.strip():
-            out.append(Text(""))
-            current_prefix = indent
-            continue
-        wrapped = textwrap.wrap(
-            paragraph,
-            width=width,
-            initial_indent=current_prefix,
-            subsequent_indent=indent,
-            break_long_words=True,
-            break_on_hyphens=False,
-        )
-        segments = wrapped or [current_prefix.rstrip()]
-        for index, line in enumerate(segments):
-            piece = Text()
-            if index == 0 and current_prefix and len(line) >= len(current_prefix):
-                piece.append(line[: len(current_prefix)], style=prefix_style)
-                body = line[len(current_prefix) :]
-            else:
-                body = line
-            if body:
-                piece.append(body, style=body_style or "")
-            out.append(piece)
-        current_prefix = indent
-    return out
-
-
-def _fit_text(text: Text, width: int) -> Text:
-    if len(text.plain) <= width:
-        return text
-    clipped = text.copy()
-    clipped.truncate(max(1, width))
-    return clipped
-
-
-def _elapsed_text(seconds: float | None, label: str) -> str:
-    if seconds is None:
-        return f"{label} unavailable"
-    return f"{label} {console.format_duration(float(seconds))}"
-
-
-def _metric_cell(value: str, missing: str = "unavailable", muted: str = "dim") -> Text:
-    """Metric cell text; missing values render muted instead of invisible."""
-    text = _clean_text(value)
-    if value == missing or value.startswith(missing):
-        return Text(text, style=muted)
-    return Text(text)
-
-
-class CampaignSources:
-    """Reads the durable campaign files selected by the campaign root."""
-
-    def __init__(self, campaign_root: Path | None = None) -> None:
-        self._campaign_root = Path(campaign_root) if campaign_root else None
-        self._usage_path: Path | None = None
-
-    def _locations(self) -> tuple[Path, Path, Path]:
-        if self._campaign_root is not None:
-            # Explicit per-campaign root (operator console tabs): frozen at
-            # construction, never rebound through runner.paths globals.
-            root = self._campaign_root
-            return (
-                root / "runner" / "state" / "research_state.json",
-                root / "campaigns" / "results.jsonl",
-                root / "reports" / "session_usage",
-            )
-        return (
-            paths.STATE_PATH,
-            paths.RESULTS_PATH,
-            paths.ROOT / "reports" / "session_usage",
-        )
-
-    def stamp(self) -> tuple:
-        """Changes whenever any durable source file is rewritten."""
-        from tui.sources import modified_ns
-
-        state_path, results_path, _ = self._locations()
-        return (
-            modified_ns(state_path),
-            modified_ns(results_path),
-            modified_ns(self._usage_path),
-        )
-
-    def campaign_id(self) -> str | None:
-        """The campaign this folder holds now; reads the state file only."""
-        from tui.sources import read_json
-
-        state = read_json(self._locations()[0])
-        value = ((state or {}).get("campaign") or {}).get("id")
-        return str(value) if value else None
-
-    def read(self) -> tuple[dict | None, list[dict], list[dict]]:
-        from tui.sources import read_json, read_jsonl
-
-        state_path, results_path, usage_dir = self._locations()
-        state = read_json(state_path)
-        records = read_jsonl(results_path)
-        usage_rows = []
-        campaign_id = (state or {}).get("campaign", {}).get("id")
-        self._usage_path = None
-        if campaign_id:
-            self._usage_path = usage_dir / f"{campaign_id}.jsonl"
-            usage_rows = read_jsonl(self._usage_path)
-        return state, records, usage_rows
-
-
-class DemoSources:
-    """Synthetic material so the demo never touches real campaign files."""
-
-    def read(self) -> tuple[dict | None, list[dict], list[dict]]:
-        args = _demo_args()
-        return args
 
 
 def _demo_args():
@@ -495,31 +262,28 @@ class CampaignPanel(Widget):
         self._models_layout_key = ""
         self._models_key: tuple | None = None
         self._output_hidden = False
-        self._training: dict | None = None
-        self._evaluation: dict | None = None
-        self._stage_started: datetime | None = None
-        self._last_activity: str = ""
         self._last_session: str = ""
-        self._last_liveness: datetime | None = None
         self._last_error: str = ""
         self._launcher_stopped = False
         self._identity_stamp: tuple | None = None
         self._feed_campaign: str | None = None
         self._campaign_id: str | None = None
         self._timeline = TimelineReducer(self._campaign_root)
+        self._timeline.activity.clock = lambda: _now()
         self._log_query = ""
         self._log_categories: set[str] = set()
         self._search_visible = False
         self._now_rows = 0
-        self._process_running: bool | None = None
-        self._paused_at: datetime | None = None
-        self._paused_intervals: list[tuple[datetime, datetime]] = []
         self._hidden = False
         self._durable_stamp: tuple | None = None
         self._durable_read_at = float("-inf")
         self._layout_key: tuple | None = None
         self._shown_text: dict[str, Text | str] = {}
         self._log_key: tuple | None = None
+
+    @property
+    def activity(self) -> LiveActivity:
+        return self._timeline.activity
 
     @property
     def _view_size(self) -> Size:
@@ -708,17 +472,9 @@ class CampaignPanel(Widget):
         self._context_rows = 0
         self._progress_rows = 0
         self._training_rows = 0
-        self._training = None
-        self._evaluation = None
-        self._stage_started = None
-        self._last_activity = ""
         self._last_session = ""
-        self._last_liveness = None
         self._last_error = ""
         self._launcher_stopped = False
-        self._process_running = None
-        self._paused_at = None
-        self._paused_intervals = []
         if not self._demo and self._events_path is None:
             self._feed = None
             self._feed_campaign = None
@@ -762,11 +518,12 @@ class CampaignPanel(Widget):
             usage_rows,
             training=self._training_progress(),
             evaluation=self._evaluation_progress(),
-            activity=self._last_activity or None,
-            stage_started_at=self._stage_started,
+            activity=self.activity.last_activity or None,
+            stage_started_at=self.activity.stage_started,
             process_observed_recently=self._process_observed(),
         )
         self.snapshot = snapshot
+        self.activity.ended_at = snapshot.ended_at
         self._mark_attached()
         self._render_context()
         self._render_models(snapshot.model_rows)
@@ -776,10 +533,7 @@ class CampaignPanel(Widget):
         self._apply_layout()
 
     def _process_observed(self) -> bool:
-        stamp = self._last_liveness
-        if stamp is None:
-            return False
-        return (_now() - stamp).total_seconds() <= LIVENESS_SECONDS
+        return self.activity.process_observed()
 
     def _report_source_error(self, message: str) -> None:
         self._note(f"Campaign source problem: {message}")
@@ -787,21 +541,8 @@ class CampaignPanel(Widget):
     # -- live progress objects -----------------------------------------
 
     def set_process_running(self, running: bool) -> None:
-        """Presentation-only clock state, supplied by the owning controller."""
-        if running == self._process_running or (
-            not running and self._process_running is None
-        ):
+        if not self.activity.set_process_running(running):
             return
-        now = _now()
-        if running:
-            if self._paused_at is not None:
-                self._paused_intervals.append((self._paused_at, now))
-                self._training = None
-                self._evaluation = None
-            self._paused_at = None
-        elif self._process_running is True:
-            self._paused_at = now
-        self._process_running = running
         if self.snapshot is not None:
             self._render_context()
             self._render_progress()
@@ -809,85 +550,20 @@ class CampaignPanel(Widget):
             self._apply_layout()
 
     def _clock_end(self, started_at: datetime | None) -> datetime:
-        end = (
-            (self.snapshot.ended_at if self.snapshot else None)
-            or self._paused_at
-            or _now()
+        return self.activity.clock_end(
+            started_at, self.snapshot.ended_at if self.snapshot else None
         )
-        if started_at is None:
-            return end
-        paused = sum(
-            max(0.0, (min(stop, end) - max(start, started_at)).total_seconds())
-            for start, stop in self._paused_intervals
-        )
-        return end - timedelta(seconds=paused)
 
     def _advance(self, state: dict) -> float:
-        """Seconds the Runner has worked since its last sample.
-
-        The Runner publishes counters, not a clock; elapsed time and ETA run
-        locally between samples. Nothing advances while the process is paused
-        or the samples are stale.
-        """
-        last = state.get("last_ts")
-        if (
-            not isinstance(last, datetime)
-            or self._paused_at is not None
-            or self._progress_stale(state)
-        ):
-            return 0.0
-        return float(int(max(0.0, (self._clock_end(last) - last).total_seconds())))
+        return self.activity.advance(state)
 
     def _training_progress(self) -> projector.TrainingProgress | None:
-        state = self._training
-        if not state:
-            return None
-        advance = self._advance(state)
-        elapsed = state.get("elapsed_seconds")
-        if isinstance(elapsed, (int, float)) and not isinstance(elapsed, bool):
-            elapsed += advance
-        eta = state.get("eta_seconds")
-        if isinstance(eta, (int, float)) and not isinstance(eta, bool):
-            eta = max(0.0, eta - advance)
-        return projector.TrainingProgress(
-            operation_id=state.get("operation_id") or "training",
-            attempt=str(state.get("attempt") or "unknown"),
-            steps=state.get("steps"),
-            target=state.get("target"),
-            elapsed_seconds=elapsed,
-            reward=state.get("reward"),
-            success=state.get("success"),
-            stale=self._progress_stale(state),
-            eta_seconds=eta
-            if self._paused_at is None and not self._progress_stale(state)
-            else None,
-        )
+        return self.activity.training_progress()
 
     def _evaluation_progress(self) -> projector.EvaluationProgress | None:
-        state = self._evaluation
-        if not state:
-            return None
-        elapsed = state.get("elapsed_seconds")
-        if isinstance(elapsed, (int, float)) and not isinstance(elapsed, bool):
-            elapsed += self._advance(state)
-        return projector.EvaluationProgress(
-            operation_id=state.get("operation_id") or "evaluation",
-            instrument=state.get("instrument") or "",
-            official=bool(state.get("official")),
-            panel_index=state.get("panel_index"),
-            panel_total=state.get("panel_total"),
-            completed_panels=state.get("completed_panels") or 0,
-            episodes=state.get("episodes"),
-            episodes_total=state.get("episodes_total"),
-            elapsed_seconds=elapsed,
-            stale=self._progress_stale(state),
-        )
+        return self.activity.evaluation_progress()
 
     def phase(self) -> str:
-        """What this campaign is doing now, for its tab; kept current when hidden."""
-        evaluation = self._evaluation
-        if evaluation and evaluation.get("official"):
-            return "official"
         return self._timeline.phase()
 
     def official_outcome(self) -> str:
@@ -898,18 +574,15 @@ class CampaignPanel(Widget):
 
     def progress_stalled(self) -> bool:
         """True while a live training or evaluation counter has stopped advancing."""
-        if self._paused_at is not None:
+        if self.activity.paused_at is not None:
             return False
         return any(
             state and self._progress_stale(state)
-            for state in (self._training, self._evaluation)
+            for state in (self.activity.training, self.activity.evaluation)
         )
 
     def _progress_stale(self, state: dict) -> bool:
-        last = state.get("last_ts")
-        if not isinstance(last, datetime):
-            return True
-        return (_now() - last).total_seconds() > PROGRESS_STALE_SECONDS
+        return self.activity.progress_stale(state)
 
     # ------------------------------------------------------------------
     # Context band
@@ -949,185 +622,30 @@ class CampaignPanel(Widget):
         widget.update(content, layout=not same_shape)
 
     def _context_budget(self) -> int:
-        width = self._view_size.width
-        if width < 60:
-            return 4
-        if width < 120 or self._view_size.height < 40:
-            return 6
-        return 8
+        return context_budget(self._view_size.width, self._view_size.height)
 
     def _context_lines(
         self, snapshot: projector.CampaignSnapshot, width: int
     ) -> list[Text]:
-        from tui.projector import campaign_age, stage_elapsed
-
-        now = _now()
-        age = campaign_age(snapshot.started_at, self._clock_end(snapshot.started_at))
-        elapsed = stage_elapsed(
-            snapshot.stage_started_at, self._clock_end(snapshot.stage_started_at)
+        return context_lines(
+            snapshot,
+            width,
+            palette=self._palette,
+            now=_now(),
+            campaign_end=self._clock_end(snapshot.started_at),
+            stage_end=self._clock_end(snapshot.stage_started_at),
+            paused=self.activity.paused_at is not None,
+            owned=self.activity.process_running is not None,
+            budget=self._context_budget(),
+            last_error=self._last_error,
         )
-
-        palette = self._palette
-        gap = 3
-        status = (
-            "STOPPED (TUI)"
-            if self._paused_at is not None and not snapshot.terminal
-            else snapshot.status
-        )
-        status_style = _status_style(status, palette)
-        left = Text("Autoresearch", style=f"bold {palette.heading}")
-        left.append(" | ", style=palette.muted)
-        left.append(status, style=status_style)
-        left.append(" | ", style=palette.muted)
-        left.append("campaign ", style=palette.muted)
-        left.append(snapshot.campaign_id[:13], style=palette.muted)
-        age_label = (
-            "Campaign elapsed" if self._process_running is not None else "Campaign age"
-        )
-        campaign_time = Text(f"{age_label} {age} (started ", style=palette.muted)
-        campaign_time.append(_start_time(snapshot.started_at, now), style=palette.text)
-        campaign_time.append(")", style=palette.muted)
-        stage_time = Text(f"Stage elapsed {elapsed} (started ", style=palette.muted)
-        stage_time.append(
-            _start_time(snapshot.stage_started_at, now), style=palette.text
-        )
-        stage_time.append(")", style=palette.muted)
-        right = campaign_time.copy()
-        right.append(" | ", style=palette.muted)
-        right.append_text(stage_time)
-        timing_rows: list[Text] = []
-        if len(left.plain) + gap + len(right.plain) <= width:
-            first = Text()
-            first.append_text(left)
-            first.append(" " * (width - len(left.plain) - len(right.plain)))
-            first.append_text(right)
-        else:
-            first = left
-            timing_rows = (
-                [right] if len(right.plain) <= width else [campaign_time, stage_time]
-            )
-        lines: list[Text] = [
-            first if len(first.plain) <= width else Text(first.plain[:width])
-        ]
-        lines.extend(_fit_text(row, width) for row in timing_rows)
-
-        stage = Text()
-        stage.append("Stage: ", style=palette.muted)
-        if snapshot.stage_ids:
-            stage.append(snapshot.stage_ids, style=f"bold {palette.accent}")
-            stage.append(" | ", style=palette.muted)
-        stage.append(
-            snapshot.stage_text,
-            style=f"bold {palette.warning}"
-            if snapshot.terminal
-            else f"bold {palette.accent}",
-        )
-        activity = Text()
-        activity.append("Current activity: ", style=palette.muted)
-        activity.append(
-            snapshot.activity_text,
-            style=palette.accent
-            if "not observed" not in snapshot.activity_text
-            else palette.muted,
-        )
-        if len(stage.plain) + gap + len(activity.plain) <= width:
-            second = Text()
-            second.append_text(stage)
-            second.append(" " * (width - len(stage.plain) - len(activity.plain)))
-            second.append_text(activity)
-        else:
-            second = stage
-        lines.append(_fit_text(second, width))
-
-        goal = snapshot.goal
-        goal_line = Text()
-        goal_line.append("Goal", style=palette.muted)
-        if goal.target_percent is not None:
-            goal_line.append(" >=", style=palette.muted)
-            goal_line.append(
-                f"{goal.target_percent:g}%", style=f"bold {palette.heading}"
-            )
-        elif goal.text:
-            goal_line.append(f": {goal.text}", style=palette.text)
-        else:
-            goal_line.append(" unavailable", style=palette.muted)
-        if goal.best_percent is not None:
-            goal_line.append(" | best ", style=palette.muted)
-            goal_line.append(f"{goal.best_percent:g}%", style=palette.text)
-        else:
-            goal_line.append(" | best not measured", style=palette.muted)
-        if goal.gap_points is not None:
-            gap_style = palette.error if goal.gap_points < 0 else palette.success
-            goal_line.append(
-                f" | {goal.gap_points:+.1f} pts", style=f"bold {gap_style}"
-            )
-        elif goal.gap_text:
-            goal_line.append(f" | {goal.gap_text}", style=palette.muted)
-        lines.append(_fit_text(goal_line, width))
-
-        counters_line = Text()
-        if snapshot.pending_text:
-            counters_line.append(snapshot.pending_text, style=f"bold {palette.warning}")
-            if snapshot.counters_text:
-                counters_line.append(" | ", style=palette.muted)
-        if snapshot.counters_text:
-            counters_line.append(snapshot.counters_text, style=palette.muted)
-        if counters_line.plain:
-            lines.append(_fit_text(counters_line, width))
-
-        excerpt_rows = max(0, self._context_budget() - 4 - len(timing_rows))
-        leads: list[Text] = []
-        question = _clean_text(snapshot.question) or _clean_text(snapshot.objective)
-        if question and excerpt_rows:
-            prefix = (
-                f"Inquiry [{snapshot.question_source}]: "
-                if snapshot.question
-                else "Objective: "
-            )
-            take = 2 if width >= 120 and excerpt_rows >= 4 else 1
-            leads.extend(
-                _hang_styled(prefix, question, width, palette.warning, palette.text)[
-                    :take
-                ]
-            )
-        synthesis = _clean_text(snapshot.synthesis)
-        if synthesis and excerpt_rows > len(leads):
-            prefix = f"PI record {snapshot.synthesis_session or 'S?'}: "
-            take = 2 if width >= 120 and excerpt_rows - len(leads) >= 3 else 1
-            leads.extend(
-                _hang_styled(prefix, synthesis, width, palette.pi, palette.text)[:take]
-            )
-        lines.extend(leads)
-
-        usage = _clean_text(projector.usage_text(snapshot.usage))[:width]
-        usage_text_obj = Text()
-        usage_text_obj.append("Usage recorded", style=palette.muted)
-        usage_text_obj.append(usage[len("Usage recorded") :], style=palette.text)
-        lines.append(usage_text_obj)
-        if snapshot.official_text:
-            lines.append(
-                Text(
-                    _clean_text(snapshot.official_text)[:width],
-                    style=self._assessment_style(snapshot.official_status),
-                )
-            )
-        if self._last_error:
-            attention = f"Attention: {self._last_error}"
-            if len(attention) > width:
-                attention = attention[: max(1, width - 1)] + "…"
-            lines.append(Text(attention, style=f"bold {palette.error}"))
-        return lines[: self._context_budget() + 2]
 
     # ------------------------------------------------------------------
     # Models table
     # ------------------------------------------------------------------
 
     def _role_style(self, role: str) -> str:
-        if role == "Working":
-            return f"bold {self._palette.accent}"
-        if role == "Best-known":
-            return f"bold {self._palette.pi}"
-        return self._palette.muted
+        return _role_style(self._palette, role)
 
     def _models_layout(self) -> str:
         if (
@@ -1212,23 +730,19 @@ class CampaignPanel(Widget):
         self._set_text(self.query_one("#models-heading", Static), heading)
 
     def _models_budget_rows(self) -> int:
-        height = self._view_size.height
-        reserved = self._context_rows + 1
-        if not self._output_hidden:
-            reserved += (
-                (2 if self._show_hints else 1)
-                + self._now_rows
-                + (1 if self._search_visible else 0)
-            )
-        reserved += self._progress_rows + self._training_rows
-        output_min = 0 if self._output_hidden else self._output_min_rows()
-        return max(1, min(20, height - reserved - output_min))
+        return model_budget(
+            self._view_size.height,
+            context_rows=self._context_rows,
+            progress_rows=self._progress_rows,
+            training_rows=self._training_rows,
+            output_hidden=self._output_hidden,
+            show_hints=self._show_hints,
+            now_rows=self._now_rows,
+            search_visible=self._search_visible,
+        )
 
     def _output_min_rows(self) -> int:
-        height = self._view_size.height
-        if height >= 40:
-            return max(5, int(height * 0.55))
-        return max(4, height // 2)
+        return output_min_rows(self._view_size.height)
 
     # ------------------------------------------------------------------
     # Progress panel
@@ -1263,123 +777,30 @@ class CampaignPanel(Widget):
     def _progress_title(
         self, lead: str, lead_style: str, parts: list[str], stale: bool
     ) -> Text:
-        palette = self._palette
-        title = Text(lead, style=lead_style)
-        for part in parts:
-            title.append(" | ", style=palette.muted)
-            title.append(part, style=palette.text)
-        if stale:
-            title.append(" | ", style=palette.muted)
-            title.append("counter observation stale", style=f"bold {palette.error}")
-        return title
+        return _progress_title(self._palette, lead, lead_style, parts, stale)
 
     def _progress_bar_line(
         self, label: str, first: int, total: int | None, width: int
     ) -> Text:
-        palette = self._palette
-        line = Text(f"{label} {first:,}", style=f"bold {palette.accent}")
-        if not total:
-            line.append(" / target unavailable", style=palette.muted)
-            return line
-        line.append(f" / {total:,}", style=palette.muted)
-        line.append("  [", style=palette.muted)
-        progress = max(0.0, min(1.0, first / max(total, 1)))
-        bar_width = max(8, min(width - 22, 60))
-        filled = max(0, min(bar_width, round(bar_width * progress)))
-        line.append("#" * filled, style=palette.success)
-        line.append("-" * (bar_width - filled), style=palette.muted)
-        line.append(f"] {round(progress * 100)}%", style=palette.text)
-        return line
+        return _progress_bar_line(self._palette, label, first, total, width)
 
     def _training_lines(
         self, training: projector.TrainingProgress, width: int
     ) -> list[Text]:
-        palette = self._palette
-        parts = [f"Attempt {training.attempt}"]
-        if self._paused_at is not None:
-            parts.append("Paused")
-        parts.append(_elapsed_text(training.elapsed_seconds, "Elapsed"))
-        parts.append(_elapsed_text(training.eta_seconds, "ETA"))
-        if isinstance(training.reward, (int, float)) and not isinstance(
-            training.reward, bool
-        ):
-            parts.append(f"Reward {training.reward:.1f}")
-        if isinstance(training.success, (int, float)) and not isinstance(
-            training.success, bool
-        ):
-            parts.append(f"Success {round(training.success * 100)}%")
-        elif isinstance(training.success, str) and training.success:
-            parts.append(training.success[:1].upper() + training.success[1:])
-        title = self._progress_title(
-            f"Training {training.operation_id}",
-            f"bold {palette.accent}",
-            parts,
-            training.stale,
+        return _training_lines(
+            self._palette, training, width, paused=self.activity.paused_at is not None
         )
-        lines = [title]
-        if training.steps is None:
-            lines.append(
-                Text("Steps: starting - no step count yet", style=palette.muted)
-            )
-            return lines
-        lines.append(
-            self._progress_bar_line("Steps", training.steps, training.target, width)
-        )
-        return lines
 
     def _evaluation_lines(
         self, evaluation: projector.EvaluationProgress, width: int
     ) -> list[Text]:
-        palette = self._palette
-        lead_style = (
-            f"bold {palette.success}"
-            if evaluation.official
-            else f"bold {palette.accent}"
-        )
-        lead = (
-            "Official assessment"
-            if evaluation.official
-            else f"Evaluation {evaluation.operation_id}"
-        )
-        parts: list[str] = []
-        if evaluation.instrument:
-            parts.append(evaluation.instrument)
-        if evaluation.panel_total:
-            parts.append(
-                f"Panel {evaluation.panel_index or '?'}/{evaluation.panel_total}"
-            )
-        if evaluation.completed_panels:
-            parts.append(
-                "Completed panels "
-                + (
-                    f"{evaluation.completed_panels}/{evaluation.panel_total}"
-                    if evaluation.panel_total
-                    else str(evaluation.completed_panels)
-                )
-            )
-        parts.append(
-            _elapsed_text(
-                evaluation.elapsed_seconds,
-                "Panel elapsed" if evaluation.panel_total else "Elapsed",
-            )
-        )
-        title = self._progress_title(lead, lead_style, parts, evaluation.stale)
-        lines = [title]
-        if evaluation.episodes is None and evaluation.episodes_total is None:
-            lines.append(Text("Running - progress unavailable", style=palette.warning))
-            return lines
-        lines.append(
-            self._progress_bar_line(
-                "Episodes", evaluation.episodes or 0, evaluation.episodes_total, width
-            )
-        )
-        return lines
+        return _evaluation_lines(self._palette, evaluation, width)
 
     def _render_training_status(self) -> None:
         widget = self.query_one("#training", Static)
         snapshot = self.snapshot
         if (
-            self._training is not None
+            self.activity.training is not None
             or snapshot is None
             or snapshot.last_training is None
         ):
@@ -1460,7 +881,7 @@ class CampaignPanel(Widget):
 
     def tick_clock(self) -> None:
         self.tick_clock_active = getattr(self, "tick_clock_active", 0) + 1
-        if self._training or self._evaluation:
+        if self.activity.training or self.activity.evaluation:
             self._render_progress()
         if self.snapshot is not None:
             self._render_context()
@@ -1474,13 +895,7 @@ class CampaignPanel(Widget):
         return self.query_one("#output", EventLog)
 
     def _assessment_style(self, status: str) -> str:
-        palette = self._palette
-        outcome = status.casefold()
-        if outcome == "passed":
-            return f"bold {palette.success}"
-        if outcome == "failed":
-            return f"bold {palette.error}"
-        return f"bold {palette.warning}"
+        return _assessment_style(self._palette, status)
 
     def _note(self, message: str) -> None:
         """Say something about the TUI's own sources.
@@ -1547,42 +962,11 @@ class CampaignPanel(Widget):
         self._launcher_stopped = True
         self._note(f"The launcher stopped: {reason}")
 
-    def _event_liveness(self, event: Observation) -> None:
-        self._last_liveness = event.ts or _now()
-
     def _event_session_start(self, event: Observation) -> None:
-        stamp = event.ts
-        started = event.fields.get("stage_started_at")
-        if isinstance(started, str):
-            stamp = projector.parse_timestamp(started) or stamp
-        self._stage_started = stamp
         if self.snapshot is not None:
-            self.snapshot.stage_started_at = stamp
-
-    def _event_activity(self, event: Observation) -> None:
-        label = _clean_text(event.fields.get("label") or "")
-        if not label or label == self._last_activity:
-            return
-        self._last_activity = label
+            self.snapshot.stage_started_at = self.activity.stage_started
 
     def _event_training_progress(self, event: Observation) -> None:
-        attempt = event.fields.get("attempt")
-        operation_id = event.operation_id or str(event.fields.get("operation_id") or "")
-        eta = projector.training_eta_seconds(
-            {**event.fields, "operation_id": operation_id}, self._training
-        )
-        self._training = {
-            "operation_id": operation_id,
-            "attempt": attempt if attempt not in (None, "") else "unknown",
-            "steps": event.fields.get("steps"),
-            "target": event.fields.get("target"),
-            "elapsed_seconds": event.fields.get("elapsed_seconds"),
-            "eta_seconds": eta,
-            "reward": event.fields.get("ep_rew_mean"),
-            "success": event.fields.get("scenario_metric")
-            or event.fields.get("training_success"),
-            "last_ts": event.ts or _now(),
-        }
         self._redraw_live()
 
     def _redraw_live(self) -> None:
@@ -1594,32 +978,9 @@ class CampaignPanel(Widget):
         self._apply_layout()
 
     def _event_eval_progress(self, event: Observation) -> None:
-        self._evaluation = {
-            "operation_id": str(event.fields.get("operation_id") or ""),
-            "instrument": str(event.fields.get("instrument") or ""),
-            "official": bool(event.fields.get("official")),
-            "panel_index": event.fields.get("panel_index"),
-            "panel_total": event.fields.get("panel_total"),
-            "completed_panels": int(event.fields.get("completed_panels") or 0),
-            "episodes": event.fields.get("episodes"),
-            "episodes_total": event.fields.get("episodes_total"),
-            "elapsed_seconds": event.fields.get("elapsed_seconds"),
-            "last_ts": event.ts or _now(),
-        }
-        if not self._hidden:
-            self._render_progress()
+        self._redraw_live()
 
     def _event_operation_completed(self, event: Observation) -> None:
-        operation = _clean_text(
-            event.operation_id
-            or event.fields.get("operation_id")
-            or event.fields.get("id")
-            or ""
-        )
-        if self._training and self._training.get("operation_id") == operation:
-            self._training = None
-        if self._evaluation and self._evaluation.get("operation_id") == operation:
-            self._evaluation = None
         self._redraw_live()
 
     _event_operation_failed = _event_operation_completed
