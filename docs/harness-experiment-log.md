@@ -803,10 +803,10 @@ or mutated by this review; the evidence-fidelity RCA remains deferred.
 
 ## Issue register
 
-**Status and description review: 29 October 2026.**
+**Status and description review: 30 October 2026.**
 
-Seven issues require work. Five changes need more evidence. Thirty-seven issues
-are closed. Thirteen entries are inactive. All 62 issue IDs remain.
+Eight issues require work. Five changes need more evidence. Thirty-seven issues
+are closed. Thirteen entries are inactive. All 63 issue IDs remain.
 
 On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and
 OI-052 to OI-056 were added from the parallel rounds. On 27 October the
@@ -816,7 +816,8 @@ the maintainer withdrew OI-058, and OI-059 was corrected. On 28 October OI-060
 was added from the round 10 analysis, and OI-059 and OI-060 were closed on the
 evidence of rounds 7 and 10 and the replay. On 29 October OI-061 (CLI
 notification text in the fixed system prompt) and OI-062 (guessed paths and
-field names) were added on branch `system-prompt-replace`.
+field names) were added on branch `system-prompt-replace`. On 30 October OI-063
+(no file editor for a Copilot coder under an external-provider PI) was added.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
 The maintainer also closed OI-033 and OI-037 without a verified recovery claim,
@@ -825,7 +826,7 @@ OI-040 to OI-047 replace the former follow-up items outside the register.
 OI-006 is retired because the training allocation remains a fixed constraint.
 Retirement does not claim that this allocation is optimal.
 
-### Open issues — 7
+### Open issues — 8
 
 These issues need investigation or design before a repair.
 This register does not authorize runtime changes or campaign operations.
@@ -839,6 +840,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. Round 6: no model added the condition; `229c3e55` stated no reflection at all. |
 | OI-061 | The fixed system prompt (branch `system-prompt-replace`) keeps the Copilot CLI `<system_notifications>` text word for word. It is generic Copilot text and contains an example. The PI receives these notifications when the scientific coder or reviewer becomes idle (258 of 601 recorded campaign sessions). | **Open** | Decide whether the PI needs this text, and rewrite it in campaign terms or remove it. Consider whether the console can use the notifications. |
 | OI-062 | The PI and the analyst guess paths and field names instead of using the ones that exist. In the 29 October batch (branch `system-prompt-replace`): about 4-5 `view` calls on paths that do not exist per campaign; about 4-6 refused analyst reads of reference files that are already in the system prompt; 1-2 `episode_outcome_breakdown` calls with guessed fields (`target_radius_cm`, `target_angle_degrees`); 1-3 `artifact_evidence_query` traversal-budget refusals; the DeepSeek analyst read `contracts/robots/robot.xml` relative to the campaign folder (the file is in the harness) and then sent 5 shell commands that were refused. All are pre-existing. | **Open** | The analyst shell was removed on 29 October. Options, none approved: refusal text that lists what exists (paths, fields); a sentence in the reference header that the files exist only in the system prompt; a file map at session start. Measure the failure counts in the next batch, including the full DeepSeek campaign, before a choice. |
+| OI-063 | A coder on a Copilot GPT model has no file editor when the PI session runs on an external provider. The Copilot CLI offers `apply_patch` only to GPT models and `create`/`edit` only to other models, and a coder subagent gets only the editors that both its own model and the session model allow. In `6ea55e42` (29 October, DeepSeek PI) every `scientific_coding` request returned `needs_pi` with no change: the Luna coder reported "no file-editing tool is available". Probes on 30 October: a Luna coder in a DeepSeek session (all three editors), a Luna coder in a Luna session (`create`/`edit` only) and a DeepSeek coder in a DeepSeek session (`apply_patch` only) had no editor; a DeepSeek coder with `create`/`edit` edited the file and the Luna review passed. | **Open** | Workaround of 30 October: with an external-provider PI, the coder runs on the PI's model with `create`/`edit` limited to its authorized files; the reviewer stays on Copilot Luna. Target: one editor set for every model and a coder model chosen independently of the PI, for example a harness-defined JSON editor tool (as for `rg`, `glob` and `read`) or a separate coder session. |
 
 ### Changes that need more evidence — 5
 
@@ -948,6 +950,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-30 | Coder on the PI's model for external-provider PIs (OI-063) | A Luna coder inside a DeepSeek session had no file editor, so DeepSeek campaign `6ea55e42` could not change code. With an external-provider PI the coder now inherits the PI's model and gets `create`/`edit` limited to its authorized files; the main PI stays without editors and the reviewer stays on Copilot Luna. Coder usage is recorded under the PI's model. Live check through the harness code path: the DeepSeek coder edited the file, the Luna reviewer asked for one correction, the repair passed review. |
 | 2026-10-29 | Per-campaign pytest folder (`c15733ea`) | Parallel campaigns shared one pytest base folder, and concurrent validation refused trainings in two campaigns. Runner validation now uses `%TEMP%\robot-learning\pytest\<hash of the campaign folder>`; two concurrent validations passed. |
 | 2026-10-29 | PI messages labelled note or end (`5debe009`, `c15733ea`) | Each PI message closes once, at the SDK assistant message: "note" when it has tool requests, "end" when it has none. The usage fact no longer closes a message, which removed duplicated PI messages. Empty assistant messages (GPT emits many between tool calls) no longer close or label a message. The TUI shows "PI note" and "PI end". |
 | 2026-10-29 | Fixed system prompt for every model family (`471574a0`, OI-061) | The SDK customize mode edited the Copilot CLI prompt, which differs by model family; on DeepSeek it dropped the analyst text. Replace mode sends one text of our own, identical on GPT, Claude and DeepSeek. No campaign text of the earlier prompt was dropped. See [Fixed system prompt](#fixed-system-prompt-for-every-model-family-29-october). |

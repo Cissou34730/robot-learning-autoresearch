@@ -94,7 +94,10 @@ receive fixed task context from `load_task_context` in
 `contracts/instruments/measurement.md`.
 
 Each new assignment receives an independent native review with high
-reasoning. Corrections reuse that reviewer to check only the reported problems
+reasoning. The coder uses the PI's model. The reviewer uses the PI's model on
+Copilot and Copilot gpt-6-luna when the PI runs on an external provider; there
+the coder edits with `create` and `edit` instead of `apply_patch` (OI-063).
+Corrections reuse that reviewer to check only the reported problems
 and errors introduced by the repair. The reviewer has exactly scoped reads and
 no write or execution authority. A failed review goes unchanged to the same
 coder within the original intent and file scope. The PI receives the final

@@ -5,6 +5,7 @@ from __future__ import annotations
 from runner import paths
 from runner.copilot.coding_contracts import (
     CODING_TOOLS,
+    EXTERNAL_EDITORS,
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
 )
@@ -100,10 +101,10 @@ def _view_denial(arguments, preliminary) -> str | None:
 
 def _allowed_tools(coding_paths, preliminary, json_editors) -> list[str]:
     if coding_paths is not None:
-        return CODING_TOOLS
+        return [*CODING_TOOLS, *(EXTERNAL_EDITORS if json_editors else [])]
     allowed = [*(RESEARCH_TOOLS if preliminary else MAIN_PI_TOOLS), *PI_CUSTOM_TOOLS]
     if json_editors and preliminary:
-        allowed += ["create", "edit"]
+        allowed += EXTERNAL_EDITORS
     return allowed
 
 

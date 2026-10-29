@@ -14,6 +14,7 @@ from runner.copilot.coding_contracts import (
     CODING_INSTRUCTIONS,
     CODING_TOOL_DESCRIPTION,
     CODING_TOOLS,
+    EXTERNAL_EDITORS,
     REPAIR_INTENT,
     REVIEW_INSTRUCTIONS,
     REVIEW_REASONING,
@@ -113,7 +114,7 @@ class ScientificCoding:
 
     @property
     def reviewer_model(self) -> str:
-        # Native children stay on Copilot when the PI uses an OpenCode route.
+        # The reviewer stays on Copilot when the PI uses an OpenCode route.
         return DEFAULT_MODEL if self.external_pi else normalize_model(self.args.model)
 
     @property
@@ -134,18 +135,16 @@ class ScientificCoding:
     # --- agent profiles and tool -------------------------------------------
 
     def agent(self) -> dict:
-        agent = {
+        # The coder inherits the PI's model: a Copilot coder in an external-provider
+        # session has no file editor (OI-063).
+        return {
             "name": CODER,
             "description": "Coder of scientific source code in authorized files.",
             "prompt": CODING_INSTRUCTIONS,
-            "tools": CODING_TOOLS,
+            "tools": [*CODING_TOOLS, *(EXTERNAL_EDITORS if self.external_pi else [])],
             "infer": False,
             "mcp_servers": {},
         }
-        if self.external_pi:
-            agent["model"] = self.reviewer_model
-            agent["reasoning_effort"] = self.reviewer_reasoning
-        return agent
 
     def reviewer_agent(self) -> dict:
         return {
@@ -261,6 +260,7 @@ class ScientificCoding:
                     coding_paths=frozenset(self.binding["allowed_paths"]),
                     read_paths=frozenset(self.binding["read_paths"]),
                     operations=self.operations,
+                    json_editors=self.external_pi,
                 )(request, invocation)
             if handle != self.args.session_id or self.busy or self.closed:
                 return deny("Unknown child or coding/Runner context is locked.")
@@ -857,7 +857,7 @@ class ScientificCoding:
             "tool_calls": usage.tool_calls,
         }
         usage_args = self.args
-        if agent == REVIEWER or self.external_pi:
+        if agent == REVIEWER:
             usage_args = argparse.Namespace(
                 **{
                     **vars(self.args),

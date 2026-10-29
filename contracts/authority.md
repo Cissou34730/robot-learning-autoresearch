@@ -18,8 +18,9 @@ The PI delegates scientific source changes to the coder through
 `scientific_coding`.
 
 - The coder changes only the exact files that the PI selected. It reads only
-  the files that the request permits. Its tools are `view`, `apply_patch` and
-  `scientific_api_reference`. It executes no code and submits no operations.
+  the files that the request permits. Its tools are `view`,
+  `scientific_api_reference` and one file editor: `apply_patch`, or `create`
+  and `edit`. It executes no code and submits no operations.
 - An independent reviewer checks each new coding request. It reads the request
   of the PI, the supplied context and the actual change. Its tools are `view`
   and `scientific_api_reference`. It returns `validation`, `what_is_wrong`,

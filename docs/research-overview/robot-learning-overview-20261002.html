@@ -686,10 +686,10 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">37 closed issues; seven open investigations</h3>
+          <h3 style="margin-top: 12px">37 closed issues; eight open investigations</h3>
           <ul>
-            <li>All 62 issue IDs remain visible. Seven are open (OI-024, OI-025, OI-039, OI-040, OI-057, OI-061,
-              OI-062).</li>
+            <li>All 63 issue IDs remain visible. Eight are open (OI-024, OI-025, OI-039, OI-040, OI-057, OI-061,
+              OI-062, OI-063).</li>
             <li>Five changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
               (invariances in the scientific model), OI-055 (first-experiment reference) and OI-056 (contrast in
               mechanism tests). OI-054 (time and AI usage shown to the PI) and OI-058 (task and policy framing) were
@@ -2035,12 +2035,13 @@
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / OPEN WORK</p>
       <h2 id="issues-heading">Open work and closed issues</h2>
-      <p><strong>Status and description review: 29 October 2026.</strong> All 62 issue IDs match
+      <p><strong>Status and description review: 30 October 2026.</strong> All 63 issue IDs match
         the <a href="../harness-experiment-log.md#issue-register">Markdown register</a>; the tables below are generated
         from it. On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and OI-052 to OI-056 were added
         from the parallel rounds. On 27 October OI-054 was withdrawn, OI-057 and OI-058 were added from round 5,
         and OI-059 from the wording analysis. After round 6 OI-058 was withdrawn and OI-059 was corrected.
-        On 29 October OI-061 and OI-062 were added on branch <code>system-prompt-replace</code>.
+        On 29 October OI-061 and OI-062 were added on branch <code>system-prompt-replace</code>, and on 30 October
+        OI-063.
         OI-040 to
         OI-047 replace the former follow-up items. The maintainer
         approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
@@ -2052,7 +2053,7 @@
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">7</p>
+          <p class="metric">8</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
@@ -2158,7 +2159,7 @@
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 7</h3>
+      <h3 id="open-issues">Open issues — 8</h3>
       <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
@@ -2251,6 +2252,22 @@
                 exists (paths, fields); a sentence in the reference header that the files exist only in the system
                 prompt; a file map at session start. Measure the failure counts in the next batch, including the full
                 DeepSeek campaign, before a choice.</td>
+            </tr>
+            <tr>
+              <td>OI-063</td>
+              <td>A coder on a Copilot GPT model has no file editor when the PI session runs on an external provider.
+                The Copilot CLI offers <code>apply_patch</code> only to GPT models and <code>create</code>/<code>edit</code>
+                only to other models, and a coder subagent gets only the editors that both its own model and the session
+                model allow. In <code>6ea55e42</code> (29 October, DeepSeek PI) every <code>scientific_coding</code>
+                request returned <code>needs_pi</code> with no change. Probes on 30 October: a Luna coder in a DeepSeek
+                session, a Luna coder with only <code>create</code>/<code>edit</code> and a DeepSeek coder with only
+                <code>apply_patch</code> had no editor; a DeepSeek coder with <code>create</code>/<code>edit</code>
+                edited the file and the Luna review passed.</td>
+              <td><span class="tag">Open</span></td>
+              <td>Workaround of 30 October: with an external-provider PI, the coder runs on the PI's model with
+                <code>create</code>/<code>edit</code> limited to its authorized files; the reviewer stays on Copilot
+                Luna. Target: one editor set for every model and a coder model chosen independently of the PI, for
+                example a harness-defined JSON editor tool or a separate coder session.</td>
             </tr>
           </tbody>
         </table>
@@ -3089,7 +3106,8 @@
             </tr>
             <tr>
               <td>Native coder and independent code reviewer</td>
-              <td>The selected Copilot campaign model reviews at high reasoning; OpenCode campaigns use Copilot Luna.
+              <td>The selected Copilot campaign model codes and reviews at high reasoning. With an OpenCode PI the
+                coder uses the PI's model with <code>create</code>/<code>edit</code> and Copilot Luna reviews (OI-063).
                 The same coder repairs the reported defects and the same reviewer checks them. Runner alone executes
                 checks.</td>
               <td>Read-only review returns validation, what is wrong, why and where. Scientific choices remain with the
@@ -3250,6 +3268,15 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: the DeepSeek PI could not change code; its coder now uses its model</h3>
+        <p>In DeepSeek campaign <code>6ea55e42</code> every coding request ended without a change: a Luna coder inside a
+          DeepSeek session gets no file editor, because the Copilot CLI ties <code>apply_patch</code> to GPT models and
+          <code>create</code>/<code>edit</code> to the others. The maintainer stopped the campaign. With an
+          external-provider PI the coder now runs on the PI's model with <code>create</code>/<code>edit</code>; Luna
+          still reviews. A live check edited a file and passed review. OI-063 tracks one editor set for every model.
+        </p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">29 October: one fixed system prompt for every model family</h3>
         <p>The customize-mode system message edited the Copilot CLI prompt, which differs by model family; on DeepSeek
