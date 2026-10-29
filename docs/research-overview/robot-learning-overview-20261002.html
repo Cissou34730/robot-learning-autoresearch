@@ -2256,18 +2256,21 @@
             <tr>
               <td>OI-063</td>
               <td>A coder on a Copilot GPT model has no file editor when the PI session runs on an external provider.
-                The Copilot CLI offers <code>apply_patch</code> only to GPT models and <code>create</code>/<code>edit</code>
+                The Copilot CLI offers <code>apply_patch</code> only to GPT models and
+                <code>create</code>/<code>edit</code>
                 only to other models, and a coder subagent gets only the editors that both its own model and the session
                 model allow. In <code>6ea55e42</code> (29 October, DeepSeek PI) every <code>scientific_coding</code>
                 request returned <code>needs_pi</code> with no change. Probes on 30 October: a Luna coder in a DeepSeek
                 session, a Luna coder with only <code>create</code>/<code>edit</code> and a DeepSeek coder with only
                 <code>apply_patch</code> had no editor; a DeepSeek coder with <code>create</code>/<code>edit</code>
-                edited the file and the Luna review passed.</td>
+                edited the file and the Luna review passed.
+              </td>
               <td><span class="tag">Open</span></td>
               <td>Workaround of 30 October: with an external-provider PI, the coder runs on the PI's model with
                 <code>create</code>/<code>edit</code> limited to its authorized files; the reviewer stays on Copilot
                 Luna. Target: one editor set for every model and a coder model chosen independently of the PI, for
-                example a harness-defined JSON editor tool or a separate coder session.</td>
+                example a harness-defined JSON editor tool or a separate coder session.
+              </td>
             </tr>
           </tbody>
         </table>
