@@ -54,12 +54,43 @@ Directly: `uv run python -m tui --help` (options: `--report`, `--read-only`, `--
 
 Issue #68 implementation. `uv run python -m tui` (or
 `.\campaign_tui.ps1` with no arguments) opens one Textual console with
-one report tab per installed campaign folder, initially showing the first
-installed campaign (normally campaign-1). Command entry is alongside the report,
+one report tab per active or recently idle campaign, initially showing the first
+visible campaign. Command entry is alongside the report,
 not on a separate Commands tab, following the maintainer's updated UX direction
 on 26 October. The standard folders are `robot-learning-campaigns\campaign-1`
-through `campaign-5`; Tab/Shift+Tab cycle their tabs. Launching the console starts
+through `campaign-5`; Tab/Shift+Tab cycle only visible tabs. Launching the console starts
 nothing; campaigns run only when a command is submitted.
+
+Tabs hide automatically after two hours with no launcher running. A long
+operation, a quiet PI or an unchanged log never makes a running campaign idle.
+Starting, resetting and stopping also keep a tab active. A stopped, failed or
+completed campaign stays visible during its two-hour idle period.
+
+`/show 3` and `/hide 3` override visibility for this console session only; numbers,
+ranges and folder names work as for other campaign commands. With no target,
+they act on the selected tab. They never start, stop, reset or delete anything.
+`/show` keeps the tab visible even after the idle deadline; `/hide` keeps it
+hidden even while it runs. The information line warns when running campaigns
+are hidden. `/start` and `/run` clear the selected targets' overrides and show
+them again. Hidden campaigns remain targets of `stop all`, `kill all` and the
+existing stop-and-exit behaviour.
+
+Only confirmed idle timestamps persist, under
+`%TEMP%\robot-learning\tui\tab-idle\<digest>.json`, outside both repositories.
+File access and process checks run off the UI thread. A running launcher clears
+its old deadline. If no end time is known, the first confirmed stopped
+observation starts the two-hour period; a last-log timestamp is not treated as
+an exit time. A changed campaign journal or state invalidates an old idle
+record, including work done while the console was closed. Unreadable records
+are reported and do not cause automatic hiding.
+
+An externally started campaign appears without changing the current selection,
+unless `/hide` explicitly hides that slot for this session. Hiding the selected
+tab selects the next visible tab in slot order, wrapping when necessary.
+Showing tabs retains their original numbers and report state. If none are
+visible, an empty state offers `/show`, `/start` and `/run`; command entry stays
+available. Console restart discards show/hide overrides and applies the
+automatic rule to all installed slots again.
 
 Controlled execution starts `python -m runner.launcher`, the reset and the
 initializer with `uv` on PATH; no PowerShell host is involved. Each child gets
@@ -78,7 +109,7 @@ the interface from opening.
   returns focus to where it was. While the panel is open, the information line
   previews what the command would do, leading with a warning for the destructive
   ones. Nothing runs just from typing. The commands are `start`, `run`, `stop`,
-  `kill`, `reset`, `settings`, `models`, `diagnostics`, `history`, `search`,
+  `kill`, `reset`, `show`, `hide`, `settings`, `models`, `diagnostics`, `history`, `search`,
   `filter`, `help` and `quit`; `tui/commands.py` defines them once for the
   parser, the list, the help and the unknown-command message. `start` resumes
   the active campaign without resetting; `run` resets and starts it.

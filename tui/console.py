@@ -1,6 +1,6 @@
 """The multi-campaign operator console (issue #68).
 
-One Textual application with one report tab per installed campaign folder
+One Textual application with report tabs for active or recently idle campaigns
 (campaign-1 .. campaign-5) and a command panel that ``/`` opens. The console
 never starts anything on its own: campaigns run only when the operator submits a
 run, reset, start or stop command. Every lifecycle action is delegated to
@@ -53,6 +53,7 @@ from tui.commands import Command
 from tui.controller import (
     DEFAULT_STOP_TIMEOUT,
     CampaignController,
+    CampaignFolderState,
     CommandError,
     LaunchSettings,
     ResetConfig,
@@ -61,6 +62,7 @@ from tui.controller import (
 )
 from tui.process import LauncherMachinery
 from tui.report import REPORT_CSS, CampaignPanel, CampaignSources
+from tui.tab_visibility import IDLE_TAB_SECONDS, TabIdleTracker
 
 HELPER_SHUTDOWN_GRACE_SECONDS = 15.0
 # After Ctrl+Q, a campaign that has not stopped by then is put to the operator.
@@ -193,6 +195,10 @@ def help_text() -> str:
         "Ranges are inclusive: start 1-2 | start 2-3 | run 1-3.\n"
         "Explicit folders also work: start campaign-1 campaign-3.\n"
         "Without a target, a campaign command acts on the active campaign tab.\n"
+        "Tabs hide automatically after two hours with no running launcher.\n"
+        "show / hide change visibility for this console session, never execution.\n"
+        "start / run restore automatic visibility. Hidden campaigns still take\n"
+        "stop all, kill all and the usual shutdown actions.\n"
         "run and reset may delete measurements and logs. There is no reset backup.\n"
         "kill ends the launcher of a campaign any console started (stop is the "
         "clean way).\n\n"
@@ -520,6 +526,15 @@ class CampaignConsole(App):
         self._panel_open = False
         self._listed: list[Command] = []
         self._return_focus = None
+        self._idle_tracker = TabIdleTracker()
+        self._tab_idle_since: dict[str, float | None] = {}
+        self._tab_overrides: dict[str, bool] = {}
+        self._visible_tabs: list[str] = []
+        self._tab_visibility_applied = False
+        self._activity_ready = False
+        self._activity_errors: tuple[str, ...] = ()
+        self._activity_poll_lock = threading.Lock()
+        self._empty_message = "Checking campaign activity..."
 
     # ------------------------------------------------------------------
     # Composition
@@ -549,17 +564,16 @@ class CampaignConsole(App):
                     )
         yield Static("Terminal too small - need 48x16", id="commands-floor")
         yield Static(
-            "No campaign folders are installed.\nUse /run 1 to initialize, reset and start campaign-1 from an existing recipe source.\nPress / for commands, F2 for settings. Nothing runs automatically.",
+            "Checking campaign activity...",
             id="empty-campaigns",
         )
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         self.set_interval(2.0, self._refresh_status)
         self.set_interval(1.0, self._pulse_tabs)
         for label in self._layout.installed():
             self._controller.state(label)
-        self._refresh_status_now()
-        self._update_campaign_visibility()
+        await self._refresh_status()
         self._focus_campaign()
 
     # ------------------------------------------------------------------
@@ -579,12 +593,44 @@ class CampaignConsole(App):
             return
         self._status_refreshing = True
         try:
-            await asyncio.to_thread(self._controller.reap_all)
+            idle_since, errors = await asyncio.to_thread(self._poll_tab_activity)
+            await self._ensure_campaign_tabs(list(idle_since))
+            self._tab_idle_since = idle_since
+            self._activity_ready = True
             self._refresh_status_now()
+            self._report_activity_errors(errors)
         except (OSError, RuntimeError) as error:
+            self._tab_idle_since = {}
+            self._activity_ready = True
             self._log(f"Process cleanup failed: {error}")
         finally:
             self._status_refreshing = False
+
+    @staticmethod
+    def _campaign_active(target: CampaignFolderState) -> bool:
+        return target.busy or target.child is not None or target.external
+
+    def _poll_tab_activity(self) -> tuple[dict[str, float | None], tuple[str, ...]]:
+        """Check processes and persist idle deadlines off the UI thread."""
+        idle_since: dict[str, float | None] = {}
+        errors: list[str] = []
+        with self._activity_poll_lock:
+            for label in self._layout.installed():
+                idle_since[label] = None  # an unknown process state never auto-hides
+                try:
+                    target = self._controller.reap(label)
+                    idle_since[label] = self._idle_tracker.observe(
+                        target.folder, active=self._campaign_active(target)
+                    )
+                except (OSError, RuntimeError, ValueError) as error:
+                    errors.append(f"{label}: cannot establish tab idle time: {error}")
+        return idle_since, tuple(errors)
+
+    def _report_activity_errors(self, errors: tuple[str, ...]) -> None:
+        if errors != self._activity_errors:
+            self._activity_errors = errors
+            if errors:
+                self._log("\n".join(errors))
 
     def _log_updatable(self, message: str) -> None:
         if message != self._summary:
@@ -616,7 +662,7 @@ class CampaignConsole(App):
                 self.query_one("#commands-input", Input).value = chosen.name + " "
                 return
             text = chosen.name
-        self._close_commands()
+        self._close_commands(restore_focus=text.split()[0].lower() != "hide")
         self.submit_command(text)
 
     @staticmethod
@@ -667,7 +713,7 @@ class CampaignConsole(App):
         field.cursor_position = len(text)
         self._refresh_status_now()
 
-    def _close_commands(self) -> None:
+    def _close_commands(self, *, restore_focus: bool = True) -> None:
         if not self._panel_open:
             return
         self._panel_open = False
@@ -675,7 +721,13 @@ class CampaignConsole(App):
         self.query_one("#commands-input", Input).value = ""
         self._listed = []
         previous, self._return_focus = self._return_focus, None
-        if previous is not None and previous.is_attached and previous.display:
+        if not restore_focus:
+            self.screen.set_focus(None)
+        elif (
+            previous is not None
+            and previous.is_attached
+            and all(widget.display for widget in previous.ancestors_with_self)
+        ):
             previous.focus()
         else:
             self._focus_campaign()
@@ -743,7 +795,15 @@ class CampaignConsole(App):
             self._log(f"> {text}\nerror: {error}")
             return
         if self._command_running and verb not in {"stop", "kill"}:
-            if verb in {"help", "settings", "history", "search", "filter"}:
+            if verb in {
+                "help",
+                "settings",
+                "history",
+                "search",
+                "filter",
+                "show",
+                "hide",
+            }:
                 pass  # they only open a view
             else:
                 self._log(
@@ -781,6 +841,28 @@ class CampaignConsole(App):
             self._log(
                 f"> {text}\nerror: {verb} requires a campaign number, range or folder name."
             )
+            return
+        if verb in {"show", "hide"}:
+            missing = [
+                f"campaign-{slot}"
+                for slot in slots
+                if not self.query(f"#panel-campaign-{slot}")
+            ]
+            if missing:
+                self._log(
+                    f"> {text}\nerror: {', '.join(missing)} not initialized; use run to create it."
+                )
+                if not self._panel_open:
+                    self._focus_campaign()
+                return
+            for slot in slots:
+                self._tab_overrides[f"campaign-{slot}"] = verb == "show"
+            outcome = "shown" if verb == "show" else "hidden"
+            self._log(
+                f"> {text}\nTabs {outcome} for this session; execution is unchanged."
+            )
+            if not self._panel_open:
+                self._focus_campaign()
             return
         if verb == "diagnostics":
             asyncio.create_task(self._show_diagnostics(slots))
@@ -827,6 +909,11 @@ class CampaignConsole(App):
             return
         if settings.stop_timeout_seconds:
             self._last_stop_timeout = settings.stop_timeout_seconds
+        if verb in {"start", "run"}:
+            for slot in slots:
+                label = f"campaign-{slot}"
+                self._tab_overrides.pop(label, None)
+                self._tab_idle_since[label] = None
         self._log(
             f"> {text}\nTargets: "
             + ", ".join(str(self._layout.folder(s)) for s in slots)
@@ -924,25 +1011,35 @@ class CampaignConsole(App):
     def _refresh_status_now(self) -> None:
         for panel in self.query(CampaignPanel):
             target = self._controller.state(panel.id.removeprefix("panel-"))
-            if target.stage in {"launching", "running", "stopping"} or (
-                target.stage == "idle" and target.external
-            ):
+            if target.stage in {"launching", "running", "stopping"} or target.external:
                 panel.set_process_running(True)
             elif target.stage in {"stopped", "failed", "completed", "idle"}:
                 panel.set_process_running(False)
+        self._sync_tab_visibility()
         self._refresh_tab_tags()
+        hidden_running = sum(
+            self._campaign_active(self._controller.state(pane.id))
+            for pane in self.query(TabPane)
+            if pane.id not in self._visible_tabs
+        )
+        warning = (
+            f"{hidden_running} running campaign{'s' if hidden_running != 1 else ''} hidden | "
+            if hidden_running
+            else ""
+        )
         if self._panel_open:
             preview = self._command_preview(
                 self.query_one("#commands-input", Input).value
             )
-            self._log_updatable(preview or PANEL_HINTS)
+            self._log_updatable(warning + (preview or PANEL_HINTS))
             return
         status = self._status_line()
         fresh = (
             self._feedback and time.monotonic() - self._feedback_at < FEEDBACK_SECONDS
         )
         self._log_updatable(
-            f"{status} | {self._feedback}" if fresh else f"{status} · {KEY_HINTS}"
+            warning
+            + (f"{status} | {self._feedback}" if fresh else f"{status} · {KEY_HINTS}")
         )
 
     def _command_preview(self, value: str) -> str:
@@ -986,9 +1083,7 @@ class CampaignConsole(App):
         for panel in self.query(CampaignPanel):
             label = panel.id.removeprefix("panel-")
             state = self._controller.state(label)
-            stage = (
-                "running" if state.stage == "idle" and state.external else state.stage
-            )
+            stage = "running" if state.external else state.stage
             tag = tab_tag(
                 stage, panel.progress_stalled(), panel.phase(), panel.official_outcome()
             )
@@ -1049,23 +1144,15 @@ class CampaignConsole(App):
             if state.stage == "failed" and state.detail:
                 return f"{active}: failed ({state.detail[:240]})"
             return f"{active}: {stage}{self._official_note(active, state.stage)}"
-        parts = []
-        for state in self._controller.folder_states():
-            detail = state.detail[:60]
-            if state.stage == "stopping" and state.stop_started is not None:
-                elapsed = time.monotonic() - state.stop_started
-                detail = f"{elapsed:.0f}s elapsed, {max(0, state.stop_timeout + 5 - elapsed):.0f}s remaining"
-            parts.append(
-                f"{state.label}: {state.stage}" + (f" ({detail})" if detail else "")
-            )
-        return " | ".join(parts) if parts else "no campaigns installed"
+        return "no visible campaigns"
 
-    async def _batch_finished(self) -> None:
+    async def _ensure_campaign_tabs(self, labels: list[str]) -> None:
         tabs = self.query_one(TabbedContent)
         known = {pane.id for pane in tabs.query(TabPane)}
-        for label in self._layout.installed():
+        for label in labels:
             if label not in known:
                 folder = self._layout.folder(self._layout.slot_for(label))
+                before = next((name for name in sorted(known) if name > label), None)
                 await tabs.add_pane(
                     TabPane(
                         label,
@@ -1076,11 +1163,16 @@ class CampaignConsole(App):
                             id=f"panel-{label}",
                         ),
                         id=label,
-                    )
+                    ),
+                    before=before,
                 )
+                known.add(label)
+
+    async def _batch_finished(self) -> None:
+        await self._ensure_campaign_tabs(self._layout.installed())
+        await self._refresh_status()
         self._command_running = False
         self._command_thread = None
-        self._update_campaign_visibility()
 
     def action_help(self) -> None:
         self.push_screen(ConsoleDetail("Campaign commands", help_text()))
@@ -1195,13 +1287,58 @@ class CampaignConsole(App):
 
     def _update_campaign_visibility(self) -> None:
         small = self.size.width < 48 or self.size.height < 16
-        installed = bool(self._layout.installed())
         tabs = self.query_one(TabbedContent)
-        tabs.display = installed and not small
-        if installed and not tabs.active:
-            tabs.active = self._layout.installed()[0]
-        self.query_one("#empty-campaigns").display = not installed and not small
+        tabs.display = bool(self._visible_tabs) and not small
+        empty = self.query_one("#empty-campaigns", Static)
+        empty.display = not self._visible_tabs and not small
+        if not self._activity_ready:
+            message = "Checking campaign activity..."
+        elif self.query(TabPane):
+            message = "No active campaigns are displayed.\nUse /show 1 to inspect a campaign, /start 1 to resume, or /run 1 for a fresh run.\nPress / for commands. Nothing runs automatically."
+        else:
+            message = "No campaign folders are installed.\nUse /run 1 to initialize, reset and start campaign-1 from an existing recipe source.\nPress / for commands, F2 for settings. Nothing runs automatically."
+        if message != self._empty_message:
+            self._empty_message = message
+            empty.update(message)
         self.query_one("#commands-floor").display = small
+
+    def _sync_tab_visibility(self) -> None:
+        if not self._activity_ready:
+            return
+        tabs = self.query_one(TabbedContent)
+        labels = sorted(pane.id for pane in tabs.query(TabPane))
+        now = time.time()
+        visible = []
+        for label in labels:
+            since = self._tab_idle_since.get(label)
+            automatic = (
+                self._campaign_active(self._controller.state(label))
+                or since is None
+                or now - since < IDLE_TAB_SECONDS
+            )
+            if self._tab_overrides.get(label, automatic):
+                visible.append(label)
+        if visible != self._visible_tabs or not self._tab_visibility_applied:
+            self._tab_visibility_applied = True
+            previous = tabs.active
+            self._visible_tabs = visible
+            for label in visible:
+                if not tabs.get_tab(label).display:
+                    tabs.show_tab(label)
+            selected = previous if previous in visible else ""
+            if not selected and visible:
+                index = labels.index(previous) if previous in labels else -1
+                selected = next(
+                    (label for label in labels[index + 1 :] if label in visible),
+                    visible[0],
+                )
+            tabs.active = selected
+            for label in labels:
+                if label not in visible and tabs.get_tab(label).display:
+                    tabs.hide_tab(label)
+            if previous != selected and not self._panel_open:
+                self.call_after_refresh(self._focus_campaign)
+        self._update_campaign_visibility()
 
     def on_tabbed_content_tab_activated(self) -> None:
         if self.is_mounted:
@@ -1233,10 +1370,10 @@ class CampaignConsole(App):
         if isinstance(self.screen, ModalScreen):
             return
         tabs = self.query_one(TabbedContent)
-        panes = [pane.id for pane in tabs.query(TabPane)]
+        panes = self._visible_tabs
         if not panes:
             return
-        if tabs.active is None or len(panes) == 1:
+        if tabs.active not in panes or len(panes) == 1:
             tabs.active = panes[0]
             return
         index = (panes.index(tabs.active) + direction) % len(panes)
@@ -1299,6 +1436,8 @@ class CampaignConsole(App):
                         break
                     stuck = self._wait_for_stop(stuck, STOP_WAIT_MORE_SECONDS)
                 controller.reap_all()
+                _, activity_errors = self._poll_tab_activity()
+                self.call_from_thread(self._report_activity_errors, activity_errors)
                 self._shutdown_complete = not cleanup_failed or left_running
             except (OSError, RuntimeError) as error:
                 self.call_from_thread(self._log, f"Shutdown cleanup failed: {error}")
