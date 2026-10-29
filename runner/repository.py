@@ -1961,7 +1961,9 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         _nonempty(campaign, field, f"campaign {field}")
     if campaign["recipe_source_commit"] is not None:
         _nonempty(campaign, "recipe_source_commit", "campaign recipe_source_commit")
-    _positive_integer(campaign.get("max_inquiries"), "campaign max_inquiries")
+    _positive_integer(
+        campaign.get("max_inquiries"), "campaign max_inquiries", allow_zero=True
+    )
     human_goal = state["human_goal"]
     if not isinstance(human_goal, dict) or set(human_goal) - {"source", "summary"}:
         raise ValueError("human_goal supports only source and optional summary")
@@ -2320,8 +2322,8 @@ def require_scientific_session_backend(
 
 
 def synchronize_max_inquiries(state: dict, requested: int) -> bool:
-    if isinstance(requested, bool) or not isinstance(requested, int) or requested < 1:
-        raise ValueError("MaxInquiries must be at least 1")
+    if isinstance(requested, bool) or not isinstance(requested, int) or requested < 0:
+        raise ValueError("MaxInquiries must be at least 0")
     current = int(state["campaign"]["max_inquiries"])
     if current == requested:
         return False

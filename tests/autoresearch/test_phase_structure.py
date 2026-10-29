@@ -579,7 +579,7 @@ def test_launcher_pauses_at_cap_only_after_scientific_work_is_checkpointed(
 ):
     state = {
         "campaign": {"max_inquiries": 15},
-        "counters": {"inquiry": count},
+        "counters": {"inquiry": count, "session": 1},
         "active_inquiry": None,
         "scientific_session": None,
         "pending_operation": None,
@@ -590,6 +590,20 @@ def test_launcher_pauses_at_cap_only_after_scientific_work_is_checkpointed(
     before = copy.deepcopy(state)
     assert phases.inquiry_cap_reached(state) is expected
     assert state == before
+
+
+@pytest.mark.parametrize(("sessions", "expected"), [(0, False), (1, True)])
+def test_a_zero_inquiry_cap_pauses_after_the_startup_session(sessions, expected):
+    state = {
+        "campaign": {"max_inquiries": 0},
+        "counters": {"inquiry": 0, "session": sessions},
+        "active_inquiry": None,
+        "scientific_session": None,
+        "pending_operation": None,
+        "terminal_state": None,
+        "pi_checkpoint": {"session_id": "S1"} if sessions else None,
+    }
+    assert phases.inquiry_cap_reached(state) is expected
 
 
 def test_goal_review_assigns_best_known_and_requests_assessment_at_cap(

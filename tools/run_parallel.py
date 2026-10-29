@@ -53,6 +53,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-hours", type=float, default=6.0)
     parser.add_argument("--max-aiu", type=float, default=120.0)
     parser.add_argument("--provider", default="github-copilot")
+    # 0 pauses each campaign after its startup session.
+    parser.add_argument("--max-inquiries", type=int)
     parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--no-reset", action="store_true")
     parser.add_argument("--control-directory", type=Path)
@@ -317,6 +319,11 @@ def launch(arguments: argparse.Namespace) -> int:
                 str(root),
                 "--provider",
                 arguments.provider,
+                *(
+                    []
+                    if arguments.max_inquiries is None
+                    else ["--max-inquiries", str(arguments.max_inquiries)]
+                ),
                 group="researcher",
             ),
             control / f"{root.name}.log",

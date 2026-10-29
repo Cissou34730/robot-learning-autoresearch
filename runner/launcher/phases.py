@@ -269,5 +269,6 @@ def inquiry_cap_reached(state: dict) -> bool:
         and not state.get("active_inquiry")
         and not state.get("pending_operation")
         and not state.get("terminal_state")
+        and session_kind(state) != "startup"
         and int(counters.get("inquiry") or 0) >= int(campaign.get("max_inquiries") or 0)
     )

@@ -28,6 +28,13 @@ def _positive(value: str) -> int:
     return number
 
 
+def _non_negative(value: str) -> int:
+    number = int(value)
+    if number < 0:
+        raise argparse.ArgumentTypeError("must be at least 0")
+    return number
+
+
 def _stop_timeout(value: str) -> int:
     number = int(value)
     if not 1 <= number <= 3600:
@@ -54,7 +61,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         choices=defaults.REASONING_LEVELS,
         default=defaults.DEFAULT_REASONING,
     )
-    parser.add_argument("--max-inquiries", type=_positive)
+    # 0 pauses the campaign after its startup session.
+    parser.add_argument("--max-inquiries", type=_non_negative)
     parser.add_argument(
         "--timesteps", type=_positive, default=defaults.DEFAULT_TIMESTEPS
     )
@@ -97,7 +105,9 @@ def launch_options(arguments: argparse.Namespace, campaign_root: Path) -> Launch
         campaign_root=campaign_root,
         model=resolve_model(arguments.model, arguments.provider),
         reasoning=arguments.reasoning,
-        max_inquiries=arguments.max_inquiries or defaults.DEFAULT_MAX_INQUIRIES,
+        max_inquiries=defaults.DEFAULT_MAX_INQUIRIES
+        if arguments.max_inquiries is None
+        else arguments.max_inquiries,
         max_inquiries_explicit=arguments.max_inquiries is not None,
         timesteps=arguments.timesteps,
         max_timesteps=arguments.max_timesteps,
