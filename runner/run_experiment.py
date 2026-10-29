@@ -387,9 +387,7 @@ def _validate_new_operation_scientific_delta(state: dict) -> None:
 
 
 def _training_allocation(request: dict, state: dict) -> int:
-    shortest = execution.training_budget(
-        TIMESTEPS, request["initialization"], False, 0
-    )
+    shortest = execution.training_budget(TIMESTEPS, request["initialization"], False, 0)
     protocol.require_active_session(state)
     if not shortest <= request["steps"] <= MAX_TIMESTEPS:
         raise ValueError(
@@ -1698,6 +1696,80 @@ def _saved_component_comparisons(
     }
 
 
+def _merged_parameters(current: dict, overrides: dict) -> dict:
+    merged = copy.deepcopy(current)
+    for key, value in overrides.items():
+        if isinstance(merged.get(key), dict) and isinstance(value, dict):
+            merged[key] = _merged_parameters(merged[key], value)
+        else:
+            merged[key] = copy.deepcopy(value)
+    return merged
+
+
+def _variant_label(candidate_name: str) -> str:
+    return candidate_name.split("-", 1)[0]
+
+
+def _train_and_archive_variants(
+    state: dict,
+    pending: dict,
+    variant_parameters: dict[str, dict],
+    *,
+    resume: Path | None,
+    candidate_dir: Path,
+    campaign_id: str,
+) -> list[dict]:
+    operation_id = pending["id"]
+    request = pending["request"]["training"]
+    timesteps = _training_allocation(request, state)
+    if candidate_dir.exists():
+        execution.remove_candidate_dir(candidate_dir)
+    candidate_dir.mkdir(parents=True)
+    pending["progress"] = "training_dispatched"
+    repository.write_state(state)
+    specs = []
+    for label, parameters in variant_parameters.items():
+        parameters_path = candidate_dir / f"{label}.parameters.json"
+        parameters_path.write_text(
+            json.dumps(parameters, indent=2) + "\n", encoding="utf-8"
+        )
+        log_id = f"{operation_id}-{label}"
+        specs.append(
+            {
+                "label": label,
+                "output_dir": candidate_dir / label,
+                "parameters_path": parameters_path,
+                "training_log": paths.training_log_path(
+                    log_id,
+                    _training_log_attempt(log_id, campaign_id),
+                    campaign_id=campaign_id,
+                ),
+            }
+        )
+    execution.train_variants(
+        specs, timesteps, int(request["seed"]), resume, operation_id
+    )
+    pending["progress"] = "training_completed"
+    repository.write_state(state)
+    contenders = [
+        {
+            **candidate,
+            "name": f"{spec['label']}-{candidate['name']}",
+            "kind": "candidate",
+            "evaluations": [],
+        }
+        for spec in specs
+        for candidate in execution.candidate_directories(spec["output_dir"])
+    ]
+    archived = repository.archive_candidates(
+        operation_id, contenders, variant_parameters, campaign_id=campaign_id
+    )
+    pending["data"]["archived_candidates"] = copy.deepcopy(archived)
+    pending["progress"] = "candidates_archived"
+    repository.write_state(state)
+    return archived
+
+
 def execute_training(state: dict, pending: dict) -> int:
     data = pending["data"]
     request = pending["request"]["training"]
@@ -1738,7 +1810,25 @@ def execute_training(state: dict, pending: dict) -> int:
     candidate_dir = paths.campaign_candidate_root(campaign_id) / operation_id.lower()
     data["candidate_dir"] = repository.repo_relative_path(candidate_dir)
     archived = data.get("archived_candidates")
+    variants = request.get("variants")
+    variant_parameters = (
+        {
+            variant["label"]: _merged_parameters(config, variant["parameters"])
+            for variant in variants
+        }
+        if variants
+        else None
+    )
     try:
+        if archived is None and variant_parameters is not None:
+            archived = _train_and_archive_variants(
+                state,
+                pending,
+                variant_parameters,
+                resume=resume,
+                candidate_dir=candidate_dir,
+                campaign_id=campaign_id,
+            )
         if archived is None:
             completed = False
             if candidate_dir.exists() and all(
@@ -1800,12 +1890,24 @@ def execute_training(state: dict, pending: dict) -> int:
     repository.persist_saved_components_inventory(
         operation_id, archived, campaign_id=campaign_id
     )
-    records = _candidate_records(
-        operation_id,
-        archived,
-        config,
-        str(data["scientific_commit"]),
-    )
+    if variant_parameters is None:
+        records = _candidate_records(
+            operation_id,
+            archived,
+            config,
+            str(data["scientific_commit"]),
+        )
+    else:
+        records = [
+            record
+            for item in archived
+            for record in _candidate_records(
+                operation_id,
+                [item],
+                variant_parameters[_variant_label(item["name"])],
+                str(data["scientific_commit"]),
+            )
+        ]
     _ensure_candidate_keys_available(state, records)
     completed_steps = max(
         (candidate["training_steps"] for candidate in records), default=0
@@ -1832,14 +1934,28 @@ def execute_training(state: dict, pending: dict) -> int:
             }
             for index, item in enumerate(records)
         ],
-        "saved_component_comparisons": _saved_component_comparisons(
+    }
+    if variants:
+        result["variants"] = [
+            {
+                "label": variant["label"],
+                "parameters": copy.deepcopy(variant["parameters"]),
+                "candidates": [
+                    record["id"]
+                    for record in records
+                    if _variant_label(record["name"]) == variant["label"]
+                ],
+            }
+            for variant in variants
+        ]
+    else:
+        result["saved_component_comparisons"] = _saved_component_comparisons(
             state,
             records,
             parent=parent["id"] if isinstance(parent, dict) else None,
             seed=int(request["seed"]),
             requested_steps=timesteps,
-        ),
-    }
+        )
 
     def apply(current: dict, _result: dict) -> None:
         for candidate in records:

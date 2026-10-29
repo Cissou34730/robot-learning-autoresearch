@@ -23,7 +23,7 @@ GOAL_REVIEW_OBJECTIVE = (
     "this campaign, or open one bounded inquiry about the gap to the goal."
 )
 # The PowerShell here-string carried the checkout's CRLF line endings; keep them.
-SCIENTIFIC_MODEL_OBJECTIVE = """Construct the physical and scientific model of the robot and of the task. The scientific model exists before any training or campaign evidence.
+SCIENTIFIC_MODEL_OBJECTIVE = """Construct the physical and scientific model of the robot, of the task and of the learning problem. The scientific model exists before any training or campaign evidence.
 
 Work from first principles and from the human-owned definitions of the robot, the simulator and the task. Explain the robot as an embodied dynamical system. Show how its morphology, actuation, sensing, control loop, simulator and task geometry together determine the behaviors that are possible, constrained or scientifically uncertain.
 
@@ -44,6 +44,16 @@ Analyze these items from first principles and from the human-owned definitions:
 * the physical, kinematic, dynamic, control and observability constraints that create qualitatively different classes of behavior or failure.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
+The PI trains the policy with reinforcement learning, from the starting recipe that contracts/scenario.md describes. Analyze the learning problem that the starting recipe and the task create:
+
+* how the transformation of the network output into the motor command affects exploration, the motion that random network outputs produce and the speed of learning.
+* the number of training steps that a run needs before a weak result is evidence against a design.
+* the quantities in the training log that show progress before task success occurs.
+* for each reward term that you consider, the behavior that the term makes cheapest for the policy, including behavior that collects reward without task success.
+* the relation between the reward, the end of the episode, the hold requirement and the discount factor.
+
+Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI implements the reward. Do not write code.
+
 For each consequential physical implication and each unknown, state:
 
 1. The research decisions that it could change.
@@ -51,7 +61,7 @@ For each consequential physical implication and each unknown, state:
 3. The source references in the implementation or in the contracts.
 4. The observation or the evidence that would support it, weaken it or revise it.
 
-The scientific model states physical consequences and the evidence that discriminates between them. The PI selects the interventions.
+The scientific model states consequences and the evidence that discriminates between them. Except for the proposed first reward, the PI selects the interventions.
 
 End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.
 

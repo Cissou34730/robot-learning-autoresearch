@@ -68,6 +68,10 @@ from runner.copilot.usage import record_usage
 from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import stop_requested, wait_for_stop_request
 
+# The scientific-model analysis runs on its own Copilot model; PI sessions keep the launcher's.
+ANALYST_MODEL = "gpt-6.1-terra"
+ANALYST_REASONING = "medium"
+
 RESUMED_STATE_PROMPT = (
     "\n\nRecovered current Runner state (factual metadata, not new "
     "scientific evidence). Automatic pending-work replay is disabled; "
@@ -472,7 +476,7 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
     from copilot import CopilotClient
 
     if args.preliminary and provider_of(args.model) == "github-copilot":
-        args.reasoning = "max"
+        args.model, args.reasoning = ANALYST_MODEL, ANALYST_REASONING
     await prepare_provider(args)
     console = getattr(args, "usage_console", None) or SessionReporter()
     if getattr(args, "session_id", ""):

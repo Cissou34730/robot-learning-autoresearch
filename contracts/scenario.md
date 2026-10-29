@@ -49,22 +49,33 @@ success.
 
 ## Starting recipe
 
-The campaign starts with a recipe skeleton in `robot_learning/`. The skeleton
-implements the interfaces that the Runner and the protected evaluators call:
+The campaign starts with a recipe in `robot_learning/`. The recipe implements
+the interfaces that the Runner and the protected evaluators call:
 
 - the training and evaluation entry points
 - the files that a training run writes
 - the format of the saved runtime
 - a research environment that applies the task definitions
 
-The docstrings of the skeleton files state these interfaces.
+The docstrings of the recipe files state these interfaces.
 
-The skeleton contains no learning method. It has no observation, no
-transformation of the network output into the motor command, no reward, no
-training algorithm and no training parameters. These parts raise an error until
-you implement them. You design and build the method.
+The recipe contains a starting method for every part except the reward:
+
+- the observation: the joint angles, the joint velocities and the position of
+  the end effector relative to the target
+- the transformation of the network output: the network output is the motor
+  command
+- the training algorithm: Stable-Baselines3 PPO with observation normalization
+- the training parameters in `robot_learning/training/current_params.json`
+- a training checkpoint at a fixed interval of steps, and the reward terms in
+  the training log
+
+The recipe has no reward. `robot_learning/training/reward.py` raises an error
+until you implement a reward. The scientific model proposes a first reward. The
+parts of the starting method are design choices, not properties of the robot.
+You can change each part.
 
 The research environment starts each episode at zero joint angles and zero joint
 velocities, and it places the target in the plane of the arm. These are design
-choices of the skeleton. The protected evaluators define the official episode
+choices of the recipe. The protected evaluators define the official episode
 start and target placement.

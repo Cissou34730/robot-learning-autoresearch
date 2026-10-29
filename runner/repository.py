@@ -1620,6 +1620,31 @@ def _validate_completed_training_result(result: dict) -> None:
         raise ValueError(
             "completed training learning_dynamics contradict completed_steps"
         )
+    variants = result.get("variants")
+    if variants is not None:
+        if not isinstance(variants, list) or not variants:
+            raise ValueError("completed training variants must be a non-empty list")
+        listed: list[str] = []
+        for variant in variants:
+            variant = _require_exact_fields(
+                variant,
+                {"label", "parameters", "candidates"},
+                "completed training variant",
+            )
+            _nonempty(variant, "label", "completed training variant label")
+            if not isinstance(variant["parameters"], dict):
+                raise TypeError(
+                    "completed training variant parameters must be an object"
+                )
+            listed += _validate_string_list(
+                variant["candidates"],
+                "completed training variant candidates",
+                allow_empty=False,
+            )
+        if sorted(listed) != sorted(candidates):
+            raise ValueError(
+                "completed training variants must list every candidate once"
+            )
     comparisons = result.get("saved_component_comparisons")
     if comparisons is None:
         return
@@ -1790,6 +1815,8 @@ def _validate_completed_event_result(kind: str, result: dict) -> None:
         }
         if "saved_component_comparisons" in result:
             fields.add("saved_component_comparisons")
+        if "variants" in result:
+            fields.add("variants")
     elif kind == "inquiry":
         fields = {"status", "action", "inquiry_id"}
         if result.get("action") == "close":

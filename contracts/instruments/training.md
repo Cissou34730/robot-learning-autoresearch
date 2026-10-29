@@ -34,6 +34,48 @@ AI usage to the campaign.
 For `transfer` training, `parent` is required and must not be empty. For
 `fresh` training, do not give `parent`.
 
+### Training variants
+
+```json
+{
+  "training": {
+    "variants": {
+      "type": "array",
+      "items": {
+        "label": {"type": "string"},
+        "parameters": {"type": "object"}
+      }
+    }
+  }
+}
+```
+
+The `variants` field is optional. Use it to compare 2 to 4 designs in one
+training operation. Each variant has a `label` and `parameters`. A label starts
+with a lowercase letter and contains only lowercase letters, digits and
+underscores. It has a maximum of 16 characters. Each label must be unique in
+the request.
+
+The Runner trains each variant in a separate process. All variants train at the
+same time, with the same source files, initialization, parent, seed and steps.
+The parameters of a variant replace the values of the same keys in
+`robot_learning/training/current_params.json`. The other values do not change.
+The trainer of a variant reads these parameters through
+`load_experiment_config()` in `robot_learning/training/research_config.py`.
+
+Thus a variant can change only a design that the parameters select. The saved
+runtime must keep the parameters that it needs, because measurements read
+`robot_learning/training/current_params.json`.
+
+The variants share the computer. Thus each variant can train more slowly than a
+single run.
+
+The candidate of a variant has the identity
+`T<n>:<label>-checkpoint-<steps>`. The completed result contains `variants`:
+for each variant, its `label`, its `parameters` and its `candidates`. Each
+variant has a separate training log. To read it, give the label as `variant` to
+the training-log tools.
+
 The Runner validates the changed PI-owned source files and the active
 parameters. It executes the accepted seed and step count. It archives all
 candidates that the run makes. It records the parent, the recipe and the facts

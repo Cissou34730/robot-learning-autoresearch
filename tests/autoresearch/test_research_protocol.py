@@ -567,3 +567,37 @@ def test_training_protocol_requires_explicit_mechanical_inputs():
     protocol.validate_training_request(request)
     with pytest.raises(ValueError, match="parent"):
         protocol.validate_training_request({**request, "initialization": "transfer"})
+
+
+def _variant(label, parameters=None):
+    return {"label": label, "parameters": parameters or {}}
+
+
+@pytest.mark.parametrize(
+    ("variants", "valid"),
+    [
+        ([_variant("a"), _variant("b", {"ppo": {"gamma": 0.9}})], True),
+        ([_variant(f"v{index}") for index in range(4)], True),
+        ([_variant("a")], False),
+        ([_variant(f"v{index}") for index in range(5)], False),
+        ([_variant("a"), _variant("a")], False),
+        ([_variant("A"), _variant("b")], False),
+        ([_variant("a-b"), _variant("b")], False),
+        ([{"label": "a"}, _variant("b")], False),
+        ([_variant("a"), {"label": "b", "parameters": []}], False),
+    ],
+)
+def test_training_variants_are_validated(variants, valid):
+    request = {
+        "initialization": "fresh",
+        "seed": 7,
+        "steps": 100,
+        "description": "Compare designs.",
+        "rationale": "Select the design that learns.",
+        "variants": variants,
+    }
+    if valid:
+        protocol.validate_training_request(request)
+    else:
+        with pytest.raises((ValueError, TypeError)):
+            protocol.validate_training_request(request)

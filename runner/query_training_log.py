@@ -46,6 +46,14 @@ class TrainingLogQueryParams(BaseModel):
             "without failure are not readable through this tool."
         ),
     )
+    variant: str | None = Field(
+        default=None,
+        pattern=r"^[a-z][a-z0-9_]{0,15}$",
+        description=(
+            "Label of one variant of a training operation with variants. "
+            "Each variant has its own log."
+        ),
+    )
     attempts: list[int] | None = Field(
         default=None,
         min_length=1,
@@ -179,7 +187,10 @@ class TrainingLogQueryParams(BaseModel):
 
 
 def training_log_paths(
-    operation_id: str, *, state: dict[str, Any] | None = None
+    operation_id: str,
+    *,
+    state: dict[str, Any] | None = None,
+    variant: str | None = None,
 ) -> list[tuple[int, Path]]:
     if re.fullmatch(r"T[1-9]\d*", operation_id) is None:
         raise ValueError("operation_id must be a training operation ID")
@@ -193,16 +204,16 @@ def training_log_paths(
     ):
         raise ValueError("active campaign ID is not a safe directory name")
     directory = paths.TRAINING_LOG_DIR / campaign_id
-    stem = operation_id.lower()
+    stem = (
+        operation_id.lower() if variant is None else f"{operation_id.lower()}-{variant}"
+    )
     pattern = re.compile(rf"^{re.escape(stem)}-attempt-(\d+)\.log$")
     logs: list[tuple[int, Path]] = []
     for log_path in directory.glob(f"{stem}-attempt-*.log"):
         match = pattern.match(log_path.name)
         if match is not None and int(match.group(1)) > 0:
             relative = repository.repo_relative_path(log_path.resolve())
-            if relative != (
-                f"campaigns/training_logs/{campaign_id}/{log_path.name}"
-            ):
+            if relative != (f"campaigns/training_logs/{campaign_id}/{log_path.name}"):
                 raise ValueError("training log is outside its campaign log directory")
             if not log_path.is_file():
                 continue
@@ -222,14 +233,8 @@ def selected_records(
     texts: dict[int, str] | None = None,
 ) -> list[tuple[int, dict[str, float]]]:
     records = []
-    for attempt, log_path in (
-        training_log_paths(operation_id) if logs is None else logs
-    ):
-        text = (
-            log_path.read_text(encoding="utf-8")
-            if texts is None
-            else texts[attempt]
-        )
+    for attempt, log_path in training_log_paths(operation_id) if logs is None else logs:
+        text = log_path.read_text(encoding="utf-8") if texts is None else texts[attempt]
         for record in parse_training_records(text):
             timestep = record.get("total_timesteps")
             if (
@@ -244,7 +249,8 @@ def selected_records(
 def _training_operation(state: dict, operation_id: str) -> dict[str, Any]:
     event = next(
         (
-            event for event in state.get("operation_events", [])
+            event
+            for event in state.get("operation_events", [])
             if event["id"] == operation_id
         ),
         None,
@@ -311,7 +317,9 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
             operation_kind="training",
             **_training_operation(state, params.operation_id),
         )
-        logs = training_log_paths(params.operation_id, state=state)
+        logs = training_log_paths(
+            params.operation_id, state=state, variant=params.variant
+        )
         available_attempts = [attempt for attempt, _ in logs]
         provenance["available_attempts"] = available_attempts
         if params.attempts is not None:

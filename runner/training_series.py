@@ -35,6 +35,14 @@ class TrainingSeriesParams(BaseModel):
         pattern=r"^T[1-9]\d*$",
         description="Training operation in the active campaign.",
     )
+    variant: str | None = Field(
+        default=None,
+        pattern=r"^[a-z][a-z0-9_]{0,15}$",
+        description=(
+            "Label of one variant of a training operation with variants. "
+            "Each variant has its own log."
+        ),
+    )
     attempt: int | None = Field(
         default=None,
         ge=1,
@@ -132,7 +140,9 @@ def query_training_series(args: dict[str, Any], campaign_id: str) -> str:
             operation_kind="training",
             **_training_operation(state, params.operation_id),
         )
-        logs = training_log_paths(params.operation_id, state=state)
+        logs = training_log_paths(
+            params.operation_id, state=state, variant=params.variant
+        )
         provenance["available_attempts"] = [attempt for attempt, _ in logs]
         if not logs:
             return json.dumps({"status": "no_logs", "provenance": provenance})

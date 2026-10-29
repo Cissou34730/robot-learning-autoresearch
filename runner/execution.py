@@ -526,6 +526,122 @@ def train_candidate(
     return time.monotonic() - started
 
 
+# The trainer of a variant reads its parameters from this file, not current_params.json.
+PARAMETERS_FILE_VARIABLE = "ROBOT_LEARNING_PARAMETERS_FILE"
+
+
+def train_variants(
+    specs: list[dict],
+    timesteps: int,
+    seed: int,
+    resume: Path | None,
+    operation_id: str,
+) -> None:
+    """Train each variant in its own process, all at the same time.
+
+    Each spec has `label`, `output_dir`, `parameters_path` and `training_log`.
+    """
+    from robot_learning.training.progress import latest_training_record
+
+    started = time.monotonic()
+    runs: list[dict] = []
+    try:
+        for spec in specs:
+            command = [
+                sys.executable,
+                "-m",
+                "runner.pi_code_guard",
+                "robot_learning.train",
+                "--timesteps",
+                str(timesteps),
+                "--seed",
+                str(seed),
+                "--output-dir",
+                str(spec["output_dir"]),
+            ]
+            if resume is not None:
+                command.extend(["--resume", str(resume)])
+            log_path = spec["training_log"]
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            log_file = log_path.open("w", encoding="utf-8")
+            log_file.write(
+                f"\n=== training {operation_id} variant {spec['label']} ===\n"
+            )
+            log_file.flush()
+            run = {"spec": spec, "log": log_file, "offset": log_file.tell()}
+            runs.append(run)
+            run["process"] = subprocess.Popen(
+                command,
+                cwd=paths.ROOT,
+                env={
+                    **paths.python_environment(),
+                    PARAMETERS_FILE_VARIABLE: str(spec["parameters_path"]),
+                },
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                text=True,
+                **process_group_options(),
+            )
+            run["steps"], run["progress_at"] = None, time.monotonic()
+        while any(run["process"].poll() is None for run in runs):
+            deadline = time.monotonic() + TRAINING_STATUS_INTERVAL_SECONDS
+            while time.monotonic() < deadline and any(
+                run["process"].poll() is None for run in runs
+            ):
+                time.sleep(1.0)
+            elapsed = time.monotonic() - started
+            typed_events.emit("liveness", {}, scope="info")
+            for run in runs:
+                label = run["spec"]["label"]
+                text = read_training_log(run["spec"]["training_log"], run["offset"])
+                steps = latest_step_count(text)
+                if steps is not None and steps != run["steps"]:
+                    run["steps"], run["progress_at"] = steps, time.monotonic()
+                if run["process"].poll() is None:
+                    _emit_progress(
+                        training_progress_event(
+                            f"{operation_id}-{label}",
+                            steps,
+                            timesteps,
+                            elapsed,
+                            latest_training_record(text),
+                        )
+                    )
+                    if time.monotonic() - run["progress_at"] > TRAIN_STALL_SECONDS:
+                        raise TimeoutError(
+                            f"training variant {label} made no progress for 30 minutes"
+                        )
+            if elapsed > TRAIN_TIMEOUT_SECONDS:
+                raise TimeoutError("training exceeded the 12 hour safety limit")
+    except BaseException as error:
+        for run in runs:
+            if "process" in run:
+                stop_process(
+                    run["process"], graceful=isinstance(error, KeyboardInterrupt)
+                )
+        raise
+    finally:
+        for run in runs:
+            run["log"].close()
+    failed = [run for run in runs if run["process"].returncode != 0]
+    if failed:
+        raise RuntimeError(
+            "training failed:\n"
+            + "\n".join(
+                f"--- variant {run['spec']['label']} ---\n"
+                + run["spec"]["training_log"].read_text(encoding="utf-8")
+                for run in failed
+            )
+        )
+    for run in runs:
+        for filename in repository.INFERENCE_ARTIFACT_FILES:
+            if not (run["spec"]["output_dir"] / filename).exists():
+                raise RuntimeError(
+                    f"training output of variant {run['spec']['label']} is "
+                    f"incomplete: {filename}"
+                )
+
+
 # --- candidate artifacts ---------------------------------------------------
 
 

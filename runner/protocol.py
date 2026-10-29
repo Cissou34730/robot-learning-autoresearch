@@ -371,7 +371,7 @@ def resolve_candidate(state: dict, identifier: str) -> dict:
 
 def validate_training_request(request: dict) -> None:
     required = {"initialization", "seed", "steps", "description", "rationale"}
-    allowed = {*required, "parent"}
+    allowed = {*required, "parent", "variants"}
     missing = required - set(request)
     extra = set(request) - allowed
     if missing or extra:
@@ -390,6 +390,41 @@ def validate_training_request(request: dict) -> None:
         _nonempty(request, "parent", "transfer training parent")
     elif "parent" in request:
         raise ValueError("fresh training must not declare a parent")
+    if "variants" in request:
+        _validate_training_variants(request["variants"])
+
+
+TRAINING_VARIANT_LABEL = re.compile(r"[a-z][a-z0-9_]{0,15}")
+MIN_TRAINING_VARIANTS = 2
+MAX_TRAINING_VARIANTS = 4
+
+
+def _validate_training_variants(variants: object) -> None:
+    if not isinstance(variants, list) or not (
+        MIN_TRAINING_VARIANTS <= len(variants) <= MAX_TRAINING_VARIANTS
+    ):
+        raise ValueError(
+            f"training variants must be a list of {MIN_TRAINING_VARIANTS} to "
+            f"{MAX_TRAINING_VARIANTS} variants"
+        )
+    labels: set[str] = set()
+    for variant in variants:
+        if not isinstance(variant, dict) or set(variant) != {"label", "parameters"}:
+            raise ValueError(
+                "each training variant requires exactly label and parameters"
+            )
+        label = variant["label"]
+        if not isinstance(label, str) or not TRAINING_VARIANT_LABEL.fullmatch(label):
+            raise ValueError(
+                "a training variant label must start with a lowercase letter and "
+                "contain only lowercase letters, digits and underscores, at most "
+                "16 characters"
+            )
+        if label in labels:
+            raise ValueError(f"training variant label {label!r} is not unique")
+        labels.add(label)
+        if not isinstance(variant["parameters"], dict):
+            raise TypeError("training variant parameters must be an object")
 
 
 def resolved_training_parent(request: dict, state: dict) -> dict | None:
@@ -1224,18 +1259,34 @@ def operation_body_schema(kind: str) -> dict:
             "steps": {"type": "integer", "minimum": 1},
             "description": text,
             "rationale": text,
+            "variants": {
+                "type": "array",
+                "minItems": MIN_TRAINING_VARIANTS,
+                "maxItems": MAX_TRAINING_VARIANTS,
+                "items": body(
+                    {
+                        "label": {
+                            "type": "string",
+                            "pattern": f"^{TRAINING_VARIANT_LABEL.pattern}$",
+                        },
+                        "parameters": {"type": "object"},
+                    }
+                ),
+            },
         }
         return {
             "oneOf": [
                 body(
-                    {**common, "initialization": {"const": "fresh", "type": "string"}}
+                    {**common, "initialization": {"const": "fresh", "type": "string"}},
+                    optional=("variants",),
                 ),
                 body(
                     {
                         **common,
                         "initialization": {"const": "transfer", "type": "string"},
                         "parent": text,
-                    }
+                    },
+                    optional=("variants",),
                 ),
             ]
         }

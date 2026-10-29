@@ -124,9 +124,7 @@ def test_startup_training_requests_stay_within_the_range(
 @pytest.mark.parametrize(
     ("steps", "accepted"), [(5, False), (10, True), (30, True), (31, False)]
 )
-def test_inquiry_training_requests_stay_within_the_range(
-    monkeypatch, steps, accepted
-):
+def test_inquiry_training_requests_stay_within_the_range(monkeypatch, steps, accepted):
     monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
     monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 30)
     request = _training()["training"]
@@ -506,6 +504,86 @@ def test_completed_training_transaction_retries_publication_without_retraining(
         completed["operation_events"][0]["result"]["requested_steps"] == requested_steps
     )
     assert completed["operation_events"][0]["result"]["completed_steps"] == 10
+
+
+def test_training_variants_train_together_and_record_candidates_per_variant(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    invocation_result.configure(tmp_path / "execution-result.json")
+    active = {"ppo": {"gamma": 0.99, "n_steps": 64}, "training": {"n_envs": 1}}
+    monkeypatch.setattr(
+        run_experiment.research_config, "load_experiment_config", lambda: active
+    )
+    request = _training()
+    request["training"]["variants"] = [
+        {"label": "base", "parameters": {}},
+        {"label": "short", "parameters": {"ppo": {"gamma": 0.9}}},
+    ]
+    run_experiment.accept_operation(request, state)
+    artifact = tmp_path / "archive"
+    artifact.mkdir()
+    (artifact / "model.zip").write_bytes(b"model")
+    (artifact / "artifact.json").write_text("{}", encoding="utf-8")
+    (artifact / "policy_runtime.pkl").write_bytes(b"runtime")
+    monkeypatch.setattr(
+        repository, "publish_scientific_recipe", lambda *_args: "b" * 40
+    )
+    monkeypatch.setattr(execution, "validate_active_configuration", dict)
+    trained = []
+
+    def train_variants(specs, timesteps, seed, resume, operation_id):
+        trained.append(
+            {
+                spec["label"]: json.loads(
+                    spec["parameters_path"].read_text(encoding="utf-8")
+                )
+                for spec in specs
+            }
+        )
+
+    monkeypatch.setattr(execution, "train_variants", train_variants)
+    monkeypatch.setattr(
+        execution,
+        "candidate_directories",
+        lambda _path: [{"name": "checkpoint-10", "path": artifact, "timesteps": 10}],
+    )
+
+    def archive(_operation, contenders, _config, *, campaign_id):
+        return [
+            {
+                "name": contender["name"],
+                "artifact": repository.repo_relative_path(artifact),
+                "fingerprint": repository.artifact_fingerprint(artifact),
+                "timesteps": 10,
+                "training_success": None,
+                "ep_rew_mean": None,
+            }
+            for contender in contenders
+        ]
+
+    monkeypatch.setattr(repository, "archive_candidates", archive)
+    monkeypatch.setattr(
+        repository, "persist_saved_components_inventory", lambda *a, **k: {}
+    )
+    monkeypatch.setattr(execution, "remove_candidate_dir", lambda _path: None)
+
+    assert run_experiment.execute_pending_operation() == 0
+
+    shorter = {**active, "ppo": {"gamma": 0.9, "n_steps": 64}}
+    assert trained == [{"base": active, "short": shorter}]
+    completed = repository.read_state()
+    result = completed["operation_events"][0]["result"]
+    assert result["variants"] == [
+        {"label": "base", "parameters": {}, "candidates": ["T1:base-checkpoint-10"]},
+        {
+            "label": "short",
+            "parameters": {"ppo": {"gamma": 0.9}},
+            "candidates": ["T1:short-checkpoint-10"],
+        },
+    ]
+    assert completed["candidates"]["T1:short-checkpoint-10"]["parameters"] == shorter
+    assert completed["candidates"]["T1:base-checkpoint-10"]["parameters"] == active
 
 
 def test_candidate_manifest_preserves_identity_order_and_artifacts(tmp_path):
