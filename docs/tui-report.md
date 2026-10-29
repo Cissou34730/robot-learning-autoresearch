@@ -354,6 +354,8 @@ candidate in recorded order with its source shown; official panels never
 become development evidence; usage excludes price and currency and keeps the
 PI, coder and reviewer scopes; missing values render as `unavailable` or
 `not measured`, never zero.
+Token-only accounting rows show the recorded input/output tokens with campaign
+AIU marked `unavailable`. They do not imply zero AIU.
 
 The header shows the latest allocated operation IDs (`I / S / T / M / E`),
 the recorded human goal with the best development success and gap, the

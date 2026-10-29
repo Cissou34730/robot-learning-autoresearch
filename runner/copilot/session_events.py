@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import json
 
-from runner.copilot.command_policy import command_denial, shell_command_text
 from runner.copilot.constants import (
     MODEL_CALL_RETRY_DELAY_SECONDS,
     MODEL_CALL_RETRY_LIMIT,
@@ -49,9 +48,14 @@ def event_handler(
             return
         # Reasoning events are deliberately not shown: the console reports work done.
         if isinstance(data, AssistantMessageDeltaData):
-            console.delta(data.delta_content or "")
+            console.delta(data.delta_content or "", data.message_id)
         elif isinstance(data, AssistantMessageData):
-            console.message(data.content or "")
+            # A message that requests a tool continues the work; one without ends it.
+            console.message(
+                data.content or "",
+                data.message_id,
+                "note" if data.tool_requests else "end",
+            )
         elif isinstance(data, ToolExecutionStartData):
             console.tool(data.tool_name, data.arguments, data.tool_call_id)
         elif isinstance(data, ToolExecutionCompleteData):
@@ -164,11 +168,7 @@ def permission_handler(
         elif isinstance(request, PermissionRequestWrite):
             reason = _write_denial(request, scope, coding_paths, preliminary)
         elif isinstance(request, PermissionRequestShell):
-            reason = (
-                command_denial(shell_command_text(request), preliminary=True)
-                if preliminary
-                else SHELL_DENIAL
-            )
+            reason = SHELL_DENIAL
         if reason:
             return reject(request, reason)
         return PermissionDecisionApproveOnce()

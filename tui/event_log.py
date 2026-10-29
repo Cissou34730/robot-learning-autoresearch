@@ -517,7 +517,13 @@ class EventLog(Tree[TimelineItem]):
     def _flow_lines(
         self, node: TreeNode[TimelineItem], item: TimelineItem
     ) -> list[Text]:
-        text = Text(item.title, style=self._kind_style(item))
+        title = item.title
+        message_kind = item.payload.get("message_kind") if item.kind == "pi" else None
+        if message_kind in {"note", "end"}:
+            title = f"PI {message_kind}"
+        text = Text(title, style=self._kind_style(item))
+        if message_kind == "end":
+            text.stylize("bold")
         if item.kind == "tool":
             if item.summary:
                 text.append(": ", style=self._styles.get("muted", ""))

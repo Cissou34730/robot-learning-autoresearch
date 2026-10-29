@@ -1,9 +1,10 @@
-"""SDK system message for the main PI and the preliminary analyst."""
+"""SDK system message for the main PI and the preliminary analyst.
+
+Replace mode sends this text unchanged. Otherwise the Copilot CLI builds a
+different prompt for each LLM family.
+"""
 
 from __future__ import annotations
-
-import re
-from collections.abc import Callable
 
 from runner import paths
 
@@ -87,36 +88,37 @@ ANALYST_AUTONOMY = (
     "session writes it."
 )
 
-REMOVED_RUNTIME_BLOCKS = (
-    "editing_constraints",
-    "destructive_actions",
-    "subagent_usage",
-    "session_context",
-    "github_reference_formatting",
-    "git_commit_trailer",
+MESSAGES = (
+    "You send two kinds of messages.\n\n"
+    "A progress note is one or two sentences in a message that also contains a "
+    "tool call. Write a progress note when a result changes your explanation of "
+    "the robot behavior or changes your next action. State the result and its "
+    "consequence. Do not write a progress note for a routine tool call.\n\n"
+    "A message without a tool call ends your work in this session. Send it only "
+    "when the session is complete. In it, state what you found and the evidence "
+    "for it."
 )
 
-# Bash and CLI bullets do not apply: these sessions have no shell.
-REMOVED_EFFICIENCY_LINES = (
-    "* Chain related bash commands",
-    "* Suppress verbose output",
-    "Your output appears in a command-line interface.",
+# Copied from the Copilot CLI 1.0.103 GPT prompt; OI-061 reviews the notifications.
+TOOLS = (
+    "<tools>You have access to several tools. Below are additional guidelines "
+    "on how to use some of them effectively:\n\n"
+    "<view>\n"
+    "Put independent file or range reads in multiple `view` calls in one "
+    "response; they run in parallel.\n"
+    "For likely-large files, use `view_range` immediately to avoid a truncated "
+    "first read.\n"
+    "</view></tools>"
 )
 
-REMOVED_IDENTITY_TEXT = (
-    "You are an interactive tool that helps users with software engineering tasks.",
-    "Your job is to perform the task the user requested.",
+SYSTEM_NOTIFICATIONS = (
+    "The runtime may send <system_notification>-wrapped status updates, such as "
+    "background-task or shell completion. Incorporate them and continue the "
+    "task; acknowledge briefly only when relevant, and if idle take the "
+    "appropriate action (for example, read completed agent results).\n\n"
+    "Never repeat notifications verbatim, explain them, generate them, or "
+    "output <system_notification> tags yourself; only the runtime provides them."
 )
-
-REMOVED_TOOL_BLOCKS = (
-    "gh_cli_preference",
-    "github-mcp-server-*",
-    "code_search_tools",
-)
-
-# The main PI has no shell, so its usage rules would only mislead. The analyst
-# has a shell under a command policy and keeps them.
-PI_ONLY_REMOVED_TOOL_BLOCKS = ("powershell",)
 
 REFERENCE_HEADER = (
     "# Campaign reference\n"
@@ -172,90 +174,37 @@ def campaign_reference(preliminary: bool) -> str:
     return "\n\n".join([REFERENCE_HEADER, *files])
 
 
-def _block(tag: str) -> re.Pattern:
-    tag = re.escape(tag)
-    return re.compile(rf"<{tag}>.*?</{tag}>\s*", re.DOTALL)
+def _tagged(tag: str, text: str) -> str:
+    return f"<{tag}>\n{text}\n</{tag}>"
 
 
-def _runtime_transform(
-    preliminary: bool, warn: Callable[[str], None]
-) -> Callable[[str], str]:
-    replaced = {
-        "autonomy_and_persistence": ANALYST_AUTONOMY if preliminary else AUTONOMY
-    }
-    removed = REMOVED_RUNTIME_BLOCKS
-    if preliminary:
-        replaced["exploration_and_reading_files"] = ANALYST_EXPLORATION
-    else:
-        removed += ("exploration_and_reading_files",)
-
-    def transform(content: str) -> str:
-        for tag, text in replaced.items():
-            block = f"<{tag}>\n{text}\n</{tag}>\n\n"
-            content, count = _block(tag).subn(
-                lambda _, block=block: block, content, count=1
-            )
-            if not count:
-                warn(f"system prompt: runtime block <{tag}> not found; not replaced")
-        for tag in removed:
-            content = _block(tag).sub("", content, count=1)
-        return content.rstrip()
-
-    return transform
-
-
-def _efficiency_transform(content: str) -> str:
-    return "\n".join(
-        line
-        for line in content.splitlines()
-        if not line.startswith(REMOVED_EFFICIENCY_LINES)
-    ).rstrip()
-
-
-def _identity_transform(content: str) -> str:
-    for text in REMOVED_IDENTITY_TEXT:
-        content = content.replace(text, "")
-    content = re.sub(
-        r"# Search and delegation\n.*?(?=^# |\Z)",
-        "",
-        content,
-        flags=re.DOTALL | re.MULTILINE,
+def environment() -> str:
+    return _tagged(
+        "environment_context",
+        f"The campaign folder is {paths.ROOT}. Use absolute Windows paths with "
+        "backslashes (\\) in tool arguments.",
     )
-    return re.sub(r"[ \t]*\n(?:[ \t]*\n)+", "\n\n", content).strip()
 
 
-def _tools_transform(preliminary: bool) -> Callable[[str], str]:
-    removed = REMOVED_TOOL_BLOCKS
-    if not preliminary:
-        removed += PI_ONLY_REMOVED_TOOL_BLOCKS
+def system_prompt(preliminary: bool) -> str:
+    parts = [
+        ANALYST_IDENTITY if preliminary else PI_IDENTITY,
+        TONE,
+        environment(),
+        TOOLS,
+        campaign_reference(preliminary),
+        _tagged("system_notifications", SYSTEM_NOTIFICATIONS),
+        _tagged("messages", MESSAGES),
+    ]
+    if preliminary:
+        parts.append(_tagged("exploration_and_reading_files", ANALYST_EXPLORATION))
+    parts.append(
+        _tagged(
+            "autonomy_and_persistence", ANALYST_AUTONOMY if preliminary else AUTONOMY
+        )
+    )
+    return "\n\n".join(parts)
 
-    def transform(content: str) -> str:
-        for tag in removed:
-            content = _block(tag).sub("", content, count=1)
-        return content.rstrip()
 
-    return transform
-
-
-def system_message(preliminary: bool, warn: Callable[[str], None]) -> dict:
-    return {
-        "mode": "customize",
-        "sections": {
-            "identity": {"action": _identity_transform},
-            "preamble": {
-                "action": "replace",
-                "content": ANALYST_IDENTITY if preliminary else PI_IDENTITY,
-            },
-            "tone": {"action": "replace", "content": TONE},
-            "tool_efficiency": {"action": _efficiency_transform},
-            "code_change_rules": {"action": "remove"},
-            "guidelines": {"action": "remove"},
-            "last_instructions": {"action": "remove"},
-            "tool_instructions": {"action": _tools_transform(preliminary)},
-            "custom_instructions": {
-                "action": "replace",
-                "content": campaign_reference(preliminary),
-            },
-            "runtime_instructions": {"action": _runtime_transform(preliminary, warn)},
-        },
-    }
+def system_message(preliminary: bool) -> dict:
+    return {"mode": "replace", "content": system_prompt(preliminary)}

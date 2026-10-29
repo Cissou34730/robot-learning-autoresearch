@@ -121,10 +121,8 @@ results.
 ## Analyst session
 
 The analyst session writes `pi_workspace/scientific_model.md`. Its tools are
-`view`, `rg`, `glob`, `apply_patch` for this file only, a limited inspection
-shell, `artifact_evidence_query`, `training_log_query`,
+`view`, `rg`, `glob`, `apply_patch` for this file only,
+`artifact_evidence_query`, `training_log_query`,
 `training_series_statistics`, `success_rate_pass_probability`,
-`episode_outcome_breakdown` and `scientific_api_reference`. The shell permits
-read-only Git commands for code provenance. The Git history is not scientific
-evidence. This session does not expose `scientific_coding` or
-`submit_operation`.
+`episode_outcome_breakdown` and `scientific_api_reference`. This session does
+not expose a shell, `scientific_coding` or `submit_operation`.

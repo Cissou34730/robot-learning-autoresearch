@@ -639,6 +639,11 @@
           (round 10). The startup invariance sentence of round 10 was removed after the startup test (round 11). The
           launcher, reset and parallel tool run in Python since 27 October.
         </p>
+        <p><strong>System prompt (29 October):</strong> branch <code>system-prompt-replace</code>, not merged into
+          <code>harness</code>. The PI and the analyst receive one fixed system prompt on every model family (SDK
+          replace mode); each PI message is labelled note or end; each campaign validates in its own pytest folder; the
+          analyst has no shell. See <a href="#architecture">agents and data flow</a>.
+        </p>
         <p><strong>Launch check:</strong> the launcher refuses to start or resume a campaign while the harness has
           uncommitted or untracked changes.</p>
         <p><strong>Known limitation:</strong> after a fatal tool result, restarting may resume a conversation that still
@@ -670,7 +675,8 @@
           <span class="tag">Validation and its limits</span>
           <h3 style="margin-top: 12px">Current test status</h3>
           <ul>
-            <li><code>tests/autoresearch</code> and <code>tests/benchmark</code>: 833 pass (28 October).
+            <li><code>tests/autoresearch</code> and <code>tests/benchmark</code>: 833 pass (28 October); 857 pass on
+              <code>system-prompt-replace</code> (29 October).
             </li>
             <li>Passing tests check implementation behavior, not scientific effectiveness.</li>
             <li>The migration checks of the 19 October split are in <a href="#archive">Old decisions</a>.</li>
@@ -680,13 +686,16 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">37 closed issues; five open investigations</h3>
+          <h3 style="margin-top: 12px">37 closed issues; seven open investigations</h3>
           <ul>
-            <li>All 60 issue IDs remain visible. Five are open (OI-024, OI-025, OI-039, OI-040, OI-057).</li>
+            <li>All 62 issue IDs remain visible. Seven are open (OI-024, OI-025, OI-039, OI-040, OI-057, OI-061,
+              OI-062).</li>
             <li>Five changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
               (invariances in the scientific model), OI-055 (first-experiment reference) and OI-056 (contrast in
               mechanism tests). OI-054 (time and AI usage shown to the PI) and OI-058 (task and policy framing) were
               withdrawn on 27 October.</li>
+            <li>On 29 October OI-061 (CLI notification text in the fixed system prompt) and OI-062 (guessed paths and
+              field names) were added on branch <code>system-prompt-replace</code>.</li>
             <li>On 28 October OI-059 (controlled wording with the scientific terms restored; rounds 7 and 10) and
               OI-060 (key-moment wording; round 10 and the replay) closed.</li>
             <li>On 26 October OI-041 (system prompt), OI-049 (analyst prompt) and OI-052 (duplicate panels) closed.</li>
@@ -882,8 +891,9 @@
           helper executes checks or submits operations.</p>
         <p>Runner executes the checks that the PI requests. Code review does not approve scientific conclusions.</p>
         <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
-        <p>Ordinary Copilot main and coding sessions have no shell tools. The main PI calls
-          <code>submit_operation</code> without file-write tools.
+        <p>No Copilot session has a shell tool. The analyst lost its inspection shell on 29 October (branch
+          <code>system-prompt-replace</code>). The main PI calls <code>submit_operation</code> without file-write
+          tools.
         </p>
         <p>The preliminary phase keeps its scientific-model publication permission and phase-specific tools. Runner
           executes scientific checks, training and evaluation using the harness environment.</p>
@@ -1100,13 +1110,18 @@
           <tbody>
             <tr>
               <td>System message (OI-041)</td>
-              <td>A customize-mode SDK system message. The preamble is the PI persona or the analyst persona. The tone
-                section is replaced. The autonomy block is replaced: the PI text states that the PI owns the campaign to
-                the official assessment and that the campaign is judged on reaching the goal and on time and AI usage;
-                the analyst text says to complete the model in one session. SDK coding-assistant sections are removed;
-                the PI also loses the exploration block. The custom-instructions section carries the campaign reference:
-                for the PI the contracts and the policy runtime; for the analyst the scenario, task spec, robot files,
-                authority, policy runtime and scientific-model instrument.</td>
+              <td>On <code>harness</code>: a customize-mode SDK system message that edits the Copilot CLI prompt. The
+                CLI prompt differs by model family, and on DeepSeek the analyst exploration and autonomy texts were
+                missing. On branch <code>system-prompt-replace</code> (29 October): a replace-mode system message, one
+                fixed text on every model family. In order: the PI or analyst identity; our tone; the campaign folder
+                with the rule to use absolute Windows paths; the CLI <code>&lt;view&gt;</code> tool guidance, word for
+                word; the campaign reference (PI: the contracts and the policy runtime, 11 files; analyst: the
+                glossary, scenario, task spec, robot files, authority, policy runtime and scientific-model instrument, 8
+                files); the CLI <code>&lt;system_notifications&gt;</code> text, word for word (OI-061); our
+                <code>&lt;messages&gt;</code> text (a progress note goes with a tool call, a message without a tool
+                call ends the session); the analyst exploration text (analyst only); our autonomy text. No other CLI
+                text remains. PI about 99k characters, analyst about 32k.
+              </td>
               <td><code>runner/copilot/system_prompt.py</code></td>
             </tr>
             <tr>
@@ -2020,11 +2035,12 @@
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / OPEN WORK</p>
       <h2 id="issues-heading">Open work and closed issues</h2>
-      <p><strong>Status and description review: 27 October 2026.</strong> All 59 issue IDs match
+      <p><strong>Status and description review: 29 October 2026.</strong> All 62 issue IDs match
         the <a href="../harness-experiment-log.md#issue-register">Markdown register</a>; the tables below are generated
         from it. On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and OI-052 to OI-056 were added
         from the parallel rounds. On 27 October OI-054 was withdrawn, OI-057 and OI-058 were added from round 5,
         and OI-059 from the wording analysis. After round 6 OI-058 was withdrawn and OI-059 was corrected.
+        On 29 October OI-061 and OI-062 were added on branch <code>system-prompt-replace</code>.
         OI-040 to
         OI-047 replace the former follow-up items. The maintainer
         approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
@@ -2036,7 +2052,7 @@
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">5</p>
+          <p class="metric">7</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
@@ -2142,7 +2158,7 @@
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 5</h3>
+      <h3 id="open-issues">Open issues — 7</h3>
       <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
@@ -2207,6 +2223,34 @@
               <td>One campaign only. Check the symmetry statements and their conditions in the next round's models, and
                 whether a conditioned statement precedes a limit-based explanation. No change is authorized. Round 6: no
                 model added the condition; <code>229c3e55</code> stated no reflection at all.</td>
+            </tr>
+            <tr>
+              <td>OI-061</td>
+              <td>The fixed system prompt (branch <code>system-prompt-replace</code>) keeps the Copilot CLI
+                <code>&lt;system_notifications&gt;</code> text word for word. It is generic Copilot text and contains an
+                example. The PI receives these notifications when the scientific coder or reviewer becomes idle (258 of
+                601 recorded campaign sessions).
+              </td>
+              <td><span class="tag">Open</span></td>
+              <td>Decide whether the PI needs this text, and rewrite it in campaign terms or remove it. Consider whether
+                the console can use the notifications.</td>
+            </tr>
+            <tr>
+              <td>OI-062</td>
+              <td>The PI and the analyst guess paths and field names instead of using the ones that exist. In the 29
+                October batch (branch <code>system-prompt-replace</code>): about 4-5 <code>view</code> calls on paths
+                that do not exist per campaign; about 4-6 refused analyst reads of reference files that are already in
+                the system prompt; 1-2 <code>episode_outcome_breakdown</code> calls with guessed fields
+                (<code>target_radius_cm</code>, <code>target_angle_degrees</code>); 1-3
+                <code>artifact_evidence_query</code> traversal-budget refusals; the DeepSeek analyst read
+                <code>contracts/robots/robot.xml</code> relative to the campaign folder (the file is in the harness)
+                and then sent 5 shell commands that were refused. All are pre-existing.
+              </td>
+              <td><span class="tag">Open</span></td>
+              <td>The analyst shell was removed on 29 October. Options, none approved: refusal text that lists what
+                exists (paths, fields); a sentence in the reference header that the files exist only in the system
+                prompt; a file map at session start. Measure the failure counts in the next batch, including the full
+                DeepSeek campaign, before a choice.</td>
             </tr>
           </tbody>
         </table>
@@ -2917,7 +2961,9 @@
                 sections are removed. The PI autonomy text states ownership to the official assessment and judgment on
                 goal, time and AI usage. See <a href="#architecture">agents and data flow</a>.</td>
               <td>On branch <code>system-prompt</code>, <code>a969f07b</code>. One campaign, <code>f83fca4d</code>,
-                passed at 200/200; one run gives no effect estimate.</td>
+                passed at 200/200; one run gives no effect estimate. Replace mode with one fixed text on branch
+                <code>system-prompt-replace</code>, <code>471574a0</code> (29 October).
+              </td>
             </tr>
             <tr>
               <td>Scientific-model phase: analyst persona, four headings</td>
@@ -3204,6 +3250,18 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">29 October: one fixed system prompt for every model family</h3>
+        <p>The customize-mode system message edited the Copilot CLI prompt, which differs by model family; on DeepSeek
+          the analyst exploration and autonomy texts were missing. Branch <code>system-prompt-replace</code> sends one
+          fixed text in SDK replace mode (<code>471574a0</code>): our identity, tone, campaign reference, messages and
+          autonomy texts, the campaign folder, and two CLI blocks kept word for word (<code>&lt;view&gt;</code> and
+          <code>&lt;system_notifications&gt;</code>, OI-061). The same branch labels each PI message note or end from
+          the SDK message and removes duplicated PI messages (<code>5debe009</code>, <code>c15733ea</code>), gives each
+          campaign its own pytest folder after parallel validations refused trainings (<code>c15733ea</code>) and
+          removes the analyst shell (<code>bede6a9d</code>, OI-062). Not merged into <code>harness</code>.
+        </p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">28 October: startup sentence removed; no-recipe experiment running</h3>
         <p>Three campaigns ran round 10 without the startup invariance sentence and were stopped after their startup

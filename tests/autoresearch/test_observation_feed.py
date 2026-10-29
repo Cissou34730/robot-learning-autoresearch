@@ -260,6 +260,33 @@ def test_domain_event_closes_the_pi_message_first(tmp_path):
     assert final_message < warning
 
 
+def test_the_sdk_message_ends_and_labels_each_pi_message_once(tmp_path):
+    session = SessionReporter(session_id="backend-1")
+    with typed_events.context(session_id="S1"):
+        session.delta("Radius results ", "m1")
+        session.model_call(10**9)
+        session.message("", "empty-1", "end")
+        session.message("", "empty-2", "end")
+        session.message("Radius results point to a gap.", "m1", "note")
+        session.tool("view", {"path": "x"}, "call-1")
+        session.delta("Early ", "m2")
+        session.warning("context compacted", code="compaction")
+        session.message("Early text.", "m2", "end")
+        session.message("Session done.", "m3", "end")
+    events = _events(tmp_path / "typed.events.jsonl")
+    finals = [
+        (event["payload"]["text"], event["payload"].get("message_kind"))
+        for event in events
+        if event["kind"] == "pi_message" and event["payload"]["final"]
+    ]
+    assert finals == [
+        ("Radius results point to a gap.", "note"),
+        ("Early ", None),
+        ("Session done.", "end"),
+    ]
+    assert any(event["kind"] == "pi_context" for event in events)
+
+
 def test_lifecycle_facts_are_domain_events(tmp_path):
     from runner import run_experiment
 

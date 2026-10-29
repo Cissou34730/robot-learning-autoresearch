@@ -16,10 +16,9 @@ permission handler denies every main-session file write. The trusted launcher
 validates each structured request through Runner and returns factual results
 and the current state to the same conversation.
 
-The preliminary analyst keeps its publication tools and a restricted shell.
-`runner/copilot/command_policy.py` permits read-only Git there and denies
-mutating Git, dependency changes, direct test runs and reserved scripts.
-Coding delegation is not exposed in that phase.
+The preliminary analyst has `view`, `rg`, `glob` and `apply_patch` (with
+`create` and `edit` on external-provider routes) and no shell. Coding delegation
+is not exposed in that phase.
 
 ## Launcher and observations
 
@@ -111,13 +110,13 @@ Reviewer usage is recorded separately from coder and PI usage.
 ## Read and search policy
 
 Read restrictions are tool-level, not an operating-system sandbox. The shared
-reserved-script policy in `runner/copilot/path_policy.py` applies to `view`,
-explicit shell-reader targets and scoped search. Searches apply it to
+reserved-script policy in `runner/copilot/path_policy.py` applies to `view`
+and scoped search. Searches apply it to
 descendants before reading content or returning paths. Maintainer documents
 (`AGENTS.md`, `README.md`, `docs/`), tests, Runner, benchmark and launch
 scripts are reserved in every phase. The preliminary phase can read all of
 `robot_learning/`; later phases read only PI-owned scientific files there.
-Preliminary shell traversal and wildcard readers are denied.
+No session has a shell.
 
 ## Contexts and recovery
 

@@ -8,7 +8,6 @@ from runner.copilot.coding_contracts import (
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
 )
-from runner.copilot.command_policy import command_denial
 from runner.copilot.path_policy import (
     CODING_SCOPE_DENIAL,
     FILE_READ_DENIAL,
@@ -132,9 +131,6 @@ def tool_denial(
         if coding_paths is not None:
             return _child_view_denial(arguments, read_paths)
         return _view_denial(arguments, preliminary)
-    if preliminary and name == "powershell":
-        command = arguments.get("command", "") if isinstance(arguments, dict) else ""
-        return command_denial(command, preliminary=True)
     return None
 
 
