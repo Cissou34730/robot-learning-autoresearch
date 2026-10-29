@@ -265,6 +265,8 @@ def test_the_sdk_message_ends_and_labels_each_pi_message_once(tmp_path):
     with typed_events.context(session_id="S1"):
         session.delta("Radius results ", "m1")
         session.model_call(10**9)
+        session.message("", "empty-1", "end")
+        session.message("", "empty-2", "end")
         session.message("Radius results point to a gap.", "m1", "note")
         session.tool("view", {"path": "x"}, "call-1")
         session.delta("Early ", "m2")

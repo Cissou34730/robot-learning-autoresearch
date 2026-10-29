@@ -561,11 +561,14 @@ class SessionReporter:
         message_kind: str | None = None,
     ) -> None:
         """The SDK's complete message: it ends and labels the streamed one."""
+        # GPT sends empty messages between real ones; they must not end the current one.
+        if not text:
+            return
         if not self._mid_stream:
-            if not text or (message_id and message_id == self._closed_message_id):
+            if message_id and message_id == self._closed_message_id:
                 return
             self.delta(text, message_id)
-        elif text:
+        else:
             self._message_text = text
         self._close_message(message_kind)
 
