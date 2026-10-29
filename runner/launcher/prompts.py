@@ -443,9 +443,7 @@ def scientific_session_prompt(
             "From the decision-relevant synthesis of the scientific model, select the "
             "scientific distinction or the capability question that should determine "
             "the initial direction. State which findings would change that decision, "
-            "and how the first action follows from it. State which predictions of the "
-            "scientific model, including its invariances, your first measurements "
-            "check. Treat the interpretations of "
+            "and how the first action follows from it. Treat the interpretations of "
             "the scientific model as revisable in light of evidence. Do not require a "
             "measurement only to restate the scientific model."
             if pstext.same(kind, "startup")

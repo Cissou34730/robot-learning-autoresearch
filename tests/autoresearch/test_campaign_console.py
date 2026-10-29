@@ -34,12 +34,15 @@ def _workspace(tmp_path: Path) -> control.WorkspaceLayout:
 
 
 def _console(tmp_path: Path, machinery):
+    from tui.tab_visibility import TabIdleTracker
+
     layout = _workspace(tmp_path)
     app = CampaignConsole(
         harness_root=layout.harness_root,
         campaigns_root=layout.campaigns_root,
         machinery=machinery,
     )
+    app._idle_tracker = TabIdleTracker(tmp_path / "tab-control")
     # A non-repository test harness must not fail the launcher preflight.
     app._controller._preflight = control.HarnessPreflight(
         layout.harness_root,
@@ -696,6 +699,36 @@ def test_initialized_campaign_gets_one_real_tab(tmp_path):
     asyncio.run(scenario())
 
 
+def test_a_new_external_slot_is_inserted_in_order_without_changing_selection(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    app, layout = _console(tmp_path, FakeMachinery())
+    # Begin with only slot 2 installed; slot 1 is installed elsewhere later.
+    (layout.folder(1) / ".git").rmdir()
+    app._controller._external = SimpleNamespace(
+        running=lambda folder: folder == layout.folder(1)
+    )
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            tabs = app.query_one(TabbedContent)
+            assert tabs.active == "campaign-2"
+            (layout.folder(1) / ".git").mkdir()
+            await app._refresh_status()
+            await pilot.pause()
+            assert app._visible_tabs == ["campaign-1", "campaign-2"]
+            assert tabs.active == "campaign-2"
+            assert (
+                tabs.get_tab("campaign-1").region.x
+                < tabs.get_tab("campaign-2").region.x
+            )
+            assert not app._controller._machinery.started
+
+    asyncio.run(scenario())
+
+
 def test_settings_cancel_is_read_only_and_a_command_uses_applied_settings(
     tmp_path,
 ):
@@ -746,6 +779,8 @@ def test_empty_console_has_no_fake_campaign_or_commands_tab(tmp_path):
             await pilot.pause()
             assert not list(app.query_one(TabbedContent).query("TabPane"))
             assert app.query_one("#empty-campaigns").display
+            assert app.query_one("#empty-campaigns").content_region.height > 0
+            assert app.query_one("#commands-summary").region.height == 1
             assert not app._command_running
             await pilot.press("ctrl+l")
             await pilot.pause()
@@ -755,6 +790,225 @@ def test_empty_console_has_no_fake_campaign_or_commands_tab(tmp_path):
             await pilot.pause()
             assert app.query_one("#command-panel").region.height == 0
             assert not app._command_running
+
+    asyncio.run(scenario())
+
+
+@pytest.mark.parametrize("size", [(160, 45), (80, 24), (60, 24), (48, 16)])
+def test_idle_tabs_hide_at_two_hours_and_show_hide_are_session_only(
+    tmp_path, monkeypatch, size
+):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import console
+    from tui.tab_visibility import IDLE_TAB_SECONDS
+
+    now = [1000.0]
+    monkeypatch.setattr(console.time, "time", lambda: now[0])
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=size) as pilot:
+            tabs = app.query_one(TabbedContent)
+            await pilot.pause()
+            now[0] += IDLE_TAB_SECONDS - 1
+            await app._refresh_status()
+            assert app._visible_tabs == ["campaign-1", "campaign-2"]
+            now[0] += 1
+            await app._refresh_status()
+            await pilot.pause()
+            assert app._visible_tabs == [] and tabs.active == ""
+            assert all(
+                tabs.get_tab(f"campaign-{n}").has_class("-hidden") for n in (1, 2)
+            )
+            assert app.query_one("#empty-campaigns").display
+            await _run_from_panel(app, pilot, "show 2")
+            assert tabs.active == "campaign-2"
+            assert app._visible_tabs == ["campaign-2"]
+            now[0] += IDLE_TAB_SECONDS
+            await app._refresh_status()
+            assert app._visible_tabs == ["campaign-2"]
+            await _run_from_panel(app, pilot, "show 1")
+            assert (
+                tabs.active == "campaign-2"
+            )  # showing another tab does not steal focus
+            await pilot.press("tab")
+            assert tabs.active == "campaign-1"
+            await _run_from_panel(app, pilot, "hide")
+            assert tabs.active == "campaign-2"
+            assert machinery.started == [] and machinery.forced == []
+            assert not app._controller.shutting_down
+            await _run_from_panel(app, pilot, "show 5")
+            assert app._visible_tabs == ["campaign-2"]
+            assert "not initialized" in app._command_history[-1]
+            await _run_from_panel(app, pilot, "hide 5")
+            panel = app.query_one("#panel-campaign-2", CampaignPanel)
+            assert app.focused in list(panel.query("*"))
+
+    asyncio.run(scenario())
+
+    reopened = CampaignConsole(
+        harness_root=layout.harness_root,
+        campaigns_root=layout.campaigns_root,
+        machinery=FakeMachinery(),
+    )
+    reopened._idle_tracker = app._idle_tracker
+
+    async def restart():
+        async with reopened.run_test(size=size) as pilot:
+            await pilot.pause()
+            assert reopened._visible_tabs == []  # the deadline persists, /show does not
+
+    asyncio.run(restart())
+
+
+def test_hidden_running_tabs_remain_controlled_and_start_shows_them_again(
+    tmp_path, monkeypatch
+):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import console
+    from tui.tab_visibility import IDLE_TAB_SECONDS
+
+    now = [1000.0]
+    monkeypatch.setattr(console.time, "time", lambda: now[0])
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await _run_batch(app, pilot, "start 1-2")
+            now[0] += 3 * IDLE_TAB_SECONDS
+            await app._refresh_status()
+            assert app._visible_tabs == ["campaign-1", "campaign-2"]
+            await _run_from_panel(app, pilot, "hide 1")
+            child = machinery.children[layout.folder(1)]
+            assert child.stop_requests == 0 and not child.forced
+            assert "1 running campaign hidden" in app._summary
+            await app._refresh_status()
+            assert app._visible_tabs == ["campaign-2"]
+            await pilot.press("tab")
+            assert app.query_one(TabbedContent).active == "campaign-2"
+            await _run_batch(app, pilot, "stop all")
+            assert all(
+                child.stop_requests == 1 for child in machinery.children.values()
+            )
+            await app._refresh_status()
+            await _run_batch(app, pilot, "start 1")
+            assert app._visible_tabs == ["campaign-1", "campaign-2"]
+            app._controller._runner = lambda args: subprocess.CompletedProcess(
+                args, 0, stdout="", stderr=""
+            )
+            await _run_from_panel(app, pilot, "hide 2")
+            await _run_batch(app, pilot, "run 2")
+            assert app._visible_tabs == ["campaign-1", "campaign-2"]
+            await _run_from_panel(app, pilot, "hide 1-2")
+            assert app._visible_tabs == []
+            await pilot.press("ctrl+q")
+            deadline = time.monotonic() + 5
+            while app.is_running and time.monotonic() < deadline:
+                await pilot.pause()
+            assert not app.is_running
+            assert machinery.children[layout.folder(1)].stop_requests == 1
+            assert app._controller.state("campaign-1").child is None
+
+    asyncio.run(scenario())
+
+
+def test_kill_all_includes_hidden_launchers(tmp_path):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await _run_batch(app, pilot, "start 1-2")
+            await _run_from_panel(app, pilot, "hide 1-2")
+            await _run_from_panel(app, pilot, "kill all")
+            deadline = time.monotonic() + 5
+            while len(machinery.forced) != 2 and time.monotonic() < deadline:
+                await pilot.pause()
+            assert len(machinery.forced) == 2
+            assert all(
+                app._controller.state(f"campaign-{n}").child is None for n in (1, 2)
+            )
+            assert app._visible_tabs == []
+
+    asyncio.run(scenario())
+
+
+def test_unreadable_idle_metadata_keeps_the_tab_visible_and_reports_the_error(
+    tmp_path, monkeypatch
+):
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import console
+    from tui.tab_visibility import IDLE_TAB_SECONDS
+
+    now = [1000.0]
+    monkeypatch.setattr(console.time, "time", lambda: now[0])
+    app, _ = _console(tmp_path, FakeMachinery())
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            for record in app._idle_tracker.directory.glob("*.json"):
+                record.write_text("invalid", encoding="utf-8")
+            now[0] += IDLE_TAB_SECONDS
+            await app._refresh_status()
+            assert app._visible_tabs == ["campaign-1", "campaign-2"]
+            assert "cannot establish tab idle time" in app._command_history[-1]
+            count = len(app._command_history)
+            await app._refresh_status()
+            assert len(app._command_history) == count  # no warning on every refresh
+
+    asyncio.run(scenario())
+
+
+def test_an_external_campaign_reappears_without_a_recent_log_or_focus_change(
+    tmp_path, monkeypatch
+):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import console
+    from tui.tab_visibility import IDLE_TAB_SECONDS
+
+    now = [1000.0]
+    monkeypatch.setattr(console.time, "time", lambda: now[0])
+    app, layout = _console(tmp_path, FakeMachinery())
+    external = set()
+    app._controller._external = SimpleNamespace(
+        running=lambda folder: folder in external
+    )
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            now[0] += IDLE_TAB_SECONDS
+            await app._refresh_status()
+            assert not app._visible_tabs
+            app.submit_command("show 1")
+            tabs = app.query_one(TabbedContent)
+            external.add(layout.folder(2))
+            await app._refresh_status()
+            await pilot.pause()
+            assert app._visible_tabs == ["campaign-1", "campaign-2"]
+            assert tabs.active == "campaign-1"
+            now[0] += 5 * IDLE_TAB_SECONDS
+            await app._refresh_status()
+            assert "campaign-2" in app._visible_tabs
+            app._controller._external.request_stop = lambda folder: None
+            await _run_batch(app, pilot, "stop 2")
+            assert "campaign-2" in app._visible_tabs
+            external.clear()
+            await app._refresh_status()
+            assert not app._controller.state("campaign-2").external
+            now[0] += IDLE_TAB_SECONDS
+            await app._refresh_status()
+            assert app._visible_tabs == ["campaign-1"]
 
     asyncio.run(scenario())
 

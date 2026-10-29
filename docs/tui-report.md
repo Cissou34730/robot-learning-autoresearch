@@ -54,12 +54,43 @@ Directly: `uv run python -m tui --help` (options: `--report`, `--read-only`, `--
 
 Issue #68 implementation. `uv run python -m tui` (or
 `.\campaign_tui.ps1` with no arguments) opens one Textual console with
-one report tab per installed campaign folder, initially showing the first
-installed campaign (normally campaign-1). Command entry is alongside the report,
+one report tab per active or recently idle campaign, initially showing the first
+visible campaign. Command entry is alongside the report,
 not on a separate Commands tab, following the maintainer's updated UX direction
 on 26 October. The standard folders are `robot-learning-campaigns\campaign-1`
-through `campaign-5`; Tab/Shift+Tab cycle their tabs. Launching the console starts
+through `campaign-5`; Tab/Shift+Tab cycle only visible tabs. Launching the console starts
 nothing; campaigns run only when a command is submitted.
+
+Tabs hide automatically after two hours with no launcher running. A long
+operation, a quiet PI or an unchanged log never makes a running campaign idle.
+Starting, resetting and stopping also keep a tab active. A stopped, failed or
+completed campaign stays visible during its two-hour idle period.
+
+`/show 3` and `/hide 3` override visibility for this console session only; numbers,
+ranges and folder names work as for other campaign commands. With no target,
+they act on the selected tab. They never start, stop, reset or delete anything.
+`/show` keeps the tab visible even after the idle deadline; `/hide` keeps it
+hidden even while it runs. The information line warns when running campaigns
+are hidden. `/start` and `/run` clear the selected targets' overrides and show
+them again. Hidden campaigns remain targets of `stop all`, `kill all` and the
+existing stop-and-exit behaviour.
+
+Only confirmed idle timestamps persist, under
+`%TEMP%\robot-learning\tui\tab-idle\<digest>.json`, outside both repositories.
+File access and process checks run off the UI thread. A running launcher clears
+its old deadline. If no end time is known, the first confirmed stopped
+observation starts the two-hour period; a last-log timestamp is not treated as
+an exit time. A changed campaign journal or state invalidates an old idle
+record, including work done while the console was closed. Unreadable records
+are reported and do not cause automatic hiding.
+
+An externally started campaign appears without changing the current selection,
+unless `/hide` explicitly hides that slot for this session. Hiding the selected
+tab selects the next visible tab in slot order, wrapping when necessary.
+Showing tabs retains their original numbers and report state. If none are
+visible, an empty state offers `/show`, `/start` and `/run`; command entry stays
+available. Console restart discards show/hide overrides and applies the
+automatic rule to all installed slots again.
 
 Controlled execution starts `python -m runner.launcher`, the reset and the
 initializer with `uv` on PATH; no PowerShell host is involved. Each child gets
@@ -78,7 +109,7 @@ the interface from opening.
   returns focus to where it was. While the panel is open, the information line
   previews what the command would do, leading with a warning for the destructive
   ones. Nothing runs just from typing. The commands are `start`, `run`, `stop`,
-  `kill`, `reset`, `settings`, `models`, `diagnostics`, `history`, `search`,
+  `kill`, `reset`, `show`, `hide`, `settings`, `models`, `diagnostics`, `history`, `search`,
   `filter`, `help` and `quit`; `tui/commands.py` defines them once for the
   parser, the list, the help and the unknown-command message. `start` resumes
   the active campaign without resetting; `run` resets and starts it.
@@ -269,13 +300,20 @@ feeds can estimate from two advancing observations in the same attempt. Missing,
 stale, stopped or non-advancing data does not produce a fabricated zero ETA.
 Live and reconstructed candidate announcements share a candidate identity, so
 each checkpoint appears once and its identifier is not repeated in the row.
+The expanded training-results group shows one row per checkpoint, with its
+recorded reward and training-success proxy in the row summary. Candidate
+publication enriches that same row instead of adding a second announcement.
+These are training metrics, not development or official-assessment results.
 
 The Runner publishes one training sample every 30 seconds. It polls evaluation
 progress every second and publishes a sample when the counters change, and at
 least every 15 seconds. PI text is
 published at most once per second. Timeline progress rows are kept one per
 30 seconds for training and one per 15 seconds for evaluation; the newest row
-updates in place. A widget is redrawn only when its content changes: a header
+updates in place.
+Progress samples share a row only while no other visible event intervenes.
+An interleaving PI message or tool event preserves the earlier progress row.
+A widget is redrawn only when its content changes: a header
 counter that ticks does not re-lay out the screen, and a refresh of unchanged
 durable data redraws nothing. A tick with no new event does no work on the log
 except the counter of a running tool, so its cost does not grow with the length
@@ -316,6 +354,8 @@ candidate in recorded order with its source shown; official panels never
 become development evidence; usage excludes price and currency and keeps the
 PI, coder and reviewer scopes; missing values render as `unavailable` or
 `not measured`, never zero.
+Token-only accounting rows show the recorded input/output tokens with campaign
+AIU marked `unavailable`. They do not imply zero AIU.
 
 The header shows the latest allocated operation IDs (`I / S / T / M / E`),
 the recorded human goal with the best development success and gap, the
@@ -328,7 +368,14 @@ deferred and is not shown.
 
 The output region is a virtualized `Tree` of collapsible timeline items:
 
-- campaign → session → inquiry → operation → leaf event;
+- session → inquiry → operation → leaf event, or campaign-owned events when
+  no session is named. Ownership never overrides chronological reading order;
+- rows are ordered by their recorded timestamps, with journal order breaking
+  ties. A group contains only a contiguous run of its owner's events. When
+  another owner intervenes, the first group stops there; later events open a
+  separate `(continued)` segment at their position in time. Each segment has
+  its own collapse state and duration. Collapsing or expanding never moves
+  later rows above earlier rows;
 - backend PI sessions, scientific sessions, inquiries and operations are
   distinct groups, so a coding child never hides the operation that requested
   it;
@@ -359,6 +406,10 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   `-`) and whether the PI operation request changed;
 - measurement panel rows show episodes, seed and instrument on start, and
   episodes, duration and success on completion;
+- a measurement header accumulates episodes across its panels against the
+  total in the request (for example `1,200 / 1,600 episodes | 75% | panel 4/4`).
+  Individual progress rows still report the current panel's episodes. Starting
+  the next panel does not reset the header to zero;
 - the sticky `Now` line names the active or pending operation and its summary;
 - the official assessment is a top-level group of its own, last, open by
   default, shown where it happened. Its header carries the model and, once done,
@@ -371,8 +422,8 @@ The output region is a virtualized `Tree` of collapsible timeline items:
   them. A usage row also shows how many AIU the campaign used since the last one,
   for example `33.57 AIU (+5.70)`;
 - a run-state change adds no row (each one repeats an operation row); it drives
-  the `Now` line and the tab. The pinned Campaign group keeps only the start of
-  the campaign and notices that no session owns.
+  the `Now` line and the tab. Campaign-owned notices follow the same chronological
+  segmentation rule; they are not pinned above earlier session events.
 
 `Enter`/`Space` toggles the selected row, `Left`/`Right` collapse or expand,
 `/` searches the full event text (including collapsed detail), `f` filters by
@@ -571,8 +622,8 @@ uv run pytest tests/autoresearch/test_reporting_independence.py tests/autoresear
 The tests cover the writer and reader, the identity contract (every emitted
 kind is listed; strict mode rejects an event without its owner), concurrent
 writers, the absence of console output from every producer, the real panel
-following a journal written by the real writer in several chunk sizes (one
-group per session, operations under their own session, the official assessment
+following a journal written by the real writer in several chunk sizes (contiguous
+owner segments, operations under their own session, the official assessment
 as its own last group, every row timed and unique, a step unknown to the
 panel still shown, panel equal to a fresh fold), the projector contracts, the
 timeline reducer, the launcher's exclusion, stop and external-stop behaviour,
@@ -581,7 +632,9 @@ single-screen composition, stage IDs, goal gap, counters, pending chip,
 last-training proxy, live training reward/success, streamed/final PI
 deduplication, timeline grouping, default collapse, search/filter, timestamps
 and training intervals, paired tool calls with duration, coding/file/usage
-rows, measurement-panel and training-checkpoint numbers, the progress lifecycle
+rows, cumulative measurement-panel counts and visible per-checkpoint reward and
+training success, strict timestamp order through interleaving and collapse/expand,
+the progress lifecycle
 (training and evaluation, official assessment label, module measurement with
 unavailable counters, end-of-execution removal), reading position while new
 output arrives, the 80x24 compact floor, the too-small fallback and stale

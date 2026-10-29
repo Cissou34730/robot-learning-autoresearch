@@ -86,11 +86,17 @@ reset or initializer does not. No PowerShell host is needed for campaign
 work. Missing `uv` fails preflight before initialization/reset; opening the
 interface still starts nothing.
 
-`.\campaign_tui.ps1` (or `uv run python -m tui`) opens the first installed campaign report (normally
-campaign-1) with one information line below it. Press **`/`** to open the
+`.\campaign_tui.ps1` (or `uv run python -m tui`) opens the first visible campaign report
+with one information line below it. Tabs hide automatically after two hours
+with no running launcher; log silence never hides a running campaign.
+`/show 3` and `/hide 3` override tab visibility for this console session without
+changing execution. `/start` and `/run` show their targets again. Hidden campaigns
+still take `stop all`, `kill all` and the usual shutdown actions.
+The idle countdown survives console restart; show/hide overrides do not.
+If a previous exit time is unknown, the countdown starts when the console first
+confirms the campaign is stopped. Press **`/`** to open the
 command list: type to filter, Up/Down to choose, Tab to complete, Enter to run,
-Esc to close. There is no separate Commands tab. Other installed campaigns have
-their own report tabs. Campaigns only run when a
+Esc to close. There is no separate Commands tab. Campaigns only run when a
 command is submitted (`run 1-3`, `reset campaign-1 campaign-2`,
 `start campaign-2`, `stop all`); each batch sends the exact same shared
 launcher options to every selected campaign, defaulting to the launcher's

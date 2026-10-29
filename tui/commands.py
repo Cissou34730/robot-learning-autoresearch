@@ -33,6 +33,12 @@ COMMANDS: tuple[Command, ...] = (
     Command("stop", "ask the launcher to stop cleanly", "1-5 | all", campaign=True),
     Command("kill", "end the launcher and everything it started", "1-5 | all", True),
     Command("reset", "reset without starting (wipes)", "1-5", campaign=True),
+    Command(
+        "show", "show a tab for this console session (does not start it)", "1-5", True
+    ),
+    Command(
+        "hide", "hide a tab for this console session (does not stop it)", "1-5", True
+    ),
     Command("settings", "launch and reset options (F2)"),
     Command("models", "list the available models"),
     Command("diagnostics", "raw console logs of a launch", "1-5", campaign=True),

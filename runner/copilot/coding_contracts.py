@@ -10,16 +10,7 @@ from runner import protocol
 from runner.artifact_evidence_query import ArtifactReference, CandidateReference
 
 # The preliminary analyst retains its existing publication/tool contract.
-RESEARCH_TOOLS = [
-    "view",
-    "rg",
-    "glob",
-    "apply_patch",
-    "powershell",
-    "read_powershell",
-    "stop_powershell",
-    "list_powershell",
-]
+RESEARCH_TOOLS = ["view", "rg", "glob", "apply_patch"]
 
 
 MAIN_PI_TOOLS = ["view", "rg", "glob"]

@@ -6,6 +6,7 @@ imported inside the execution paths that need it, so validation-only commands
 never pay for it.
 """
 
+import hashlib
 import json
 import os
 import platform
@@ -189,18 +190,27 @@ def validate_active_configuration() -> dict:
         ) from error
 
 
+def validation_temp_directory() -> Path:
+    """One pytest folder per campaign: parallel campaigns share the harness."""
+    campaign = hashlib.sha256(str(paths.ROOT.resolve()).encode()).hexdigest()[:16]
+    return Path(tempfile.gettempdir()) / "robot-learning" / "pytest" / campaign
+
+
 def run_validation_suites(selected_tests: tuple[str, ...]) -> None:
     selected_tests = tuple(
         path for path in selected_tests if paths.locate(path).exists()
     )
     if not selected_tests:
         return
+    basetemp = validation_temp_directory()
+    # Pytest creates its base folder but not the parents.
+    basetemp.parent.mkdir(parents=True, exist_ok=True)
     run_module(
         "pytest",
         "-q",
         *selected_tests,
         "--basetemp",
-        str(paths.locate(".pytest-run-temp")),
+        str(basetemp),
         cwd=paths.HARNESS_ROOT if paths.SPLIT else None,
     )
 

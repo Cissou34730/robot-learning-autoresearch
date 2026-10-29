@@ -189,7 +189,7 @@ def session_options(
         ),
         "tools": tools,
         "available_tools": available,
-        "system_message": system_message(args.preliminary, console.warning),
+        "system_message": system_message(args.preliminary),
         "working_directory": str(ROOT),
         "streaming": True,
         "enable_file_change_tracking": True,

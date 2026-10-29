@@ -7,6 +7,8 @@ scope-preserving usage and explicit unavailable values.
 
 from datetime import UTC, datetime
 
+import pytest
+
 from tui import projector
 from tui.demo import (
     demo_clock,
@@ -158,6 +160,38 @@ def test_usage_scopes_and_session_pending():
     assert "Copilot AIU" in text
     assert "coder 1.40" in text
     assert "session S7 accounting pending" in text
+
+
+@pytest.mark.parametrize(
+    ("input_tokens", "output_tokens", "token_text"),
+    [
+        (6_409_870, 103_539, "in 6.4M out 103.5k"),
+        (6_409_870, 0, "in 6.4M"),
+        (0, 103_539, "out 103.5k"),
+    ],
+)
+def test_token_only_usage_keeps_aiu_unavailable(
+    input_tokens, output_tokens, token_text
+):
+    usage = projector.build_snapshot(
+        {"campaign": {"id": "token-only"}},
+        [],
+        [
+            {
+                "campaign_id": "token-only",
+                "aiu": None,
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+            }
+        ],
+    ).usage
+    assert usage.available
+    assert usage.total_aiu is None
+    assert usage.input_tokens == input_tokens
+    assert usage.output_tokens == output_tokens
+    text = projector.usage_text(usage)
+    assert "AIU unavailable" in text
+    assert f"tokens {token_text}" in text
 
 
 def test_usage_text_contains_no_monetary_fields():

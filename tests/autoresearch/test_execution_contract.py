@@ -29,6 +29,15 @@ def _result_errors(tmp_path: Path) -> str:
     return "\n".join(errors)
 
 
+def test_each_campaign_validates_in_its_own_pytest_folder(monkeypatch, tmp_path):
+    folders = set()
+    for name in ("campaign-1", "campaign-2"):
+        monkeypatch.setattr(paths, "ROOT", tmp_path / name)
+        folders.add(execution.validation_temp_directory())
+    assert len(folders) == 2
+    assert not any(paths.HARNESS_ROOT in folder.parents for folder in folders)
+
+
 def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") -> dict:
     research = tmp_path / "campaigns"
     research.mkdir()

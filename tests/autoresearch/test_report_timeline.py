@@ -322,12 +322,8 @@ def test_frequent_progress_samples_share_one_row_per_interval():
         )
     roots, _ = reducer.view()
     items = {item.item_id: item for item in _walk(roots)}
-    training = [
-        c for c in items["operation:T9"].children if c.kind == "training_progress"
-    ]
-    evaluation = [
-        c for c in items["operation:M9"].children if c.kind == "eval_progress"
-    ]
+    training = [c for c in items.values() if c.kind == "training_progress"]
+    evaluation = [c for c in items.values() if c.kind == "eval_progress"]
     # Each row stands for its newest sample, so its time is that sample's time.
     assert [row.ts for row in training] == [
         start + timedelta(seconds=28),
@@ -605,10 +601,180 @@ def test_panel_and_training_checkpoints_keep_console_numbers():
     assert "97.5%" in panels[0].summary
     assert "42s" in panels[0].summary
     results = next(item for item in items if item.title == "training results")
-    assert "reward 12.5 | success 75%" in results.detail[0]
-    assert "2,000 steps" in results.detail[1]
-    assert "reward 14.0" in results.detail[1]
-    assert "success 80%" in results.detail[1]
+    assert "reward 12.5 | success 75%" in results.children[0].summary
+    assert "2,000 steps" in results.children[1].summary
+    assert "reward 14" in results.children[1].summary
+    assert "success 80%" in results.children[1].summary
+
+
+def test_measurement_header_accumulates_unequal_panels_instead_of_resetting():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    identity = {"operation_id": "M7", "session_id": "S5", "inquiry_id": "I2"}
+    request = {
+        "measurement": {
+            "measurements": [
+                {"candidate": "parent", "episodes": 100},
+                {"candidate": "candidate", "episodes": 400},
+            ]
+        }
+    }
+    events = [
+        ("operation_requested", {"kind": "measurement", "request": request}),
+        ("measurement_panel_started", {"instrument": "parent", "episodes": 100}),
+        ("eval_progress", {"episodes": 100, "episodes_total": 100}),
+        (
+            "measurement_panel_completed",
+            {"episodes": 100, "episodes_total": 100, "success_percent": 94.0},
+        ),
+        ("measurement_panel_started", {"instrument": "candidate", "episodes": 400}),
+        ("eval_progress", {"episodes": 0, "episodes_total": 400}),
+        ("eval_progress", {"episodes": 200, "episodes_total": 400}),
+        (
+            "measurement_panel_completed",
+            {"episodes": 400, "episodes_total": 400, "success_percent": 97.0},
+        ),
+        ("operation_completed", {"kind": "measurement"}),
+    ]
+    expected = {
+        0: "0 / 500",
+        2: "100 / 500",
+        4: "100 / 500",
+        5: "100 / 500",
+        6: "300 / 500",
+        7: "500 / 500",
+        8: "500 / 500",
+    }
+    for n, (kind, fields) in enumerate(events):
+        reducer.ingest(_event(kind, start + timedelta(seconds=n), fields, **identity))
+        if n in expected:
+            operation = next(
+                item
+                for item in _walk(reducer.view()[0])
+                if item.item_id == "operation:M7"
+            )
+            assert expected[n] in operation.summary
+    assert "completed" in operation.summary and "100%" in operation.summary
+
+
+def test_checkpoint_rows_show_metrics_without_opening_each_candidate():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, tzinfo=UTC)
+    candidates = [
+        {
+            "candidate": "T3:checkpoint-10",
+            "steps": 10,
+            "ep_rew_mean": 0.0,
+            "training_success": 0.0,
+        },
+        {
+            "candidate": "T3:checkpoint-20",
+            "steps": 20,
+            "ep_rew_mean": 12.5,
+            "summary": "reward 12.5 | success 75%",
+        },
+    ]
+    reducer.ingest(
+        _event(
+            "training_checkpoints",
+            start,
+            {"candidates": candidates},
+            session_id="S5",
+            operation_id="T3",
+        )
+    )
+    for candidate in candidates:
+        reducer.ingest(
+            _event(
+                "candidate_created",
+                start + timedelta(seconds=1),
+                {
+                    "candidate": candidate["candidate"],
+                    "training_steps": candidate["steps"],
+                },
+                session_id="S5",
+                operation_id="T3",
+            )
+        )
+    rows = list(_walk(reducer.view()[0]))
+    checkpoints = [item for item in rows if item.item_id.startswith("candidate:")]
+    assert len(checkpoints) == 2
+    assert (
+        "reward 0" in checkpoints[0].summary and "success 0%" in checkpoints[0].summary
+    )
+    assert (
+        "reward 12.5" in checkpoints[1].summary
+        and "success 75%" in checkpoints[1].summary
+    )
+    results = next(item for item in rows if item.title == "training results")
+    assert results.is_group and results.default_expanded
+    assert checkpoints == results.children
+
+    import asyncio
+
+    from textual.app import App
+
+    from tui.event_log import EventLog
+
+    class _Host(App):
+        def compose(self):
+            yield EventLog({}, id="log")
+
+    async def scenario():
+        app = _Host()
+        async with app.run_test(size=(120, 24)) as pilot:
+            log = app.query_one("#log", EventLog)
+            log.set_view(reducer.view()[0], active_ids={"session:S5", "operation:T3"})
+            await pilot.pause()
+            shown = [
+                line.node.data for line in log._tree_lines if line.node.data is not None
+            ]
+            assert all(item in shown for item in checkpoints)
+            for item in checkpoints:
+                node = log._node_by_id[item.item_id]
+                assert not node.is_expanded
+                assert "reward" in str(node.label) and "success" in str(node.label)
+
+    asyncio.run(scenario())
+
+
+def test_measurement_counts_seeds_separately_and_does_not_recount_a_resumed_panel():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    identity = {"operation_id": "M1", "session_id": "S1"}
+    request = {
+        "measurement": {
+            "measurements": [
+                {"candidate": "same", "episodes": 100, "seed": 7},
+                {"candidate": "same", "episodes": 100, "seed": 8},
+            ]
+        }
+    }
+    events = [
+        ("operation_requested", {"kind": "measurement", "request": request}),
+        (
+            "measurement_panel_started",
+            {"artifact": "same", "instrument": "panel", "episodes": 100, "seed": 7},
+        ),
+        ("eval_progress", {"episodes": 100, "episodes_total": 100}),
+        (
+            "measurement_panel_started",
+            {"artifact": "same", "instrument": "panel", "episodes": 100, "seed": 7},
+        ),
+        ("measurement_panel_completed", {"episodes": 100, "episodes_total": 100}),
+        (
+            "measurement_panel_started",
+            {"artifact": "same", "instrument": "panel", "episodes": 100, "seed": 8},
+        ),
+        ("eval_progress", {"episodes": 50, "episodes_total": 100}),
+    ]
+    for n, (kind, fields) in enumerate(events):
+        reducer.ingest(_event(kind, start + timedelta(seconds=n), fields, **identity))
+    operation = next(
+        item for item in _walk(reducer.view()[0]) if item.item_id == "operation:M1"
+    )
+    assert "150 / 200 episodes" in operation.summary
+    assert "75%" in operation.summary and "panel 2/2" in operation.summary
 
 
 def test_usage_and_publication_events_render_structured_numbers():
@@ -834,7 +1000,14 @@ def test_goal_review_and_publication_recovery_sit_in_their_session():
     reducer.ingest(_event("campaign_concluded", start, {"status": "done"}))
     roots, _ = reducer.view()
     items = {item.item_id: item for item in _walk(roots)}
-    first, second = items["session:S1"], items["session:S2"]
+    first = next(
+        item
+        for item in items.values()
+        if item.kind == "session"
+        and any(c.title == "campaign goal review" for c in item.children)
+    )
+    second = items["session:S2"]
+    assert first.item_id.startswith("session:S1:continued:")
     campaign = items["campaign:root"]
     assert [c.title for c in first.children if c.title == "campaign goal review"]
     assert [c.title for c in second.children if c.title == "publication recovered"]

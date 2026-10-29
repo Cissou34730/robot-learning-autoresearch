@@ -910,8 +910,11 @@ def _usage_summary(state: dict, usage_rows: list[dict]) -> UsageSummary:
 def usage_text(summary: UsageSummary) -> str:
     if not summary.available:
         return "Recorded usage: unavailable - no accounting rows for this campaign"
-    unit = "Copilot AIU" if summary.copilot_accounting else "recorded AIU"
-    text = f"Usage recorded: campaign {_aiu_text(summary.total_aiu)} {unit}"
+    if summary.total_aiu is None:
+        text = "Usage recorded: campaign AIU unavailable"
+    else:
+        unit = "Copilot AIU" if summary.copilot_accounting else "recorded AIU"
+        text = f"Usage recorded: campaign {_aiu_text(summary.total_aiu)} {unit}"
     scoped = []
     if summary.pi_aiu is not None:
         scoped.append(f"PI {_aiu_text(summary.pi_aiu)}")
