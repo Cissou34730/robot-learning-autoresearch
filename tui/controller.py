@@ -10,10 +10,8 @@ stop-request contract in ``docs/external-campaign-stop.md``.
 
 from __future__ import annotations
 
-import difflib
 import json
 import os
-import re
 import subprocess
 import threading
 import time
@@ -25,10 +23,29 @@ from typing import Protocol
 
 from runner.paths import reset_marker_path, stop_request_path
 from tui import commands
+from tui.commands import MAX_SLOTS, CommandError, parse_command
+
+__all__ = [
+    "BatchOutcome",
+    "CampaignController",
+    "CampaignFolderError",
+    "CampaignFolderState",
+    "CommandError",
+    "ControllerError",
+    "ExternalCampaigns",
+    "HarnessPreflight",
+    "LaunchSettings",
+    "LauncherError",
+    "ProcessMachinery",
+    "ResetConfig",
+    "ResetError",
+    "StepRecord",
+    "WorkspaceLayout",
+    "parse_command",
+]
 
 DEFAULT_RECIPE_REF = "baseline-distinct-episodes-v3-robot"
 DEFAULT_STOP_TIMEOUT = 180
-MAX_SLOTS = 5
 
 SUCCESS = "success"
 FAILED = "failed"
@@ -50,10 +67,6 @@ def default_campaigns_root(harness_root: Path) -> Path:
 def campaigns_root(harness_root: Path) -> Path:
     configured = os.environ.get("ROBOT_LEARNING_CAMPAIGNS")
     return Path(configured) if configured else default_campaigns_root(harness_root)
-
-
-class CommandError(ValueError):
-    """Invalid command text; the operator sees the message."""
 
 
 class ControllerError(RuntimeError):
@@ -197,67 +210,6 @@ class BatchOutcome:
 
 
 COMMANDS = commands.NAMES
-
-
-def _unknown_command_message(word: str) -> str:
-    """Name the valid commands, and the one the word was probably meant to be."""
-    close = difflib.get_close_matches(word.lower(), COMMANDS, n=1, cutoff=0.6)
-    guess = f" Did you mean {close[0]}?" if close else ""
-    return f"Unknown command: {word!r}.{guess} Commands: {', '.join(COMMANDS)}."
-
-
-def parse_command(text: str) -> tuple[str, list[int]]:
-    """Parse one command line into ``(verb, slots)``.
-
-    A leading ``/`` is allowed. A bare number selects that campaign; ``1-3``
-    selects an inclusive range. ``campaign-k`` tokens also select explicit
-    folders. Campaign actions without a target are allowed only inside a campaign
-    tab, where the caller supplies that campaign. A command that is not about
-    campaigns (``settings``, ``search``, ``quit`` ...) keeps its words for the
-    caller and selects none.
-    """
-    tokens = text.strip().lstrip("/").split()
-    if not tokens:
-        raise CommandError("Empty command.")
-    verb = tokens[0].lower()
-    command = commands.find(verb)
-    if command is None:
-        raise CommandError(_unknown_command_message(tokens[0]))
-    if not command.campaign:
-        return verb, []
-    if len(tokens) == 1:
-        return verb, []
-    selection = tokens[1:]
-    if selection == ["all"]:
-        if verb not in {"stop", "kill"}:
-            raise CommandError(
-                "Use campaign numbers, ranges or folder names; all is for stop and kill only."
-            )
-        return verb, list(range(1, MAX_SLOTS + 1))
-    slots: list[int] = []
-    for token in selection:
-        lowered = token.lower()
-        if lowered.startswith("campaign-"):
-            identity = lowered[len("campaign-") :]
-            if identity not in {str(slot) for slot in range(1, MAX_SLOTS + 1)}:
-                raise CommandError(f"Invalid campaign folder: {token!r}")
-            selected = [int(identity)]
-        else:
-            match = re.fullmatch(r"([1-5])(?:-([1-5]))?", lowered)
-            if match is None:
-                raise CommandError(
-                    f"Invalid target {token!r}; use a campaign number 1–5, a range such as 1-3, or a folder name."
-                )
-            first = int(match[1])
-            last = int(match[2] or match[1])
-            if first > last:
-                raise CommandError(f"Invalid descending range: {token!r}")
-            selected = range(first, last + 1)
-        for slot in selected:
-            if slot in slots:
-                raise CommandError(f"Duplicate target: campaign-{slot}")
-            slots.append(slot)
-    return verb, sorted(slots)
 
 
 class WorkspaceLayout:
@@ -569,6 +521,22 @@ class CampaignController:
     ) -> StepRecord:
         record = outcome.record(action, target, status, detail)
         return record
+
+    def list_models(self, settings: LaunchSettings) -> subprocess.CompletedProcess[str]:
+        settings.launcher_arguments()
+        arguments = [
+            "uv",
+            "run",
+            "--project",
+            str(self._layout.harness_root),
+            "python",
+            "-m",
+            "runner.launcher",
+            "--list-models",
+        ]
+        if settings.provider:
+            arguments += ["--provider", settings.provider]
+        return self._runner(arguments)
 
     # -- Command surface ---------------------------------------------------
     def execute(

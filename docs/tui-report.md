@@ -28,6 +28,64 @@ The campaign repository and all `runner/` code are untouched. The report
 never writes; it reads durable campaign files under the selected campaign
 root only.
 
+## Component boundaries
+
+The TUI separates execution, evidence projection, live activity and rendering.
+The existing application entry points and compatibility imports remain available.
+
+| Component | Owner |
+|---|---|
+| Campaign execution and process lifecycle | `tui/controller.py` |
+| Command catalogue, matching and parsing | `tui/commands.py` |
+| Command selection and completion | `tui/command_panel.py` |
+| Settings and decision dialogs | `tui/console_screens.py` |
+| Interactive shutdown coordination | `tui/shutdown.py` |
+| Phase colors, pulse and outcome markers | `tui/phase_presentation.py` |
+| Durable file collection | `tui/sources.py` |
+| Durable evidence and snapshot projection | `tui/projector.py` |
+| Live progress, phase selection and display clocks | `tui/activity.py` |
+| Historical event reduction and ownership | `tui/timeline.py` |
+| Timeline item records | `tui/timeline_items.py` |
+| Timeline titles, summaries and details | `tui/timeline_formatting.py` |
+| Chronological segments, search, filters and folded views | `tui/timeline_view.py` |
+| Report text, palette and size calculations | `tui/report_presentation.py` |
+| Widget refresh, focus and layout application | `tui/report.py` |
+
+`TimelineReducer` processes each accepted event once. Its `LiveActivity` instance
+supplies the report's live progress and phase. The panel does not maintain a
+second progress reducer. Hidden tabs continue to process events without rendering.
+The controller supplies process-running observations for local pause accounting.
+
+Durable evidence and live activity remain separate. The snapshot projector reads
+recorded state, results and usage. The visible event log reads only the journal.
+The projector's existing durable timeline remains available for compatibility.
+
+### Adding messages and phases
+
+For a new informational message, use the generic event fallback where possible.
+Add a specialized formatter when the message needs a distinct summary or details.
+Add reducer handling only when the event changes ownership, aggregation or state.
+If the producer introduces a new event type, update its event definition separately.
+
+For a new phase, update activity selection and its presentation record.
+`PHASE_PRESENTATIONS` defines both theme colors, pulse behavior and outcome markers.
+Do not treat an event type, display kind, filter category and phase as interchangeable.
+Chronological projection and campaign execution do not need changes for a display-only phase.
+
+Source event IDs identify ordinary event rows. Explicit aggregate identities still
+identify tools, streamed messages and candidates. Filters consider source types,
+display kinds and warning severity. Search retains the ancestors of matching events.
+Matching group text does not bypass the selected categories.
+Match counts include the displayed event rows.
+
+State-only run-state updates do not rebuild chronological history. A resumed
+interrupted operation does invalidate its displayed status. Late panel completion
+does not reopen an operation that already completed or failed.
+
+The console sends model-listing requests through the public controller interface.
+Stop and kill remain independent of a running reset or start worker.
+Shutdown coordination remains separate from the prompt and emergency cleanup policy.
+
 ## Running the report
 
 The default entry point is now the multi-campaign operator console (see the

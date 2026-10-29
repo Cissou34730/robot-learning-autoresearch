@@ -12,6 +12,8 @@ import json
 import time
 from pathlib import Path
 
+from runner import paths
+
 _RETRY_ATTEMPTS = 5
 _RETRY_PAUSE = 0.02
 
@@ -73,3 +75,54 @@ def read_jsonl(path: Path | None) -> list[dict]:
         if isinstance(parsed, dict):
             records.append(parsed)
     return records
+
+
+class CampaignSources:
+    """Reads the durable campaign files selected by the campaign root."""
+
+    def __init__(self, campaign_root: Path | None = None) -> None:
+        self._campaign_root = Path(campaign_root) if campaign_root else None
+        self._usage_path: Path | None = None
+
+    def _locations(self) -> tuple[Path, Path, Path]:
+        if self._campaign_root is not None:
+            # Explicit per-campaign root (operator console tabs): frozen at
+            # construction, never rebound through runner.paths globals.
+            root = self._campaign_root
+            return (
+                root / "runner" / "state" / "research_state.json",
+                root / "campaigns" / "results.jsonl",
+                root / "reports" / "session_usage",
+            )
+        return (
+            paths.STATE_PATH,
+            paths.RESULTS_PATH,
+            paths.ROOT / "reports" / "session_usage",
+        )
+
+    def stamp(self) -> tuple:
+        """Changes whenever any durable source file is rewritten."""
+        state_path, results_path, _ = self._locations()
+        return (
+            modified_ns(state_path),
+            modified_ns(results_path),
+            modified_ns(self._usage_path),
+        )
+
+    def campaign_id(self) -> str | None:
+        """The campaign this folder holds now; reads the state file only."""
+        state = read_json(self._locations()[0])
+        value = ((state or {}).get("campaign") or {}).get("id")
+        return str(value) if value else None
+
+    def read(self) -> tuple[dict | None, list[dict], list[dict]]:
+        state_path, results_path, usage_dir = self._locations()
+        state = read_json(state_path)
+        records = read_jsonl(results_path)
+        usage_rows = []
+        campaign_id = (state or {}).get("campaign", {}).get("id")
+        self._usage_path = None
+        if campaign_id:
+            self._usage_path = usage_dir / f"{campaign_id}.jsonl"
+            usage_rows = read_jsonl(self._usage_path)
+        return state, records, usage_rows

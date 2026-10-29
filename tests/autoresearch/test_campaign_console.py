@@ -522,7 +522,7 @@ def test_stopped_campaign_clocks_freeze_and_resume_without_counting_the_pause(
                 panel._sources = SimpleNamespace(
                     read=lambda state=state: (state, [], [])
                 )
-                panel._stage_started = stage
+                panel.activity.stage_started = stage
                 panel.refresh_snapshot()
             await _run_batch(app, pilot, "start 1")
             await _run_batch(app, pilot, "start 2")

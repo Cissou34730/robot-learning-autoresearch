@@ -17,12 +17,36 @@ zero.
 
 from __future__ import annotations
 
-import math
 import re
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime
 
 from runner import reporting as console
+from tui.activity import (
+    EvaluationProgress,
+    TrainingProgress,
+    parse_timestamp,
+    training_eta_seconds,
+)
+
+__all__ = [
+    "CampaignSnapshot",
+    "EvaluationProgress",
+    "GoalSummary",
+    "ModelRow",
+    "TimelineEntry",
+    "TrainingProgress",
+    "TrainingProxy",
+    "UsageSummary",
+    "build_snapshot",
+    "campaign_age",
+    "parse_timestamp",
+    "role_assignment_text",
+    "stage_elapsed",
+    "terminal_stage_text",
+    "training_eta_seconds",
+    "usage_text",
+]
 
 
 def _as_dict(value: object) -> dict:
@@ -31,21 +55,6 @@ def _as_dict(value: object) -> dict:
 
 def _as_list(value: object) -> list:
     return value if isinstance(value, list) else []
-
-
-def parse_timestamp(value: object) -> datetime | None:
-    if not isinstance(value, str) or not value:
-        return None
-    text = value.strip()
-    if text.endswith("Z"):
-        text = text[:-1] + "+00:00"
-    try:
-        parsed = datetime.fromisoformat(text)
-    except ValueError:
-        return None
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=UTC)
-    return parsed
 
 
 def _clock_time(stamp: datetime | None) -> str:
@@ -153,73 +162,6 @@ class TimelineEntry:
     text: str
     kind: str
     identity: str = ""
-
-
-@dataclass(frozen=True)
-class TrainingProgress:
-    operation_id: str
-    attempt: str = "unknown"
-    steps: int | None = None
-    target: int | None = None
-    elapsed_seconds: float | None = None
-    reward: float | None = None
-    success: float | str | None = None
-    stale: bool = False
-    eta_seconds: float | None = None
-
-
-def training_eta_seconds(progress: dict, previous: dict | None = None) -> float | None:
-    """Prefer the producer's ETA; estimate older feeds only from actual advancement."""
-
-    def number(value):
-        return (
-            isinstance(value, (int, float))
-            and not isinstance(value, bool)
-            and math.isfinite(value)
-        )
-
-    eta = progress.get("eta_seconds")
-    if number(eta) and eta >= 0:
-        return float(eta)
-    steps, target = progress.get("steps"), progress.get("target")
-    if not number(steps) or not number(target) or target <= 0:
-        return None
-    if steps >= target:
-        return 0.0
-    previous = previous or {}
-    if progress.get("operation_id") != previous.get("operation_id") or (
-        progress.get("attempt") or "unknown"
-    ) != (previous.get("attempt") or "unknown"):
-        return None
-    before, elapsed, prior_elapsed = (
-        previous.get("steps"),
-        progress.get("elapsed_seconds"),
-        previous.get("elapsed_seconds"),
-    )
-    if (
-        number(before)
-        and number(elapsed)
-        and number(prior_elapsed)
-        and steps > before
-        and elapsed > prior_elapsed
-    ):
-        return (target - steps) * (elapsed - prior_elapsed) / (steps - before)
-    return None
-
-
-@dataclass(frozen=True)
-class EvaluationProgress:
-    operation_id: str
-    instrument: str = ""
-    official: bool = False
-    panel_index: int | None = None
-    panel_total: int | None = None
-    completed_panels: int = 0
-    episode_label: str | None = None
-    episodes: int | None = None
-    episodes_total: int | None = None
-    elapsed_seconds: float | None = None
-    stale: bool = False
 
 
 @dataclass

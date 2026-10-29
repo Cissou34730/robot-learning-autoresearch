@@ -34,6 +34,33 @@ def _layout(tmp_path: Path) -> control.WorkspaceLayout:
     return control.WorkspaceLayout(harness, root)
 
 
+def test_model_listing_uses_public_controller_execution_boundary(tmp_path):
+    calls = []
+
+    def run(arguments):
+        calls.append(arguments)
+        return subprocess.CompletedProcess(arguments, 0, stdout="models", stderr="")
+
+    layout = _layout(tmp_path)
+    controller = control.CampaignController(layout, FakeMachinery(), runner=run)
+    result = controller.list_models(control.LaunchSettings(provider="opencode"))
+    assert result.stdout == "models"
+    assert calls == [
+        [
+            "uv",
+            "run",
+            "--project",
+            str(layout.harness_root),
+            "python",
+            "-m",
+            "runner.launcher",
+            "--list-models",
+            "--provider",
+            "opencode",
+        ]
+    ]
+
+
 class FakeChild:
     def __init__(self, exit_code: int = 0, pending_stop: bool = False) -> None:
         self.exit_code = exit_code

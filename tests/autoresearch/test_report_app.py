@@ -427,7 +427,7 @@ async def _stale():
         stale_time = datetime.now(tz=UTC) - timedelta(
             seconds=PROGRESS_STALE_SECONDS + 60
         )
-        app._training["last_ts"] = stale_time
+        app.activity.training["last_ts"] = stale_time
         app._render_progress()
         await pilot.pause()
         rendered = str(app.query_one("#progress").render())
@@ -910,14 +910,14 @@ async def _campaign_switch():
         sources.campaign_id = "new-campaign-id"
         app.set_process_running(True)
         app.set_process_running(False)
-        assert app._paused_at is not None
+        assert app.activity.paused_at is not None
         app.refresh_snapshot()
         await pilot.pause()
         rendered = "\n".join(strip.text for strip in out.lines)
         assert "OLD CAMPAIGN OUTPUT" not in rendered
         assert app._campaign_id == "new-campaign-id"
-        assert app._paused_at is None
-        assert app._paused_intervals == []
+        assert app.activity.paused_at is None
+        assert app.activity.paused_intervals == []
 
 
 def test_event_log_uses_a_fixed_time_column():
