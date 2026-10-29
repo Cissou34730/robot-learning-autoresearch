@@ -81,6 +81,12 @@ as a failed test (3 of 6 assessed campaigns passed). The no-recipe experiment
 `robot-learning-recipes\skeleton`) runs two campaigns in
 `robot-learning-campaigns-norecipe` since 21:53 UTC, beside the main harness.
 
+**29 October 2026.** Branch `system-prompt-replace` (worktree
+`robot-learning-harness-sysprompt`, not merged into `harness`) sends one fixed
+system prompt for every model family, labels each PI message as a note or an
+end, gives each campaign its own pytest folder and removes the analyst shell.
+See [Fixed system prompt](#fixed-system-prompt-for-every-model-family-29-october).
+
 - **Repositories.** The harness is published on GitHub branch `harness`. Campaigns
   live in local repositories under one plain folder beside the harness,
   `robot-learning-campaigns\campaign-1` to `campaign-5` (created on demand).
@@ -106,7 +112,10 @@ as a failed test (3 of 6 assessed campaigns passed). The no-recipe experiment
   byte-identical (847 recorded states compared).
 - **Agents.** PI and analyst run gpt-6-luna on GitHub Copilot with a customized
   system message (OI-041); PI reasoning high, analyst max. The analyst's model
-  scope includes the invariances of the definitions (OI-053).
+  scope includes the invariances of the definitions (OI-053). On
+  `system-prompt-replace` the system message is one fixed text (SDK replace
+  mode), the same on GPT, Claude and external-provider models, and the analyst
+  has no shell.
 - **Lifecycle.** Unchanged: startup, goal review, inquiries, bounded sessions,
   hidden `--max-inquiries` 15. `contracts/program.md` carries the 25-26 October
   reasoning changes (OI-055, OI-056).
@@ -120,7 +129,8 @@ as a failed test (3 of 6 assessed campaigns passed). The no-recipe experiment
   sessions, measurements, training runs, candidates); elapsed time and AI usage
   were removed on 27 October (OI-054 withdrawn).
 - **Tests.** `tests/autoresearch` and `tests/benchmark` with
-  `ROBOT_LEARNING_CAMPAIGN_ROOT` set to a campaign: 833 pass (28 October).
+  `ROBOT_LEARNING_CAMPAIGN_ROOT` set to a campaign: 833 pass (28 October);
+  857 pass on `system-prompt-replace` (29 October).
   `tests/e2e` fails as before: it expects `robot_learning/` in a harness
   clone.
 - **Open authority item.** `contracts/authority.md` still lists
@@ -793,10 +803,10 @@ or mutated by this review; the evidence-fidelity RCA remains deferred.
 
 ## Issue register
 
-**Status and description review: 28 October 2026.**
+**Status and description review: 29 October 2026.**
 
-Five issues require work. Five changes need more evidence. Thirty-seven issues
-are closed. Thirteen entries are inactive. All 60 issue IDs remain.
+Seven issues require work. Five changes need more evidence. Thirty-seven issues
+are closed. Thirteen entries are inactive. All 62 issue IDs remain.
 
 On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and
 OI-052 to OI-056 were added from the parallel rounds. On 27 October the
@@ -804,7 +814,9 @@ maintainer withdrew OI-054 after round 4, OI-057 and OI-058 were added
 from round 5, and OI-059 was added from the wording analysis. After round 6
 the maintainer withdrew OI-058, and OI-059 was corrected. On 28 October OI-060
 was added from the round 10 analysis, and OI-059 and OI-060 were closed on the
-evidence of rounds 7 and 10 and the replay.
+evidence of rounds 7 and 10 and the replay. On 29 October OI-061 (CLI
+notification text in the fixed system prompt) and OI-062 (guessed paths and
+field names) were added on branch `system-prompt-replace`.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
 The maintainer also closed OI-033 and OI-037 without a verified recovery claim,
@@ -936,6 +948,9 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-29 | Per-campaign pytest folder (`c15733ea`) | Parallel campaigns shared one pytest base folder, and concurrent validation refused trainings in two campaigns. Runner validation now uses `%TEMP%\robot-learning\pytest\<hash of the campaign folder>`; two concurrent validations passed. |
+| 2026-10-29 | PI messages labelled note or end (`5debe009`, `c15733ea`) | Each PI message closes once, at the SDK assistant message: "note" when it has tool requests, "end" when it has none. The usage fact no longer closes a message, which removed duplicated PI messages. Empty assistant messages (GPT emits many between tool calls) no longer close or label a message. The TUI shows "PI note" and "PI end". |
+| 2026-10-29 | Fixed system prompt for every model family (`471574a0`, OI-061) | The SDK customize mode edited the Copilot CLI prompt, which differs by model family; on DeepSeek it dropped the analyst text. Replace mode sends one text of our own, identical on GPT, Claude and DeepSeek. No campaign text of the earlier prompt was dropped. See [Fixed system prompt](#fixed-system-prompt-for-every-model-family-29-october). |
 | 2026-10-29 | Analyst shell removed (branch `system-prompt-replace`, OI-062) | The analyst tools are `view`, `rg`, `glob`, `apply_patch` and the custom evidence tools; every shell permission request is refused with the same text as for the PI. `contracts/authority.md` no longer lists the inspection shell. `runner/copilot/command_policy.py` is no longer imported. |
 | 2026-10-28 | Startup sentence removed (`511c9cfe`, round 11) | Three campaigns on round 10 minus the startup sentence, stopped by decision after their startup sessions. PI time in startup (session time minus Runner wait) 2.6 and 4.0 min against a mean of 9.3 min in round 10 (up to 19.2) and 3.7 in round 9; no startup mirror measurement; the training-radius change came at 26-30 min against 32-50. The sentence stays removed; round 7 passed 4 of 4 without it. |
 | 2026-10-28 | No-recipe experiment launched | Two campaigns from the worktree `robot-learning-harness-norecipe` (`d6624b37`, skeleton `skeleton-v1`), beside the main harness. After 40 min: `e4eb4acd` built a relative-bearing observation, joint-target feedback output and a dense hold reward, reached 197/400 at 100k steps and 101/400 at 120k; `f762cca6` reached 0/160 and opened an inquiry on reach versus hold failure. |
@@ -1293,6 +1308,50 @@ wording.
   `program.md` or the persona, or the new texts cover them.
 - The analyst gets its own complete system prompt after the next campaign
   (OI-049).
+
+### Fixed system prompt for every model family (29 October)
+
+Branch `system-prompt-replace`, commit `471574a0`;
+`runner/copilot/system_prompt.py`.
+
+**Cause.** The SDK customize mode edits the prompt that the Copilot CLI builds,
+and the CLI builds a different prompt for each model family (GPT, Claude,
+others). The section edits matched one layout only: on DeepSeek the analyst
+exploration and autonomy texts were missing.
+
+**Repair.** `system_message()` returns `{"mode": "replace", "content": ...}`.
+The CLI sends the text unchanged, so the PI and the analyst receive the same
+prompt on every model. All campaign texts of the customize-mode prompt are
+kept. The section transforms and their removal lists are deleted.
+
+**Content, in order.**
+
+| Part | Source |
+|---|---|
+| Identity: `PI_IDENTITY` or `ANALYST_IDENTITY` | Ours, unchanged |
+| `# Tone and style` (`TONE`) | Ours, unchanged |
+| `<environment_context>`: the campaign folder and the rule to use absolute Windows paths with backslashes | Ours, new |
+| `<tools><view>`: parallel `view` calls and `view_range` for large files | Copilot CLI GPT prompt, word for word |
+| `# Campaign reference` and the reference files | Ours, unchanged |
+| `<system_notifications>` | Copilot CLI, word for word; review under OI-061 |
+| `<messages>`: a progress note goes with a tool call; a message without a tool call ends the session | Ours, new; replaces the GPT-only `preamble_messages` |
+| `<exploration_and_reading_files>` (analyst only) | Ours, unchanged |
+| `<autonomy_and_persistence>`: `AUTONOMY` or `ANALYST_AUTONOMY` | Ours, unchanged |
+
+Everything else of the CLI prompt is absent: the SDK safety and tool-efficiency
+text, the tool-use guidelines, the GitHub and code-search blocks and the
+shell rules. Coder and reviewer subagents keep their own system messages.
+
+**Size (campaign-2, 29 October).** PI 98,569 characters with 11 reference
+files; analyst 32,220 characters with 8.
+
+**Checks.** The rendered prompt was identical on GPT, Claude and DeepSeek
+routes. Tests assert replace mode, the campaign folder, each reference file
+once and the analyst-only exploration text.
+
+**Related changes on the branch.** PI messages are labelled note or end from
+the SDK message (`5debe009`, `c15733ea`); each campaign validates in its own
+pytest folder (`c15733ea`); the analyst has no shell (`bede6a9d`, OI-062).
 
 ### Historical comprehensive RCA crosswalk
 
