@@ -107,11 +107,16 @@ When a method exists, an experiment that changes several of its parts at once
 gives a result that you cannot attribute to any one part. Choose the size of
 a change from the explanation that it tests.
 
-When two or more designs are credible, one training operation can train them
-as variants. The variants train at the same time, with the same seed and steps,
-and each design gets a result. A variant changes only parameters. Thus the
-parameters must select the design. `contracts/instruments/training.md`
-describes variants.
+The scientific model proposes a first design and one or more design variants.
+A variant changes one choice, for example a reward weight, the observation or
+a training parameter. Before training, you often cannot tell which design the
+robot learns better. A training operation with variants trains 2 to 4 designs
+at the same time, with the same seed and steps. The results show which design
+learns better. One run of one design cannot show this.
+
+A variant changes only parameters. Thus the parameters must select the design,
+for example a reward weight in `robot_learning/training/current_params.json`
+that the reward reads. `contracts/instruments/training.md` describes variants.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you
