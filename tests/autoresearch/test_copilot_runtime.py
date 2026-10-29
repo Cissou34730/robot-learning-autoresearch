@@ -399,25 +399,38 @@ def test_a_long_operation_is_awaited_in_slices(monkeypatch, tmp_path, capsys):
 # --- native children ----------------------------------------------------------------
 
 
-def test_native_children_stay_on_copilot_with_role_tools():
+def test_external_pi_coder_uses_the_pi_model_and_the_reviewer_stays_on_copilot():
     coding = ScientificCoding(None, opencode_args("opencode/free-model"), Console())
     coder, reviewer = coding.agent(), coding.reviewer_agent()
-    assert (coder["model"], reviewer["model"]) == ("gpt-6-luna", "gpt-6-luna")
-    assert (coder["tools"], reviewer["tools"]) == (CODING_TOOLS, REVIEW_TOOLS)
+    assert "model" not in coder and reviewer["model"] == "gpt-6-luna"
+    assert coder["tools"] == [*CODING_TOOLS, "create", "edit"]
+    assert reviewer["tools"] == REVIEW_TOOLS
     coding.busy, coding.active_handle = True, "child"
     coding.binding = {"allowed_paths": [SOURCE], "read_paths": [SOURCE]}
-    for tool in ("read", "create", "powershell", "submit_operation"):
+    for tool in ("read", "powershell", "submit_operation"):
         request = {"sessionId": "child", "toolName": tool, "toolArgs": {"path": SOURCE}}
         assert (
             coding.pre_tool_use(request, {"session_id": "s"})["permissionDecision"]
             == "deny"
         )
+    for path, allowed in ((SOURCE, True), ("pi_workspace/scientific_model.md", False)):
+        request = {
+            "sessionId": "child",
+            "toolName": "create",
+            "toolArgs": {"path": path},
+        }
+        decision = coding.pre_tool_use(request, {"session_id": "s"})
+        assert (decision is None) is allowed, path
     coding.active_agent = "scientific-reviewer"
     request = {"sessionId": "child", "toolName": "apply_patch", "toolArgs": {}}
     assert (
         coding.pre_tool_use(request, {"session_id": "s"})["permissionDecision"]
         == "deny"
     )
+    copilot = ScientificCoding(
+        None, adapter.parse_args(["p", "--session-id", "s"]), Console()
+    )
+    assert copilot.agent()["tools"] == CODING_TOOLS
 
 
 def test_reviewer_identity_must_match_the_requested_copilot_model():

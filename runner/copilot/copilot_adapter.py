@@ -16,6 +16,7 @@ import time
 
 from runner import typed_events
 from runner.copilot.coding_contracts import (
+    EXTERNAL_EDITORS,
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
     normalize_model,
@@ -161,11 +162,13 @@ def session_options(
         available.add_custom("read")
         if args.preliminary:
             # Non-GPT routes may not drive freeform patches for the model document.
-            available.add_builtin(["create", "edit"])
+            available.add_builtin(EXTERNAL_EDITORS)
     if not args.preliminary and coding is not None:
         tools.append(coding.tool())
         available.add_custom("scientific_coding")
         available.add_builtin("apply_patch")
+        if external is not None:
+            available.add_builtin(EXTERNAL_EDITORS)
     if not args.preliminary and operations is not None:
         tools.append(operations.tool())
         available.add_custom("submit_operation")
@@ -215,7 +218,11 @@ def session_options(
     }
     if not args.preliminary:
         options["include_sub_agent_streaming_events"] = True
-        options["default_agent"] = {"excluded_tools": ["apply_patch"]}
+        options["default_agent"] = {
+            "excluded_tools": ["apply_patch", *EXTERNAL_EDITORS]
+            if external is not None
+            else ["apply_patch"]
+        }
         if coding is not None:
             options["hooks"]["on_subagent_start"] = coding.start_hook
             options["hooks"]["on_subagent_stop"] = coding.stop_hook
@@ -246,7 +253,7 @@ async def prepare_provider(args) -> None:
 
 
 def required_copilot_model(args) -> str | None:
-    """The Copilot model this session needs; native children always run on Copilot."""
+    """The Copilot model this session needs; the reviewer always runs on Copilot."""
     if provider_of(args.model) == "github-copilot":
         return normalize_model(args.model)
     return None if args.preliminary else DEFAULT_MODEL

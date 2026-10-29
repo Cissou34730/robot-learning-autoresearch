@@ -19,6 +19,10 @@ MAIN_PI_TOOLS = ["view", "rg", "glob"]
 CODING_TOOLS = ["view", "apply_patch", "scientific_api_reference"]
 
 
+# External-provider sessions offer create/edit instead of apply_patch.
+EXTERNAL_EDITORS = ["create", "edit"]
+
+
 REVIEW_TOOLS = ["view", "scientific_api_reference"]
 
 
