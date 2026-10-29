@@ -6,6 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from runner import paths
 from runner.copilot import copilot_adapter as adapter
 from runner.copilot import opencode_provider as provider
 from runner.copilot import operation_submission as submission_module
@@ -16,9 +17,11 @@ from runner.copilot.pi_tools import scoped_search
 from runner.copilot.reporting import SessionReporter as Console
 from runner.copilot.reporting import tool_detail
 from runner.copilot.system_prompt import (
+    ANALYST_EXPLORATION,
     REFERENCE_READ_DENIAL,
     reference_paths,
     system_message,
+    system_prompt,
 )
 from runner.copilot.tool_policy import scoped_tool_hook, tool_denial
 
@@ -265,53 +268,18 @@ def test_search_refuses_an_explicit_reference_target():
 
 def test_each_reference_file_is_in_the_system_message_once():
     for preliminary in (False, True):
-        sections = system_message(preliminary, lambda _: None)["sections"]
-        text = "\n".join(
-            section["content"]
-            for section in sections.values()
-            if isinstance(section.get("content"), str)
-        )
+        text = system_message(preliminary)["content"]
         for path in reference_paths(preliminary):
             assert text.count(f"File {path}:\n") == 1, path
 
 
-def test_runtime_blocks_are_replaced_or_removed_and_missing_ones_reported():
-    warnings = []
-    sections = system_message(False, warnings.append)["sections"]
-    text = sections["runtime_instructions"]["action"](
-        "<system_notifications>\nkeep\n</system_notifications>\n"
-        "<exploration_and_reading_files>\nExamine\n</exploration_and_reading_files>\n"
-        "<autonomy_and_persistence>\nBias to action\n</autonomy_and_persistence>\n"
-        "<subagent_usage>\nsparingly\n</subagent_usage>\n"
-    )
-    assert "keep" in text and "submit_operation" in text
-    assert "Examine" not in text and "Bias to action" not in text
-    assert "sparingly" not in text and not warnings
-    sections = system_message(True, warnings.append)["sections"]
-    sections["runtime_instructions"]["action"](
-        "<autonomy_and_persistence>\nBias to action\n</autonomy_and_persistence>\n"
-    )
-    assert len(warnings) == 1 and "exploration_and_reading_files" in warnings[0]
-
-
-def test_the_shell_usage_rules_stay_only_for_the_analyst_who_has_a_shell():
-    sample = (
-        "<tools>\n"
-        "<powershell>\nPay attention to the following when using the powershell "
-        "tool:\n<example>\nrun it\n</example>\n</powershell>\n"
-        "<view>\nPut independent reads in one call.\n</view>\n"
-        "</tools>\n"
-        "<gh_cli_preference>\nprefer gh\n</gh_cli_preference>\n"
-    )
-    pi = system_message(False, lambda _: None)["sections"]["tool_instructions"]
-    text = pi["action"](sample)
-    assert "powershell" not in text and "run it" not in text
-    assert "gh_cli_preference" not in text and "prefer gh" not in text
-    assert "<view>" in text and "independent reads" in text
-    analyst = system_message(True, lambda _: None)["sections"]["tool_instructions"]
-    text = analyst["action"](sample)
-    assert "<powershell>" in text and "run it" in text
-    assert "gh_cli_preference" not in text and "<view>" in text
+def test_the_system_message_replaces_the_cli_prompt_with_one_fixed_text():
+    for preliminary in (False, True):
+        message = system_message(preliminary)
+        assert message == {"mode": "replace", "content": system_prompt(preliminary)}
+        assert str(paths.ROOT) in message["content"]
+    assert ANALYST_EXPLORATION in system_prompt(True)
+    assert ANALYST_EXPLORATION not in system_prompt(False)
 
 
 def test_coder_is_confined_to_its_binding():

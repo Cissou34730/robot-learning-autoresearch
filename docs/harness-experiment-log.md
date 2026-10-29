@@ -813,7 +813,7 @@ OI-040 to OI-047 replace the former follow-up items outside the register.
 OI-006 is retired because the training allocation remains a fixed constraint.
 Retirement does not claim that this allocation is optimal.
 
-### Open issues — 5
+### Open issues — 6
 
 These issues need investigation or design before a repair.
 This register does not authorize runtime changes or campaign operations.
@@ -825,6 +825,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-039 | The paired success difference between candidate and reference has an exact sign-test p-value but no confidence interval. | **Open** | Optional tool `episode_outcome_breakdown` (2026-10-22) reads recorded measurements and gives the exact sign test and a Wilson interval for the first measurement's share of discordant episodes, per stratum when asked. The maintainer reversed "no harness tool": in `e7dbbece` the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts unchanged, and the PI-owned `comparison.py` stays available. Track use. Use: 8 calls in `cfa88359`, 45 in `5d94bf8a`. |
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
 | OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. Round 6: no model added the condition; `229c3e55` stated no reflection at all. |
+| OI-061 | The fixed system prompt (branch `system-prompt-replace`) keeps the Copilot CLI `<system_notifications>` text word for word. It is generic Copilot text and contains an example. The PI receives these notifications when the scientific coder or reviewer becomes idle (258 of 601 recorded campaign sessions). | **Open** | Decide whether the PI needs this text, and rewrite it in campaign terms or remove it. Consider whether the console can use the notifications. |
 
 ### Changes that need more evidence — 5
 
