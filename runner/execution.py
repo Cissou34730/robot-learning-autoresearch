@@ -539,9 +539,12 @@ def train_variants(
 ) -> None:
     """Train each variant in its own process, all at the same time.
 
-    Each spec has `label`, `output_dir`, `parameters_path` and `training_log`.
+    Each spec has `label`, `source_root`, `output_dir`, `parameters_path` and
+    `training_log`.
     """
     from robot_learning.training.progress import latest_training_record
+
+    from runner.pi_code_guard import VARIANT_SOURCE_VARIABLE
 
     started = time.monotonic()
     runs: list[dict] = []
@@ -570,13 +573,14 @@ def train_variants(
             log_file.flush()
             run = {"spec": spec, "log": log_file, "offset": log_file.tell()}
             runs.append(run)
+            environment = paths.python_environment()
+            environment[VARIANT_SOURCE_VARIABLE] = str(spec["source_root"])
+            environment[PARAMETERS_FILE_VARIABLE] = str(spec["parameters_path"])
+            environment["PYTHONDONTWRITEBYTECODE"] = "1"
             run["process"] = subprocess.Popen(
                 command,
                 cwd=paths.ROOT,
-                env={
-                    **paths.python_environment(),
-                    PARAMETERS_FILE_VARIABLE: str(spec["parameters_path"]),
-                },
+                env=environment,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
                 text=True,

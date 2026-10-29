@@ -69,10 +69,12 @@ from runner.copilot.usage import record_usage
 from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import stop_requested, wait_for_stop_request
 
-# The scientific-model analysis runs on its own Copilot model; PI sessions keep the launcher's.
+# The scientific-model analysis runs on its own model; PI sessions keep the launcher's.
 # Maintainer-only environment overrides allow a model comparison of the analysis.
-ANALYST_MODEL = os.environ.get("ROBOT_LEARNING_ANALYST_MODEL", "gpt-6.1-sol")
-ANALYST_REASONING = os.environ.get("ROBOT_LEARNING_ANALYST_REASONING", "medium")
+ANALYST_MODEL = os.environ.get(
+    "ROBOT_LEARNING_ANALYST_MODEL", "opencode-go/deepseek-v4.1-flash"
+)
+ANALYST_REASONING = os.environ.get("ROBOT_LEARNING_ANALYST_REASONING", "max")
 
 RESUMED_STATE_PROMPT = (
     "\n\nRecovered current Runner state (factual metadata, not new "

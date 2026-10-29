@@ -1710,6 +1710,28 @@ def _variant_label(candidate_name: str) -> str:
     return candidate_name.split("-", 1)[0]
 
 
+def _variant_source(candidate_dir: Path, label: str) -> Path:
+    """A copy of the scientific package with the files of one variant in place."""
+    package = paths.ROOT / "robot_learning"
+    overlay = package / "variants" / label
+
+    def ignored(directory: str, names: list[str]) -> set[str]:
+        skip = {name for name in names if name in {"__pycache__", ".mypy_cache"}}
+        if Path(directory) == package:
+            skip.add("variants")
+        return skip
+
+    root = candidate_dir / f"{label}.source"
+    shutil.copytree(package, root / "robot_learning", ignore=ignored)
+    if overlay.is_dir():
+        for path in overlay.rglob("*"):
+            if path.is_file() and "__pycache__" not in path.parts:
+                target = root / "robot_learning" / path.relative_to(overlay)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(path, target)
+    return root
+
+
 def _train_and_archive_variants(
     state: dict,
     pending: dict,
@@ -1737,6 +1759,7 @@ def _train_and_archive_variants(
         specs.append(
             {
                 "label": label,
+                "source_root": _variant_source(candidate_dir, label),
                 "output_dir": candidate_dir / label,
                 "parameters_path": parameters_path,
                 "training_log": paths.training_log_path(
@@ -1813,7 +1836,7 @@ def execute_training(state: dict, pending: dict) -> int:
     variants = request.get("variants")
     variant_parameters = (
         {
-            variant["label"]: _merged_parameters(config, variant["parameters"])
+            variant["label"]: _merged_parameters(config, variant.get("parameters", {}))
             for variant in variants
         }
         if variants
@@ -1939,7 +1962,7 @@ def execute_training(state: dict, pending: dict) -> int:
         result["variants"] = [
             {
                 "label": variant["label"],
-                "parameters": copy.deepcopy(variant["parameters"]),
+                "parameters": copy.deepcopy(variant.get("parameters", {})),
                 "candidates": [
                     record["id"]
                     for record in records

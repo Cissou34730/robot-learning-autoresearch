@@ -37,6 +37,8 @@ _RUNNER_RECORDS = frozenset(
     }
 )
 _TRANSIENT_SUFFIXES = (".tmp", ".progress")
+# A training variant imports the scientific package from its own source copy.
+VARIANT_SOURCE_VARIABLE = "ROBOT_LEARNING_VARIANT_SOURCE"
 
 
 def _allowed_in_campaign(relative: str) -> bool:
@@ -101,6 +103,9 @@ def main() -> None:
         raise SystemExit("usage: python -m runner.pi_code_guard <module> [args...]")
     module = sys.argv[1]
     sys.argv = sys.argv[1:]
+    variant_source = os.environ.get(VARIANT_SOURCE_VARIABLE)
+    if variant_source:
+        sys.path.insert(0, variant_source)
     sys.addaudithook(_audit)
     runpy.run_module(module, run_name="__main__", alter_sys=True)
 

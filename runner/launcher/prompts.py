@@ -39,8 +39,8 @@ Analyze these items from first principles and from the human-owned definitions:
 * the coupled physical capabilities that success requires, including reaching, trajectory control, convergence and stabilization, and the physically justified interactions between them.
 * the sensing and observation model: which physical state is observable, which is derived, which is ambiguous and which is unavailable.
 * the relation between observation, control action, robot motion and episode outcome.
-* the alternative physical configurations or solutions available to the robot, for example multiple kinematic solutions.
-* the invariances of the definitions, for example symmetries and conserved quantities, and what each makes equal or different across configurations, targets and behavior.
+* the alternative physical configurations or solutions available to the robot.
+* the invariances of the definitions, and what each makes equal or different across configurations, targets and behavior.
 * the physical, kinematic, dynamic, control and observability constraints that create qualitatively different classes of behavior or failure.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
@@ -51,11 +51,11 @@ The PI trains the policy with reinforcement learning, from the starting recipe t
 * the quantities in the training log that show progress before task success occurs.
 * for each reward term that you consider, the behavior that the term makes cheapest for the policy, including behavior that collects reward without task success.
 * the relation between the reward, the end of the episode, the hold requirement and the discount factor.
-* the design choices where the analysis cannot tell before training which option the robot learns better. Examples are the weight of a reward term, the information in the observation and a training parameter.
+* the design choices where the analysis cannot tell before training which option the robot learns better.
 
 Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI implements the reward. Do not write code.
 
-Propose one or more design variants under the heading `### Proposed design variants` in the register Decision-relevant synthesis. A variant changes one choice of the first design: the reward, the observation, the transformation of the network output or a training parameter. For each variant, state the change, its physical or learning reason and the training result that shows whether it is better than the first design. Two or more designs that train together on the same seed and steps show which design the robot learns better. One run of one design cannot show this.
+Propose one or more design variants under the heading `### Proposed design variants` in the register Decision-relevant synthesis. A variant changes one design choice of the first design. Order the variants by their expected effect on task success. For each variant, state the change, its physical or learning reason and the training result that shows whether it is better than the first design. Two or more designs that train together on the same seed and steps show which design the robot learns better. One run of one design cannot show this.
 
 For each consequential physical implication and each unknown, state:
 

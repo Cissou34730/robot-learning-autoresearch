@@ -25,8 +25,8 @@ names in code format are technical names. They keep their exact spelling.
 | policy | A trained neural network together with its saved runtime. | learned policy, learned model, learned candidate |
 | saved runtime | The code that is saved with a policy. It builds the observation of the network and turns the network output into the motor command. | policy io, policy i/o |
 | observation | The input that the saved runtime gives to the network at each control step. | — |
-| robot model | A model of the kinematics or the dynamics of the robot, for example inverse kinematics or a copy of the simulation. You can use a robot model as a tool. The fixed transformation from the network output to the motor command cannot contain one; `contracts/scenario.md` gives this limit. | — |
-| candidate | A policy that a training run saved and that you can measure, for example `T2:checkpoint-90112`. | model, saved artifact |
+| robot model | A model of the kinematics or the dynamics of the robot, in any form. You can use a robot model as a tool. The fixed transformation from the network output to the motor command cannot contain one; `contracts/scenario.md` gives this limit. | — |
+| candidate | A policy that a training run saved and that you can measure. Its identity has the form `T<n>:checkpoint-<steps>`, or `T<n>:<label>-checkpoint-<steps>` for a training variant. | model, saved artifact |
 | training checkpoint | A candidate that a training run saved at a given step count. | checkpoint, policy checkpoint |
 | role | A label that you give to a candidate: working, best-known, or a retained label. The operation is `model_role`. | model role |
 | best-known candidate | The candidate with the strongest measured evidence. It does not need to reach the goal. | best-known model |

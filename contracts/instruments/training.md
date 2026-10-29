@@ -51,21 +51,25 @@ For `transfer` training, `parent` is required and must not be empty. For
 ```
 
 The `variants` field is optional. Use it to compare 2 to 4 designs in one
-training operation. Each variant has a `label` and `parameters`. A label starts
-with a lowercase letter and contains only lowercase letters, digits and
-underscores. It has a maximum of 16 characters. Each label must be unique in
-the request.
+training operation. Each variant has a `label`. A label starts with a lowercase
+letter and contains only lowercase letters, digits and underscores. It has a
+maximum of 16 characters. Each label must be unique in the request.
+
+A variant can change any PI-owned source file and any parameter:
+
+- Source files: put the changed files of a variant in
+  `robot_learning/variants/<label>/`, with the same relative paths that they
+  have below `robot_learning/`. For the training of that variant, each of these
+  files replaces the file at the same path. Other files do not change.
+- Parameters: the optional `parameters` object replaces the values of the same
+  keys in `robot_learning/training/current_params.json`. The other values do
+  not change. The trainer reads these parameters through
+  `load_experiment_config()` in `robot_learning/training/research_config.py`.
 
 The Runner trains each variant in a separate process. All variants train at the
-same time, with the same source files, initialization, parent, seed and steps.
-The parameters of a variant replace the values of the same keys in
-`robot_learning/training/current_params.json`. The other values do not change.
-The trainer of a variant reads these parameters through
-`load_experiment_config()` in `robot_learning/training/research_config.py`.
-
-Thus a variant can change only a design that the parameters select. The saved
-runtime must keep the parameters that it needs, because measurements read
-`robot_learning/training/current_params.json`.
+same time, with the same initialization, parent, seed and steps. Measurements
+of a candidate use its saved runtime. They do not use the files or the
+parameters of its variant.
 
 The variants share the computer. Thus each variant can train more slowly than a
 single run.

@@ -103,7 +103,7 @@ Set `instrument` to `python_module`. The `module`, `args` and `artifact` fields
 are required. The `label` and `inputs` fields are optional.
 
 Each `args` element is one literal argument of the module, not a full launch
-command. Do not put the module name or a command prefix such as `python -m`
+command. Do not put the module name or a command prefix
 in `args`. When the module needs an output path, give a specific output path
 in the arguments. `artifact`
 declares the expected output. It does not replace an argument. Before

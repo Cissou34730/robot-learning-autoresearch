@@ -517,9 +517,15 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
     )
     request = _training()
     request["training"]["variants"] = [
-        {"label": "base", "parameters": {}},
+        {"label": "base"},
         {"label": "short", "parameters": {"ppo": {"gamma": 0.9}}},
     ]
+    package = tmp_path / "robot_learning"
+    (package / "variants" / "short").mkdir(parents=True)
+    (package / "train.py").write_text("base\n", encoding="utf-8")
+    (package / "variants" / "short" / "train.py").write_text(
+        "short\n", encoding="utf-8"
+    )
     run_experiment.accept_operation(request, state)
     artifact = tmp_path / "archive"
     artifact.mkdir()
@@ -535,8 +541,12 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
     def train_variants(specs, timesteps, seed, resume, operation_id):
         trained.append(
             {
-                spec["label"]: json.loads(
-                    spec["parameters_path"].read_text(encoding="utf-8")
+                spec["label"]: (
+                    json.loads(spec["parameters_path"].read_text(encoding="utf-8")),
+                    (spec["source_root"] / "robot_learning" / "train.py").read_text(
+                        encoding="utf-8"
+                    ),
+                    (spec["source_root"] / "robot_learning" / "variants").exists(),
                 )
                 for spec in specs
             }
@@ -571,7 +581,9 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
     assert run_experiment.execute_pending_operation() == 0
 
     shorter = {**active, "ppo": {"gamma": 0.9, "n_steps": 64}}
-    assert trained == [{"base": active, "short": shorter}]
+    assert trained == [
+        {"base": (active, "base\n", False), "short": (shorter, "short\n", False)}
+    ]
     completed = repository.read_state()
     result = completed["operation_events"][0]["result"]
     assert result["variants"] == [

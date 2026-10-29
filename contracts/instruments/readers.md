@@ -279,8 +279,8 @@ measurement has.
 
 Strata repeat these results for each bin. They use the field values of the
 first measurement. They count the episodes outside the edges or without a
-value. Rows of a research evaluation that contain fields such as the target
-radius can be in another section of the artifact. `artifact_evidence_query`
+value. Rows of a research evaluation that contain per-episode fields
+can be in another section of the artifact. `artifact_evidence_query`
 with `action=discover` shows them. Edges that you choose after you see the
 episode outcomes make the differences between strata optimistic.
 

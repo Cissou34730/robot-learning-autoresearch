@@ -583,7 +583,8 @@ def _variant(label, parameters=None):
         ([_variant("a"), _variant("a")], False),
         ([_variant("A"), _variant("b")], False),
         ([_variant("a-b"), _variant("b")], False),
-        ([{"label": "a"}, _variant("b")], False),
+        ([{"label": "a"}, _variant("b")], True),
+        ([{"label": "a", "files": []}, _variant("b")], False),
         ([_variant("a"), {"label": "b", "parameters": []}], False),
     ],
 )

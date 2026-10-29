@@ -409,9 +409,13 @@ def _validate_training_variants(variants: object) -> None:
         )
     labels: set[str] = set()
     for variant in variants:
-        if not isinstance(variant, dict) or set(variant) != {"label", "parameters"}:
+        if (
+            not isinstance(variant, dict)
+            or "label" not in variant
+            or not set(variant) <= {"label", "parameters"}
+        ):
             raise ValueError(
-                "each training variant requires exactly label and parameters"
+                "each training variant requires label and allows only parameters"
             )
         label = variant["label"]
         if not isinstance(label, str) or not TRAINING_VARIANT_LABEL.fullmatch(label):
@@ -423,7 +427,7 @@ def _validate_training_variants(variants: object) -> None:
         if label in labels:
             raise ValueError(f"training variant label {label!r} is not unique")
         labels.add(label)
-        if not isinstance(variant["parameters"], dict):
+        if not isinstance(variant.get("parameters", {}), dict):
             raise TypeError("training variant parameters must be an object")
 
 
@@ -1270,7 +1274,8 @@ def operation_body_schema(kind: str) -> dict:
                             "pattern": f"^{TRAINING_VARIANT_LABEL.pattern}$",
                         },
                         "parameters": {"type": "object"},
-                    }
+                    },
+                    optional=("parameters",),
                 ),
             },
         }
