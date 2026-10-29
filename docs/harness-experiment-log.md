@@ -813,7 +813,7 @@ OI-040 to OI-047 replace the former follow-up items outside the register.
 OI-006 is retired because the training allocation remains a fixed constraint.
 Retirement does not claim that this allocation is optimal.
 
-### Open issues — 6
+### Open issues — 7
 
 These issues need investigation or design before a repair.
 This register does not authorize runtime changes or campaign operations.
@@ -826,6 +826,7 @@ This register does not authorize runtime changes or campaign operations.
 | OI-040 | The console shows no progress while a PI model request runs. The PI also lacks clear guidance about when to checkpoint a session. | **Open** | Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign shows a defect. Faster responses do not show recovery from a stalled request. |
 | OI-057 | The scientific model can state the reflection symmetry with a condition that the definitions do not require. In `0c12d136` it limited the symmetry to "trajectories away from active joint stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by the shoulder limit and did not use the reflection. | **Open** | One campaign only. Check the symmetry statements and their conditions in the next round's models, and whether a conditioned statement precedes a limit-based explanation. No change is authorized. Round 6: no model added the condition; `229c3e55` stated no reflection at all. |
 | OI-061 | The fixed system prompt (branch `system-prompt-replace`) keeps the Copilot CLI `<system_notifications>` text word for word. It is generic Copilot text and contains an example. The PI receives these notifications when the scientific coder or reviewer becomes idle (258 of 601 recorded campaign sessions). | **Open** | Decide whether the PI needs this text, and rewrite it in campaign terms or remove it. Consider whether the console can use the notifications. |
+| OI-062 | The PI and the analyst guess paths and field names instead of using the ones that exist. In the 29 October batch (branch `system-prompt-replace`): about 4-5 `view` calls on paths that do not exist per campaign; about 4-6 refused analyst reads of reference files that are already in the system prompt; 1-2 `episode_outcome_breakdown` calls with guessed fields (`target_radius_cm`, `target_angle_degrees`); 1-3 `artifact_evidence_query` traversal-budget refusals; the DeepSeek analyst read `contracts/robots/robot.xml` relative to the campaign folder (the file is in the harness) and then sent 5 shell commands that were refused. All are pre-existing. | **Open** | The analyst shell was removed on 29 October. Options, none approved: refusal text that lists what exists (paths, fields); a sentence in the reference header that the files exist only in the system prompt; a file map at session start. Measure the failure counts in the next batch, including the full DeepSeek campaign, before a choice. |
 
 ### Changes that need more evidence — 5
 
@@ -935,6 +936,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-29 | Analyst shell removed (branch `system-prompt-replace`, OI-062) | The analyst tools are `view`, `rg`, `glob`, `apply_patch` and the custom evidence tools; every shell permission request is refused with the same text as for the PI. `contracts/authority.md` no longer lists the inspection shell. `runner/copilot/command_policy.py` is no longer imported. |
 | 2026-10-28 | Startup sentence removed (`511c9cfe`, round 11) | Three campaigns on round 10 minus the startup sentence, stopped by decision after their startup sessions. PI time in startup (session time minus Runner wait) 2.6 and 4.0 min against a mean of 9.3 min in round 10 (up to 19.2) and 3.7 in round 9; no startup mirror measurement; the training-radius change came at 26-30 min against 32-50. The sentence stays removed; round 7 passed 4 of 4 without it. |
 | 2026-10-28 | No-recipe experiment launched | Two campaigns from the worktree `robot-learning-harness-norecipe` (`d6624b37`, skeleton `skeleton-v1`), beside the main harness. After 40 min: `e4eb4acd` built a relative-bearing observation, joint-target feedback output and a dense hold reward, reached 197/400 at 100k steps and 101/400 at 120k; `f762cca6` reached 0/160 and opened an inquiry on reach versus hold failure. |
 | 2026-10-28 | OI-059 and OI-060 closed | OI-059 on rounds 7 (4 of 4) and 10 (5 of 5), both on the corrected text; OI-060 on round 10 and the replay. |

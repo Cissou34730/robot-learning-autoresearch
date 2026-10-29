@@ -236,6 +236,7 @@ def test_main_pi_cannot_write_or_run_shell_or_read_reserved_files():
 
 def test_preliminary_editors_reach_only_the_scientific_model():
     model = {"path": "pi_workspace/scientific_model.md"}
+    assert tool_denial("powershell", {"command": "dir"}, preliminary=True)
     assert tool_denial("create", model, preliminary=True, json_editors=True) is None
     assert tool_denial("create", {"path": SOURCE}, preliminary=True, json_editors=True)
     assert tool_denial("create", model, json_editors=True)
