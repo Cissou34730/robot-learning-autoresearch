@@ -100,6 +100,19 @@ def required_transition(availability: dict) -> Transition | None:
     )
 
 
+# Recipe files that the PI read at the start of most startup and inquiry sessions.
+RECIPE_CONTEXT_FILES = [
+    "robot_learning/train.py",
+    "robot_learning/training/current_params.json",
+    "robot_learning/training/environment.py",
+    "robot_learning/training/reward.py",
+    "robot_learning/scenario/environment.py",
+    "robot_learning/scenario/observations.py",
+    "robot_learning/scenario/policy_io.py",
+    "robot_learning/scenario/evaluation.py",
+]
+
+
 def first_message_files(
     paths: list[str], *, harness_root: Path, campaign_root: Path
 ) -> list[str]:
@@ -397,6 +410,13 @@ def scientific_session_prompt(
         harness_root=context.harness_root,
         campaign_root=context.campaign_root,
     )
+    recipe_files = first_message_files(
+        RECIPE_CONTEXT_FILES
+        if included and not pstext.same(kind, "goal_review")
+        else [],
+        harness_root=context.harness_root,
+        campaign_root=context.campaign_root,
+    )
     model_file = first_message_files(
         ["pi_workspace/scientific_model.md"] if context_files else [],
         harness_root=context.harness_root,
@@ -411,16 +431,22 @@ def scientific_session_prompt(
     )
     context_note = None
     if included:
-        characters = len("".join(model_file + included))
+        characters = len("".join(model_file + included + recipe_files))
         context_note = (
             "CONTEXT | first message includes pi_workspace/scientific_model.md, "
-            f"{', '.join(context_files)} ({(characters + 500) // 1000}k chars)"
+            "campaigns/brief.md"
+            + (f", {len(recipe_files)} recipe files" if recipe_files else "")
+            + f" ({(characters + 500) // 1000}k chars)"
+        )
+        end_files = (
+            "campaigns/brief.md and the current recipe files that follow it are"
+            if recipe_files
+            else "campaigns/brief.md is"
         )
         source_guidance = (
-            "The scientific model is at the start of this message, and "
-            "campaigns/brief.md is at the end. The summary of the latest session "
-            "record is above. Read other evidence when the scientific question "
-            "needs it."
+            f"The scientific model is at the start of this message, and {end_files} "
+            "at the end. The summary of the latest session record is above. Read "
+            "other evidence when the scientific question needs it."
         )
     sections = [
         role_line,
@@ -462,6 +488,7 @@ def scientific_session_prompt(
         source_guidance,
         _submission_guidance(availability, transition),
         *included,
+        *recipe_files,
     ]
     return SessionPrompt(
         "\n\n".join(section for section in sections if section), context_note
