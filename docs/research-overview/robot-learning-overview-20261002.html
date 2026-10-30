@@ -626,6 +626,10 @@
           passed, and the three failures each scored 195/200. See <a href="#reports">Campaigns</a> and <a
             href="#findings">What decides success</a>.
         </p>
+        <p><strong>First OpenCode campaign (30 October):</strong> <code>2f20339a</code>, with a DeepSeek V4.1 Flash PI,
+          passed the official assessment at <strong>200/200</strong> in about 59 minutes and two trainings. It used no
+          reflection symmetry. One campaign only. See its <a href="robot-campaign-2f20339a-20261030.html">report</a>.
+        </p>
         <p><strong>What decides success:</strong> in rounds 7-10 all 12 assessed policies with a
           reflection-canonicalized
           policy I/O passed (199-200/200) and all 3 without it failed (195/200). Two PI decisions lead to it: do not
@@ -1520,6 +1524,15 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><code>2f20339a</code></td>
+              <td>30 Oct, 02:24 CET</td>
+              <td>Official pass: <strong>200/200</strong> in about 59 minutes. First full campaign with an OpenCode PI
+                (DeepSeek V4.1 Flash, max reasoning). T1 scored 292/400. T2 trained on the full 6&ndash;20 cm range
+                and observed only the joint-limit-safe inverse-kinematics branch: 400/400 on two panels. No reflection
+                symmetry. The coder ran on the PI's model (OI-063).</td>
+              <td><a href="robot-campaign-2f20339a-20261030.html">Campaign report</a></td>
+            </tr>
             <tr>
               <td><code>5bc006d0</code>, <code>63494724</code>, <code>6ca20361</code>, <code>0b66a262</code>,
                 <code>8309b29b</code>
@@ -3271,6 +3284,14 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: first full campaign with an OpenCode PI passed 200/200</h3>
+        <p>After the two coding fixes below, DeepSeek campaign <code>2f20339a</code> ran from start to the official
+          assessment and passed at 200/200 in about 59 minutes. Its one code change (<code>2a4f201a</code>) passed the
+          Luna review at the first attempt. The coder still runs on the PI's model (OI-063). See the
+          <a href="robot-campaign-2f20339a-20261030.html">campaign report</a>.
+        </p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">30 October: the DeepSeek PI could not change code; its coder now uses its model</h3>
         <p>In DeepSeek campaign <code>6ea55e42</code> every coding request ended without a change: a Luna coder inside a
