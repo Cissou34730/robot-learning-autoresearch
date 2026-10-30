@@ -6,7 +6,7 @@ import hashlib
 import json
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from runner import paths, repository
 
@@ -160,19 +160,46 @@ TASK_REFERENCE_ADAPTER_PATH = "benchmark/adapters/task_reference.py"
 OFFICIAL_ASSESSMENT_ADAPTER_PATH = "benchmark/adapters/final_benchmark.py"
 
 
-def is_protected_source(path: str) -> bool:
+def _scientific_base_path(path: str) -> str | None:
     relative = path.replace("\\", "/")
-    return (
-        relative in PROTECTED_BENCHMARK_PATHS
-        or relative in PROTECTED_RUNNER_PATHS
-        or relative in PROTECTED_RUNTIME_PATHS
-        or relative in PROTECTED_MEASUREMENT_PATHS
-        or relative in PROTECTED_CONTEXT_PATHS
-        or relative in CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS
-        or relative in DEPENDENCY_METADATA_PATHS
-        or relative.startswith(PROTECTED_BENCHMARK_PREFIXES)
-        or relative.startswith(PROTECTED_RUNNER_PREFIXES)
-        or relative.startswith(PROTECTED_RUNTIME_PREFIXES)
+    parts = relative.split("/")
+    if (
+        PureWindowsPath(relative).drive
+        or ":" in relative
+        or any(part in {"", ".", ".."} for part in parts)
+    ):
+        return None
+    if [part.casefold() for part in parts[:2]] == ["robot_learning", "variants"]:
+        if len(parts) < 4 or not TRAINING_VARIANT_LABEL.fullmatch(parts[2]):
+            return None
+        return "/".join(("robot_learning", *parts[3:])).casefold()
+    return relative.casefold()
+
+
+def is_protected_source(path: str) -> bool:
+    relative = _scientific_base_path(path)
+    if relative is None:
+        return True
+    return any(
+        relative == protected.casefold()
+        for protected in (
+            *PROTECTED_BENCHMARK_PATHS,
+            *PROTECTED_RUNNER_PATHS,
+            *PROTECTED_RUNTIME_PATHS,
+            *PROTECTED_MEASUREMENT_PATHS,
+            *PROTECTED_CONTEXT_PATHS,
+            *CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS,
+            *DEPENDENCY_METADATA_PATHS,
+        )
+    ) or relative.startswith(
+        tuple(
+            prefix.casefold()
+            for prefix in (
+                *PROTECTED_BENCHMARK_PREFIXES,
+                *PROTECTED_RUNNER_PREFIXES,
+                *PROTECTED_RUNTIME_PREFIXES,
+            )
+        )
     )
 
 
@@ -182,7 +209,9 @@ def is_human_owned(path: str) -> bool:
 
 
 def is_researcher_owned(path: str) -> bool:
-    relative = path.replace("\\", "/")
+    relative = _scientific_base_path(path)
+    if relative is None or relative.startswith("robot_learning/variants/"):
+        return False
     if is_human_owned(relative):
         return False
     return (

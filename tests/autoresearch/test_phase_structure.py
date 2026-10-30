@@ -117,6 +117,9 @@ def test_launcher_trust_gate_allows_only_the_documented_pi_surface(tmp_path):
     (root / "pi_workspace" / "operation_request.json").write_text(
         '{"checkpoint": {}}', encoding="utf-8"
     )
+    overlay = root / "robot_learning/variants/pd_servo/scenario/policy_io.py"
+    overlay.parent.mkdir(parents=True)
+    overlay.write_text("VALUE = 2\n", encoding="utf-8")
     snapshot.verify()
     assert (root / "docs" / "untracked-plan.md").read_text(
         encoding="utf-8"
@@ -186,6 +189,8 @@ def test_launcher_protected_file_scan_fails_closed_on_enumeration_error(tmp_path
         "run_research.ps1",
         "benchmark/adapters/final_benchmark.py",
         "docs/untracked-plan.md",
+        "robot_learning/variants/pd_servo/__init__.py",
+        "robot_learning/variants/pd_servo/scenario/__init__.py",
     ],
 )
 def test_launcher_trust_snapshot_rejects_protected_file_modification(
@@ -194,6 +199,7 @@ def test_launcher_trust_snapshot_rejects_protected_file_modification(
     root = _short_temp_repo(tmp_path)
     _trust_test_repository(root)
     snapshot = TrustSnapshot.capture(root, preliminary=False)
+    (root / relative).parent.mkdir(parents=True, exist_ok=True)
     with (root / relative).open("a", encoding="utf-8") as stream:
         stream.write("PI mutation\n")
     assert relative in _violation(snapshot)
@@ -248,6 +254,12 @@ def test_preliminary_snapshot_allows_only_scientific_model_handoff(tmp_path):
     snapshot = TrustSnapshot.capture(root, preliminary=True)
     model.write_text("updated model\n", encoding="utf-8")
     snapshot.verify()
+    overlay = root / "robot_learning/variants/pd_servo/scenario/policy_io.py"
+    overlay.parent.mkdir(parents=True)
+    overlay.write_text("VALUE = 2\n", encoding="utf-8")
+    assert "robot_learning/variants/pd_servo/scenario/policy_io.py" in _violation(
+        snapshot
+    )
     (root / "pi_workspace" / "operation_request.json").write_text(
         '{"checkpoint": {}}', encoding="utf-8"
     )

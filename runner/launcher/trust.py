@@ -17,27 +17,6 @@ from pathlib import Path
 
 from runner.paths import is_harness_runtime
 
-_PROTECTED_INSIDE_PI_AREA = frozenset(
-    {
-        "robot_learning/scenario/__init__.py",
-        "benchmark/adapters/final_benchmark.py",
-        "benchmark/adapters/task_reference.py",
-    }
-)
-_PI_FILES = frozenset(
-    {
-        "robot_learning/train.py",
-        "robot_learning/evaluate.py",
-        "robot_learning/play.py",
-        "robot_learning/training/current_params.json",
-        "pi_workspace/operation_request.json",
-    }
-)
-_PI_PREFIXES = (
-    "robot_learning/scenario/",
-    "robot_learning/training/",
-    "robot_learning/lab/",
-)
 _PRELIMINARY_FILE = "pi_workspace/scientific_model.md"
 _EXCLUDED_DIRECTORIES = frozenset(
     {
@@ -95,12 +74,11 @@ class TrustViolation(RuntimeError):
 
 
 def is_pi_writable(relative: str, *, preliminary: bool) -> bool:
-    relative = relative.replace("\\", "/").lstrip("/").lower()
-    if relative in _PROTECTED_INSIDE_PI_AREA:
-        return False
+    from runner import protocol
+
     if preliminary:
-        return relative == _PRELIMINARY_FILE
-    return relative in _PI_FILES or relative.startswith(_PI_PREFIXES)
+        return relative.replace("\\", "/").lower() == _PRELIMINARY_FILE
+    return protocol.is_researcher_owned(relative)
 
 
 def is_excluded(relative: str) -> bool:
@@ -190,7 +168,11 @@ def protected_files(root: Path, *, preliminary: bool) -> dict[str, str]:
                     else:
                         pending.append(entry.path)
                     continue
-                if is_pi_writable(relative, preliminary=preliminary):
+                if (
+                    not reparse
+                    and os.stat(entry.path, follow_symlinks=False).st_nlink == 1
+                    and is_pi_writable(relative, preliminary=preliminary)
+                ):
                     continue
                 files[key] = (
                     _link_identity(entry) if reparse else _file_hash(entry.path)

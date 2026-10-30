@@ -318,6 +318,26 @@ def test_coder_is_confined_to_its_binding():
     assert tool_denial("submit_operation", {}, **scope)
 
 
+@pytest.mark.parametrize(
+    "source",
+    [
+        "robot_learning/scenario/__INIT__.py",
+        "robot_learning/__INIT__.py",
+        "robot_learning/variants/pd_servo/scenario/__INIT__.py",
+        "robot_learning/variants/pd_abs/scenario/__INIT__.py",
+        "Robot_Learning/Variants/pd_servo/ScEnArIo/__iNiT__.Py",
+        "robot_learning/variants/PD/scenario/policy_io.py",
+    ],
+)
+def test_coder_binding_cannot_authorize_protected_or_invalid_scientific_paths(source):
+    scope = {"coding_paths": frozenset({source.casefold()}), "json_editors": True}
+    assert tool_denial(
+        "apply_patch", {"input": f"*** Update File: {source}\n"}, **scope
+    )
+    for editor in ("create", "edit"):
+        assert tool_denial(editor, {"path": source}, **scope)
+
+
 def test_a_locked_runner_denies_every_call():
     hook = scoped_tool_hook(operations=SimpleNamespace(locked=True))
     decision = hook({"toolName": "view", "toolArgs": {"path": SOURCE}}, {})
@@ -438,7 +458,22 @@ def test_external_pi_coder_uses_the_pi_model_and_the_reviewer_stays_on_copilot()
     assert copilot.agent()["tools"] == CODING_TOOLS
 
 
-def test_coding_creates_the_missing_folder_of_an_authorized_file(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "source",
+    [
+        "robot_learning/lab/new_tool.py",
+        "robot_learning/variants/pd_servo/scenario/policy_io.py",
+        "robot_learning/variants/pd_abs/scenario/policy_io.py",
+    ],
+)
+def test_coding_creates_the_missing_folder_of_an_authorized_file(
+    tmp_path, monkeypatch, source
+):
+    from runner import protocol, repository, run_experiment
+    from runner.copilot import path_policy
+
+    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    monkeypatch.setattr(path_policy, "ROOT", tmp_path)
     monkeypatch.setattr(paths, "locate", lambda relative: tmp_path / relative)
     monkeypatch.setattr(coding_session, "load_task_context", lambda root: {})
     args = adapter.parse_args(
@@ -458,12 +493,35 @@ def test_coding_creates_the_missing_folder_of_an_authorized_file(tmp_path, monke
     coding.session = SimpleNamespace(
         rpc=SimpleNamespace(tools=SimpleNamespace(initialize_and_validate=validate))
     )
-    params = ScientificCodingParams(
-        intent="x", allowed_paths=["robot_learning/lab/new_tool.py"]
-    )
+    params = ScientificCodingParams(intent="x", allowed_paths=[source])
     invocation = SimpleNamespace(session_id="s", agent_id=None, tool_call_id="t")
-    asyncio.run(coding._prepare(params, invocation))
-    assert (tmp_path / "robot_learning/lab").is_dir()
+    binding, _, _ = asyncio.run(coding._prepare(params, invocation))
+    assert (tmp_path / source).parent.is_dir()
+    scope = {
+        "coding_paths": frozenset(binding["allowed_paths"]),
+        "read_paths": frozenset(binding["read_paths"]),
+    }
+    assert (
+        tool_denial(
+            "apply_patch", {"input": f"*** Add File: {source}\n+VALUE = 2\n"}, **scope
+        )
+        is None
+    )
+    (tmp_path / source).write_text("VALUE = 2\n", encoding="utf-8")
+    assert protocol.is_researcher_owned(source)
+    protocol.validate_research_delta_ownership([source])
+    if source.startswith("robot_learning/variants/"):
+        assert repository.scientific_change_paths([source]) == [source]
+        monkeypatch.setattr(repository, "committed_change_paths", lambda _: [source])
+        monkeypatch.setattr(repository, "status_paths", lambda _: [])
+        assert repository.scientific_delta("parent") == [source]
+        copied = run_experiment._variant_source(
+            tmp_path / "candidate", source.split("/")[2]
+        )
+        assert (copied / "robot_learning/scenario/policy_io.py").read_text(
+            encoding="utf-8"
+        ) == "VALUE = 2\n"
+        assert not (copied / "robot_learning/variants").exists()
 
 
 def test_reviewer_identity_must_match_the_requested_copilot_model():

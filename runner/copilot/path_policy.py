@@ -152,31 +152,18 @@ def target_root(path: Path) -> Path:
 
 
 def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
+    from runner import protocol
+
     relative = _repository_relative_target(target)
     if relative is None:
         return False
-    protected_scenario = {
-        "robot_learning/scenario/__init__.py",
-        "benchmark/adapters/final_benchmark.py",
-        "benchmark/adapters/task_reference.py",
-    }
-    if relative in protected_scenario:
+    try:
+        lexical = physical_target(target).relative_to(ROOT).as_posix()
+    except ValueError:
         return False
     if preliminary:
-        return relative == "pi_workspace/scientific_model.md"
-    return relative in {
-        "robot_learning/train.py",
-        "robot_learning/evaluate.py",
-        "robot_learning/play.py",
-        "robot_learning/training/current_params.json",
-        "pi_workspace/operation_request.json",
-    } or relative.startswith(
-        (
-            "robot_learning/scenario/",
-            "robot_learning/training/",
-            "robot_learning/lab/",
-        )
-    )
+        return lexical.casefold() == "pi_workspace/scientific_model.md"
+    return protocol.is_researcher_owned(lexical)
 
 
 def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:

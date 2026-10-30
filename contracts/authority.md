@@ -48,6 +48,13 @@ an explicit request of the PI.
   Runner executes them through `python_module` measurements.
 - `pi_workspace/scientific_model.md`, only during the analyst session
 
+Variant source files use `robot_learning/variants/<label>/<innerpath>`.
+The label follows the training variant label format.
+Each variant file has the ownership of `robot_learning/<innerpath>`.
+You can change a variant file when you own `robot_learning/<innerpath>`.
+Protected files retain their protection inside variants.
+Each variant maps directly to the scientific package, without nested variants.
+
 In these paths, the PI may retain, rewrite, combine, replace or remove any
 implementation. The existing structure has no authority over this choice. No
 option has standing merely because it preserves earlier work.

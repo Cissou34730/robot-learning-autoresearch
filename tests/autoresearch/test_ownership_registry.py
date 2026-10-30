@@ -47,16 +47,107 @@ def test_campaign_lab_is_owned_but_not_part_of_recipe_identity():
         ("robot_learning/training/new.py", True),
         ("robot_learning/lab/new.py", True),
         ("robot_learning/train.py", True),
+        ("robot_learning/evaluate.py", True),
+        ("robot_learning/play.py", True),
+        ("robot_learning/training/current_params.json", True),
+        ("robot_learning/training/__init__.py", True),
+        ("robot_learning/training/__INIT__.py", True),
         ("robot_learning/scenario/__init__.py", False),
+        ("robot_learning/scenario/__INIT__.py", False),
+        ("robot_learning/ScEnArIo/__iNiT__.Py", False),
         ("robot_learning/__init__.py", False),
+        ("robot_learning/__INIT__.py", False),
         ("robot_learning/extra.py", False),
+        ("contracts/authority.md", False),
+        ("benchmark/adapters/final_benchmark.py", False),
+        ("runner/protocol.py", False),
+        ("pi_workspace/operation_request.json", False),
     ],
 )
-def test_runner_and_copilot_agree_on_scientific_file_ownership(path, owned):
-    from runner.copilot.path_policy import is_pi_writable_path
+@pytest.mark.parametrize("variant", [None, "pd_servo", "pd_abs"])
+def test_runner_and_copilot_agree_on_scientific_file_ownership(path, owned, variant):
+    from runner.copilot.path_policy import coding_file_scope, is_pi_writable_path
+    from runner.launcher.trust import is_pi_writable
+
+    if path == "pi_workspace/operation_request.json" and not variant:
+        owned = True
+    if variant:
+        path = f"robot_learning/variants/{variant}/" + path.removeprefix(
+            "robot_learning/"
+        )
 
     assert protocol.is_researcher_owned(path) is owned
     assert is_pi_writable_path(path) is owned
+    assert is_pi_writable(path, preliminary=False) is owned
+    assert not is_pi_writable_path(path, preliminary=True)
+    assert not is_pi_writable(path, preliminary=True)
+    if owned and path != "pi_workspace/operation_request.json":
+        assert coding_file_scope([path], writable=True) == frozenset({path.casefold()})
+    else:
+        with pytest.raises(ValueError):
+            coding_file_scope([path], writable=True)
+
+
+@pytest.mark.parametrize("path", ["AGENTS.md", "agents.md", "AgEnTs.Md"])
+def test_mixed_case_context_paths_remain_protected(path):
+    assert protocol.is_protected_source(path)
+    assert protocol.is_human_owned(path)
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "robot_learning/variants/PD/scenario/policy_io.py",
+        "Robot_Learning/Variants/PD/scenario/policy_io.py",
+        "robot_learning/variants/1pd/scenario/policy_io.py",
+        "robot_learning/variants/pd-servo/scenario/policy_io.py",
+        "robot_learning/variants/abcdefghijklmnopq/scenario/policy_io.py",
+        "robot_learning/variants//scenario/policy_io.py",
+        "robot_learning/variants/pd/variants/other/scenario/policy_io.py",
+        "Robot_Learning/Variants/pd/Variants/other/scenario/policy_io.py",
+        "robot_learning/variants/../scenario/policy_io.py",
+        "Robot_Learning/Variants/../scenario/policy_io.py",
+        "robot_learning/variants/pd/scenario/../__init__.py",
+        "robot_learning/variants/pd/../../pi_workspace/operation_request.json",
+        "robot_learning/variants/pd/../../../pi_workspace/scientific_model.md",
+    ],
+)
+def test_invalid_variant_paths_are_not_authorized(path):
+    from runner.copilot.path_policy import (
+        coding_file_scope,
+        file_edit_denial,
+        is_pi_writable_path,
+    )
+    from runner.launcher.trust import is_pi_writable
+
+    assert not protocol.is_researcher_owned(path)
+    assert not is_pi_writable(path, preliminary=False)
+    assert not is_pi_writable_path(path)
+    assert not is_pi_writable_path(path, preliminary=True)
+    assert not is_pi_writable(path, preliminary=True)
+    assert file_edit_denial(path)
+    assert file_edit_denial(path, preliminary=True)
+    with pytest.raises(ValueError):
+        coding_file_scope([path], writable=True)
+
+
+def test_linked_variant_file_cannot_enter_the_coding_scope(monkeypatch, tmp_path):
+    from runner.copilot import path_policy
+    from runner.launcher.trust import protected_files
+
+    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    monkeypatch.setattr(path_policy, "ROOT", tmp_path)
+    original = tmp_path / "original.py"
+    original.write_text("VALUE = 1\n", encoding="utf-8")
+    relative = "robot_learning/variants/pd_servo/scenario/policy_io.py"
+    linked = tmp_path / relative
+    linked.parent.mkdir(parents=True)
+    linked.hardlink_to(original)
+
+    assert path_policy.file_edit_denial(relative)
+    with pytest.raises(ValueError):
+        path_policy.coding_file_scope([relative], writable=True)
+    assert relative in protected_files(tmp_path, preliminary=False)
 
 
 def test_internal_operation_exchange_is_not_a_coding_child_write():
