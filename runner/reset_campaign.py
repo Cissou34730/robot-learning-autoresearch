@@ -392,7 +392,7 @@ def task_file_fingerprint(content: bytes) -> str:
     return hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
 
 
-def verify_recipe_source(commit: str) -> None:
+def verify_recipe_source(commit: str) -> bytes | None:
     files = commit_files(commit)
     if "robot_learning/training/current_params.json" not in files:
         raise ValueError(
@@ -400,6 +400,11 @@ def verify_recipe_source(commit: str) -> None:
         )
     git_json(commit, "robot_learning/training/current_params.json")
     verify_task_compatibility(commit)
+    if "pi_workspace/scientific_model.md" in files:
+        analysis = git_bytes(commit, "pi_workspace/scientific_model.md")
+        repository.validate_scientific_model_text(analysis.decode("utf-8"))
+        return analysis
+    return None
 
 
 def artifact_fingerprint_at_commit(commit: str, artifact: str) -> str:
@@ -720,8 +725,7 @@ def reset_failure(original_head: str, error: Exception) -> RuntimeError:
 def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None]:
     source = resolve_commit(recipe_ref, "RecipeRef") if recipe_ref else None
     plan = scientific_plan(source) if source else None
-    if source:
-        verify_recipe_source(source)
+    analysis = verify_recipe_source(source) if source else None
     targets = validate_reset_targets(
         "fresh", [*CAMPAIGN_PATHS, *(plan_paths(plan) if plan else [])]
     )
@@ -738,6 +742,13 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None]:
                 "recipe",
             )
         state = write_fresh_campaign(source)
+        if analysis is not None:
+            repository.atomic_write_bytes(paths.SCIENTIFIC_MODEL_PATH, analysis)
+            repository.mark_scientific_model_ready(state, str(source))
+            state["last_verdict"] = (
+                "fresh campaign initialized; scientific model restored"
+            )
+            repository.write_state(state)
         publish_reset_changes(
             "reset research campaign state: fresh",
             list(CAMPAIGN_PATHS),
@@ -832,7 +843,12 @@ def main() -> int:
                 f"Source recipe revision: {source or 'current HEAD (science preserved)'}"
             )
             print(f"New campaign ID: {campaign_id}")
-            print("Scientific model pending; the launcher publishes it before PI work.")
+            if source and paths.SCIENTIFIC_MODEL_PATH.is_file():
+                print("Scientific model restored from the source recipe revision.")
+            else:
+                print(
+                    "Scientific model pending; the launcher publishes it before PI work."
+                )
             print(
                 "No trained model, score, evidence, or prior designation was imported."
             )

@@ -13,7 +13,7 @@ import sys
 import zipfile
 from pathlib import Path
 
-from runner import paths
+from runner import paths, repository
 from runner.reset_campaign import (
     TASK_COMPATIBILITY_PATHS,
     TASK_CONTRACT_PATH,
@@ -28,6 +28,7 @@ CAMPAIGN_GITIGNORE = (
     "runner/state/GOAL_REACHED\nrunner/state/RECOVERY_PENDING\n"
     "runner/state/RESTART_PENDING\npi_workspace/operation_request.json\n"
 )
+SCIENTIFIC_MODEL_RELATIVE = "pi_workspace/scientific_model.md"
 
 
 def source_git(root: Path, *args: str) -> bytes:
@@ -94,23 +95,37 @@ def initialize(root: Path, source: Path, reference: str) -> None:
         }
     if recorded != contract:
         raise ValueError("Source recipe belongs to a different human-defined task")
+    archive_paths = ["robot_learning"]
+    analysis = None
+    if SCIENTIFIC_MODEL_RELATIVE in files:
+        analysis = source_git(source, "show", f"{revision}:{SCIENTIFIC_MODEL_RELATIVE}")
+        repository.validate_scientific_model_text(analysis.decode("utf-8"))
+        archive_paths.append(SCIENTIFIC_MODEL_RELATIVE)
     archive = source_git(
-        source, "archive", "--format=zip", revision, "--", "robot_learning"
+        source, "archive", "--format=zip", revision, "--", *archive_paths
     )
     with zipfile.ZipFile(io.BytesIO(archive)) as contents:
         for member in contents.infolist():
             name = Path(member.filename)
+            allowed_analysis = analysis is not None and (
+                (member.filename == SCIENTIFIC_MODEL_RELATIVE and not member.is_dir())
+                or (member.filename == "pi_workspace/" and member.is_dir())
+            )
             if (
                 name.is_absolute()
                 or ".." in name.parts
                 or not name.parts
-                or name.parts[0] != "robot_learning"
+                or (name.parts[0] != "robot_learning" and not allowed_analysis)
                 or stat.S_ISLNK(member.external_attr >> 16)
             ):
                 raise ValueError(f"Unsafe recipe archive member: {member.filename}")
         root.mkdir(parents=True)
         try:
             contents.extractall(root)
+            if analysis is not None:
+                analysis_path = root / SCIENTIFIC_MODEL_RELATIVE
+                analysis_path.parent.mkdir(exist_ok=True)
+                analysis_path.write_bytes(analysis)
             metadata = root / TASK_CONTRACT_PATH
             metadata.parent.mkdir(parents=True)
             metadata.write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")

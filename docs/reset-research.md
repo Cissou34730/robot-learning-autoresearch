@@ -64,6 +64,38 @@ This tag is a recipe, not a prepared trained model, so use Fresh rather than
 Baseline mode. It lives in the campaign repository after initialization. The
 scientific model starts pending and is prepared on the next authorized launch.
 
+### Prepared Recipe References
+
+A prepared recipe reference is a Git commit or tag that contains
+`robot_learning/` and valid analysis at `pi_workspace/scientific_model.md`.
+Select it through the existing `--recipe-ref` argument. To initialize a new
+campaign folder, use a destination that does not exist:
+
+```powershell
+uv run python -m tools.initialize_campaign `
+  --campaign-root <new-campaign-folder> `
+  --source-repository <source-repository> `
+  --recipe-ref <recipe-ref>
+```
+
+Initialization and Fresh reset with this reference restore the exact analysis
+bytes from the selected commit. Both mark the scientific model ready and record
+its path and the selected commit in the existing model metadata. Both create a
+new campaign identity, fresh PI state, reset counters, empty history and no
+candidates. The campaign starts in `recipe_development` without another
+preliminary analyst invocation.
+
+A bare recipe reference has no analysis file. Its scientific model starts
+pending, and the preliminary analyst prepares it on the next authorized launch.
+If the selected reference contains invalid analysis, initialization or reset
+rejects it before cleanup.
+
+This reuses source code and analysis only, not a trained candidate or PI
+history. Neither command exports a prepared reference automatically. The
+existing Fresh recipe reference field in the TUI selects the same reference.
+Prepared Baseline is unchanged and remains separate: it imports a selected
+trained candidate. The normal destructive Fresh reset behavior still applies.
+
 ## Baseline
 
 ```powershell

@@ -703,6 +703,33 @@ def atomic_write_text(path: Path, text: str) -> None:
     _atomic_replace(temporary, path)
 
 
+def atomic_write_bytes(path: Path, content: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_bytes(content)
+    _atomic_replace(temporary, path)
+
+
+def validate_scientific_model_text(text: str) -> None:
+    if not text.strip():
+        raise ValueError("pi_workspace/scientific_model.md is empty")
+    for heading in (
+        "Established facts",
+        "Physical consequences",
+        "Unknowns",
+        "Decision-relevant synthesis",
+    ):
+        match = re.search(
+            rf"(?ms)^## {re.escape(heading)}\s+(.*?)(?=^## |\Z)",
+            text,
+        )
+        if not match or not match.group(1).strip():
+            raise ValueError(
+                f"pi_workspace/scientific_model.md requires a substantive "
+                f"## {heading} section"
+            )
+
+
 def _nonempty(record: dict, field: str, description: str) -> str:
     value = record.get(field)
     if not isinstance(value, str) or not value.strip():

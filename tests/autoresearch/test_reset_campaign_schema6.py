@@ -11,6 +11,13 @@ import pytest
 
 from runner import paths, protocol, repository, reset_campaign
 
+SCIENTIFIC_MODEL_TEXT = (
+    "## Established facts\nThe robot has actuated joints.\n"
+    "## Physical consequences\nTorque affects the robot's motion.\n"
+    "## Unknowns\nLearning performance remains uncertain.\n"
+    "## Decision-relevant synthesis\nCompare measured results: caf\u00e9.\n"
+)
+
 
 def _bind_paths(monkeypatch: pytest.MonkeyPatch, root: Path) -> Path:
     research = root / "campaigns"
@@ -183,8 +190,25 @@ def test_recipe_import_excludes_campaign_memory_and_laboratory(monkeypatch):
         reset_campaign.scientific_plan("source")
 
 
+@pytest.mark.parametrize(
+    ("analysis", "failure"),
+    [
+        (None, None),
+        (SCIENTIFIC_MODEL_TEXT.encode("utf-8"), None),
+        (SCIENTIFIC_MODEL_TEXT.replace("\n", "\r\n").encode("utf-8"), None),
+        (SCIENTIFIC_MODEL_TEXT.encode("utf-8"), "analysis_restore"),
+        (SCIENTIFIC_MODEL_TEXT.encode("utf-8"), "campaign_publication"),
+    ],
+    ids=[
+        "bare",
+        "prepared-utf8",
+        "prepared-crlf-utf8",
+        "restore-failure",
+        "publication-failure",
+    ],
+)
 def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, analysis, failure
 ):
     root = tmp_path
     source = "a" * 40
@@ -223,7 +247,7 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
         "runner/state/research_state.json": json.dumps(source_state),
         "campaigns/results.jsonl": '{"id":"T1","status":"completed"}\n',
         "campaigns/EXPERIMENTS.md": "# Source campaign history\n",
-        "pi_workspace/scientific_model.md": "# Source scientific model\n",
+        "pi_workspace/scientific_model.md": "# Old analysis\n" + SCIENTIFIC_MODEL_TEXT,
         "pi_workspace/operation_request.json": '{"kind":"training"}\n',
         "campaigns/postmortems.md": "# Source postmortem\n",
         "campaigns/brief.md": "# Source bounded-session context\n",
@@ -265,13 +289,38 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
         ),
     )
     monkeypatch.setattr(reset_campaign, "scientific_plan", lambda commit: plan)
-    monkeypatch.setattr(reset_campaign, "verify_recipe_source", lambda commit: None)
-    monkeypatch.setattr(reset_campaign, "validate_restored_recipe", lambda: None)
     monkeypatch.setattr(
         reset_campaign,
-        "publish_reset_changes",
-        lambda _message, scope, purpose: publications.append((purpose, tuple(scope))),
+        "commit_files",
+        lambda _commit: (
+            set(recipe)
+            | ({"pi_workspace/scientific_model.md"} if analysis is not None else set())
+        ),
     )
+    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: {})
+    monkeypatch.setattr(
+        reset_campaign, "verify_task_compatibility", lambda _commit: None
+    )
+
+    def committed_analysis(commit: str, relative: str) -> bytes:
+        assert commit == source
+        assert relative == "pi_workspace/scientific_model.md"
+        assert analysis is not None
+        return analysis
+
+    monkeypatch.setattr(reset_campaign, "git_bytes", committed_analysis)
+    resolved_commits = []
+    monkeypatch.setattr(
+        repository, "require_resolvable_commit", resolved_commits.append
+    )
+    monkeypatch.setattr(reset_campaign, "validate_restored_recipe", lambda: None)
+
+    def publish(_message, scope, purpose):
+        publications.append((purpose, tuple(scope)))
+        if failure == "campaign_publication" and purpose == "campaign":
+            raise repository.PublicationError("publication interrupted")
+
+    monkeypatch.setattr(reset_campaign, "publish_reset_changes", publish)
     monkeypatch.setattr(reset_campaign, "git", lambda *_args, **_kwargs: "new-head\n")
 
     def restore_paths(commit: str, restorable: list[str]) -> None:
@@ -283,6 +332,32 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
             target.write_text(recipe[relative], encoding="utf-8")
 
     monkeypatch.setattr(repository, "restore_paths", restore_paths)
+
+    if failure == "analysis_restore":
+
+        def refuse_analysis(_path, _content):
+            raise OSError("analysis restoration interrupted")
+
+        monkeypatch.setattr(repository, "atomic_write_bytes", refuse_analysis)
+
+    if failure:
+        with pytest.raises(RuntimeError, match="reset failed") as caught:
+            reset_campaign.reset_fresh("strong-baseline")
+        assert paths.reset_marker_path(root).exists()
+        state = json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
+        assert state["scientific_session"] is None
+        assert state["candidates"] == {}
+        if failure == "analysis_restore":
+            assert isinstance(caught.value.__cause__, OSError)
+            assert state["scientific_model"]["status"] == "pending"
+            assert not paths.SCIENTIFIC_MODEL_PATH.exists()
+            assert [purpose for purpose, _scope in publications] == ["recipe"]
+        else:
+            assert isinstance(caught.value.__cause__, repository.PublicationError)
+            assert state["scientific_model"]["status"] == "ready"
+            assert state["scientific_model"]["commit"] == source
+            assert paths.SCIENTIFIC_MODEL_PATH.read_bytes() == analysis
+        return
 
     campaign_id, resolved_source = reset_campaign.reset_fresh("strong-baseline")
 
@@ -299,10 +374,11 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
     assert state["campaign"]["recipe_source_commit"] == source
     assert state["campaign"]["base_commit"] == "new-head"
     assert state["scientific_model"] == {
-        "status": "pending",
+        "status": "ready" if analysis is not None else "pending",
         "path": "pi_workspace/scientific_model.md",
-        "commit": None,
+        "commit": source if analysis is not None else None,
     }
+    assert resolved_commits == ([source] if analysis is not None else [])
     assert state["active_inquiry"] is None
     assert state["scientific_session"] is None
     assert state["pi_checkpoint"] is None
@@ -331,8 +407,11 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
     assert (root / "campaigns/EXPERIMENTS.md").read_text(
         encoding="utf-8"
     ) == repository.render_operation_log([])
+    if analysis is not None:
+        assert paths.SCIENTIFIC_MODEL_PATH.read_bytes() == analysis
+    else:
+        assert not paths.SCIENTIFIC_MODEL_PATH.exists()
     for relative in (
-        "pi_workspace/scientific_model.md",
         "pi_workspace/operation_request.json",
         "campaigns/postmortems.md",
         "campaigns/brief.md",
@@ -349,6 +428,95 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
     assert publications[0] == ("recipe", tuple(reset_campaign.plan_paths(plan)))
     assert publications[1][0] == "campaign"
     assert set(reset_campaign.CAMPAIGN_PATHS) <= set(publications[1][1])
+
+
+@pytest.mark.parametrize("clean", [False, True], ids=["reset", "clean"])
+@pytest.mark.parametrize(
+    "analysis",
+    [
+        b"\xff",
+        b"",
+        b" \r\n",
+        b"## Established facts\nThe robot has actuated joints.\n",
+        SCIENTIFIC_MODEL_TEXT.replace(
+            "Compare measured results: caf\u00e9.", ""
+        ).encode("utf-8"),
+    ],
+    ids=["invalid-utf8", "empty", "whitespace", "incomplete", "empty-register"],
+)
+def test_invalid_recipe_analysis_is_rejected_before_cleanup(
+    monkeypatch, tmp_path, analysis, clean
+):
+    _bind_paths(monkeypatch, tmp_path)
+    (tmp_path / ".git").mkdir()
+    previous = {
+        "pi_workspace/scientific_model.md": SCIENTIFIC_MODEL_TEXT.encode("utf-8"),
+        "runner/state/research_state.json": b'{"previous": true}\n',
+        "models/candidates/old/model.zip": b"old policy",
+    }
+    for relative, content in previous.items():
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda *_args: "source")
+    monkeypatch.setattr(reset_campaign, "scientific_plan", lambda _commit: {})
+    monkeypatch.setattr(
+        reset_campaign,
+        "commit_files",
+        lambda _commit: {
+            "robot_learning/training/current_params.json",
+            "pi_workspace/scientific_model.md",
+        },
+    )
+    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: {})
+    monkeypatch.setattr(reset_campaign, "git_bytes", lambda *_args: analysis)
+    monkeypatch.setattr(
+        reset_campaign, "verify_task_compatibility", lambda _commit: None
+    )
+
+    def mutation_forbidden(*_args, **_kwargs):
+        pytest.fail("invalid analysis must be rejected before campaign cleanup")
+
+    for name in ("mark_reset_started", "remove_path", "git"):
+        monkeypatch.setattr(reset_campaign, name, mutation_forbidden)
+
+    with pytest.raises(ValueError):
+        if clean:
+            reset_campaign.clean_campaign_changes(recipe_ref="source")
+        else:
+            reset_campaign.reset_fresh("source")
+
+    assert not paths.reset_marker_path(tmp_path).exists()
+    for relative, content in previous.items():
+        assert (tmp_path / relative).read_bytes() == content
+
+
+@pytest.mark.parametrize(
+    "analysis",
+    [None, b"\xff", b"", SCIENTIFIC_MODEL_TEXT.encode("utf-8")],
+    ids=["missing", "invalid-utf8", "empty", "valid"],
+)
+def test_recipe_analysis_preserves_analyst_validation_result(
+    monkeypatch, tmp_path, analysis
+):
+    from runner import invocation_result, run_experiment
+
+    _bind_paths(monkeypatch, tmp_path)
+    if analysis is not None:
+        paths.SCIENTIFIC_MODEL_PATH.parent.mkdir(parents=True)
+        paths.SCIENTIFIC_MODEL_PATH.write_bytes(analysis)
+    results = {}
+    monkeypatch.setattr(invocation_result, "put", results.__setitem__)
+    valid = analysis == SCIENTIFIC_MODEL_TEXT.encode("utf-8")
+
+    assert run_experiment.check_scientific_model_deliverable() == (0 if valid else 1)
+    assert results["validation"]["valid"] is valid
+    if valid:
+        assert results["validation"]["message"] == "SCIENTIFIC_MODEL_DELIVERABLE_VALID"
+    else:
+        assert results["validation"]["message"].startswith(
+            "SCIENTIFIC_MODEL_DELIVERABLE_INVALID: "
+        )
 
 
 @pytest.mark.parametrize("schema", [6, 7])
