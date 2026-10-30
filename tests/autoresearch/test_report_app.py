@@ -391,6 +391,108 @@ def test_durable_changes_update_the_header_but_never_write_into_the_log():
     _run(_context_change())
 
 
+@pytest.mark.parametrize("size", [(80, 24), (60, 24)])
+def test_recipe_phase_handoff_survives_training_stop_resume_and_failure(
+    monkeypatch, tmp_path, size
+):
+    from runner.event_contract import LAUNCHER_STOP_CODES
+
+    state = {
+        "schema_version": 7,
+        "campaign": {"id": "phase-campaign"},
+        "campaign_phase": "recipe_development",
+        "scientific_model": {"status": "ready"},
+        "scientific_session": {"id": "S4", "kind": "recipe_development"},
+        "counters": {"session": 4},
+    }
+    sources = DemoSources()
+    monkeypatch.setattr(sources, "read", lambda: (state, [], []))
+
+    async def scenario():
+        app = CampaignReport(
+            sources=sources, events_path=tmp_path / "phase.events.v2.jsonl"
+        )
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            stamp = datetime.now(tz=UTC)
+            app._process_events(
+                [
+                    Observation(
+                        "session_started",
+                        stamp,
+                        {"kind": "recipe_development"},
+                        session_id="S4",
+                    ),
+                    Observation(
+                        "operation_started",
+                        stamp,
+                        {"kind": "training"},
+                        session_id="S4",
+                        operation_id="T1",
+                    ),
+                ]
+            )
+            app.set_process_running(True)
+            app.refresh_snapshot()
+            active_stage = app.snapshot.stage_text
+            assert active_stage in str(app.query_one("#context").render())
+            assert app.snapshot.campaign_phase == "recipe_development"
+            assert app.phase() == "training"
+            app.set_process_running(False)
+            assert app.snapshot.stage_text == active_stage
+            assert app.activity.paused_at is not None
+            app._process_events(
+                [
+                    Observation(
+                        "error",
+                        stamp,
+                        {"code": next(iter(LAUNCHER_STOP_CODES)), "message": "failed"},
+                        session_id="S4",
+                    )
+                ]
+            )
+            app.refresh_snapshot()
+            assert app.snapshot.stage_text == active_stage
+            assert not app.snapshot.terminal
+            app.set_process_running(True)
+            assert app.activity.paused_at is None
+            assert app.phase() == "training"
+            app._process_events(
+                [
+                    Observation(
+                        "operation_completed",
+                        stamp,
+                        {"kind": "training"},
+                        session_id="S4",
+                        operation_id="T1",
+                    ),
+                    Observation("session_ended", stamp, {}, session_id="S4"),
+                ]
+            )
+            state["scientific_session"] = None
+            stages = {active_stage}
+            for phase in ("startup", "research"):
+                state["campaign_phase"] = phase
+                app.refresh_snapshot()
+                await pilot.pause()
+                assert app.snapshot.campaign_phase == phase
+                assert app.snapshot.session_kind == app.snapshot.session_id == ""
+                assert app.snapshot.stage_text not in stages
+                stages.add(app.snapshot.stage_text)
+                assert app.snapshot.stage_text in str(
+                    app.query_one("#context").render()
+                )
+                assert not app.snapshot.terminal
+                assert not app.official_outcome()
+                assert app.phase() == "none"
+            app.set_process_running(False)
+            assert app.snapshot.stage_text in str(app.query_one("#context").render())
+            assert app.activity.paused_at is not None
+            assert app.snapshot.ended_at is None
+
+    _run(scenario())
+
+
 async def _context_change():
     sources = _ControlledSources()
     app = CampaignReport(

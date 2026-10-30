@@ -237,6 +237,53 @@ def test_stage_and_terminal_status():
     assert ended.model_rows  # role assignments remain readable after the end
 
 
+@pytest.mark.parametrize("phase", ["recipe_development", "startup", "research"])
+def test_campaign_phase_handoff_does_not_infer_a_session_from_counters(phase):
+    state = {
+        "schema_version": 7,
+        "campaign_phase": phase,
+        "scientific_model": {"status": "ready"},
+        "scientific_session": None,
+        "counters": {"session": 1},
+    }
+    snapshot = projector.build_snapshot(state, [], [])
+    legacy = projector.build_snapshot(
+        {key: value for key, value in state.items() if key != "campaign_phase"},
+        [],
+        [],
+    )
+    assert snapshot.campaign_phase == phase
+    assert snapshot.session_kind == snapshot.session_id == ""
+    assert snapshot.stage_text != legacy.stage_text
+    assert not snapshot.terminal
+    assert snapshot.ended_at is None
+    assert not snapshot.objective
+    assert legacy.campaign_phase == ""
+
+
+def test_pending_model_precedes_recipe_development_until_analyst_finishes():
+    state = {
+        "campaign_phase": "recipe_development",
+        "scientific_model": {"status": "pending"},
+        "counters": {"session": 0},
+    }
+    preparing = projector.build_snapshot(state, [], [])
+    legacy = projector.build_snapshot(
+        {key: value for key, value in state.items() if key != "campaign_phase"},
+        [],
+        [],
+    )
+    assert preparing.stage_text == legacy.stage_text
+    assert preparing.campaign_phase == "recipe_development"
+    assert preparing.session_kind == preparing.session_id == ""
+    state["scientific_model"]["status"] = "ready"
+    state["scientific_session"] = {"id": "S4", "kind": "recipe_development"}
+    active = projector.build_snapshot(state, [], [])
+    assert active.campaign_phase == active.session_kind == "recipe_development"
+    assert active.session_id == "S4"
+    assert active.stage_text != preparing.stage_text
+
+
 def test_campaign_age_stops_at_the_recorded_end():
     started = datetime(2026, 10, 20, 8, 0, tzinfo=UTC)
     ended = datetime(2026, 10, 20, 9, 30, tzinfo=UTC)

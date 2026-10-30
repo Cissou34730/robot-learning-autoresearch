@@ -409,6 +409,63 @@ def test_journal_feed_keeps_a_partial_tail_and_reports_a_broken_complete_line(tm
     assert feed.rejected == "a complete journal line could not be decoded"
 
 
+def test_v2_replay_keeps_recipe_development_and_startup_as_distinct_sessions(
+    tmp_path,
+):
+    path = tmp_path / "campaign.events.v2.jsonl"
+    events = [
+        ("session_started", "S4", "", {"kind": "recipe_development"}),
+        ("operation_started", "S4", "T1", {"kind": "training"}),
+        ("operation_completed", "S4", "T1", {"kind": "training"}),
+        ("session_ended", "S4", "", {"kind": "recipe_development"}),
+        ("session_started", "S5", "", {"kind": "startup"}),
+        ("future_phase_metadata", "S5", "", {"campaign_phase": "startup"}),
+        ("session_ended", "S5", "", {"kind": "startup"}),
+        ("run_state", "", "", {"state": "paused", "campaign_phase": "research"}),
+    ]
+    path.write_text(
+        "".join(
+            json.dumps(
+                {
+                    "schema_version": 2,
+                    "event_id": f"event-{index}",
+                    "campaign_id": "phase-campaign",
+                    "ts": f"2026-10-24T12:00:0{index}+00:00",
+                    "kind": kind,
+                    "session_id": session,
+                    "operation_id": operation,
+                    "payload": payload,
+                }
+            )
+            + "\n"
+            for index, (kind, session, operation, payload) in enumerate(events)
+        ),
+        encoding="utf-8",
+    )
+    feed = JournalFeed(path, campaign_id="phase-campaign")
+    reducer = TimelineReducer()
+    for event in feed.poll():
+        reducer.ingest(event)
+    assert feed.rejected is None
+    assert not feed.poll()
+    items = {item.item_id: item for item in _walk(reducer.view()[0])}
+    recipe = items["session:S4"]
+    startup = items["session:S5"]
+    assert recipe.payload["kind"] == "recipe_development"
+    assert startup.payload["kind"] == "startup"
+    assert recipe.status == startup.status == "closed"
+    assert "operation:T1" in {item.item_id for item in _walk(recipe.children)}
+    assert "operation:T1" not in {item.item_id for item in _walk(startup.children)}
+    assert any(item.event_kind == "future_phase_metadata" for item in items.values())
+    assert not reducer.active_ids()
+    assert reducer.phase() == "none"
+    before = reducer.view()
+    feed.reset()
+    for event in feed.poll():
+        reducer.ingest(event)
+    assert reducer.view() == before
+
+
 def _event(kind, ts, fields=None, **identity):
     """An event as the journal carries it. A kind that must name a session gets
     S1 unless the test names another."""
@@ -954,7 +1011,8 @@ def test_usage_and_publication_events_render_structured_numbers():
     assert "remote error" in retry.detail[0]
 
 
-def test_phase_follows_the_active_work():
+@pytest.mark.parametrize("session_kind", ["startup", "recipe_development"])
+def test_phase_follows_the_active_work(session_kind):
     reducer = TimelineReducer()
     start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
     assert reducer.phase() == "none"
@@ -969,7 +1027,10 @@ def test_phase_follows_the_active_work():
     assert reducer.phase() == "preparing"
     reducer.ingest(
         _event(
-            "session_started", start, {"id": "S1", "kind": "startup"}, session_id="S1"
+            "session_started",
+            start,
+            {"id": "S1", "kind": session_kind},
+            session_id="S1",
         )
     )
     assert reducer.phase() == "pi"
@@ -1025,6 +1086,27 @@ def test_phase_follows_the_active_work():
     )
     reducer.ingest(_event("session_ended", start, {"summary": "done"}, session_id="S1"))
     assert reducer.phase() == "none"
+
+
+def test_launch_attempt_preserves_recorded_session_kind_on_resume():
+    reducer = TimelineReducer()
+    start = datetime(2026, 10, 24, 12, 0, tzinfo=UTC)
+    for attempt in ("first", "resumed"):
+        reducer.ingest(
+            _event(
+                "session_start",
+                start,
+                {"kind": "recipe_development", "resumed": attempt == "resumed"},
+                session_id="S4",
+                attempt=attempt,
+            )
+        )
+    sessions = [item for item in reducer.view()[0] if item.kind == "session"]
+    assert [item.item_id for item in sessions] == ["session:S4"]
+    assert sessions[0].payload["kind"] == "recipe_development"
+    assert {item.payload["resumed"] for item in sessions[0].children} == {False, True}
+    assert reducer.active_ids() == {"session:S4"}
+    assert reducer.phase() == "pi"
 
 
 def test_pi_attempts_are_rows_of_their_durable_session():

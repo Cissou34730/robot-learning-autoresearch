@@ -1,4 +1,4 @@
-"""Human-only factual report for strict schema-6 campaigns."""
+"""Human-only factual report for validated current and legacy campaign state."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ USAGE_ROLES = ("analyst", "pi", "scientific_coder", "scientific_reviewer")
 
 def read_json(path: Path) -> dict:
     if not path.is_file():
-        raise ValueError(f"{path}: required schema-6 state is missing")
+        raise ValueError(f"{path}: required research state is missing")
     value = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(value, dict):
         raise TypeError(f"{path}: expected a JSON object")
@@ -101,12 +101,14 @@ def usage_total(rows: list[dict], field: str) -> str:
 
 
 def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
-    state = read_json(repo / "runner" / "state" / "research_state.json")
+    state = runner_repository.normalize_research_state(
+        read_json(repo / "runner" / "state" / "research_state.json")
+    )
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
     current_id = str(state["campaign"]["id"])
     if campaign_id is not None and campaign_id != current_id:
         raise ValueError(
-            f"requested campaign {campaign_id!r} is not the current schema-6 "
+            f"requested campaign {campaign_id!r} is not the current "
             f"campaign {current_id!r} in {repo}"
         )
 
@@ -965,9 +967,9 @@ def campaign_sections(campaign: dict) -> list[str]:
 
 def render_report(campaigns: list[dict]) -> str:
     if not campaigns:
-        raise ValueError("at least one schema-6 campaign is required")
+        raise ValueError("at least one campaign is required")
     lines = [
-        "# Schema-6 campaign factual report",
+        "# Campaign factual report",
         "",
         (
             "Read-only accounting of persisted campaign state, completed evidence, "
@@ -991,9 +993,7 @@ def render_report(campaigns: list[dict]) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=ROOT)
-    parser.add_argument(
-        "--campaign-id", help="Must match the current schema-6 campaign"
-    )
+    parser.add_argument("--campaign-id", help="Must match the current campaign")
     parser.add_argument("--compare", type=Path)
     parser.add_argument("--compare-campaign-id")
     parser.add_argument("--output", type=Path)

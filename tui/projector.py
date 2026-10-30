@@ -176,6 +176,8 @@ class CampaignSnapshot:
     counters_text: str = ""
     pending_text: str = ""
     stage_text: str = "Preparation"
+    campaign_phase: str = ""
+    session_kind: str = ""
     session_id: str = ""
     inquiry_id: str = ""
     stage_started_at: datetime | None = None
@@ -214,6 +216,10 @@ def _stage_text(state: dict) -> tuple[str, str, str]:
     inquiry_id = _inquiry_identity(state.get("active_inquiry"))
     if state.get("terminal_state"):
         return terminal_stage_text(state), session_id, inquiry_id
+    if "campaign_phase" in state and _as_dict(state.get("scientific_model")).get(
+        "status"
+    ) == "pending":
+        return "Preparation - PI scientific model pending", "", ""
     if session:
         kind = str(session.get("kind") or "scientific session")
         if inquiry_id or kind == "inquiry":
@@ -222,6 +228,9 @@ def _stage_text(state: dict) -> tuple[str, str, str]:
             return stage, session_id, inquiry_id
         title = kind.replace("_", " ").capitalize()
         return f"{title} {session_id}".strip(), session_id, ""
+    if "campaign_phase" in state:
+        phase = str(state.get("campaign_phase") or "")
+        return phase.replace("_", " ").capitalize() or "Loading", "", inquiry_id
     if not _as_dict(state.get("counters")).get("session"):
         return "Preparation - PI scientific model pending", "", ""
     model = _as_dict(state.get("scientific_model"))
@@ -944,6 +953,8 @@ def _objective_without_inquiry(state: dict) -> str:
     if objective:
         return objective
     model = _as_dict(state.get("scientific_model"))
+    if "campaign_phase" in state and model.get("status") != "pending":
+        return ""
     if model.get("status") == "pending" or not _as_dict(state.get("counters")).get(
         "session"
     ):
@@ -1045,6 +1056,8 @@ def build_snapshot(
         counters_text=counters_text,
         pending_text=pending_text,
         stage_text=stage,
+        campaign_phase=str(state.get("campaign_phase") or ""),
+        session_kind=str(_as_dict(state.get("scientific_session")).get("kind") or ""),
         session_id=session_id,
         inquiry_id=inquiry_id,
         stage_started_at=stage_started_at,

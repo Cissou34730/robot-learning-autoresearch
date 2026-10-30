@@ -1,4 +1,4 @@
-"""Strict schema-6 factual campaign report."""
+"""Strict factual campaign reports for current and legacy state."""
 
 from __future__ import annotations
 
@@ -54,6 +54,7 @@ def _campaign_repository(tmp_path):
             "summary": "Reach and hold on the protected task.",
         },
     )
+    state["campaign_phase"] = "research"
     state["scientific_model"] = {
         "status": "ready",
         "path": "pi_workspace/scientific_model.md",
@@ -226,6 +227,7 @@ def _campaign_repository(tmp_path):
         "decision_frontier": (
             "Choose whether the recorded evidence supports closing the inquiry."
         ),
+        "next_question": "Does the selected candidate meet the protected goal?",
         "completed_operations": ["E1", "T2", "M2", "E2"],
         "candidates_and_roles": (
             "T2:checkpoint-10 is best-known and retained for assessment."
@@ -356,8 +358,9 @@ def _campaign_repository(tmp_path):
     return state
 
 
-def test_report_requires_exact_current_schema6_state(tmp_path):
+def test_report_requires_exact_current_state(tmp_path):
     state = _campaign_repository(tmp_path)
+    campaign_report.load_campaign(tmp_path)
     state["schema_version"] = 5
     (tmp_path / "runner" / "state" / "research_state.json").write_text(
         json.dumps(state), encoding="utf-8"
@@ -366,10 +369,39 @@ def test_report_requires_exact_current_schema6_state(tmp_path):
     with pytest.raises(RuntimeError, match="unsupported research state schema"):
         campaign_report.load_campaign(tmp_path)
 
-    state["schema_version"] = 6
+    state["schema_version"] = repository.STATE_SCHEMA_VERSION
     state["pending_analysis"] = copy.deepcopy(state["pending_operation"])
     (tmp_path / "runner" / "state" / "research_state.json").write_text(
         json.dumps(state), encoding="utf-8"
     )
     with pytest.raises(RuntimeError, match="pending_analysis"):
+        campaign_report.load_campaign(tmp_path)
+
+
+@pytest.mark.parametrize("schema_version", [6, repository.STATE_SCHEMA_VERSION])
+def test_report_reads_supported_state_without_rewriting_or_rewinding(
+    tmp_path, schema_version
+):
+    state = _campaign_repository(tmp_path)
+    state["schema_version"] = schema_version
+    if schema_version == 6:
+        del state["campaign_phase"]
+        del state["recipe_development"]
+    state_path = tmp_path / "runner" / "state" / "research_state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    before = state_path.read_bytes()
+
+    campaign = campaign_report.load_campaign(tmp_path)
+    assert campaign_report.render_report([campaign])
+
+    assert campaign["state"]["schema_version"] == repository.STATE_SCHEMA_VERSION
+    assert campaign["state"]["campaign_phase"] == "research"
+    assert campaign["state"]["recipe_development"] is None
+    assert campaign["state"]["pi_checkpoint"] == state["pi_checkpoint"]
+    assert campaign["events"] == state["operation_events"]
+    assert state_path.read_bytes() == before
+
+    state["pending_analysis"] = None
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="research state fields are invalid"):
         campaign_report.load_campaign(tmp_path)

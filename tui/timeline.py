@@ -814,7 +814,7 @@ class TimelineReducer:
         self, ts: datetime | None, session_id: str, fields: dict
     ) -> None:
         """One PI invocation starting in a session (an attempt)."""
-        item = self._session(session_id, ts, {})
+        item = self._session(session_id, ts, fields)
         self._current_session = session_id
         stage = _first_line(fields.get("stage") or "")
         resumed = " | resumed" if fields.get("resumed") else ""
