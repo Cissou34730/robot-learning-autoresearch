@@ -12,7 +12,7 @@ import subprocess
 import threading
 import time
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from types import SimpleNamespace
 
 import pytest
@@ -20,6 +20,93 @@ import pytest
 from tui import controller as control
 from tui.console import CampaignConsole, ConsoleDetail, SharedSettings
 from tui.report import CampaignPanel
+
+
+@pytest.mark.parametrize(
+    "folder",
+    [
+        PureWindowsPath(r"C:\a-long-workspace\robot-learning-campaigns\campaign-1"),
+        PureWindowsPath("C:\\a-long-workspace\\研究-e\u0301\\campaign-1"),
+    ],
+)
+def test_tab_folder_text_preserves_parent_and_uses_terminal_cell_width(folder):
+    from rich.cells import cell_len
+
+    from tui.phase_presentation import tab_folder_text
+
+    compact = str(folder.with_segments("...", folder.parent.name, folder.name))
+    width = cell_len(compact)
+    assert tab_folder_text(folder, cell_len(str(folder))) == str(folder)
+    assert tab_folder_text(folder, width) == compact
+    assert tab_folder_text(folder, width - 1) == ""
+
+
+def test_campaign_folder_is_flush_right_without_crowding_tabs_or_reducing_log(tmp_path):
+    from textual.widgets import Static, TabbedContent, Tabs
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    app, layout = _console(tmp_path, FakeMachinery())
+    for slot in (3, 4, 5):
+        (layout.folder(slot) / ".git").mkdir(parents=True)
+
+    async def scenario():
+        async with app.run_test(size=(160, 45)) as pilot:
+            await pilot.pause()
+            tabs = app.query_one(TabbedContent)
+            bar = tabs.query_one(Tabs)
+            location = app.query_one("#campaign-folder", Static)
+            assert location.display
+            assert location.region.right == bar.region.right
+            assert location.region.y == tabs.get_tab(tabs.active).region.y
+            assert str(layout.folder(1)) == location.tooltip
+
+            location.display = False
+            await pilot.pause()
+            assert not location.display
+            output = app.query_one("#panel-campaign-1 #output")
+            baseline_output = output.region
+            baseline_tabs = [tabs.get_tab(label).region for label in app._visible_tabs]
+            app._refresh_campaign_folder()
+            await pilot.pause()
+            assert output.region == baseline_output
+            assert [
+                tabs.get_tab(label).region for label in app._visible_tabs
+            ] == baseline_tabs
+            assert all(tab.right <= location.region.x for tab in baseline_tabs)
+
+            await pilot.press("tab", "tab")
+            await pilot.pause()
+            assert tabs.active == "campaign-3"
+            assert location.tooltip == str(layout.folder(3))
+
+            for size in ((80, 24), (60, 24), (48, 16)):
+                await pilot.resize_terminal(*size)
+                await pilot.pause()
+                assert not location.display
+                summary = app.query_one("#commands-summary")
+                assert summary.region.height == 1
+                assert summary.region.bottom == size[1]
+                assert tabs.active == "campaign-3"
+            await pilot.resize_terminal(160, 45)
+            await pilot.pause()
+            assert location.display
+            assert location.region.right == bar.region.right
+
+            app.submit_command("hide 1-5")
+            await pilot.pause()
+            assert not location.display
+            app.submit_command("show 1-5")
+            await pilot.pause()
+            assert location.display
+
+            await app._show_diagnostics([3])
+            await pilot.pause()
+            screen = app.screen
+            assert isinstance(screen, ConsoleDetail)
+            assert str(layout.folder(3)) in screen.body_text
+
+    asyncio.run(scenario())
 
 
 def _workspace(tmp_path: Path) -> control.WorkspaceLayout:
