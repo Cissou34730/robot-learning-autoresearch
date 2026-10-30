@@ -1,6 +1,10 @@
 {
- "mypy-type-checker.args": [
-    "--exclude", ".*"
+  "mypy-type-checker.args": [
+    "--exclude",
+    ".*"
   ],
-  "mypy-type-checker.ignorePatterns": ["**/*.py"]
+  "mypy-type-checker.ignorePatterns": [
+    "**/*.py"
+  ],
+  "workbench.colorTheme": "Monokai Dimmed"
 }
