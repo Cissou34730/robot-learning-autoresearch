@@ -821,9 +821,7 @@ def _validate_campaign_phase(state: dict) -> None:
     if phase == "recipe_development" and (
         handoff is not None or state["pi_checkpoint"] is not None
     ):
-        raise ValueError(
-            "recipe_development phase cannot have a completed checkpoint"
-        )
+        raise ValueError("recipe_development phase cannot have a completed checkpoint")
     if handoff is None:
         return
     if handoff["session_id"] != "S1" or handoff["inquiry_id"] is not None:
@@ -1126,15 +1124,22 @@ def _validate_pending_plan(kind: str, plan: object) -> None:
 
 
 def _validate_pending_data(kind: str, data: object) -> None:
-    data = _require_exact_fields(
-        data, PENDING_DATA_FIELDS[kind], f"pending {kind} data"
-    )
+    fields = PENDING_DATA_FIELDS[kind]
+    if kind == "training" and isinstance(data, dict) and "variant_parents" in data:
+        fields = fields | {"variant_parents"}
+    data = _require_exact_fields(data, fields, f"pending {kind} data")
     if data["result"] is not None and not isinstance(data["result"], dict):
         raise TypeError(f"pending {kind} result must be an object or null")
     if kind == "training":
         _validate_manifest(data["scientific_manifest"], "training manifest")
-        parent = data["parent"]
-        if parent is not None:
+        parents = [data["parent"]]
+        if "variant_parents" in data:
+            if not isinstance(data["variant_parents"], dict):
+                raise TypeError("pending training variant_parents must be an object")
+            parents.extend(data["variant_parents"].values())
+        for parent in parents:
+            if parent is None:
+                continue
             _require_exact_fields(
                 parent,
                 {
@@ -1146,6 +1151,15 @@ def _validate_pending_data(kind: str, data: object) -> None:
                     "training_steps",
                 },
                 "pending training parent",
+            )
+            for field in ("id", "artifact", "fingerprint", "scientific_commit"):
+                _nonempty(parent, field, f"pending training parent {field}")
+            if not isinstance(parent["parameters"], dict):
+                raise TypeError("pending training parent parameters must be an object")
+            _positive_integer(
+                parent["training_steps"],
+                "pending training parent training_steps",
+                allow_zero=True,
             )
         archived = data["archived_candidates"]
         if archived is not None:
@@ -1628,7 +1642,7 @@ def _validate_completed_training_result(result: dict) -> None:
     if result["initialization"] == "fresh":
         if result["parent"] is not None:
             raise ValueError("fresh completed training cannot name a parent")
-    else:
+    elif result["parent"] is not None or "variants" not in result:
         _nonempty(result, "parent", "completed training parent")
     _positive_integer(result["seed"], "completed training seed", allow_zero=True)
     _positive_integer(result["requested_steps"], "completed training requested_steps")
@@ -1702,13 +1716,30 @@ def _validate_completed_training_result(result: dict) -> None:
         if not isinstance(variants, list) or not variants:
             raise ValueError("completed training variants must be a non-empty list")
         listed: list[str] = []
+        labels: set[str] = set()
         for variant in variants:
+            fields = {"label", "parameters", "candidates"}
+            if isinstance(variant, dict) and "parent" in variant:
+                fields.add("parent")
             variant = _require_exact_fields(
                 variant,
-                {"label", "parameters", "candidates"},
+                fields,
                 "completed training variant",
             )
-            _nonempty(variant, "label", "completed training variant label")
+            label = _nonempty(variant, "label", "completed training variant label")
+            if label in labels:
+                raise ValueError("completed training variant labels must be unique")
+            labels.add(label)
+            parent = variant.get("parent", result["parent"])
+            if result["initialization"] == "fresh":
+                if parent is not None:
+                    raise ValueError(
+                        "fresh completed training variant cannot name a parent"
+                    )
+            else:
+                _nonempty(
+                    {"parent": parent}, "parent", "completed training variant parent"
+                )
             if not isinstance(variant["parameters"], dict):
                 raise TypeError(
                     "completed training variant parameters must be an object"
@@ -1948,6 +1979,37 @@ def _validate_pending_operation(pending: object) -> None:
     elif progress not in PENDING_PROGRESS[kind]:
         raise ValueError(f"pending {kind} has unsupported progress {progress!r}")
     _validate_pending_data(kind, pending["data"])
+    if kind == "training":
+        training = request[kind]
+        data = pending["data"]
+        parents = data.get("variant_parents")
+        variants = training.get("variants", [])
+        if parents is not None and set(parents) != {
+            variant["label"] for variant in variants
+        }:
+            raise ValueError(
+                "pending training variant_parents must cover exactly the variant labels"
+            )
+        if training["initialization"] == "fresh":
+            if data["parent"] is not None or any(
+                parent is not None for parent in (parents or {}).values()
+            ):
+                raise ValueError("fresh pending training cannot name a parent")
+        else:
+            if ("parent" in training) != (data["parent"] is not None):
+                raise ValueError("pending transfer root parent contradicts the request")
+            for variant in variants:
+                parent = (
+                    parents[variant["label"]] if parents is not None else data["parent"]
+                )
+                if parent is None:
+                    raise ValueError(
+                        "pending transfer variant requires a frozen parent"
+                    )
+                if "parent" not in variant and parent != data["parent"]:
+                    raise ValueError(
+                        "pending transfer variant must inherit the frozen root parent"
+                    )
 
 
 def _validate_operation_event(event: object) -> str:
@@ -2188,6 +2250,16 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
                 raise ValueError(f"candidate {identifier} fingerprint changed")
 
     roles = state["model_roles"]
+    if pending is not None and pending["kind"] == "training":
+        data = pending["data"]
+        for parent in [data["parent"], *data.get("variant_parents", {}).values()]:
+            if parent is None:
+                continue
+            candidate = candidates.get(parent["id"])
+            if candidate is None or any(
+                candidate[field] != value for field, value in parent.items()
+            ):
+                raise ValueError("pending training parent resolved identity changed")
     if not isinstance(roles, dict) or set(roles) != {
         "working",
         "best_known",

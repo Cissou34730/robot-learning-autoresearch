@@ -32,8 +32,15 @@ values during validation, acceptance and the start of training.
 The time and AI usage of a run increase with its steps. Each run adds time and
 AI usage to the campaign.
 
-For `transfer` training, `parent` is required and must not be empty. For
-`fresh` training, do not give `parent`.
+Transfer training starts from the saved training checkpoint of a parent candidate.
+A single transfer run requires a non-empty `parent` string.
+Fresh training uses no `parent` fields.
+
+The `steps` value is the requested training allocation for each run.
+For transfer training, this allocation applies to the new training.
+The parent training checkpoint remains a separate source of learned state.
+Its recorded training steps are not part of the requested allocation.
+The Runner preserves the parent training checkpoint.
 
 ### Training variants
 
@@ -44,7 +51,8 @@ For `transfer` training, `parent` is required and must not be empty. For
       "type": "array",
       "items": {
         "label": {"type": "string"},
-        "parameters": {"type": "object"}
+        "parameters": {"type": "object"},
+        "parent": {"type": "string"}
       }
     }
   }
@@ -67,8 +75,20 @@ A variant can change any PI-owned source file and any parameter:
   not change. The trainer reads these parameters through
   `load_experiment_config()` in `robot_learning/training/research_config.py`.
 
+For transfer training, each variant can declare a non-empty `parent` string.
+A variant without this field uses the root `parent`.
+When the root `parent` is absent, every variant declares its own parent.
+
+The Runner resolves all parent identities when it accepts the operation.
+Each variant starts from its own saved parent training checkpoint.
+The active parameters and the declared overrides determine its parameters.
+The parent parameters remain a record of the earlier training.
+
+Training checkpoint loading checks mechanical compatibility and reports failures.
+Successful loading alone does not establish semantic compatibility.
+
 The Runner trains each variant in a separate process. All variants train at the
-same time, with the same initialization, parent, seed and steps. Measurements
+same time, with the same initialization, seed and steps. Measurements
 of a candidate use its saved runtime. They do not use the files or the
 parameters of its variant.
 
@@ -77,8 +97,12 @@ single run.
 
 The candidate of a variant has the identity
 `T<n>:<label>-checkpoint-<steps>`. The completed result contains `variants`:
-for each variant, its `label`, its `parameters` and its `candidates`. Each
-variant has a separate training log. To read it, give the label as `variant` to
+for each variant, its `label`, its `parameters`, its `parent` and its `candidates`.
+
+The variant `parent` is the resolved candidate identity or null for fresh training.
+The root `parent` records only the declared root parent.
+Earlier results without a variant `parent` use their recorded root parent.
+Each variant has a separate training log. To read it, give the label as `variant` to
 the training-log tools.
 
 The Runner validates the changed PI-owned source files and the active

@@ -2,13 +2,21 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import sys
 from pathlib import Path
 
 import pytest
 
-from runner import execution, invocation_result, paths, repository, run_experiment
+from runner import (
+    execution,
+    invocation_result,
+    paths,
+    protocol,
+    repository,
+    run_experiment,
+)
 
 
 def _checked(tmp_path: Path) -> tuple[int, str]:
@@ -65,7 +73,9 @@ def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") ->
         "commit": "a" * 40,
     }
     state["campaign_phase"] = (
-        session_kind if session_kind in {"recipe_development", "startup"} else "research"
+        session_kind
+        if session_kind in {"recipe_development", "startup"}
+        else "research"
     )
     repository.start_scientific_session(
         state,
@@ -93,6 +103,68 @@ def _training() -> dict:
 
 def _write_request(request: dict) -> None:
     paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    ("initialization", "root", "variants", "valid"),
+    [
+        ("transfer", {"parent": "working"}, [{"label": "a"}, {"label": "b"}], True),
+        (
+            "transfer",
+            {"parent": "working"},
+            [{"label": "a", "parent": "best_known"}, {"label": "b"}],
+            True,
+        ),
+        (
+            "transfer",
+            {},
+            [
+                {"label": "a", "parent": "working"},
+                {"label": "b", "parent": "best_known"},
+            ],
+            True,
+        ),
+        ("transfer", {}, [{"label": "a", "parent": "working"}, {"label": "b"}], False),
+        (
+            "transfer",
+            {"parent": None},
+            [{"label": "a", "parent": "working"}, {"label": "b", "parent": "working"}],
+            False,
+        ),
+        (
+            "transfer",
+            {"parent": "working"},
+            [{"label": "a", "parent": None}, {"label": "b"}],
+            False,
+        ),
+        (
+            "transfer",
+            {"parent": "working"},
+            [{"label": "a", "parent": ""}, {"label": "b"}],
+            False,
+        ),
+        ("fresh", {"parent": None}, [{"label": "a"}, {"label": "b"}], False),
+        ("fresh", {}, [{"label": "a", "parent": None}, {"label": "b"}], False),
+        ("fresh", {}, [{"label": "a", "parent": ""}, {"label": "b"}], False),
+        ("fresh", {}, [{"label": "a", "parent": "working"}, {"label": "b"}], False),
+    ],
+)
+def test_training_variant_parent_request_rules(initialization, root, variants, valid):
+    request = {
+        **_training()["training"],
+        "initialization": initialization,
+        **root,
+        "variants": variants,
+    }
+    for validate in (
+        protocol.validate_training_request,
+        lambda value: protocol.validate_operation_shape("training", value),
+    ):
+        if valid:
+            validate(request)
+        else:
+            with pytest.raises((ValueError, TypeError)):
+                validate(request)
 
 
 def test_training_range_default_and_maintainer_override(monkeypatch):
@@ -408,6 +480,99 @@ def test_transfer_parent_is_revalidated_at_execution(monkeypatch, tmp_path):
         run_experiment.execute_training(repository.read_state(), pending)
 
 
+def _add_training_parent(state, tmp_path, name):
+    artifact = tmp_path / name
+    artifact.mkdir()
+    (artifact / "model.zip").write_bytes(name.encode())
+    (artifact / "artifact.json").write_text("{}", encoding="utf-8")
+    (artifact / "policy_runtime.pkl").write_bytes(b"runtime")
+    candidate = {
+        "id": f"T0:{name}",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T0",
+        "name": name,
+        "parameters": {"ppo": {"gamma": 0.5}},
+        "scientific_commit": "b" * 40,
+        "training_steps": 100,
+        "evaluation_artifacts": [],
+    }
+    state["candidates"][candidate["id"]] = candidate
+    return candidate
+
+
+@pytest.mark.parametrize("missing_at", ["root", "variant"])
+@pytest.mark.parametrize("replacement", [False, True])
+def test_unknown_training_parent_refuses_acceptance_without_mutation(
+    monkeypatch, tmp_path, missing_at, replacement
+):
+    state = _configure(monkeypatch, tmp_path)
+    parent = _add_training_parent(state, tmp_path, "parent")
+    if replacement:
+        pending = run_experiment.accept_operation(_training(), state)
+        pending["failure"] = "training failed"
+    repository.write_state(state)
+    request = _training()
+    request["training"].update(
+        initialization="transfer",
+        parent="unknown" if missing_at == "root" else parent["id"],
+        variants=[{"label": "a"}, {"label": "b", "parent": "unknown"}],
+    )
+    before = copy.deepcopy(state)
+    with pytest.raises(KeyError, match="unknown candidate"):
+        run_experiment.accept_operation(request, state)
+    assert state == before
+    assert repository.read_state() == before
+
+
+@pytest.mark.parametrize(
+    "corruption", ["missing", "extra", "null", "identity", "parameters"]
+)
+def test_pending_variant_parent_mapping_rejects_corruption(
+    monkeypatch, tmp_path, corruption
+):
+    state = _configure(monkeypatch, tmp_path)
+    parent = _add_training_parent(state, tmp_path, "parent")
+    request = _training()
+    request["training"].update(
+        initialization="transfer",
+        parent=parent["id"],
+        variants=[{"label": "a"}, {"label": "b"}],
+    )
+    pending = run_experiment.accept_operation(request, state)
+    parents = pending["data"]["variant_parents"]
+    if corruption == "missing":
+        del parents["b"]
+    elif corruption == "extra":
+        parents["c"] = copy.deepcopy(parents["a"])
+    elif corruption == "null":
+        parents["b"] = None
+    elif corruption == "identity":
+        parents["b"]["id"] = "T0:unknown"
+    else:
+        parents["b"]["parameters"] = {"changed": True}
+    with pytest.raises(ValueError, match="parent"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+def test_variant_parent_is_revalidated_before_any_training(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    parent = _add_training_parent(state, tmp_path, "parent")
+    request = _training()
+    request["training"].update(
+        initialization="transfer",
+        variants=[{"label": label, "parent": parent["id"]} for label in ("a", "b")],
+    )
+    pending = run_experiment.accept_operation(request, state)
+    pending["data"]["scientific_commit"] = "c" * 40
+    (tmp_path / "parent" / "model.zip").write_bytes(b"changed")
+    monkeypatch.setattr(execution, "train_variants", lambda *a: pytest.fail("trained"))
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch, match="parent fingerprint"
+    ):
+        run_experiment.execute_training(state, pending)
+
+
 @pytest.mark.parametrize(
     "failure_point",
     [
@@ -518,12 +683,30 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     assert completed["operation_events"][0]["result"]["completed_steps"] == 10
 
 
+@pytest.mark.parametrize(
+    ("parent_mode", "publication"),
+    [
+        ("fresh", "normal"),
+        ("inherited", "normal"),
+        ("overridden", "normal"),
+        ("per_variant", "normal"),
+        ("legacy", "normal"),
+        ("per_variant", "wrong_resume"),
+        ("per_variant", "result_ready"),
+        ("legacy", "legacy_result_ready"),
+    ],
+)
 def test_training_variants_train_together_and_record_candidates_per_variant(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, parent_mode, publication
 ):
     state = _configure(monkeypatch, tmp_path)
     invocation_result.configure(tmp_path / "execution-result.json")
     active = {"ppo": {"gamma": 0.99, "n_steps": 64}, "training": {"n_envs": 1}}
+    monkeypatch.setattr(
+        execution,
+        "effective_config",
+        lambda *_args: pytest.fail("used shared trainer configuration for a variant"),
+    )
     monkeypatch.setattr(
         run_experiment.research_config, "load_experiment_config", lambda: active
     )
@@ -532,13 +715,52 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
         {"label": "base"},
         {"label": "short", "parameters": {"ppo": {"gamma": 0.9}}},
     ]
+    first = _add_training_parent(state, tmp_path, "first")
+    second = _add_training_parent(state, tmp_path, "second")
+    state["model_roles"]["working"] = first["id"]
+    state["model_roles"]["best_known"] = second["id"]
+    if parent_mode != "fresh":
+        request["training"].update(initialization="transfer", parent="working")
+    if parent_mode in {"overridden", "per_variant"}:
+        request["training"]["variants"][1]["parent"] = "best_known"
+    if parent_mode == "per_variant":
+        del request["training"]["parent"]
+        request["training"]["variants"][0]["parent"] = "working"
+    expected_parents = {
+        "base": None if parent_mode == "fresh" else first,
+        "short": (
+            None
+            if parent_mode == "fresh"
+            else second
+            if parent_mode in {"overridden", "per_variant"}
+            else first
+        ),
+    }
     package = tmp_path / "robot_learning"
     (package / "variants" / "short").mkdir(parents=True)
     (package / "train.py").write_text("base\n", encoding="utf-8")
     (package / "variants" / "short" / "train.py").write_text(
         "short\n", encoding="utf-8"
     )
-    run_experiment.accept_operation(request, state)
+    pending = run_experiment.accept_operation(request, state)
+    assert pending["data"]["parent"] == (
+        None
+        if parent_mode in {"fresh", "per_variant"}
+        else {key: first[key] for key in pending["data"]["parent"]}
+    )
+    for label, parent in expected_parents.items():
+        frozen = pending["data"]["variant_parents"][label]
+        assert frozen == (
+            None if parent is None else {key: parent[key] for key in frozen}
+        )
+    if parent_mode == "legacy":
+        del pending["data"]["variant_parents"]
+    state["model_roles"]["working"] = second["id"]
+    state["model_roles"]["best_known"] = first["id"]
+    repository.write_state(state)
+    monkeypatch.setattr(
+        protocol, "resolve_candidate", lambda *a: pytest.fail("re-resolved parent")
+    )
     artifact = tmp_path / "archive"
     artifact.mkdir()
     (artifact / "model.zip").write_bytes(b"model")
@@ -551,6 +773,37 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
     trained = []
 
     def train_variants(specs, timesteps, seed, resume, operation_id):
+        for spec in specs:
+            parent = expected_parents[spec["label"]]
+            expected_resume = (
+                None if parent is None else tmp_path / parent["name"] / "model.zip"
+            )
+            assert spec["resume"] == expected_resume
+            output = spec["output_dir"]
+            output.mkdir(parents=True)
+            (output / "model.zip").write_bytes(b"trained")
+            (output / "policy_runtime.pkl").write_bytes(b"runtime")
+            config = json.loads(spec["parameters_path"].read_text(encoding="utf-8"))
+            (output / "artifact.json").write_text(
+                json.dumps(
+                    {
+                        "timesteps": 10,
+                        "requested_timesteps": timesteps,
+                        "seed": seed,
+                        "effective_config": {
+                            "variant_runtime": spec["label"],
+                            "parameters": config,
+                        },
+                        "resumed_from": str(tmp_path / "wrong.zip")
+                        if publication == "wrong_resume"
+                        else str(expected_resume)
+                        if expected_resume
+                        else None,
+                        "completed": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
         trained.append(
             {
                 spec["label"]: (
@@ -568,15 +821,19 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
     monkeypatch.setattr(
         execution,
         "candidate_directories",
-        lambda _path: [{"name": "checkpoint-10", "path": artifact, "timesteps": 10}],
+        lambda _path: [{"name": "checkpoint-10", "path": _path, "timesteps": 10}],
     )
 
     def archive(_operation, contenders, _config, *, campaign_id):
+        assert _config == {
+            "base": active,
+            "short": {**active, "ppo": {"gamma": 0.9, "n_steps": 64}},
+        }
         return [
             {
                 "name": contender["name"],
-                "artifact": repository.repo_relative_path(artifact),
-                "fingerprint": repository.artifact_fingerprint(artifact),
+                "artifact": repository.repo_relative_path(contender["path"]),
+                "fingerprint": repository.artifact_fingerprint(contender["path"]),
                 "timesteps": 10,
                 "training_success": None,
                 "ep_rew_mean": None,
@@ -590,6 +847,42 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
     )
     monkeypatch.setattr(execution, "remove_candidate_dir", lambda _path: None)
 
+    if publication == "wrong_resume":
+        with pytest.raises(ValueError, match="resume training checkpoint"):
+            run_experiment.execute_pending_operation()
+        assert (
+            "resume training checkpoint"
+            in repository.read_state()["pending_operation"]["failure"]
+        )
+        return
+
+    if publication != "normal":
+        original_upsert = repository.upsert_operation_event
+
+        def fail_publication(_event):
+            raise OSError("publication interrupted")
+
+        monkeypatch.setattr(repository, "upsert_operation_event", fail_publication)
+        with pytest.raises(OSError, match="publication interrupted"):
+            run_experiment.execute_pending_operation()
+        interrupted = repository.read_state()
+        assert interrupted["pending_operation"]["progress"] == "result_ready"
+        if publication == "legacy_result_ready":
+            for variant in interrupted["pending_operation"]["data"]["result"][
+                "variants"
+            ]:
+                del variant["parent"]
+            repository.write_state(interrupted)
+        monkeypatch.setattr(repository, "upsert_operation_event", original_upsert)
+        monkeypatch.setattr(
+            execution, "train_variants", lambda *a: pytest.fail("retrained")
+        )
+        monkeypatch.setattr(
+            protocol,
+            "resolved_training_parent",
+            lambda *a: pytest.fail("re-resolved parent"),
+        )
+
     assert run_experiment.execute_pending_operation() == 0
 
     shorter = {**active, "ppo": {"gamma": 0.9, "n_steps": 64}}
@@ -598,16 +891,121 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
     ]
     completed = repository.read_state()
     result = completed["operation_events"][0]["result"]
-    assert result["variants"] == [
-        {"label": "base", "parameters": {}, "candidates": ["T1:base-checkpoint-10"]},
-        {
-            "label": "short",
-            "parameters": {"ppo": {"gamma": 0.9}},
-            "candidates": ["T1:short-checkpoint-10"],
-        },
-    ]
+    expected_variants = (
+        [
+            {
+                "label": "base",
+                "parent": expected_parents["base"]["id"]
+                if expected_parents["base"]
+                else None,
+                "parameters": {},
+                "candidates": ["T1:base-checkpoint-10"],
+            },
+            {
+                "label": "short",
+                "parent": expected_parents["short"]["id"]
+                if expected_parents["short"]
+                else None,
+                "parameters": {"ppo": {"gamma": 0.9}},
+                "candidates": ["T1:short-checkpoint-10"],
+            },
+        ]
+        if publication != "legacy_result_ready"
+        else [
+            {
+                "label": "base",
+                "parameters": {},
+                "candidates": ["T1:base-checkpoint-10"],
+            },
+            {
+                "label": "short",
+                "parameters": {"ppo": {"gamma": 0.9}},
+                "candidates": ["T1:short-checkpoint-10"],
+            },
+        ]
+    )
+    assert result["variants"] == expected_variants
     assert completed["candidates"]["T1:short-checkpoint-10"]["parameters"] == shorter
     assert completed["candidates"]["T1:base-checkpoint-10"]["parameters"] == active
+
+
+def test_variant_process_resume_override_and_shared_fallback(monkeypatch, tmp_path):
+    commands = []
+
+    class Process:
+        returncode = 0
+
+        def poll(self):
+            return 0
+
+    def popen(command, **_kwargs):
+        commands.append(command)
+        return Process()
+
+    monkeypatch.setattr(execution.subprocess, "Popen", popen)
+    specs = []
+    for label, override in (
+        ("own", {"resume": tmp_path / "own.zip"}),
+        ("fresh", {"resume": None}),
+        ("inherited", {}),
+    ):
+        output = tmp_path / label
+        output.mkdir()
+        for filename in repository.INFERENCE_ARTIFACT_FILES:
+            (output / filename).write_bytes(b"output")
+        specs.append(
+            {
+                "label": label,
+                "source_root": tmp_path,
+                "output_dir": output,
+                "parameters_path": tmp_path / "parameters.json",
+                "training_log": tmp_path / f"{label}.log",
+                **override,
+            }
+        )
+    execution.train_variants(specs, 10, 4, tmp_path / "shared.zip", "T1")
+    assert commands[0][-2:] == ["--resume", str(tmp_path / "own.zip")]
+    assert "--resume" not in commands[1]
+    assert commands[2][-2:] == ["--resume", str(tmp_path / "shared.zip")]
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_saved_comparisons_use_the_parent_of_each_prior_variant(
+    monkeypatch, tmp_path, legacy
+):
+    state = _configure(monkeypatch, tmp_path)
+    first = _add_training_parent(state, tmp_path, "first")
+    second = _add_training_parent(state, tmp_path, "second")
+    variants = [
+        {"label": "first", "candidates": [first["id"]], "parent": "earlier:first"},
+        {"label": "second", "candidates": [second["id"]], "parent": "earlier:second"},
+    ]
+    if legacy:
+        for variant in variants:
+            del variant["parent"]
+    state["operation_events"] = [
+        {
+            "id": "T0",
+            "kind": "training",
+            "status": "completed",
+            "result": {
+                "parent": "earlier:root",
+                "seed": 4,
+                "requested_steps": 100,
+                "variants": variants,
+            },
+        }
+    ]
+    comparisons = run_experiment._saved_component_comparisons(
+        state,
+        [{**first, "id": "T1:checkpoint-100"}],
+        parent=None,
+        seed=4,
+        requested_steps=100,
+    )["comparisons"]
+    assert [item["context"]["parent"] for item in comparisons] == (
+        ["earlier:root"] if legacy else ["earlier:first", "earlier:second"]
+    )
 
 
 def test_candidate_manifest_preserves_identity_order_and_artifacts(tmp_path):

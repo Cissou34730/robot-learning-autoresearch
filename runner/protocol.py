@@ -387,12 +387,21 @@ def validate_training_request(request: dict) -> None:
     _integer(request, "steps", "training steps", minimum=1)
     _nonempty(request, "description", "training description")
     _nonempty(request, "rationale", "training rationale")
-    if initialization == "transfer":
-        _nonempty(request, "parent", "transfer training parent")
-    elif "parent" in request:
+    if initialization == "fresh" and "parent" in request:
         raise ValueError("fresh training must not declare a parent")
     if "variants" in request:
         _validate_training_variants(request["variants"])
+    if initialization == "transfer" and (
+        "parent" in request or "variants" not in request
+    ):
+        _nonempty(request, "parent", "transfer training parent")
+    for variant in request.get("variants", []):
+        if initialization == "fresh" and "parent" in variant:
+            raise ValueError("fresh training variants must not declare a parent")
+        if "parent" in variant:
+            _nonempty(variant, "parent", "transfer training variant parent")
+        elif initialization == "transfer" and "parent" not in request:
+            raise ValueError("each transfer training variant requires a parent")
 
 
 TRAINING_VARIANT_LABEL = re.compile(r"[a-z][a-z0-9_]{0,15}")
@@ -413,10 +422,10 @@ def _validate_training_variants(variants: object) -> None:
         if (
             not isinstance(variant, dict)
             or "label" not in variant
-            or not set(variant) <= {"label", "parameters"}
+            or not set(variant) <= {"label", "parameters", "parent"}
         ):
             raise ValueError(
-                "each training variant requires label and allows only parameters"
+                "each training variant requires label and allows parameters and parent"
             )
         label = variant["label"]
         if not isinstance(label, str) or not TRAINING_VARIANT_LABEL.fullmatch(label):
@@ -433,7 +442,7 @@ def _validate_training_variants(variants: object) -> None:
 
 
 def resolved_training_parent(request: dict, state: dict) -> dict | None:
-    if request["initialization"] == "fresh":
+    if request["initialization"] == "fresh" or "parent" not in request:
         return None
     parent = resolve_candidate(state, str(request["parent"]))
     return {
@@ -1259,7 +1268,7 @@ def operation_body_schema(kind: str) -> dict:
         }
 
     if kind == "training":
-        common = {
+        common: dict = {
             "seed": {"type": "integer", "minimum": 0},
             "steps": {"type": "integer", "minimum": 1},
             "description": text,
@@ -1280,7 +1289,7 @@ def operation_body_schema(kind: str) -> dict:
                 ),
             },
         }
-        return {
+        schema = {
             "oneOf": [
                 body(
                     {**common, "initialization": {"const": "fresh", "type": "string"}},
@@ -1289,13 +1298,31 @@ def operation_body_schema(kind: str) -> dict:
                 body(
                     {
                         **common,
+                        "variants": {
+                            **common["variants"],
+                            "items": body(
+                                {
+                                    **common["variants"]["items"]["properties"],
+                                    "parent": text,
+                                },
+                                optional=("parameters", "parent"),
+                            ),
+                        },
                         "initialization": {"const": "transfer", "type": "string"},
                         "parent": text,
                     },
-                    optional=("variants",),
+                    optional=("variants", "parent"),
                 ),
             ]
         }
+        schema["oneOf"][1]["anyOf"] = [
+            {"required": ["parent"]},
+            {
+                "required": ["variants"],
+                "properties": {"variants": {"items": {"required": ["parent"]}}},
+            },
+        ]
+        return schema
     if kind == "measurement":
         entries = [
             body(
@@ -1505,6 +1532,8 @@ def validate_operation_shape(kind: str, request: object) -> None:
     selector = "initialization" if kind == "training" else "action"
     schema = variant(schema, request, selector)
     fields(request, schema, f"{kind} request")
+    if kind == "training":
+        validate_training_request(request)
     if kind != "measurement":
         return
     entry_schema = schema["properties"]["measurements"]["items"]

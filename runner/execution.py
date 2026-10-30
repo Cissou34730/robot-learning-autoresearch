@@ -550,7 +550,7 @@ def train_variants(
     """Train each variant in its own process, all at the same time.
 
     Each spec has `label`, `source_root`, `output_dir`, `parameters_path` and
-    `training_log`.
+    `training_log`. An optional `resume` overrides the shared checkpoint.
     """
     from robot_learning.training.progress import latest_training_record
 
@@ -572,8 +572,9 @@ def train_variants(
                 "--output-dir",
                 str(spec["output_dir"]),
             ]
-            if resume is not None:
-                command.extend(["--resume", str(resume)])
+            variant_resume = spec.get("resume", resume)
+            if variant_resume is not None:
+                command.extend(["--resume", str(variant_resume)])
             log_path = spec["training_log"]
             log_path.parent.mkdir(parents=True, exist_ok=True)
             log_file = log_path.open("w", encoding="utf-8")
@@ -734,13 +735,13 @@ def validate_reusable_candidate(
     timesteps: int,
     seed: int,
     resume: Path | None,
-    config: dict,
+    config: dict | None,
 ) -> None:
     for filename in repository.INFERENCE_ARTIFACT_FILES:
         if not (source / filename).exists():
             raise ValueError(f"reusable candidate is incomplete: {filename}")
     artifact = json.loads((source / "artifact.json").read_text(encoding="utf-8"))
-    expected_effective_config = effective_config(config)
+    expected_effective_config = effective_config(config) if config is not None else None
     expected_resume = resume.resolve() if resume is not None else None
     actual_resume = (
         Path(artifact["resumed_from"]).resolve()
@@ -753,8 +754,8 @@ def validate_reusable_candidate(
             artifact.get("requested_timesteps", artifact.get("timesteps", -1))
         )
         == timesteps,
-        "effective configuration": artifact.get("effective_config")
-        == expected_effective_config,
+        "effective configuration": config is None
+        or artifact.get("effective_config") == expected_effective_config,
         "resume training checkpoint": (
             not bool(artifact.get("completed", True))
             or actual_resume == expected_resume

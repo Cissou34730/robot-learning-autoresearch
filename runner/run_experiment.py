@@ -239,6 +239,16 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
         parent = protocol.resolved_training_parent(request["training"], state)
         return {
             "parent": copy.deepcopy(parent),
+            "variant_parents": {
+                variant["label"]: copy.deepcopy(
+                    protocol.resolved_training_parent(
+                        {**request["training"], "parent": variant["parent"]}, state
+                    )
+                    if "parent" in variant
+                    else parent
+                )
+                for variant in request["training"].get("variants", [])
+            },
             "code_parent_commit": parent_commit,
             "scientific_manifest": _scientific_manifest(source_changes),
             "scientific_paths": list(changed),
@@ -1612,14 +1622,24 @@ def _saved_component_comparisons(
         for event in state["operation_events"]
         if event.get("status") == "completed" and event.get("kind") == "training"
     }
-    prior_by_operation: dict[str, list[dict]] = {}
+    prior_by_operation: dict[tuple[str, str | None], list[dict]] = {}
     for candidate in state["candidates"].values():
-        prior_by_operation.setdefault(candidate["origin_operation"], []).append(
+        operation_id = candidate["origin_operation"]
+        event = events.get(operation_id)
+        if event is None:
+            continue
+        prior_result = event["result"]
+        prior_parent = prior_result["parent"]
+        for variant in prior_result.get("variants", []):
+            if candidate["id"] in variant["candidates"]:
+                prior_parent = variant.get("parent", prior_parent)
+                break
+        prior_by_operation.setdefault((operation_id, prior_parent), []).append(
             candidate
         )
 
     comparisons: list[dict] = []
-    for operation_id, prior_candidates in prior_by_operation.items():
+    for (operation_id, prior_parent), prior_candidates in prior_by_operation.items():
         event = events.get(operation_id)
         if event is None:
             continue
@@ -1677,7 +1697,7 @@ def _saved_component_comparisons(
             {
                 "operation": operation_id,
                 "context": {
-                    "parent": prior_result["parent"],
+                    "parent": prior_parent,
                     "seed": prior_result["seed"],
                     "requested_steps": prior_result["requested_steps"],
                 },
@@ -1755,8 +1775,13 @@ def _train_and_archive_variants(
     candidate_dir.mkdir(parents=True)
     pending["progress"] = "training_dispatched"
     repository.write_state(state)
-    specs = []
+    specs: list[dict] = []
     for label, parameters in variant_parameters.items():
+        parent = (
+            pending["data"]
+            .get("variant_parents", {})
+            .get(label, pending["data"]["parent"])
+        )
         parameters_path = candidate_dir / f"{label}.parameters.json"
         parameters_path.write_text(
             json.dumps(parameters, indent=2) + "\n", encoding="utf-8"
@@ -1765,6 +1790,11 @@ def _train_and_archive_variants(
         specs.append(
             {
                 "label": label,
+                "resume": (
+                    repository.resolve_repo_path(parent["artifact"]) / "model.zip"
+                    if parent is not None
+                    else None
+                ),
                 "source_root": _variant_source(candidate_dir, label),
                 "output_dir": candidate_dir / label,
                 "parameters_path": parameters_path,
@@ -1778,6 +1808,14 @@ def _train_and_archive_variants(
     execution.train_variants(
         specs, timesteps, int(request["seed"]), resume, operation_id
     )
+    for spec in specs:
+        execution.validate_reusable_candidate(
+            spec["output_dir"],
+            timesteps=timesteps,
+            seed=int(request["seed"]),
+            resume=spec["resume"],
+            config=None,
+        )
     pending["progress"] = "training_completed"
     repository.write_state(state)
     contenders = [
@@ -1799,9 +1837,51 @@ def _train_and_archive_variants(
     return archived
 
 
+def _training_candidate_records(pending: dict) -> list[dict]:
+    data = pending["data"]
+    variants = pending["request"]["training"].get("variants")
+    if not variants:
+        return _candidate_records(
+            pending["id"],
+            data["archived_candidates"],
+            data["effective_parameters"],
+            str(data["scientific_commit"]),
+        )
+    parameters = {
+        variant["label"]: _merged_parameters(
+            data["effective_parameters"], variant.get("parameters", {})
+        )
+        for variant in variants
+    }
+    return [
+        record
+        for item in data["archived_candidates"]
+        for record in _candidate_records(
+            pending["id"],
+            [item],
+            parameters[_variant_label(item["name"])],
+            str(data["scientific_commit"]),
+        )
+    ]
+
+
 def execute_training(state: dict, pending: dict) -> int:
     data = pending["data"]
     request = pending["request"]["training"]
+
+    def apply(current: dict, _result: dict) -> None:
+        for candidate in records:
+            current["candidates"][candidate["id"]] = copy.deepcopy(candidate)
+        current["scientific_session"]["scientific_parent_commit"] = str(
+            data["scientific_commit"]
+        )
+
+    if data["result"] is not None:
+        records = _training_candidate_records(pending)
+        _ensure_candidate_keys_available(state, records)
+        _complete_operation(state, data["result"], apply)
+        return 0
+
     timesteps = int(request["steps"])
     parent_commit = str(data["code_parent_commit"])
     campaign_id = repository.current_campaign_id(state)
@@ -1828,14 +1908,24 @@ def execute_training(state: dict, pending: dict) -> int:
     if not isinstance(config, dict):
         raise FrozenOperationMismatch("accepted training has no frozen configuration")
     parent = data["parent"]
-    if isinstance(parent, dict):
-        parent_artifact = repository.resolve_repo_path(parent["artifact"])
+    frozen_parents = [parent, *data.get("variant_parents", {}).values()]
+    for frozen_parent in frozen_parents:
+        if frozen_parent is None:
+            continue
+        parent_artifact = repository.resolve_repo_path(frozen_parent["artifact"])
         repository.require_complete_inference_artifact(
             parent_artifact, "frozen training parent"
         )
-        if repository.artifact_fingerprint(parent_artifact) != parent["fingerprint"]:
+        if (
+            repository.artifact_fingerprint(parent_artifact)
+            != frozen_parent["fingerprint"]
+        ):
             raise FrozenOperationMismatch("frozen training parent fingerprint changed")
-    resume = parent_artifact / "model.zip" if isinstance(parent, dict) else None
+    resume = (
+        repository.resolve_repo_path(parent["artifact"]) / "model.zip"
+        if parent is not None
+        else None
+    )
     candidate_dir = paths.campaign_candidate_root(campaign_id) / operation_id.lower()
     data["candidate_dir"] = repository.repo_relative_path(candidate_dir)
     archived = data.get("archived_candidates")
@@ -1919,24 +2009,7 @@ def execute_training(state: dict, pending: dict) -> int:
     repository.persist_saved_components_inventory(
         operation_id, archived, campaign_id=campaign_id
     )
-    if variant_parameters is None:
-        records = _candidate_records(
-            operation_id,
-            archived,
-            config,
-            str(data["scientific_commit"]),
-        )
-    else:
-        records = [
-            record
-            for item in archived
-            for record in _candidate_records(
-                operation_id,
-                [item],
-                variant_parameters[_variant_label(item["name"])],
-                str(data["scientific_commit"]),
-            )
-        ]
+    records = _training_candidate_records(pending)
     _ensure_candidate_keys_available(state, records)
     completed_steps = max(
         (candidate["training_steps"] for candidate in records), default=0
@@ -1968,6 +2041,9 @@ def execute_training(state: dict, pending: dict) -> int:
         result["variants"] = [
             {
                 "label": variant["label"],
+                "parent": (
+                    variant_parent["id"] if variant_parent is not None else None
+                ),
                 "parameters": copy.deepcopy(variant.get("parameters", {})),
                 "candidates": [
                     record["id"]
@@ -1976,6 +2052,9 @@ def execute_training(state: dict, pending: dict) -> int:
                 ],
             }
             for variant in variants
+            for variant_parent in [
+                data.get("variant_parents", {}).get(variant["label"], parent)
+            ]
         ]
     else:
         result["saved_component_comparisons"] = _saved_component_comparisons(
@@ -1985,12 +2064,6 @@ def execute_training(state: dict, pending: dict) -> int:
             seed=int(request["seed"]),
             requested_steps=timesteps,
         )
-
-    def apply(current: dict, _result: dict) -> None:
-        for candidate in records:
-            current["candidates"][candidate["id"]] = copy.deepcopy(candidate)
-        session = current["scientific_session"]
-        session["scientific_parent_commit"] = str(data["scientific_commit"])
 
     for candidate, archived_item in zip(records, archived, strict=True):
         typed_events.emit(
