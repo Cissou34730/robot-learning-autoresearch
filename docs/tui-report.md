@@ -110,6 +110,13 @@ Directly: `uv run python -m tui --help` (options: `--report`, `--read-only`, `--
 
 ## Operator console (multi-campaign control)
 
+The selected campaign's folder appears flush-right in the existing tab bar.
+It uses only space left after the visible tabs. Long paths omit leading folders,
+but retain the campaign folder and its parent. The path hides when that minimum
+does not fit. It adds no rows and does not change the footer or log area.
+Diagnostics always includes the full campaign folder, including for campaigns
+that this console did not start.
+
 Issue #68 implementation. `uv run python -m tui` (or
 `.\campaign_tui.ps1` with no arguments) opens one Textual console with
 one report tab per active or recently idle campaign, initially showing the first

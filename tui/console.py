@@ -29,6 +29,7 @@ import time
 from pathlib import Path
 from typing import ClassVar
 
+from rich.cells import cell_len
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -40,6 +41,7 @@ from textual.widgets import (
     Static,
     TabbedContent,
     TabPane,
+    Tabs,
 )
 
 from tui import commands
@@ -62,6 +64,7 @@ from tui.phase_presentation import (
     TAB_PHASE_COLOURS,
     TAB_STATE_COLOURS,
     TAB_TAG_COLOURS,
+    tab_folder_text,
     tab_tag,
 )
 from tui.process import LauncherMachinery
@@ -173,6 +176,10 @@ class CampaignConsole(App):
     TabbedContent { height: 1fr; min-height: 0; }
     TabbedContent > ContentSwitcher { height: 1fr; }
     TabPane { height: 100%; padding: 0; }
+    #campaign-folder {
+        display: none; dock: right; height: 1;
+        padding-left: 2; color: $text-muted; text-align: right;
+    }
     """
     )
 
@@ -250,6 +257,8 @@ class CampaignConsole(App):
         )
 
     async def on_mount(self) -> None:
+        tab_bar = self.query_one(TabbedContent).query_one(Tabs)
+        await tab_bar.mount(Static("", id="campaign-folder", markup=False))
         self.set_interval(2.0, self._refresh_status)
         self.set_interval(1.0, self._pulse_tabs)
         for label in self._layout.installed():
@@ -275,7 +284,11 @@ class CampaignConsole(App):
         self._status_refreshing = True
         try:
             idle_since, errors = await asyncio.to_thread(self._poll_tab_activity)
+            if not self.is_running:
+                return
             await self._ensure_campaign_tabs(list(idle_since))
+            if not self.is_running:
+                return
             self._tab_idle_since = idle_since
             self._activity_ready = True
             self._refresh_status_now()
@@ -616,6 +629,7 @@ class CampaignConsole(App):
                 panel.set_process_running(False)
         self._sync_tab_visibility()
         self._refresh_tab_tags()
+        self.call_after_refresh(self._refresh_campaign_folder)
         hidden_running = sum(
             self._campaign_active(self._controller.state(pane.id))
             for pane in self.query(TabPane)
@@ -810,6 +824,7 @@ class CampaignConsole(App):
                 chunks.append(
                     f"{state.label}: {state.control_directory or 'no TUI-owned invocation'}"
                 )
+                chunks.append(f"Campaign folder: {state.folder}")
                 if state.control_directory:
                     for name in ("console.out.log", "console.err.log"):
                         path = state.control_directory / name
@@ -883,6 +898,31 @@ class CampaignConsole(App):
     def on_resize(self) -> None:
         if self.is_mounted:
             self._update_campaign_visibility()
+            self.call_after_refresh(self._refresh_campaign_folder)
+
+    def _refresh_campaign_folder(self) -> None:
+        if not self.is_running:
+            return
+        tabs = self.query_one(TabbedContent)
+        found = self.query("#campaign-folder")
+        if not found:
+            return
+        location = found.first(Static)
+        if not tabs.display or not tabs.active:
+            location.display = False
+            return
+        visible = [tabs.get_tab(label) for label in self._visible_tabs]
+        # The full-width tab bar's measured size can lag a terminal resize.
+        available = self.size.width - sum(tab.outer_size.width for tab in visible) - 2
+        folder = self._controller.state(tabs.active).folder
+        shown = tab_folder_text(folder, available)
+        location.tooltip = str(folder)
+        location.display = bool(shown)
+        if shown:
+            location.styles.width = cell_len(shown) + 2
+            content = Text(shown, no_wrap=True, overflow="crop", justify="right")
+            if location.content != content:
+                location.update(content)
 
     def _update_campaign_visibility(self) -> None:
         small = self.size.width < 48 or self.size.height < 16

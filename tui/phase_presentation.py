@@ -3,6 +3,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import PurePath
+
+from rich.cells import cell_len
+
+
+def tab_folder_text(folder: PurePath, width: int) -> str:
+    text = str(folder)
+    if cell_len(text) <= width:
+        return text
+    for start in range(1, len(folder.parts) - 1):
+        compact = str(folder.with_segments("...", *folder.parts[start:]))
+        if cell_len(compact) <= width:
+            return compact
+    return ""
 
 
 @dataclass(frozen=True)

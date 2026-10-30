@@ -421,6 +421,9 @@ class ScientificCoding:
             raise ValueError("Coding requires an explicit campaign identity.")
         uuid.UUID(self.args.campaign_id)
         binding = self.resolve_binding(params)
+        # The create editor cannot make folders; apply_patch can.
+        for relative in binding["allowed_paths"]:
+            paths.locate(relative).parent.mkdir(parents=True, exist_ok=True)
         if params.session_handle:
             context = self.original_requests[params.session_handle]["task_context"]
             await self._require_idle_children(params.session_handle)

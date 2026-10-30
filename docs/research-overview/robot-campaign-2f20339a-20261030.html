@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Campaign 2f20339a: first full campaign with an OpenCode model</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cp-bg);
+            color: var(--cp-text);
+            font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.55;
+        }
+
+        main {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 32px 20px 64px;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            margin: 0 0 8px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin: 0 0 12px;
+            color: var(--cp-accent);
+        }
+
+        h3 {
+            font-size: 1.05rem;
+            margin: 16px 0 8px;
+        }
+
+        p {
+            margin: 0 0 12px;
+        }
+
+        .lead {
+            color: var(--cp-text-muted);
+            font-size: 1.05rem;
+        }
+
+        code {
+            font-family: Consolas, "Courier New", Courier, monospace;
+            font-size: 0.92em;
+            background: var(--cp-surface-soft);
+            border: 1px solid var(--cp-border);
+            border-radius: 6px;
+            padding: 0 4px;
+        }
+
+        .card {
+            background: var(--cp-surface);
+            border: 1px solid var(--cp-border);
+            border-radius: 16px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14);
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .verdict {
+            border-left: 6px solid var(--cp-success);
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .kpi {
+            background: var(--cp-bg-elevated);
+            border: 1px solid var(--cp-border);
+            border-radius: 0.625rem;
+            padding: 12px 16px;
+        }
+
+        .kpi .v {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .kpi .l {
+            color: var(--cp-text-muted);
+            font-size: 0.88rem;
+        }
+
+        .ok {
+            color: var(--cp-success);
+        }
+
+        .bad {
+            color: var(--cp-danger);
+        }
+
+        .warn {
+            color: var(--cp-warning);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.94rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--cp-border);
+            vertical-align: top;
+        }
+
+        th {
+            color: var(--cp-text-muted);
+            font-weight: 600;
+            background: var(--cp-surface-soft);
+        }
+
+        .bars {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .bar {
+            display: grid;
+            grid-template-columns: 210px 1fr 80px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .track {
+            background: var(--cp-surface-soft);
+            border: 1px solid var(--cp-border);
+            border-radius: 0.625rem;
+            height: 22px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            background: var(--cp-accent);
+        }
+
+        .fill.ok-fill {
+            background: var(--cp-success);
+        }
+
+        .timeline {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            border-left: 2px solid var(--cp-border-strong);
+        }
+
+        .timeline li {
+            position: relative;
+            padding: 0 0 16px 20px;
+        }
+
+        .timeline li::before {
+            content: "";
+            position: absolute;
+            left: -7px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--cp-accent);
+        }
+
+        .timeline .t {
+            font-family: Consolas, "Courier New", Courier, monospace;
+            color: var(--cp-text-muted);
+            margin-right: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.78rem;
+            padding: 1px 8px;
+            border-radius: 999px;
+            background: var(--cp-accent-soft);
+            color: var(--cp-accent);
+            border: 1px solid var(--cp-highlight);
+        }
+
+        .two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 720px) {
+            .two {
+                grid-template-columns: 1fr;
+            }
+
+            .bar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .note {
+            color: var(--cp-text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+
+        <h1>Campaign 2f20339a: first full campaign with an OpenCode model</h1>
+        <p class="lead">Campaign <code>2f20339a-7e84-4faf-82c4-34a934ef9a28</code>, slot <code>campaign-1</code>, 30
+            October 2026.
+            The research lead (PI) ran on DeepSeek V4.1 Flash through OpenCode, not on a Copilot model.</p>
+
+        <section class="card verdict">
+            <h2>Result in one paragraph</h2>
+            <p>The campaign passed the official assessment with <strong class="ok">200 of 200 episodes (100%)</strong>.
+                The goal is 196 of 200 (98%). The campaign took about 59 minutes and two training runs.
+                The purpose of this run was to test whether a full campaign works with a model from OpenCode. It did.
+                The coding step works, but it uses a temporary solution (see "Open point" below).</p>
+            <div class="kpis">
+                <div class="kpi">
+                    <div class="v ok">200 / 200</div>
+                    <div class="l">Official assessment</div>
+                </div>
+                <div class="kpi">
+                    <div class="v">59 min</div>
+                    <div class="l">Campaign duration</div>
+                </div>
+                <div class="kpi">
+                    <div class="v">2</div>
+                    <div class="l">Training runs (T1, T2)</div>
+                </div>
+                <div class="kpi">
+                    <div class="v">4</div>
+                    <div class="l">Measurements (M1 to M4)</div>
+                </div>
+                <div class="kpi">
+                    <div class="v">1</div>
+                    <div class="l">Inquiry (I1)</div>
+                </div>
+                <div class="kpi">
+                    <div class="v">1</div>
+                    <div class="l">Code change, accepted at first review</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Who did what</h2>
+            <table>
+                <tr>
+                    <th>Role</th>
+                    <th>Model</th>
+                    <th>Reasoning</th>
+                    <th>What it did</th>
+                </tr>
+                <tr>
+                    <td>PI</td>
+                    <td><code>opencode-go/deepseek-v4.1-flash</code></td>
+                    <td>max</td>
+                    <td>Chose each step, read the results and decided when to ask for the official assessment.</td>
+                </tr>
+                <tr>
+                    <td>Analyst</td>
+                    <td>DeepSeek V4.1 Flash</td>
+                    <td>max</td>
+                    <td>Wrote the starting scientific model before the PI began.</td>
+                </tr>
+                <tr>
+                    <td>Coder</td>
+                    <td>DeepSeek V4.1 Flash (same as the PI)</td>
+                    <td>max</td>
+                    <td>Wrote the T2 code change.</td>
+                </tr>
+                <tr>
+                    <td>Reviewer</td>
+                    <td><code>gpt-6-luna</code></td>
+                    <td>high</td>
+                    <td>Checked the code change. It accepted the change at the first review.</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>What happened, step by step</h2>
+            <p class="note">Times are UTC on 30 October 2026.</p>
+            <ol class="timeline">
+                <li><span class="t">01:24</span>The campaign started.</li>
+                <li><span class="t">01:49</span><strong>T1.</strong> The PI trained the inherited recipe with no change,
+                    for 120,000 steps (120,832 done).</li>
+                <li><span class="t">01:50</span><strong>M1.</strong> Research evaluation of
+                    <code>T1:checkpoint-120832</code>: <strong>292 of 400 (73%)</strong>.</li>
+                <li><span class="t">02:02</span><strong>I1 opened.</strong> The PI calculated a 4.0e-17 chance to reach
+                    196 of 200 with T1. It did not ask for the official assessment.</li>
+                <li><span class="t">02:13</span><strong>T2.</strong> A new training run with two changes (see below),
+                    360,000 steps (360,448 done).</li>
+                <li><span class="t">02:15</span><strong>M2.</strong> Development panel (seed 100000): <strong
+                        class="ok">400 of 400</strong>. Against T1 on the same episodes: 108 wins, 0 losses.</li>
+                <li><span class="t">02:16</span><strong>M3.</strong> A new panel (seed 200000): <strong class="ok">400
+                        of 400</strong>.</li>
+                <li><span class="t">02:18</span><strong>M4.</strong> Task reference (<code>task-reference-v1</code>):
+                    <strong class="ok">200 of 200</strong>.</li>
+                <li><span class="t">02:23</span><strong>Official assessment:</strong> <strong class="ok">passed, 200 of
+                        200</strong>. Final state: <code>official_assessment_passed</code>.</li>
+            </ol>
+        </section>
+
+        <section class="card">
+            <h2>Success rate of each measurement</h2>
+            <div class="bars">
+                <div class="bar"><span>M1, T1 (400 episodes)</span>
+                    <div class="track">
+                        <div class="fill" style="width:73%"></div>
+                    </div><span>73%</span>
+                </div>
+                <div class="bar"><span>M2, T2 (400 episodes)</span>
+                    <div class="track">
+                        <div class="fill ok-fill" style="width:100%"></div>
+                    </div><span>100%</span>
+                </div>
+                <div class="bar"><span>M3, T2 (400 new episodes)</span>
+                    <div class="track">
+                        <div class="fill ok-fill" style="width:100%"></div>
+                    </div><span>100%</span>
+                </div>
+                <div class="bar"><span>M4, task reference (200)</span>
+                    <div class="track">
+                        <div class="fill ok-fill" style="width:100%"></div>
+                    </div><span>100%</span>
+                </div>
+                <div class="bar"><span>Official assessment (200)</span>
+                    <div class="track">
+                        <div class="fill ok-fill" style="width:100%"></div>
+                    </div><span>100%</span>
+                </div>
+            </div>
+            <p class="note" style="margin-top:12px">The goal line is 98%.</p>
+        </section>
+
+        <section class="card">
+            <h2>Why T1 failed, and what the PI changed</h2>
+            <div class="two">
+                <div>
+                    <h3>What M1 showed</h3>
+                    <ul>
+                        <li>T1 failed 108 of 400 episodes.</li>
+                        <li>104 of the 108 failures had a target closer than 14 cm. This includes all 20 hold failures
+                            and all 25 large reach misses.</li>
+                        <li>The inherited recipe trains only on targets from 14 to 20 cm. The official task uses 6 to 20
+                            cm, a range 2.3 times wider.</li>
+                        <li>3 of the 4 other failures were in a 20° zone where the selected elbow solution hits a joint
+                            limit.</li>
+                        <li>The training score was still rising at 120,000 steps.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>The two changes in T2</h3>
+                    <ol>
+                        <li><strong>Training targets.</strong> The training range is now 6 to 20 cm, the same as the
+                            official range. Before, it was 14 to 20 cm.</li>
+                        <li><strong>Observation.</strong> The old observation gave the policy two joint-angle solutions
+                            for the target. The new one gives only the solution that respects the joint limits. That is
+                            the solution with the smaller shoulder angle. The observation has 9 values instead of 11.
+                        </li>
+                    </ol>
+                    <p>The PI kept direct motor torque output, the PPO network (64×64, tanh) and the inherited reward.
+                    </p>
+                </div>
+            </div>
+            <p class="note">Code commit <code>2a4f201a</code> in the campaign repository changed
+                <code>robot_learning/scenario/observations.py</code> and
+                <code>robot_learning/training/environment.py</code>
+                (16 lines added, 8 removed). The scenario forbids inverse kinematics only in the output transformation.
+                The PI can build the observation freely, so this change obeys the rules.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>How good is the T2 policy?</h2>
+            <p>On M3 (400 new episodes) the policy succeeded in every case:</p>
+            <ul>
+                <li>Every 2 cm distance group from 6 cm to 20 cm: 100%.</li>
+                <li>Every 30° direction group: 100%.</li>
+                <li>Every episode held the target for the full 100 steps.</li>
+                <li>The arm first reached the target between step 5 and step 15.</li>
+                <li>The largest final distance to the target was 0.877 cm. The tolerance is 1 cm.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Cost and time</h2>
+            <table>
+                <tr>
+                    <th>Role</th>
+                    <th>Sessions or requests</th>
+                    <th>Time</th>
+                    <th>Output tokens</th>
+                </tr>
+                <tr>
+                    <td>PI</td>
+                    <td>5 sessions</td>
+                    <td>43.2 min (13.5 min of it waited for the Runner)</td>
+                    <td>278k</td>
+                </tr>
+                <tr>
+                    <td>Coder</td>
+                    <td>1 request</td>
+                    <td>0.5 min</td>
+                    <td>4.3k</td>
+                </tr>
+                <tr>
+                    <td>Reviewer</td>
+                    <td>1 review</td>
+                    <td>0.2 min</td>
+                    <td>not recorded here</td>
+                </tr>
+            </table>
+            <p class="note" style="margin-top:12px">The harness records no AIU cost for the OpenCode route.
+                DeepSeek at max reasoning writes about six times more output than the Luna PI at high reasoning.</p>
+        </section>
+
+        <section class="card">
+            <h2>Comparison with the Luna campaigns</h2>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>This campaign (DeepSeek)</th>
+                    <th>Luna round 10</th>
+                </tr>
+                <tr>
+                    <td>Campaigns</td>
+                    <td>1</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Passed</td>
+                    <td class="ok">1 of 1, 200/200</td>
+                    <td class="ok">5 of 5, each 200/200</td>
+                </tr>
+                <tr>
+                    <td>Duration</td>
+                    <td>about 59 min</td>
+                    <td>110 to 144 min</td>
+                </tr>
+                <tr>
+                    <td>Route to the goal</td>
+                    <td>Full training range and one joint-limit-safe solution in the observation</td>
+                    <td>Used reflection symmetry</td>
+                </tr>
+            </table>
+            <p class="note" style="margin-top:12px">This is one campaign. One result cannot show that DeepSeek is faster
+                or better in general.</p>
+        </section>
+
+        <section class="card">
+            <h2>Problems before this run</h2>
+            <p>We stopped the first DeepSeek runs because of two harness bugs. Both are now fixed:</p>
+            <ol>
+                <li><strong>The coder had no file editor.</strong> A coder sub-agent gets only the editors that its
+                    model and the PI model both allow. With a DeepSeek PI and a GPT coder, that set was empty.</li>
+                <li><strong>The coder could not create a file in a new folder.</strong> The <code>create</code> editor
+                    does not make missing folders. The harness now makes the folders before coding starts.</li>
+            </ol>
+        </section>
+
+        <section class="card">
+            <h2>Open point: the coder <span class="tag">OI-063</span></h2>
+            <p>With an OpenCode PI, the coder now runs on the same model as the PI. The reviewer stays on
+                <code>gpt-6-luna</code>.
+                This is a temporary solution. The maintainer is not satisfied with the coding part.</p>
+            <p>OI-063 tracks the real fix. There are two options:</p>
+            <ul>
+                <li>a harness file editor tool that every model can use, or</li>
+                <li>a separate coder session on a Copilot model.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Conclusion</h2>
+            <ul>
+                <li>A full campaign with an OpenCode model works from start to official assessment.</li>
+                <li>The PI found a direct cause in the first measurement and fixed it in one step.</li>
+                <li>The coder setup for OpenCode PIs stays temporary until OI-063 is fixed.</li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+
+</html>

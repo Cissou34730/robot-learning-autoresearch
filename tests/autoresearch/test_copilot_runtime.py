@@ -7,10 +7,15 @@ from types import SimpleNamespace
 import pytest
 
 from runner import paths
+from runner.copilot import coding_session
 from runner.copilot import copilot_adapter as adapter
 from runner.copilot import opencode_provider as provider
 from runner.copilot import operation_submission as submission_module
-from runner.copilot.coding_contracts import CODING_TOOLS, REVIEW_TOOLS
+from runner.copilot.coding_contracts import (
+    CODING_TOOLS,
+    REVIEW_TOOLS,
+    ScientificCodingParams,
+)
 from runner.copilot.coding_session import ScientificCoding
 from runner.copilot.operation_submission import OperationSubmission
 from runner.copilot.pi_tools import scoped_search
@@ -431,6 +436,34 @@ def test_external_pi_coder_uses_the_pi_model_and_the_reviewer_stays_on_copilot()
         None, adapter.parse_args(["p", "--session-id", "s"]), Console()
     )
     assert copilot.agent()["tools"] == CODING_TOOLS
+
+
+def test_coding_creates_the_missing_folder_of_an_authorized_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(paths, "locate", lambda relative: tmp_path / relative)
+    monkeypatch.setattr(coding_session, "load_task_context", lambda root: {})
+    args = adapter.parse_args(
+        [
+            "p",
+            "--session-id",
+            "s",
+            "--campaign-id",
+            "00000000-0000-0000-0000-000000000001",
+        ]
+    )
+    coding = ScientificCoding(None, args, Console())
+
+    async def validate():
+        return None
+
+    coding.session = SimpleNamespace(
+        rpc=SimpleNamespace(tools=SimpleNamespace(initialize_and_validate=validate))
+    )
+    params = ScientificCodingParams(
+        intent="x", allowed_paths=["robot_learning/lab/new_tool.py"]
+    )
+    invocation = SimpleNamespace(session_id="s", agent_id=None, tool_call_id="t")
+    asyncio.run(coding._prepare(params, invocation))
+    assert (tmp_path / "robot_learning/lab").is_dir()
 
 
 def test_reviewer_identity_must_match_the_requested_copilot_model():
