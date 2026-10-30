@@ -75,8 +75,8 @@ ANALYST_EXPLORATION = (
     "session. The inherited recipe that contracts/scenario.md describes gives "
     "design choices, not properties of the robot. A variant can change any "
     "PI-owned source file and any parameter. The training instrument in the "
-    "campaign reference describes the variant capabilities. The PI compares "
-    "variants and selects the method before the startup session."
+    "campaign reference describes the variant capabilities. The PI uses quick "
+    "variant comparisons to guide the first recipe before the startup session."
 )
 
 AUTONOMY = (

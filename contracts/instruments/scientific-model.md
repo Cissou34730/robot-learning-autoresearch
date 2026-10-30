@@ -30,13 +30,15 @@ the task.
 
 The synthesis includes `### Proposed first reward` and
 `### Proposed design variants`. The first reward is a design proposal. Each
-variant implements a distinct proposed method. The proposals state their
-physical or learning reasons and the evidence that can distinguish them. A
-variant can change any PI-owned source file and any parameter.
+variant tests a proposed method. The proposals state the recipe questions,
+their physical or learning reasons and the behavior that the analyst expects.
+Short training tests give evidence for the next recipe decision. A variant can
+change any PI-owned source file and any parameter.
 
 The recipe-development session receives the synthesis and the full scientific
-model. The PI compares variants and selects a method. The startup session then
-receives the scientific model and the completed recipe-development record.
+model. The PI uses quick variant comparisons to guide the first recipe. The
+startup session then receives the scientific model and the completed
+recipe-development record.
 The PI uses them to establish the initial scientific direction and the first
 useful investigation.
 

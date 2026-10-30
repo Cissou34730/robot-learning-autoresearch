@@ -105,43 +105,34 @@ session follows recipe development. A goal-review session follows startup.
 
 ## Recipe-development session
 
-Select a method that later inquiries can develop toward the goal. Compare
-variants to obtain the measured differences that this decision needs. A variant
-implements a distinct proposed method. Its differences from other variants
-follow from the scientific question. It can change any PI-owned source file
-and any parameter. `contracts/instruments/training.md` defines how to submit
-variants.
-
+Build the first recipe through quick iterations on variants.
 Start from the scientific model and the analyst's proposals. You decide which
-proposals to implement and how to revise them. The proposed first reward is a
-design proposal with the same status as the other proposals.
+proposals to implement and how to revise them. The proposed first reward has
+the same status as the other proposals. A variant can change any PI-owned
+source file and any parameter.
 
-This session can contain several comparisons. Use each result to decide which
-distinction still matters for method selection. Compare complete methods when
-the decision concerns their performance. Attribute a difference to a particular
-change only when the evidence separates its effect.
+Before training, state your comparison plan. Explain the recipe question, why
+you chose each variant and the behavior you expect. State the training length
+and justify it for this test. Explain how the results will change your next
+decision.
 
-Choose the training length from the next variant decision and the observed
-learning dynamics. State what the allocated training can reveal about that
-decision. A weak result can leave the relative merits of methods unresolved.
-Further training is selective. Preserve each variant's own learned state when
-continuation can answer the next decision.
+Use short training tests. After each comparison, state what you learned and why
+you keep or revise each variant. Update the plan before further training.
+Each variant can continue from its own saved training checkpoint.
+`contracts/instruments/training.md`
+defines how to submit variants and continue training.
 
 Recipe development is complete when the remaining scientific work primarily
 develops the selected method rather than chooses among competing methods.
-Support the selection with measured differences and the limits of those
-measurements. Preserve the unresolved alternatives and the next investigation.
 The selection is a scientific judgment from the evidence, not a score threshold
 or a prescribed number of comparisons.
 
-Save the session record when recipe development is complete. In
-`current_synthesis`, identify the selected method, its recipe and the measured
-differences that support the selection. In `decision_frontier`, preserve the
-unresolved alternatives and the evidence that can distinguish them. Use
-`next_question` for the next investigation that startup will develop. The
-startup session receives this completed record unchanged, together with the
-scientific model. Later evidence can revise the scientific judgments in the
-record.
+Save the selected method, recipe, measured differences and their limits in
+`current_synthesis`, with supporting operations in `evidence_references`.
+`decision_frontier` keeps unresolved alternatives and discriminating evidence.
+`next_question` states the next investigation, and `next_direction_or_closure`
+explains the transition. Startup receives this record unchanged with the
+scientific model. Later evidence can revise its scientific judgments.
 
 ## Startup session
 

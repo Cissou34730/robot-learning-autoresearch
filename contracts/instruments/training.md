@@ -26,11 +26,6 @@ negative. The `description` and `rationale` strings must not be empty. The
 The session prompt gives the shortest and the longest permitted run. In a
 recipe-development, startup or inquiry session, you choose `steps` in that range
 for each run.
-No length is standard. You cannot change the range. The Runner rejects other
-values during validation, acceptance and the start of training.
-
-The time and AI usage of a run increase with its steps. Each run adds time and
-AI usage to the campaign.
 
 Transfer training starts from the saved training checkpoint of a parent candidate.
 A single transfer run requires a non-empty `parent` string.

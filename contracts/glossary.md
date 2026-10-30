@@ -39,7 +39,7 @@ names in code format are technical names. They keep their exact spelling.
 | change | One modification of the method or of a tool. | — |
 | intervention | A change that you make to test its causal effect on the behavior of the policy. | — |
 | recipe | The source files and the parameters that implement a method. Each candidate records its recipe. | scientific recipe |
-| variant | A recipe that implements a distinct proposed method. Its differences from other variants follow from the scientific question. It can change any PI-owned source file and any parameter. | — |
+| variant | A recipe that tests a proposed method. During recipe development, quick tests of variants guide the first recipe. Differences between variants follow from the scientific question. A variant can change any PI-owned source file and any parameter. | — |
 | inherited recipe | The recipe that the campaign contains when it starts. `contracts/scenario.md` describes it. | current recipe, baseline recipe |
 | source code | Any code. | — |
 | implementation | The source code that realizes a method, a tool or an instrument. | — |

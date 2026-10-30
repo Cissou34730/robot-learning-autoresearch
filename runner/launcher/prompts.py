@@ -11,9 +11,9 @@ from runner.launcher.pstext import field, items, text
 from runner.launcher.summaries import completed_events, latest_session_result
 
 RECIPE_DEVELOPMENT_OBJECTIVE = (
-    "Select the method that later inquiries will develop, through measured "
-    "variant comparisons. Complete recipe development when the remaining "
-    "scientific work primarily develops the selected method rather than chooses "
+    "Develop the first recipe through quick variant comparisons. Complete "
+    "recipe development when the remaining scientific work primarily develops "
+    "the selected method rather than chooses "
     "among competing methods. The section 'Recipe-development session' of "
     "contracts/program.md defines this phase."
 )
@@ -64,9 +64,9 @@ The PI trains the policy with reinforcement learning, from the starting recipe t
 
 Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI decides whether to implement or revise the proposal. Do not write code.
 
-Propose distinct methods as variants under the heading `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that implements a distinct proposed method. Its differences from other variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
+Propose variants for quick learning tests under the heading `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that tests a proposed method. These tests guide the first recipe. Differences between variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
 
-For each variant, explain the proposed differences and their physical or learning reasons. State the evidence that can distinguish the variants and change the selection of a method. Explain how observed learning can inform the training length for that decision. Keep what the definitions establish separate from what only a comparison can resolve.
+For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
 
 For each consequential physical implication and each unknown, state:
 
@@ -79,7 +79,7 @@ The scientific model states consequences, proposals and the evidence that discri
 
 End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.
 
-The PI receives this section and the full scientific model in the recipe-development session. The PI compares variants and selects a method. The startup session then receives the scientific model and the completed recipe-development record. The PI establishes the initial scientific direction and the first useful investigation from the selected recipe.
+The PI receives this section and the full scientific model in the recipe-development session. The PI uses quick variant comparisons to guide the first recipe. The startup session then receives the scientific model and the completed recipe-development record. The PI establishes the initial scientific direction and the first useful investigation from the selected recipe.
 
 The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically.""".replace(
     "\n", "\r\n"
@@ -261,14 +261,16 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
     if pstext.same(kind, "recipe_development"):
         return [
             (
-                "Choose the next variant decision from the scientific model and "
-                "the completed evidence. State which measured differences can "
-                "change the selection of a method."
+                "Before training, state your comparison plan. Explain the recipe "
+                "question, why you chose each variant and the behavior you expect. "
+                "State the training length and justify it for this test. Explain "
+                "how the results will change your next decision."
             ),
             (
-                "Use the observed learning dynamics to judge what the next "
-                "comparison needs to reveal. Further comparisons can resolve "
-                "alternatives that still matter for method selection."
+                "Use short training tests. After each comparison, state what you "
+                "learned and why you keep or revise each variant. Update the plan "
+                "before further training. Each variant can continue from its "
+                "own saved training checkpoint."
             ),
             (
                 "Save the session record when the remaining scientific work "
@@ -394,14 +396,9 @@ def _training_allocation(
         return ""
     return (
         f"Training length: for each run, you choose `steps` between "
-        f"{context.timesteps:,} and {context.max_timesteps:,}. There is no standard "
-        "length. The time and AI usage of a run increase with its steps. One "
+        f"{context.timesteps:,} and {context.max_timesteps:,}. One "
         "training operation can train 2 to 4 design variants at the same time, "
-        "with the same seed and steps.\n\n"
-        "Choose the training length from the next variant decision and the "
-        "observed learning dynamics. State what the allocated training can "
-        "reveal about that decision. Further training is selective. A weak "
-        "result can leave the relative merits of methods unresolved."
+        "with the same seed and steps."
     )
 
 
@@ -493,11 +490,11 @@ def scientific_session_prompt(
         *model_file,
         *_handoff_context(state, kind, checkpoint, synthesis),
         (
-            "Use the scientific model and the analyst's proposals to choose "
-            "variants for comparison. You decide which proposals to implement "
-            "and how to revise them. A variant can change any PI-owned source "
-            "file and any parameter. Select the method from measured differences "
-            "that matter for later inquiries."
+            "Build the first recipe through quick iterations on variants. "
+            "Start from the scientific model and the analyst's proposals. You "
+            "decide which proposals to implement and how to revise them. The "
+            "proposed first reward has the same status as the other proposals. "
+            "A variant can change any PI-owned source file and any parameter."
             if pstext.same(kind, "recipe_development")
             else ""
         ),
