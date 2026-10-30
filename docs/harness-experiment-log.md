@@ -946,25 +946,53 @@ These priorities authorize neither repairs nor campaign operations.
 
 ### No-recipe next-run work (30 October)
 
-Run 5 evidence is in the
-[maintainer report](research-overview/no-recipe-run-5-2026-10-30.html).
-The maintainer selected a startup phase centered on comparing and revising
-variants. Permission to change files is already explicit. Another permission
-sentence does not address the design problem. Final campaign wording still
-needs review before implementation.
+Updated after run 9 ended. The
+[run 5 report](research-overview/no-recipe-run-5-2026-10-30.html)
+preserves the earlier evidence. The run 9 report records the current batch,
+its comparison with run 8 and the remaining scientific questions.
+Run numbers follow the no-recipe archive folders, not the earlier parallel rounds.
+
+See [run 9: results and decisions](research-overview/no-recipe-run-9-2026-10-30.md).
 
 | Work | Maintainer decision and current state | Next action |
 |---|---|---|
-| Startup purpose and variant definition | Review as one phase, not separate wording patches. `contracts/glossary.md` has no definition of variant. Startup still means choosing the initial direction. The program and analyst prompt describe a variant as changing one design choice. | Define variant, comparison, iteration and startup completion together. Describe distinct methods and the scientific question that their comparison answers. Keep full code and parameter freedom. Derive the training budget from that comparison. Avoid a fixed number of rounds or steps unless the maintainer approves one. |
-| Coherent campaign instructions | The analyst proposes designs and the PI decides. The maintainer expects the PI to use the analysis as its starting point, then improve the recipe through startup comparisons. The earlier permission-only proposal is insufficient. | Review the glossary, program, analyst and PI system prompts, session prompts, instrument descriptions and coding guidance as one package. Use positive statements, consistent terms and simple English. Add no examples, option lists or solutions from earlier campaigns. Show the complete proposed wording before edits. |
-| Training-step scaffold anchor | Removing the trainer's `default=100_000` is approved. It remains unimplemented. The Runner already supplies the step count. | Make the argument required in the skeleton recipe. Preserve `skeleton-v3` and use a new tag. Keep the existing permitted range. Make the budget explanation follow the variant comparison rather than another suggested number. |
-| Editor-created Mypy cache | Root cause found, not a campaign type-check command. VS Code checked external campaign-2 `robot_learning/train.py` at 02:18:30 local (01:18:30 UTC), with `robot_learning` as its working directory. Cache writes began at 01:20:14 UTC. The ownership gate rejected them before Mypy finished at 01:27:13 UTC. The maintainer removed Mypy. Obsolete workspace Mypy settings were removed and JSON validation passed. Ruff and the color theme were left unchanged. | Use non-editor reads of campaign Python during runs. No ownership-gate relaxation or harness cache repair is approved. Preserve the failed session and completed training evidence. |
-| DeepSeek accounting | Token counts are sufficient for the maintainer. | Keep token and time summaries. No new cost or AIU conversion work is requested. |
-| Next experiment | No launch or reset is authorized by this backlog. | Preserve run 5 before resetting any slot. Review the coherent phase proposal and validate approved changes before requesting launch approval. This experiment branch remains local. |
+| Recipe development and variants | Implemented in `d618312cf`. The analyst proposes methods and the PI selects them. Variants can differ in code and parameters. Recipe development precedes the original startup and preserves its complete comparison record. Selection has no score threshold or fixed comparison count. | Interpret phase completion as method selection, not scientific success. Check whether each selection follows its evidence. |
+| Independent continuation | Implemented in `74d6fb697`. Each transfer variant can retain its own parent. Variants within one operation still share steps and seed. Run 9 campaign-4 used this path for two continuations. | Distinguish additional training steps from the parent's exposure. |
+| Console, reports and compatibility | TUI/report stage `356c8a47c` and final compatibility repair `87a2d938f` are complete. The implementation report's pending follow-up commit is historical. | See the implementation record for its offline checks. Live phase completion is recorded below. |
+| Training-step scaffold anchor | Implemented in the separate skeleton commit `79e671a`, tag `skeleton-v4`. The training-step argument is required. `skeleton-v3` remains preserved. | Derive the requested exposure from the comparison and learning evidence. Removing a default alone does not establish a sufficient budget. |
+| Variant write authorization | Run 6 stopped on the new variant path. Repair `5dc489ffe` covered variant permissions and Windows path case. | Preserve the failed attempt. Runs 7-9 exercised variant training after the repair. |
+| Reused analysis | `cb7ee1bbc` supports per-slot `skeleton-v4-analyzed` references. Runs 8 and 9 reused the completed DeepSeek analyses from run 7. | Record zero new analyst tokens separately from the original analysis cost. |
+| Short comparison plan | `715ae5be2` asks for a brief comparison plan and quick tests. It adds no new training cap or minimum-first-run rule. Run 9 started at 100k/50k/20k/50k/30k steps instead of run 8's 200k/100k/100k/150k/100k. | Judge the later decisions as well as the first budgets. Campaigns 1 and 4 iterated, while campaigns 2, 3 and 5 selected after one training operation. |
+| Editor-created Mypy cache | Run 5 campaign-2 failed after editor checks wrote caches in its scientific tree. VS Code checked external `robot_learning/train.py` at 02:18:30 local. Cache writes began at 01:20:14 UTC. The maintainer removed Mypy and obsolete workspace settings. | Use non-editor reads of campaign Python during runs. Preserve the failed session and completed training evidence. No ownership-gate relaxation is approved. |
+| Accounting | Time and token records are sufficient. Reused analysis has no new analyst charge in run 9. | Keep current-campaign usage separate from earlier sessions. Do not invent a DeepSeek AIU conversion. |
+| Publication and next work | Branch `feature/prepared-recipe-analysis` has local HEAD `715ae5be2`. The last known origin revision is `cb7ee1bbc`. The attempted push returned GitHub HTTP 500, then the maintainer explicitly prohibited further pushes. | No push, commit, reset, archive or new campaign is authorized by this documentation update. |
+
+#### No-recipe run ledger
+
+Runs 1-4 below retain the maintainer history from the run 5 report.
+They are not new numerical audits of those campaigns.
+Archive roots are siblings of this harness checkout.
+Stopped attempts remain separate from completed measurements.
+
+| Run or attempt | Source and recipe | Change and models | Result and status |
+|---|---|---|---|
+| 1 | `robot-learning-campaigns-norecipe-run1`, `skeleton-v1` | Two campaigns, fixed 120k training exposure. Both selected joint targets with feedback. | Convergence failed in the maintainer history. Later work allowed variable exposure and added reward-term logs. |
+| 2 | `robot-learning-campaigns-norecipe-run2`, before `skeleton-v3` | Five full campaigns. Direct commands outperformed the repeated joint-target method. | No official pass. Best reported task reference: 186/200. Parallel variants and a broader analyst task followed. |
+| 3 | `robot-learning-campaigns-norecipe-run3`, `skeleton-v3` period | Terra analyst. No PI used variants. | Maintainer found useful insights but weak correctness. Terra and Luna missed the fast velocity dynamics. No measured score is asserted here. |
+| 4 | `robot-learning-campaigns-norecipe-run4`, `skeleton-v3` | Sol analyst. Variants mostly changed small parameters. Examples and parameter-only framing constrained the choices. | Reported analysis cost: 24-36 AIU each. The run 5 audit found no completed evaluation operations, so training proxies are not research scores. |
+| 5, earlier attempt | History in the run 5 report | DeepSeek analyst. Copilot omitted two analyst paragraphs. | Stopped before analysis completion. Fixed-system-prompt repair preceded the restart. This is not a second completed batch. |
+| 5, restart | `robot-learning-campaigns-norecipe-run5`, harness `33435311`, `skeleton-v3` | DeepSeek/max analyst, Luna/high PI and helpers. Broader method comparisons and clearer dynamics. | 11 variant runs requested 3.1m steps. Best task reference: campaign-1 171/200. Campaign-3 research: 13/400. Campaign-4 task reference: 98/200. Campaign-5 research: 242/400. Campaign-2 stopped on editor-created Mypy caches. See the run 5 report for all comparisons. |
+| 6 | `robot-learning-campaigns-norecipe-run6`, harness `3e1d86b94`, `skeleton-v4` | New recipe-development phase, full variant freedom, independent parents and required training steps. | Stopped on variant write authorization. No policy-performance conclusion follows from that failure. |
+| 7 | `robot-learning-campaigns-norecipe-run7`, repair `5dc489ffe`, `skeleton-v4` | DeepSeek/max completed all five analyses. Luna/high PI, coder and reviewer. Original recipe-development wording. | Pending requests total 4.1m steps across 18 variants. Maintainer stopped the batch before any completed operation record. Its completed analyses became the immutable replay sources. |
+| 8 | `robot-learning-campaigns-norecipe-run8`, harness `cb7ee1bbc`, per-slot `skeleton-v4-analyzed` | Reused run 7 analysis. Same original wording, without new analyst calls. | Pending requests total 2.6m steps across 20 variants. First budgets: 200k/100k/100k/150k/100k. Maintainer stopped the replay before any completed operation record. The 4.1m/18-variant figure belongs to run 7, not run 8. |
+| 9 | Live `robot-learning-campaigns-norecipe`, harness `715ae5be2`, same analyzed references | Same analysis and Luna roles. Brief comparison plan and quick-test wording. | All five completed recipe development and original startup, then paused before inquiries. Best task reference: campaign-1 mirror 138/200 (69%). No official assessment. Detailed run 9 results are recorded in the accompanying report. |
 
 The repository is the maintainer record for this work. Assistant memory may
-support continuity, but it does not replace the repository backlog. This entry
-changes no campaign contract, runtime code or recipe.
+support continuity, but it does not replace this record. The
+[implementation record](proposals/recipe-development-implementation-20261030.md)
+preserves the staged design and validation history. Its pending publication
+and no-live-run statements describe that earlier point in time.
+This entry changes no campaign contract, runtime code or recipe.
 
 ## Change ledger
 
