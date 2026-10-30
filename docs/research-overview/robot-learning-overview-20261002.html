@@ -690,13 +690,16 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">47 closed issues; four open investigations</h3>
+          <h3 style="margin-top: 12px">51 closed issues; two open investigations</h3>
           <ul>
-            <li>All 63 issue IDs remain visible. Four are open (OI-024, OI-025, OI-062, OI-063).</li>
+            <li>All 63 issue IDs remain visible. Two are open (OI-024, OI-063).</li>
+            <li>The maintainer closed OI-025, OI-062, OI-042 and OI-047 on 30 October.
+              OI-062 errors are now very rare according to the maintainer. OI-042 has limited expected gain.
+              OI-047 concerned the first OpenCode implementation.</li>
             <li>On 30 October the maintainer closed OI-039, OI-040, OI-057 and OI-061. The closure records state
               the evidence and the limits of each decision.</li>
             <li>The maintainer also closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007 on 30 October.
-              No changes need more evidence. Twelve inactive entries remain: six proposals and six withdrawn concerns.</li>
+              No changes need more evidence. Ten inactive entries remain: four proposals and six withdrawn concerns.</li>
             <li>OI-006 and OI-010 changed from Retired to Withdrawn on 30 October. OI-054 (time and AI usage shown to
               the PI) and OI-058 (task and policy framing) were withdrawn on 27 October.</li>
             <li>On 29 October OI-061 (CLI notification text in the fixed system prompt) and OI-062 (guessed paths and
@@ -2065,13 +2068,16 @@
         Their closure records state the evidence and the limits of each decision.</p>
       <p>On the same date the maintainer closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007.
         OI-006 and OI-010 changed from Retired to Withdrawn. No entries remain paused or awaiting more evidence.</p>
+      <p>The maintainer then closed OI-025, OI-062, OI-042 and OI-047.
+        OI-062 is now rare according to the maintainer. The expected gain from OI-042 is limited.
+        OI-047 concerned the first OpenCode implementation. OI-043 and OI-050 remain proposals, pending clarification.</p>
       <p>Each description states the problem without internal campaign labels. The next column states the required
         action or the completed repair. Historical evidence remains separate.</p>
       <p>This register owns current status decisions. Older review tables and campaign reports preserve their
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">4</p>
+          <p class="metric">2</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
@@ -2079,11 +2085,11 @@
           <p class="metric-label">Changes that need more evidence</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">47</p>
+          <p class="metric">51</p>
           <p class="metric-label">Closed issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">12</p>
+          <p class="metric">10</p>
           <p class="metric-label">Inactive entries</p>
         </article>
       </div>
@@ -2175,7 +2181,7 @@
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 4</h3>
+      <h3 id="open-issues">Open issues — 2</h3>
       <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
@@ -2196,35 +2202,6 @@
               <td><span class="tag">Open</span></td>
               <td>Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse
                 of prior results. Preserve PI judgment. No automatic duplicate gate is approved.</td>
-            </tr>
-            <tr>
-              <td>OI-025</td>
-              <td>The PI can confuse measurement fields or state conclusions that the data do not support. Later
-                accurate summaries do not explain the earlier errors.</td>
-              <td><span class="tag">Open</span></td>
-              <td>T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated,
-                12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds
-                after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool
-                defect found. Optional tool <code>training_series_statistics</code> (window summary with PI-chosen
-                checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured.
-                Preserve the historical evidence.</td>
-            </tr>
-            <tr>
-              <td>OI-062</td>
-              <td>The PI and the analyst guess paths and field names instead of using the ones that exist. In the 29
-                October batch (branch <code>system-prompt-replace</code>): about 4-5 <code>view</code> calls on paths
-                that do not exist per campaign; about 4-6 refused analyst reads of reference files that are already in
-                the system prompt; 1-2 <code>episode_outcome_breakdown</code> calls with guessed fields
-                (<code>target_radius_cm</code>, <code>target_angle_degrees</code>); 1-3
-                <code>artifact_evidence_query</code> traversal-budget refusals; the DeepSeek analyst read
-                <code>contracts/robots/robot.xml</code> relative to the campaign folder (the file is in the harness)
-                and then sent 5 shell commands that were refused. All are pre-existing.
-              </td>
-              <td><span class="tag">Open</span></td>
-              <td>The analyst shell was removed on 29 October. Options, none approved: refusal text that lists what
-                exists (paths, fields); a sentence in the reference header that the files exist only in the system
-                prompt; a file map at session start. Measure the failure counts in the next batch, including the full
-                DeepSeek campaign, before a choice.</td>
             </tr>
             <tr>
               <td>OI-063</td>
@@ -2251,16 +2228,17 @@
       <h3 id="observed-issues">Changes that need more evidence — 0</h3>
       <p>No entries remain in this category. The maintainer closed OI-008, OI-051, OI-053, OI-055 and OI-056 on
         30 October. Their closure records preserve the implementation evidence and its limits.</p>
-      <h3 id="closed-issues">Closed issues — 47</h3>
+      <h3 id="closed-issues">Closed issues — 51</h3>
       <p>Most closures reflect recorded repairs. OI-021, OI-026, OI-033, OI-037, OI-038 and OI-046 were closed by
         maintainer decision; OI-033 and OI-037 without verified recovery.
         The maintainer also closed OI-039, OI-040, OI-057 and OI-061 on 30 October.
         On the same date the maintainer closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007.
+        The maintainer then closed OI-025, OI-062, OI-042 and OI-047.
         Closure does not establish scientific success
         or cover every future case.
         An unrelated official assessment is not a condition for closure.</p>
       <details>
-        <summary>Show the 47 closed issues and their closure basis</summary>
+        <summary>Show the 51 closed issues and their closure basis</summary>
         <div class="details-body">
           <div class="table-wrap wide">
             <table>
@@ -2713,12 +2691,50 @@
                     Round 3 exercised them together with OI-053. Their separate effects remain unisolated, but no
                     additional evidence requirement remains under this issue.</td>
                 </tr>
+                <tr>
+                  <td>OI-025</td>
+                  <td>The PI can misinterpret measurement fields or state conclusions that the data do not support.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The T4 trace found a PI interpretation error, not a query defect.
+                    The reply contained 79 complete records, including 12 values at 0.99 between steps 58,368 and 69,632.
+                    The PI nevertheless reported a plateau at 1.00 through step 120,832.
+                    The optional <code>training_series_statistics</code> tool supplies window summaries and PI-chosen checks.
+                    Its effect on this error remains unmeasured.
+                    Closure ends the investigation without claiming that all future interpretation errors are prevented.</td>
+                </tr>
+                <tr>
+                  <td>OI-062</td>
+                  <td>The PI and analyst can guess nonexistent paths or query fields and repeat refused reads.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The maintainer reports that these errors are now very rare.
+                    Earlier evidence includes nonexistent paths, refused reference reads, guessed fields and traversal-budget
+                    refusals in the 29 October batch. The analyst shell was removed on 29 October.
+                    No further file map, refusal-text change or failure-count study remains scheduled under this issue.
+                    Closure does not claim that every such error is eliminated.</td>
+                </tr>
+                <tr>
+                  <td>OI-042</td>
+                  <td>A tool could supply named context sections instead of whole files.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October because the expected additional gain is limited.
+                    The named-sections tool was not approved or implemented.
+                    Existing context reductions remain in place under closed OI-008.
+                    This closure ends the proposal rather than claiming delivery of the tool.</td>
+                </tr>
+                <tr>
+                  <td>OI-047</td>
+                  <td>External-provider-specific code was proposed for removal when the PI uses GitHub Copilot.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The concern applied to the first OpenCode implementation.
+                    No removal of current external-provider support is requested or claimed.
+                    This closure schedules no change to <code>read</code>, <code>read_alias</code> or <code>json_editors</code>.</td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
       </details>
-      <h3 id="inactive-issues">Inactive entries — 12</h3>
+      <h3 id="inactive-issues">Inactive entries — 10</h3>
       <p>These entries do not authorize implementation. The historical evidence remains valid.</p>
       <details>
         <summary>Show the proposed and withdrawn entries</summary>
@@ -2776,15 +2792,6 @@
                     observations remain in their campaign analysis. This entry does not authorize a generic repair.</td>
                 </tr>
                 <tr>
-                  <td>OI-042</td>
-                  <td>Each new session receives whole context files. Only named sections could reduce cost further.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Distant future. One PI-selected named-sections context tool, as in the <a
-                      href="../archive/copilot-sdk-consolidation-plan.md">SDK consolidation plan</a>.
-                    Reconsider only if context costs justify it. OI-008 is closed and requires no further monitoring
-                    for this proposal.</td>
-                </tr>
-                <tr>
                   <td>OI-043</td>
                   <td>Instruction changes are tested only in full campaigns.</td>
                   <td><span class="tag">Proposal</span></td>
@@ -2805,15 +2812,6 @@
                     recorded measurements if a campaign shows this error again. Precedent: E11 in <code>49e58c12</code>
                     attributed T1's 192/200 to T2. Recorded references in <code>success_rate_pass_probability</code>
                     already cover the counts behind pass estimates.</td>
-                </tr>
-                <tr>
-                  <td>OI-047</td>
-                  <td>Code paths used only for external inference providers remain when the PI runs on GitHub
-                    Copilot.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Low priority. Remove the <code>read</code> tool, <code>read_alias</code> and
-                    <code>json_editors</code> if external providers are no longer used.
-                  </td>
                 </tr>
                 <tr>
                   <td>OI-050</td>
@@ -3269,6 +3267,16 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: OI-025, OI-062, OI-042 and OI-047 closed</h3>
+        <p>OI-025 ends the interpretation-error investigation. The maintainer reports that OI-062 errors are now very rare.
+          OI-042 ends because its expected additional gain is limited.
+          OI-047 concerned the first OpenCode implementation, not removal of current provider support.
+          Two issues remain open, none await more evidence, 51 are closed and 10 are inactive.
+          The inactive entries comprise four proposals and six withdrawn concerns.
+          OI-043 and OI-050 remain proposals, pending clarification.
+          No runtime code, campaign state or evidence changed.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">30 October: six more closures and two status changes</h3>
         <p>The maintainer closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007.
