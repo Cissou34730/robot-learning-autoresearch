@@ -137,6 +137,7 @@ SCIENTIFIC_OPERATION_KINDS = {
     "restore_recipe",
 }
 SESSION_OPERATION_MATRIX = {
+    "recipe_development": {*SCIENTIFIC_OPERATION_KINDS, "checkpoint"},
     "startup": {*SCIENTIFIC_OPERATION_KINDS, "checkpoint"},
     "goal_review": {
         "measurement",

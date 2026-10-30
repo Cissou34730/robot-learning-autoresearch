@@ -333,13 +333,15 @@ def test_publication_failure_guard_preserves_other_recovery_routes(progress):
     phases.require_publication_recovered({"pending_operation": pending})
 
 
-def test_schema6_state_and_model_are_the_only_fresh_start_contract():
+def test_schema7_state_and_model_are_the_only_fresh_start_contract():
     assert "pi_workspace/operation_request.json" in reset_campaign.CAMPAIGN_PATHS
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
     )
-    assert state["schema_version"] == 6
+    assert state["schema_version"] == 7
+    assert state["campaign_phase"] == "recipe_development"
+    assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
     assert state["scientific_model"]["status"] == "pending"
     assert state["active_inquiry"] is None
@@ -393,6 +395,7 @@ def _goal_review_candidate(
     }
     if at_cap:
         state["counters"]["inquiry"] = state["campaign"]["max_inquiries"]
+    state["campaign_phase"] = "research"
     repository.start_scientific_session(
         state,
         kind="goal_review",
@@ -578,6 +581,7 @@ def test_launcher_pauses_at_cap_only_after_scientific_work_is_checkpointed(
     count, active_field, expected
 ):
     state = {
+        "campaign_phase": "research",
         "campaign": {"max_inquiries": 15},
         "counters": {"inquiry": count, "session": 1},
         "active_inquiry": None,
@@ -592,9 +596,13 @@ def test_launcher_pauses_at_cap_only_after_scientific_work_is_checkpointed(
     assert state == before
 
 
-@pytest.mark.parametrize(("sessions", "expected"), [(0, False), (1, True)])
-def test_a_zero_inquiry_cap_pauses_after_the_startup_session(sessions, expected):
+@pytest.mark.parametrize(
+    ("phase", "sessions", "expected"),
+    [("recipe_development", 0, False), ("startup", 1, False), ("research", 2, True)],
+)
+def test_a_zero_inquiry_cap_pauses_after_both_initial_phases(phase, sessions, expected):
     state = {
+        "campaign_phase": phase,
         "campaign": {"max_inquiries": 0},
         "counters": {"inquiry": 0, "session": sessions},
         "active_inquiry": None,

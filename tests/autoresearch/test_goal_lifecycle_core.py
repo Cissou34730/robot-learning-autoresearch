@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import atexit
+import copy
 import json
 import os
 import shutil
@@ -14,6 +15,7 @@ from pathlib import Path
 import pytest
 
 from runner import (
+    build_brief,
     execution,
     invocation_result,
     paths,
@@ -21,6 +23,7 @@ from runner import (
     repository,
     run_experiment,
 )
+from runner.launcher import phases, summaries
 
 
 def _init_git_worktree(path: Path) -> None:
@@ -180,6 +183,8 @@ def _model_role_event(candidate_id: str, evidence: list[str]) -> dict:
 
 
 def _start_session(state: dict, kind: str, objective: str) -> dict:
+    if kind == "startup" and state["counters"]["session"] == 0:
+        state["campaign_phase"] = "startup"
     session = repository.start_scientific_session(
         state,
         kind=kind,
@@ -201,6 +206,7 @@ def _checkpoint(state: dict) -> dict:
             "current_synthesis": "The completed operations establish factual behavior.",
             "evidence_references": list(session["operation_ids"]),
             "decision_frontier": "Choose whether to continue or close the inquiry.",
+            "next_question": "Which uncertainty should the next session resolve?",
             "completed_operations": list(session["operation_ids"]),
             "candidates_and_roles": "Candidates are available; roles remain explicit.",
             "next_direction_or_closure": "Start a fresh bounded session.",
@@ -209,7 +215,7 @@ def _checkpoint(state: dict) -> dict:
     }
 
 
-def test_state_is_a_strict_schema6_operation_state(monkeypatch, tmp_path):
+def test_state_is_a_strict_schema7_operation_state(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
 
     assert state["model_roles"] == {
@@ -221,8 +227,290 @@ def test_state_is_a_strict_schema6_operation_state(monkeypatch, tmp_path):
     assert state["active_inquiry"] is None
     assert state["scientific_session"] is None
     assert state["pi_checkpoint"] is None
+    assert state["campaign_phase"] == "recipe_development"
+    assert state["recipe_development"] is None
     assert state["operation_events"] == []
     assert set(state) == repository.STATE_FIELDS
+
+
+@pytest.mark.parametrize(
+    "sessions, kind, phase",
+    [(0, None, "startup"), (1, "startup", "startup"), (2, "goal_review", "research")],
+)
+def test_schema6_read_normalizes_without_writing(
+    monkeypatch, tmp_path, sessions, kind, phase
+):
+    state = _configure(monkeypatch, tmp_path)
+    if kind is not None:
+        state["campaign_phase"] = phase
+        _start_session(state, kind, "Continue the existing scientific session.")
+    state.pop("campaign_phase")
+    state.pop("recipe_development")
+    state["schema_version"] = 6
+    state["counters"]["session"] = sessions
+    serialized = json.dumps(state)
+    paths.STATE_PATH.write_text(serialized, encoding="utf-8")
+
+    loaded = repository.load_state(allow_missing_artifact=True)
+
+    assert loaded["schema_version"] == 7
+    assert loaded["campaign_phase"] == phase
+    assert loaded["recipe_development"] is None
+    assert paths.STATE_PATH.read_text(encoding="utf-8") == serialized
+    monkeypatch.setattr(repository, "git", lambda *_args: serialized)
+    assert repository.read_committed_state("HEAD") == loaded
+    launcher_path = tmp_path / "runner" / "state" / "research_state.json"
+    launcher_path.parent.mkdir(parents=True)
+    launcher_path.write_text(serialized, encoding="utf-8")
+    assert summaries.load_state(tmp_path) == loaded
+    assert launcher_path.read_text(encoding="utf-8") == serialized
+
+
+@pytest.mark.parametrize("cap", [0, 15])
+def test_fresh_flow_checkpoints_both_initial_phases_before_the_inquiry_cap(
+    monkeypatch, tmp_path, cap
+):
+    state = _configure(monkeypatch, tmp_path)
+    state["campaign"]["max_inquiries"] = cap
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    assert phases.session_kind(state) == "recipe_development"
+    assert not phases.inquiry_cap_reached(state)
+    for number, kind, next_phase in (
+        (1, "recipe_development", "startup"),
+        (2, "startup", "research"),
+    ):
+        session = _start_session(
+            state, kind, "Resolve the initial scientific decision."
+        )
+        assert session["id"] == f"S{number}"
+        assert not phases.inquiry_cap_reached(state)
+        run_experiment.accept_operation(_checkpoint(state), state)
+        assert run_experiment.execute_pending_operation() == 0
+        state = repository.load_state(allow_missing_artifact=True)
+        assert state["campaign_phase"] == next_phase
+        assert state["scientific_session"] is None
+        assert state["pending_operation"] is None
+        assert state["pi_checkpoint"]["session_id"] == f"S{number}"
+        if number == 1:
+            handoff = copy.deepcopy(state["recipe_development"])
+            assert handoff == state["pi_checkpoint"]
+            assert not phases.inquiry_cap_reached(state)
+            assert phases.session_kind(state) == "startup"
+        else:
+            assert state["recipe_development"] == handoff
+            assert state["recipe_development"] != state["pi_checkpoint"]
+    assert phases.session_kind(state) == "goal_review"
+    assert phases.inquiry_cap_reached(state) is (cap == 0)
+    assert state["counters"]["training"] == 0
+    assert state["counters"]["inquiry"] == 0
+    assert [event["id"] for event in state["operation_events"]] == ["E1", "E2"]
+
+
+@pytest.mark.parametrize(
+    "failure_point", ["result_record", "completion_commit", "finalization_commit"]
+)
+def test_development_checkpoint_retries_without_republishing_or_training(
+    monkeypatch, tmp_path, failure_point
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "recipe_development", "Compare the scientific recipes.")
+    run_experiment.accept_operation(_checkpoint(state), state)
+    published = []
+    monkeypatch.setattr(
+        repository,
+        "publish_scientific_recipe",
+        lambda *_args: published.append("recipe") or "a" * 40,
+    )
+    monkeypatch.setattr(
+        execution,
+        "train_candidate",
+        lambda *_args, **_kwargs: pytest.fail("checkpoint must not train"),
+    )
+    original_upsert = repository.upsert_operation_event
+    failed = False
+
+    def upsert(event):
+        nonlocal failed
+        if failure_point == "result_record" and not failed:
+            failed = True
+            raise OSError("injected publication failure")
+        original_upsert(event)
+
+    def commit(message):
+        nonlocal failed
+        target = (
+            "complete E1 checkpoint"
+            if failure_point == "completion_commit"
+            else "finalize E1"
+        )
+        if failure_point != "result_record" and message == target and not failed:
+            failed = True
+            raise OSError("injected publication failure")
+        return True
+
+    monkeypatch.setattr(repository, "upsert_operation_event", upsert)
+    monkeypatch.setattr(repository, "commit_runner_memory", commit)
+    writes = []
+    original_write = repository.write_state
+
+    def write(current):
+        original_write(current)
+        writes.append(copy.deepcopy(current))
+
+    monkeypatch.setattr(repository, "write_state", write)
+    with pytest.raises(OSError, match="injected publication failure"):
+        run_experiment.execute_pending_operation()
+    interrupted = repository.load_state(allow_missing_artifact=True)
+    assert interrupted["pending_operation"]["failure"] is None
+    if failure_point == "result_record":
+        assert interrupted["campaign_phase"] == "recipe_development"
+        assert interrupted["recipe_development"] is None
+        assert interrupted["pi_checkpoint"] is None
+        assert interrupted["scientific_session"]["id"] == "S1"
+    else:
+        assert interrupted["campaign_phase"] == "startup"
+        assert interrupted["recipe_development"] == interrupted["pi_checkpoint"]
+        assert interrupted["scientific_session"] is None
+    assert run_experiment.execute_pending_operation() == 0
+    completed = repository.load_state(allow_missing_artifact=True)
+    assert published == ["recipe"]
+    assert completed["pending_operation"] is None
+    assert completed["campaign_phase"] == "startup"
+    assert completed["recipe_development"] == completed["pi_checkpoint"]
+    assert completed["counters"] == interrupted["counters"]
+    assert [event["id"] for event in completed["operation_events"]] == ["E1"]
+    assert [event["id"] for event in repository.history_records()] == ["E1"]
+    for snapshot in writes:
+        pending = snapshot["pending_operation"]
+        if pending is not None and pending["progress"] != "completed":
+            assert snapshot["recipe_development"] is None
+            assert snapshot["campaign_phase"] == "recipe_development"
+        if snapshot["recipe_development"] is not None:
+            assert snapshot["scientific_session"] is None
+            assert snapshot["campaign_phase"] == "startup"
+            assert snapshot["pi_checkpoint"] == snapshot["recipe_development"]
+
+
+@pytest.mark.parametrize(
+    "mutation, message",
+    [
+        ("phase", "recipe_development phase"),
+        ("session", "session S1"),
+        ("inquiry", "without an inquiry"),
+        ("evidence", "recipe_development evidence_references"),
+        ("record", "completed checkpoint event"),
+        ("event", "completed checkpoint event"),
+        ("completed", "completed_operations"),
+        ("latest", "startup must follow"),
+        ("research", "startup checkpoint"),
+        ("shape", "recipe_development requires exactly"),
+    ],
+)
+def test_development_handoff_requires_consistent_phase_session_and_evidence(
+    monkeypatch, tmp_path, mutation, message
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "recipe_development", "Compare scientific recipes.")
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    run_experiment.accept_operation(_checkpoint(state), state)
+    assert run_experiment.execute_pending_operation() == 0
+    state = repository.read_state()
+    handoff = state["recipe_development"]
+    if mutation == "phase":
+        state["campaign_phase"] = "recipe_development"
+    elif mutation == "session":
+        handoff["session_id"] = "S9"
+    elif mutation == "inquiry":
+        handoff["inquiry_id"] = "I1"
+    elif mutation == "evidence":
+        handoff["evidence_references"] = ["M404"]
+    elif mutation == "record":
+        handoff["current_synthesis"] = "A different saved interpretation."
+    elif mutation == "event":
+        state["operation_events"].clear()
+    elif mutation == "completed":
+        handoff["completed_operations"] = ["E1"]
+        state["operation_events"][0]["request"]["completed_operations"] = ["E1"]
+    elif mutation == "latest":
+        state["pi_checkpoint"]["current_synthesis"] = "A later interpretation."
+    elif mutation == "research":
+        state["campaign_phase"] = "research"
+    elif mutation == "shape":
+        handoff.pop("session_id")
+    with pytest.raises(ValueError, match=message):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+@pytest.mark.parametrize("phase", ["recipe_development", "startup"])
+def test_initial_phases_refuse_active_inquiries(monkeypatch, tmp_path, phase):
+    state = _configure(monkeypatch, tmp_path)
+    state["campaign_phase"] = phase
+    state["active_inquiry"] = {
+        "id": "I1",
+        "question": "Question",
+        "goal_connection": "Connection",
+        "closure_condition": "Condition",
+        "rationale": "Rationale",
+        "opened_in_session": "S1",
+        "handoff_conclusion": "Conclusion",
+        "handoff_question": "Question",
+        "handoff_source_session_id": "S1",
+        "reframes": [],
+    }
+    with pytest.raises(
+        ValueError, match="active_inquiry requires campaign phase research"
+    ):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+def test_session_kind_must_match_campaign_phase(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "recipe_development", "Compare scientific recipes.")
+    state["campaign_phase"] = "startup"
+    with pytest.raises(
+        ValueError, match="kind recipe_development requires phase recipe_development"
+    ):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+def test_brief_keeps_development_handoff_separate_from_latest_startup_record(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(build_brief, "RESEARCH_DIR", paths.RESEARCH_DIR)
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    for kind in ("recipe_development", "startup"):
+        _start_session(state, kind, "Resolve the initial scientific decision.")
+        assert f"`{kind}`" in "\n".join(build_brief._active_inquiry_lines(state))
+        request = _checkpoint(state)
+        request["checkpoint"]["current_synthesis"] = f"Saved interpretation for {kind}."
+        run_experiment.accept_operation(request, state)
+        assert run_experiment.execute_pending_operation() == 0
+        state = repository.read_state()
+        rendered = build_brief.render_research_brief()
+        assert f"`{state['campaign_phase']}`" in rendered
+        handoff = state["recipe_development"]
+        assert handoff["current_synthesis"] in rendered
+        assert handoff["next_question"] in rendered
+        assert state["pi_checkpoint"]["current_synthesis"] in rendered
+        assert handoff["current_synthesis"] in "\n".join(
+            build_brief._checkpoint_lines(state, development=True)
+        )
+    assert state["recipe_development"]["session_id"] == "S1"
+    assert state["pi_checkpoint"]["session_id"] == "S2"
+
+
+def test_brief_normalizes_legacy_state_without_rewriting_it(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(build_brief, "RESEARCH_DIR", paths.RESEARCH_DIR)
+    _start_session(state, "startup", "Review the existing recipe.")
+    state["schema_version"] = 6
+    state.pop("campaign_phase")
+    state.pop("recipe_development")
+    serialized = json.dumps(state)
+    paths.STATE_PATH.write_text(serialized, encoding="utf-8")
+    assert "`startup`" in build_brief.render_research_brief()
+    assert paths.STATE_PATH.read_text(encoding="utf-8") == serialized
 
 
 def test_one_pending_transaction_freezes_the_request(monkeypatch, tmp_path):

@@ -76,7 +76,7 @@ def _prepared_source_state(candidate: dict) -> dict:
     return state
 
 
-def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
+def test_fresh_campaign_writes_only_schema7_memory(monkeypatch, tmp_path):
     research = _bind_paths(monkeypatch, tmp_path)
     obsolete = (
         "pi_workspace/operation_request.json",
@@ -100,7 +100,9 @@ def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
 
     state = reset_campaign.write_fresh_campaign(None)
 
-    assert state["schema_version"] == 6
+    assert state["schema_version"] == 7
+    assert state["campaign_phase"] == "recipe_development"
+    assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
     assert state["scientific_model"] == {
         "status": "pending",
@@ -181,7 +183,7 @@ def test_recipe_import_excludes_campaign_memory_and_laboratory(monkeypatch):
         reset_campaign.scientific_plan("source")
 
 
-def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
+def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
     monkeypatch, tmp_path
 ):
     root = tmp_path
@@ -289,7 +291,9 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     )
     assert resolved_source == source
     assert campaign_id == state["campaign"]["id"]
-    assert state["schema_version"] == 6
+    assert state["schema_version"] == 7
+    assert state["campaign_phase"] == "recipe_development"
+    assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
     assert state["campaign"]["id"] != source_state["campaign"]["id"]
     assert state["campaign"]["recipe_source_commit"] == source
@@ -347,9 +351,15 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     assert set(reset_campaign.CAMPAIGN_PATHS) <= set(publications[1][1])
 
 
-def test_baseline_import_builds_clean_schema6_state():
+@pytest.mark.parametrize("schema", [6, 7])
+def test_baseline_import_builds_clean_startup_state(monkeypatch, schema):
     candidate = _candidate("f" * 64)
     source_state = _prepared_source_state(candidate)
+    if schema == 6:
+        source_state["schema_version"] = 6
+        source_state.pop("campaign_phase")
+        source_state.pop("recipe_development")
+    original = copy.deepcopy(source_state)
 
     state = reset_campaign.baseline_state(
         source_state,
@@ -359,6 +369,10 @@ def test_baseline_import_builds_clean_schema6_state():
     )
 
     assert state["campaign"]["id"] != source_state["campaign"]["id"]
+    assert state["schema_version"] == 7
+    assert state["campaign_phase"] == "startup"
+    assert state["recipe_development"] is None
+    assert source_state == original
     assert state["campaign"]["recipe_source_commit"] == candidate["scientific_commit"]
     assert state["scientific_model"] == source_state["scientific_model"]
     assert state["candidates"] == {candidate["id"]: candidate}
@@ -374,6 +388,54 @@ def test_baseline_import_builds_clean_schema6_state():
     assert state["pending_operation"] is None
     assert state["terminal_state"] is None
     assert state["official_assessment"] is None
+    monkeypatch.setattr(repository, "git", lambda *_args: "a" * 40)
+    session = repository.start_scientific_session(
+        state,
+        kind="startup",
+        objective="Review the imported candidate.",
+        backend_adapter="copilot",
+        backend_model="test-model",
+        backend_reasoning="high",
+    )
+    assert session["id"] == "S1"
+    repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+@pytest.mark.parametrize("schema", [6, 7])
+def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch, schema):
+    candidate = _candidate("f" * 64)
+    source_state = _prepared_source_state(candidate)
+    source_state["counters"]["session"] = 2
+    if schema == 6:
+        source_state["schema_version"] = 6
+        source_state.pop("campaign_phase")
+        source_state.pop("recipe_development")
+    else:
+        source_state["campaign_phase"] = "research"
+    original = copy.deepcopy(source_state)
+    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: source_state)
+    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda value, _label: value)
+    monkeypatch.setattr(reset_campaign, "git_bytes", lambda *_args: b"model")
+    monkeypatch.setattr(
+        reset_campaign, "verify_task_compatibility", lambda _commit: None
+    )
+    monkeypatch.setattr(reset_campaign, "baseline_restore_paths", lambda *_args: [])
+    monkeypatch.setattr(
+        reset_campaign,
+        "artifact_fingerprint_at_commit",
+        lambda *_args: candidate["fingerprint"],
+    )
+    monkeypatch.setattr(reset_campaign, "scientific_plan", lambda _commit: {})
+
+    normalized, imported, _restore, _plan = reset_campaign.verify_baseline_source(
+        "source"
+    )
+
+    assert normalized["schema_version"] == 7
+    assert normalized["campaign_phase"] == "research"
+    assert normalized["recipe_development"] is None
+    assert imported == candidate
+    assert source_state == original
 
 
 def test_baseline_import_seeds_operation_counters_before_first_training():
@@ -392,6 +454,59 @@ def test_baseline_import_seeds_operation_counters_before_first_training():
     assert state["counters"]["training"] == 1
     assert protocol.allocate_operation_id("training", state) == "T2"
     assert state["candidates"] == {candidate["id"]: candidate}
+
+
+@pytest.mark.parametrize("schema", [6, 7])
+def test_baseline_evidence_lookup_accepts_legacy_measurement_history(
+    monkeypatch, tmp_path, schema
+):
+    _bind_paths(monkeypatch, tmp_path)
+    candidate = _candidate("f" * 64)
+    source_state = _prepared_source_state(candidate)
+    relative = candidate["evaluation_artifacts"][0]
+    artifact = tmp_path / relative
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text('{"measurement": 1}\n', encoding="utf-8")
+    historical = copy.deepcopy(source_state)
+    if schema == 6:
+        historical["schema_version"] = 6
+        historical.pop("campaign_phase")
+        historical.pop("recipe_development")
+    historical["operation_events"] = [
+        {
+            "id": "M1",
+            "kind": "measurement",
+            "status": "completed",
+            "result": {
+                "measurements": [
+                    {
+                        "candidate_id": candidate["id"],
+                        "metrics": {
+                            "evaluation_artifact": relative,
+                            "evaluation_artifact_fingerprint": repository.file_fingerprint(
+                                artifact
+                            ),
+                        },
+                    }
+                ]
+            },
+        }
+    ]
+    required = {
+        *(
+            f"{candidate['artifact']}/{name}"
+            for name in repository.INFERENCE_ARTIFACT_FILES
+        ),
+        "pi_workspace/scientific_model.md",
+    }
+    monkeypatch.setattr(reset_campaign, "git", lambda *_args: "source\nmeasurement\n")
+    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: historical)
+    monkeypatch.setattr(reset_campaign, "commit_files", lambda _commit: required)
+
+    assert reset_campaign.baseline_restore_paths(
+        "source", candidate, source_state
+    ) == sorted(required)
+    assert artifact.read_text(encoding="utf-8") == '{"measurement": 1}\n'
 
 
 @pytest.mark.parametrize(

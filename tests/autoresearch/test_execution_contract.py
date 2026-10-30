@@ -64,6 +64,9 @@ def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") ->
         "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
+    state["campaign_phase"] = (
+        session_kind if session_kind in {"recipe_development", "startup"} else "research"
+    )
     repository.start_scientific_session(
         state,
         kind=session_kind,

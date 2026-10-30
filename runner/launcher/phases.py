@@ -245,15 +245,17 @@ def require_publication_recovered(state: dict) -> None:
 
 
 def session_kind(state: dict) -> str:
+    phase = state["campaign_phase"]
+    if phase in {"recipe_development", "startup"}:
+        return phase
     if pstext.truthy(state.get("active_inquiry")):
         return "inquiry"
-    counters = state.get("counters") or {}
-    if int(counters.get("session") or 0) == 0 and state.get("pi_checkpoint") is None:
-        return "startup"
     return "goal_review"
 
 
 def session_objective(kind: str, state: dict) -> str:
+    if kind == "recipe_development":
+        return prompts.RECIPE_DEVELOPMENT_OBJECTIVE
     if kind == "startup":
         return prompts.STARTUP_OBJECTIVE
     if kind == "goal_review":
@@ -269,6 +271,6 @@ def inquiry_cap_reached(state: dict) -> bool:
         and not state.get("active_inquiry")
         and not state.get("pending_operation")
         and not state.get("terminal_state")
-        and session_kind(state) != "startup"
+        and state["campaign_phase"] == "research"
         and int(counters.get("inquiry") or 0) >= int(campaign.get("max_inquiries") or 0)
     )

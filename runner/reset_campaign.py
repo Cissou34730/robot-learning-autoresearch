@@ -464,10 +464,10 @@ def baseline_restore_paths(
             if revision == commit:
                 continue
             historical_state = git_json(revision, "runner/state/research_state.json")
-            if (
-                historical_state.get("schema_version")
-                != repository.STATE_SCHEMA_VERSION
-            ):
+            if historical_state.get("schema_version") not in {
+                6,
+                repository.STATE_SCHEMA_VERSION,
+            }:
                 continue
             collect_records(historical_state)
             if len(records_by_path) == len(set(evaluation_artifacts)):
@@ -508,9 +508,13 @@ def baseline_restore_paths(
 
 
 def verify_baseline_source(commit: str) -> tuple[dict, dict, list[str], dict]:
-    state = git_json(commit, "runner/state/research_state.json")
+    state = repository.normalize_research_state(
+        git_json(commit, "runner/state/research_state.json")
+    )
     if state.get("schema_version") != repository.STATE_SCHEMA_VERSION:
-        raise ValueError("BaselineRef must use schema 6")
+        raise ValueError(
+            f"BaselineRef must use schema 6 or {repository.STATE_SCHEMA_VERSION}"
+        )
     repository.validate_research_state(state, allow_missing_artifact=True)
     roles = state["model_roles"]
     candidate_id = roles["working"]
@@ -690,6 +694,7 @@ def baseline_state(
             "imported candidate origin_operation must be a strict training operation ID"
         )
     state["scientific_model"] = copy.deepcopy(source_state["scientific_model"])
+    state["campaign_phase"] = "startup"
     state["counters"]["measurement"] = source_state["counters"]["measurement"]
     state["counters"]["training"] = max(
         source_state["counters"]["training"],

@@ -45,6 +45,9 @@ def _ready_state(monkeypatch, *, session_kind: str = "startup") -> dict:
         "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
+    state["campaign_phase"] = (
+        session_kind if session_kind in {"recipe_development", "startup"} else "research"
+    )
     if session_kind == "inquiry":
         state["active_inquiry"] = {
             "id": "I1",
@@ -95,6 +98,13 @@ def test_startup_session_persists_backend_identity_and_has_strict_shape(monkeypa
 @pytest.mark.parametrize(
     ("session_kind", "kind", "action", "allowed"),
     [
+        ("recipe_development", "training", None, True),
+        ("recipe_development", "measurement", None, True),
+        ("recipe_development", "model_role", None, True),
+        ("recipe_development", "restore_recipe", None, True),
+        ("recipe_development", "checkpoint", None, True),
+        ("recipe_development", "inquiry", "open", False),
+        ("recipe_development", "campaign_conclusion", "request_official_assessment", False),
         ("startup", "training", None, True),
         ("startup", "inquiry", "open", False),
         ("goal_review", "inquiry", "open", True),

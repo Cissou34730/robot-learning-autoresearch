@@ -39,6 +39,7 @@ names in code format are technical names. They keep their exact spelling.
 | change | One modification of the method or of a tool. | — |
 | intervention | A change that you make to test its causal effect on the behavior of the policy. | — |
 | recipe | The source files and the parameters that implement a method. Each candidate records its recipe. | scientific recipe |
+| variant | A recipe that implements a distinct proposed method. Its differences from other variants follow from the scientific question. It can change any PI-owned source file and any parameter. | — |
 | inherited recipe | The recipe that the campaign contains when it starts. `contracts/scenario.md` describes it. | current recipe, baseline recipe |
 | source code | Any code. | — |
 | implementation | The source code that realizes a method, a tool or an instrument. | — |
@@ -82,7 +83,8 @@ names in code format are technical names. They keep their exact spelling.
 | analyst session | The first session. The analyst writes the scientific model. | preliminary session, preliminary analyst session, campaign-start session |
 | scientific model | The document `pi_workspace/scientific_model.md`: the initial physical model of the robot and the task, which the analyst derives from the definitions. It does not change during the campaign; your session records carry forward what the campaign learns. | — |
 | decision-relevant synthesis | The last section of the scientific model. It gives the facts and the unknowns that are most likely to change your first decisions. | decision-relevant |
-| startup session | Your first session. You choose the first direction of the campaign. | — |
+| recipe-development session | Your first session after the analyst session. You compare variants and select the method for later inquiries. Its kind is `recipe_development`. | — |
+| startup session | The session after recipe development. You establish the initial scientific direction, the tools and the first useful investigation from the selected recipe. | — |
 | goal-review session | A session in which you choose one of two actions: request the official assessment, or open one inquiry. You can measure before you choose. | goal review |
 | inquiry | A question that you open in a goal-review session, with a closure condition. You work on it in inquiry sessions until you close it. | goal-linked inquiry |
 | active inquiry | An inquiry that is open. | — |
@@ -93,7 +95,7 @@ names in code format are technical names. They keep their exact spelling.
 The campaign follows this cycle:
 
 ```text
-analyst session -> startup session -> goal-review session
+analyst session -> recipe-development session -> startup session -> goal-review session
 goal-review session -> open inquiry -> inquiry sessions -> close inquiry -> goal-review session
 goal-review session -> official assessment -> end of the campaign
 ```
@@ -108,16 +110,16 @@ goal-review session -> official assessment -> end of the campaign
 
 ## Operations by session
 
-| Operation | Startup session | Goal-review session | Inquiry session |
-|---|---|---|---|
-| `measurement` | yes | yes | yes |
-| `training` | yes | no | yes |
-| `model_role` | yes | yes | yes |
-| `restore_recipe` | yes | no | yes |
-| `inquiry` open | no | yes, when no inquiry is active | no |
-| `inquiry` reframe or close | no | no | yes |
-| `campaign_conclusion` | no | yes, when no inquiry is active | no |
-| `checkpoint` | yes | yes, after you open an inquiry | yes |
+| Operation | Recipe-development session | Startup session | Goal-review session | Inquiry session |
+|---|---|---|---|---|
+| `measurement` | yes | yes | yes | yes |
+| `training` | yes | yes | no | yes |
+| `model_role` | yes | yes | yes | yes |
+| `restore_recipe` | yes | yes | no | yes |
+| `inquiry` open | no | no | yes, when no inquiry is active | no |
+| `inquiry` reframe or close | no | no | no | yes |
+| `campaign_conclusion` | no | no | yes, when no inquiry is active | no |
+| `checkpoint` | yes | yes | yes, after you open an inquiry | yes |
 
 `contracts/instruments.md` gives the formats and the acceptance rules.
 

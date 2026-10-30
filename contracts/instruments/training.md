@@ -24,7 +24,8 @@ negative. The `description` and `rationale` strings must not be empty. The
 `steps` value must be a positive integer.
 
 The session prompt gives the shortest and the longest permitted run. In a
-startup or an inquiry session, you choose `steps` in that range for each run.
+recipe-development, startup or inquiry session, you choose `steps` in that range
+for each run.
 No length is standard. You cannot change the range. The Runner rejects other
 values during validation, acceptance and the start of training.
 

@@ -6,6 +6,7 @@ import json
 import re
 from pathlib import Path
 
+from runner import repository
 from runner.launcher import pstext
 from runner.launcher.pstext import field, items, text
 
@@ -22,7 +23,9 @@ _MEASUREMENT_HIDDEN_METRICS = frozenset(
 
 def load_state(campaign_root: Path) -> dict:
     path = campaign_root / "runner" / "state" / "research_state.json"
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    return repository.normalize_research_state(
+        json.loads(path.read_text(encoding="utf-8-sig"))
+    )
 
 
 def completed_events(state: dict) -> list:

@@ -114,6 +114,8 @@ session.
 
 The kind of the current session sets the operations that the Runner accepts:
 
+- In a recipe-development session, the Runner accepts measurement, training,
+  role, recipe restoration and `checkpoint` operations.
 - In a startup session, the Runner accepts measurement, training, role, recipe
   restoration and `checkpoint` operations.
 - In a goal-review session, the Runner accepts measurement, role, inquiry open
@@ -166,12 +168,20 @@ so that each count comes from the record of the cited operation and candidate.
 
 `next_question` depends on the kind of session:
 
+- recipe-development session: the next investigation for the startup session
 - startup session, or inquiry session that closed its inquiry: the proposed
   question for the next goal-review session
 - goal-review session: the exact question of the inquiry that you opened in
   this session
 - inquiry session in which the inquiry stays active: the exact question of the
   active inquiry
+
+In a recipe-development session, `current_synthesis` identifies the selected
+method, its recipe and the measured differences that support the selection.
+`decision_frontier` preserves the unresolved alternatives and the evidence that
+can distinguish them. `next_direction_or_closure` explains why later inquiries
+will primarily develop the selected method. The Runner preserves the completed
+session record as the handoff to startup.
 
 `completed_operations` must be exactly the completed operation identities of
 the active session. When you open, reframe or close an inquiry, the session

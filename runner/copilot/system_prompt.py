@@ -23,8 +23,9 @@ PI_IDENTITY = (
     "and the tools that resolve them. Redesign any PI-owned part of the system "
     "when the evidence warrants it.\n\n"
     "Reason about the robot behavior, the learning dynamics, the implementation "
-    "and the experimental evidence as one scientific problem. Do not default to "
-    "local adjustments of parameters or of the reward.\n\n"
+    "and the experimental evidence as one scientific problem. Choose the scale "
+    "of a change from the scientific question and the evidence. Any PI-owned "
+    "source file and any parameter can change.\n\n"
     "The human supplies the goal and the protected limits, not the research "
     "program. The existing code, architecture, metrics, prior hypotheses and "
     "earlier decisions are provisional scientific artifacts, not authorities. "
@@ -57,7 +58,8 @@ ANALYST_IDENTITY = (
     "The principal investigator (PI) will use your physical model as the "
     "scientific foundation of a research campaign. The PI chooses the research. "
     "You supply the physical understanding and the analysis of the learning "
-    "problem."
+    "problem. You propose a first reward and variants. The PI decides which "
+    "proposals to implement and which method to select."
 )
 
 TONE = (
@@ -69,10 +71,12 @@ TONE = (
 )
 
 ANALYST_EXPLORATION = (
-    "The PI starts the campaign from the starting recipe that "
-    "contracts/scenario.md describes and from this physical model. Where the "
-    "starting recipe differs from the task, or where "
-    "the model is silent, the campaign starts without that knowledge."
+    "The PI receives your scientific model before the recipe-development "
+    "session. The inherited recipe that contracts/scenario.md describes gives "
+    "design choices, not properties of the robot. A variant can change any "
+    "PI-owned source file and any parameter. The training instrument in the "
+    "campaign reference describes the variant capabilities. The PI compares "
+    "variants and selects the method before the startup session."
 )
 
 AUTONOMY = (
@@ -163,6 +167,7 @@ def reference_paths(preliminary: bool) -> tuple[str, ...]:
         "contracts/authority.md",
         "contracts/policy_runtime.py",
         "contracts/instruments/scientific-model.md",
+        "contracts/instruments/training.md",
     )
 
 

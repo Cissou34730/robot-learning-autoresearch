@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -9,9 +10,17 @@ from runner.launcher import pstext
 from runner.launcher.pstext import field, items, text
 from runner.launcher.summaries import completed_events, latest_session_result
 
+RECIPE_DEVELOPMENT_OBJECTIVE = (
+    "Select the method that later inquiries will develop, through measured "
+    "variant comparisons. Complete recipe development when the remaining "
+    "scientific work primarily develops the selected method rather than chooses "
+    "among competing methods. The section 'Recipe-development session' of "
+    "contracts/program.md defines this phase."
+)
 STARTUP_OBJECTIVE = (
-    "Establish the initial scientific direction, as the section 'Campaign start' "
-    "of contracts/program.md defines."
+    "Establish the initial scientific direction, the tools and the first useful "
+    "investigation from the selected recipe. The section 'Startup session' "
+    "of contracts/program.md defines this session."
 )
 GOAL_REVIEW_OBJECTIVE = (
     "Use the completed evidence to update the scientific direction toward the "
@@ -47,15 +56,17 @@ Analyze these items from first principles and from the human-owned definitions:
 The PI trains the policy with reinforcement learning, from the starting recipe that contracts/scenario.md describes. Analyze the learning problem that the starting recipe and the task create:
 
 * how the transformation of the network output into the motor command affects exploration, the motion that random network outputs produce and the speed of learning.
-* the number of training steps that a run needs before a weak result is evidence against a design.
+* how the next variant decision and the observed learning dynamics inform the training length and the limits of a weak result.
 * the quantities in the training log that show progress before task success occurs.
 * for each reward term that you consider, the behavior that the term makes cheapest for the policy, including behavior that collects reward without task success.
 * the relation between the reward, the end of the episode, the hold requirement and the discount factor.
 * the design choices where the analysis cannot tell before training which option the robot learns better.
 
-Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI implements the reward. Do not write code.
+Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI decides whether to implement or revise the proposal. Do not write code.
 
-Propose one or more design variants under the heading `### Proposed design variants` in the register Decision-relevant synthesis. A variant changes one design choice of the first design. Order the variants by their expected effect on task success. For each variant, state the change, its physical or learning reason and the training result that shows whether it is better than the first design. Two or more designs that train together on the same seed and steps show which design the robot learns better. One run of one design cannot show this.
+Propose distinct methods as variants under the heading `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that implements a distinct proposed method. Its differences from other variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
+
+For each variant, explain the proposed differences and their physical or learning reasons. State the evidence that can distinguish the variants and change the selection of a method. Explain how observed learning can inform the training length for that decision. Keep what the definitions establish separate from what only a comparison can resolve.
 
 For each consequential physical implication and each unknown, state:
 
@@ -64,11 +75,11 @@ For each consequential physical implication and each unknown, state:
 3. The source references in the implementation or in the contracts.
 4. The observation or the evidence that would support it, weaken it or revise it.
 
-The scientific model states consequences and the evidence that discriminates between them. Except for the proposed first reward, the PI selects the interventions.
+The scientific model states consequences, proposals and the evidence that discriminates between them. The PI selects all interventions and the method.
 
 End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.
 
-The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.
+The PI receives this section and the full scientific model in the recipe-development session. The PI compares variants and selects a method. The startup session then receives the scientific model and the completed recipe-development record. The PI establishes the initial scientific direction and the first useful investigation from the selected recipe.
 
 The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically.""".replace(
     "\n", "\r\n"
@@ -198,6 +209,21 @@ def _handoff_context(
     state: dict, kind: object, checkpoint: object, synthesis: str
 ) -> list[str]:
     inquiry = field(state, "active_inquiry")
+    recipe_development = field(state, "recipe_development")
+    if pstext.same(kind, "startup") and pstext.truthy(recipe_development):
+        return [
+            (
+                "Completed recipe-development session record, unchanged:\n"
+                f"{_FENCE}json\n"
+                f"{json.dumps(recipe_development, ensure_ascii=False, indent=2)}\n"
+                f"{_FENCE}"
+            ),
+            (
+                "Continue from the selected recipe, its measured differences and "
+                "the unresolved alternatives in this record. The record stays "
+                "fixed. Its scientific judgments remain revisable from evidence."
+            ),
+        ]
     if pstext.same(kind, "goal_review") and pstext.truthy(checkpoint):
         return [
             (
@@ -232,6 +258,30 @@ def _handoff_context(
 
 
 def _decision_guidance(state: dict, kind: object) -> list[str]:
+    if pstext.same(kind, "recipe_development"):
+        return [
+            (
+                "Choose the next variant decision from the scientific model and "
+                "the completed evidence. State which measured differences can "
+                "change the selection of a method."
+            ),
+            (
+                "Use the observed learning dynamics to judge what the next "
+                "comparison needs to reveal. Further comparisons can resolve "
+                "alternatives that still matter for method selection."
+            ),
+            (
+                "Save the session record when the remaining scientific work "
+                "primarily develops the selected method rather than chooses "
+                "among competing methods. In `current_synthesis`, identify the "
+                "selected method, its recipe and the measured differences that "
+                "support the selection. Cite the completed evidence in "
+                "`evidence_references`. Preserve unresolved alternatives and "
+                "discriminating evidence in `decision_frontier`. Set `next_question` "
+                "to the next investigation for startup. Explain this transition "
+                "in `next_direction_or_closure`."
+            ),
+        ]
     goal_review = pstext.same(kind, "goal_review")
     lines = [
         "Compare the risk of the official assessment, given the residual failures "
@@ -347,8 +397,11 @@ def _training_allocation(
         f"{context.timesteps:,} and {context.max_timesteps:,}. There is no standard "
         "length. The time and AI usage of a run increase with its steps. One "
         "training operation can train 2 to 4 design variants at the same time, "
-        "with the same seed and steps. The results show which design the robot "
-        "learns better. One run of one design cannot show this."
+        "with the same seed and steps.\n\n"
+        "Choose the training length from the next variant decision and the "
+        "observed learning dynamics. State what the allocated training can "
+        "reveal about that decision. Further training is selective. A weak "
+        "result can leave the relative merits of methods unresolved."
     )
 
 
@@ -440,12 +493,29 @@ def scientific_session_prompt(
         *model_file,
         *_handoff_context(state, kind, checkpoint, synthesis),
         (
-            "From the decision-relevant synthesis of the scientific model, select the "
-            "scientific distinction or the capability question that should determine "
-            "the initial direction. State which findings would change that decision, "
-            "and how the first action follows from it. Treat the interpretations of "
-            "the scientific model as revisable in light of evidence. Do not require a "
-            "measurement only to restate the scientific model."
+            "Use the scientific model and the analyst's proposals to choose "
+            "variants for comparison. You decide which proposals to implement "
+            "and how to revise them. A variant can change any PI-owned source "
+            "file and any parameter. Select the method from measured differences "
+            "that matter for later inquiries."
+            if pstext.same(kind, "recipe_development")
+            else ""
+        ),
+        (
+            (
+                "From the selected recipe, the recipe-development record and the "
+                "scientific model, establish the initial scientific direction "
+                "toward the goal. Develop the tools that this direction needs. "
+                "Choose the first useful investigation and explain how its "
+                "possible findings can change the direction."
+                if pstext.truthy(field(state, "recipe_development"))
+                else "From the decision-relevant synthesis of the scientific model, select the "
+                "scientific distinction or the capability question that should determine "
+                "the initial direction. State which findings would change that decision, "
+                "and how the first action follows from it. Treat the interpretations of "
+                "the scientific model as revisable in light of evidence. Do not require a "
+                "measurement only to restate the scientific model."
+            )
             if pstext.same(kind, "startup")
             else ""
         ),
@@ -459,7 +529,7 @@ def scientific_session_prompt(
         f"Scientific decision frontier: {frontier}",
         (
             f"Active inquiry: {_inquiry_line(state, transition)}"
-            if not pstext.same(kind, "startup")
+            if kind not in {"recipe_development", "startup"}
             else ""
         ),
         f"Session objective: {objective}",

@@ -716,7 +716,13 @@ def _execute_checkpoint(state: dict, pending: dict) -> int:
     }
 
     def apply(current: dict, _result: dict) -> None:
-        current["pi_checkpoint"] = checkpoint
+        current["pi_checkpoint"] = copy.deepcopy(checkpoint)
+        kind = current["scientific_session"]["kind"]
+        if kind == "recipe_development":
+            current["recipe_development"] = copy.deepcopy(checkpoint)
+            current["campaign_phase"] = "startup"
+        elif kind == "startup":
+            current["campaign_phase"] = "research"
         active = current.get("active_inquiry")
         if (
             checkpoint["inquiry_id"] is None
@@ -2668,7 +2674,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-operation-input", action="store_true")
     parser.add_argument("--execute-pending", action="store_true")
     parser.add_argument(
-        "--start-session", choices=("startup", "goal_review", "inquiry"), default=None
+        "--start-session",
+        choices=("recipe_development", "startup", "goal_review", "inquiry"),
+        default=None,
     )
     parser.add_argument("--session-objective")
     parser.add_argument("--backend-session-id")

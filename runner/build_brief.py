@@ -1,4 +1,4 @@
-"""Render the strict schema-6 scientific context for a bounded PI session."""
+"""Render the scientific context for a bounded PI session."""
 
 from __future__ import annotations
 
@@ -291,13 +291,17 @@ def _active_inquiry_lines(state: dict) -> list[str]:
     if not isinstance(inquiry, dict):
         session = state["scientific_session"]
         if not isinstance(session, dict):
-            return ["- None; no session is active."]
+            return [f"- None. Campaign phase: `{state['campaign_phase']}`."]
+        if session["kind"] == "recipe_development":
+            return [
+                "- None. The current session is `recipe_development`.",
+                "- The startup session follows the recipe development checkpoint.",
+            ]
         if session["kind"] == "startup":
             return [
                 (
-                    "- None; the current session is `startup`. The goal-review "
-                    "session begins after the checkpoint operation of the startup "
-                    "session."
+                    "- None. The current session is `startup`. "
+                    "The startup checkpoint completes the startup phase."
                 )
             ]
         if session["kind"] == "goal_review":
@@ -318,17 +322,27 @@ def _active_inquiry_lines(state: dict) -> list[str]:
     ]
 
 
-def _checkpoint_lines(state: dict) -> list[str]:
-    checkpoint = state["pi_checkpoint"]
+def _checkpoint_lines(state: dict, *, development: bool = False) -> list[str]:
+    checkpoint = state["recipe_development"] if development else state["pi_checkpoint"]
     if not isinstance(checkpoint, dict):
-        return ["- No session record has been saved."]
+        return [
+            "- No recipe development record is saved."
+            if development
+            else "- No session record has been saved."
+        ]
     question_label = (
         "Active inquiry question"
-        if isinstance(state["active_inquiry"], dict)
+        if not development and isinstance(state["active_inquiry"], dict)
         else "Proposed next inquiry question"
     )
     historical_context = []
-    if isinstance(state["official_assessment"], dict):
+    if development:
+        historical_context = [
+            "- This record describes recipe development at completion. Later sessions do not change this record.",
+            f"- Goal gap at completion: {checkpoint['current_goal_gap']}",
+        ]
+        question_label = "Next question at completion"
+    elif isinstance(state["official_assessment"], dict):
         historical_context = [
             (
                 "- This session record predates the official assessment. Its "
@@ -338,11 +352,18 @@ def _checkpoint_lines(state: dict) -> list[str]:
         ]
     return [
         *historical_context,
+        f"- Session: `{checkpoint['session_id']}`",
+        f"- Scientific commit: `{checkpoint['scientific_commit']}`",
         f"- Inquiry: `{checkpoint['inquiry_id'] or '-'}`",
         f"- Connection to the goal: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
         f"- Decision frontier: {checkpoint['decision_frontier']}",
         f"- {question_label}: {checkpoint['next_question']}",
+        "- Evidence references: "
+        + (
+            ", ".join(f"`{item}`" for item in checkpoint["evidence_references"])
+            or "none"
+        ),
         "- Completed operations: "
         + (
             ", ".join(f"`{item}`" for item in checkpoint["completed_operations"])
@@ -458,10 +479,10 @@ def _completed_events(state: dict) -> list[dict]:
 
 def _event_lines(state: dict) -> list[str]:
     references: set[str] = set()
-    checkpoint = state["pi_checkpoint"]
-    if isinstance(checkpoint, dict):
-        references.update(checkpoint["completed_operations"])
-        references.update(checkpoint["evidence_references"])
+    for checkpoint in (state["recipe_development"], state["pi_checkpoint"]):
+        if isinstance(checkpoint, dict):
+            references.update(checkpoint["completed_operations"])
+            references.update(checkpoint["evidence_references"])
     session = state["scientific_session"]
     if isinstance(session, dict):
         references.update(session["operation_ids"])
@@ -525,7 +546,9 @@ def render_research_brief() -> str:
     )
     if not state_path.is_file():
         raise RuntimeError("research state is missing")
-    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state = runner_repository.normalize_research_state(
+        json.loads(state_path.read_text(encoding="utf-8"))
+    )
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
     lines = [
         "# Research brief",
@@ -551,6 +574,10 @@ def render_research_brief() -> str:
         "## Active inquiry and goal relevance",
         "",
         *_active_inquiry_lines(state),
+        "",
+        "## Recipe development record",
+        "",
+        *_checkpoint_lines(state, development=True),
         "",
         "## Latest session record",
         "",

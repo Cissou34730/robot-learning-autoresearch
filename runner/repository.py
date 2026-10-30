@@ -26,7 +26,7 @@ class PublicationError(RuntimeError):
     """Local commits could not be published to origin."""
 
 
-STATE_SCHEMA_VERSION = 6
+STATE_SCHEMA_VERSION = 7
 DEFAULT_MAX_INQUIRIES = 15
 WINDOWS_COMMAND_LINE_LIMIT = 32_767
 ARTIFACT_CONTENTS_MAX_BYTES = 4_096
@@ -77,6 +77,8 @@ STATE_FIELDS = {
     "campaign",
     "human_goal",
     "scientific_model",
+    "campaign_phase",
+    "recipe_development",
     "active_inquiry",
     "pi_checkpoint",
     "scientific_session",
@@ -764,15 +766,17 @@ def _validate_completed_event_references(
     return value
 
 
-def _validate_checkpoint(checkpoint: object, completed_event_ids: set[str]) -> None:
+def _validate_checkpoint(
+    checkpoint: object, completed_event_ids: set[str], description: str
+) -> None:
     if checkpoint is None:
         return
     if not isinstance(checkpoint, dict) or set(checkpoint) != CHECKPOINT_FIELDS:
-        raise ValueError(f"pi_checkpoint requires exactly {sorted(CHECKPOINT_FIELDS)}")
-    _nonempty(checkpoint, "session_id", "pi_checkpoint session_id")
+        raise ValueError(f"{description} requires exactly {sorted(CHECKPOINT_FIELDS)}")
+    _nonempty(checkpoint, "session_id", f"{description} session_id")
     inquiry_id = checkpoint["inquiry_id"]
     if inquiry_id is not None:
-        _nonempty({"value": inquiry_id}, "value", "pi_checkpoint inquiry_id")
+        _nonempty({"value": inquiry_id}, "value", f"{description} inquiry_id")
     for field in (
         "human_goal_connection",
         "current_goal_gap",
@@ -784,19 +788,87 @@ def _validate_checkpoint(checkpoint: object, completed_event_ids: set[str]) -> N
         "cumulative_resource_use",
         "scientific_commit",
     ):
-        _nonempty(checkpoint, field, f"pi_checkpoint {field}")
+        _nonempty(checkpoint, field, f"{description} {field}")
     evidence = checkpoint["evidence_references"]
     completed = checkpoint["completed_operations"]
     _validate_completed_event_references(
         evidence,
         completed_event_ids,
-        "pi_checkpoint evidence_references",
+        f"{description} evidence_references",
     )
     _validate_completed_event_references(
         completed,
         completed_event_ids,
-        "pi_checkpoint completed_operations",
+        f"{description} completed_operations",
     )
+
+
+def _validate_campaign_phase(state: dict) -> None:
+    phase = state["campaign_phase"]
+    session = state["scientific_session"]
+    handoff = state["recipe_development"]
+    if phase != "research" and state["active_inquiry"] is not None:
+        raise ValueError("active_inquiry requires campaign phase research")
+    if session is not None:
+        kind = session["kind"]
+        required_phase = (
+            kind if kind in {"recipe_development", "startup"} else "research"
+        )
+        if phase != required_phase:
+            raise ValueError(
+                f"scientific_session kind {kind} requires phase {required_phase}"
+            )
+    if phase == "recipe_development" and (
+        handoff is not None or state["pi_checkpoint"] is not None
+    ):
+        raise ValueError(
+            "recipe_development phase cannot have a completed checkpoint"
+        )
+    if handoff is None:
+        return
+    if handoff["session_id"] != "S1" or handoff["inquiry_id"] is not None:
+        raise ValueError(
+            "recipe_development checkpoint must belong to session S1 without an inquiry"
+        )
+    checkpoint_events = [
+        event
+        for event in state["operation_events"]
+        if event["kind"] == "checkpoint"
+        and event["status"] == "completed"
+        and event["session_id"] == handoff["session_id"]
+        and event["inquiry_id"] is None
+    ]
+    request = {
+        key: value
+        for key, value in handoff.items()
+        if key not in {"session_id", "inquiry_id", "scientific_commit"}
+    }
+    if len(checkpoint_events) != 1 or checkpoint_events[0]["request"] != request:
+        raise ValueError(
+            "recipe_development checkpoint must match its completed checkpoint event"
+        )
+    completed = [
+        event["id"]
+        for event in state["operation_events"]
+        if event["session_id"] == handoff["session_id"]
+        and event["status"] == "completed"
+        and event["kind"] != "checkpoint"
+    ]
+    if handoff["completed_operations"] != completed:
+        raise ValueError(
+            "recipe_development completed_operations must match its session events"
+        )
+    latest = state["pi_checkpoint"]
+    if phase == "startup":
+        expected_session = 2 if session is not None else 1
+        if latest != handoff or state["counters"]["session"] != expected_session:
+            raise ValueError("startup must follow the recipe_development checkpoint")
+        if session is not None and session["id"] != "S2":
+            raise ValueError("startup after recipe_development must use session S2")
+    elif latest is None or latest == handoff or state["counters"]["session"] < 2:
+        raise ValueError(
+            "research requires the startup checkpoint after recipe_development"
+        )
 
 
 def _validate_active_inquiry(active: object) -> None:
@@ -864,9 +936,14 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         raise ValueError(f"scientific_session requires exactly {sorted(required)}")
     if not str(session["id"]).startswith("S"):
         raise ValueError("scientific_session id must use an S# identity")
-    if session["kind"] not in {"startup", "goal_review", "inquiry"}:
+    if session["kind"] not in {
+        "recipe_development",
+        "startup",
+        "goal_review",
+        "inquiry",
+    }:
         raise ValueError(
-            "scientific_session kind must be startup, goal_review, or inquiry"
+            "scientific_session kind must be recipe_development, startup, goal_review, or inquiry"
         )
     _nonempty(session, "objective", "scientific_session objective")
     _nonempty(
@@ -897,7 +974,7 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         isinstance(item, str) and item.strip() for item in operation_ids
     ):
         raise ValueError("scientific_session operation_ids must be a list of strings")
-    if session["kind"] in {"startup", "goal_review"}:
+    if session["kind"] in {"recipe_development", "startup", "goal_review"}:
         if session["inquiry_id"] is not None:
             raise ValueError(f"{session['kind']} session cannot carry an inquiry_id")
     else:
@@ -1983,6 +2060,8 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
             "research state fields are invalid: "
             f"missing={sorted(missing)}, extra={sorted(extra)}"
         )
+    if state["campaign_phase"] not in {"recipe_development", "startup", "research"}:
+        raise ValueError("campaign_phase is unsupported")
     campaign = _require_exact_fields(state["campaign"], CAMPAIGN_FIELDS, "campaign")
     for field in ("id", "started_at", "base_commit"):
         _nonempty(campaign, field, f"campaign {field}")
@@ -2059,7 +2138,11 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
 
     _validate_active_inquiry(state["active_inquiry"])
     _validate_session(state["scientific_session"], state["active_inquiry"])
-    _validate_checkpoint(state["pi_checkpoint"], completed_event_ids)
+    _validate_checkpoint(state["pi_checkpoint"], completed_event_ids, "pi_checkpoint")
+    _validate_checkpoint(
+        state["recipe_development"], completed_event_ids, "recipe_development"
+    )
+    _validate_campaign_phase(state)
 
     pending = state["pending_operation"]
     if pending is not None:
@@ -2194,11 +2277,36 @@ def write_state(state: dict) -> None:
 
 
 def read_state() -> dict:
-    return json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
+    return normalize_research_state(
+        json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
+    )
+
+
+def normalize_research_state(state: dict) -> dict:
+    if state.get("schema_version") != 6:
+        return state
+    legacy_fields = STATE_FIELDS - {"campaign_phase", "recipe_development"}
+    if set(state) != legacy_fields:
+        raise RuntimeError("research state fields are invalid for schema 6")
+    normalized = copy.deepcopy(state)
+    session = state.get("scientific_session") or {}
+    initial_startup = (
+        state["counters"]["session"] == 0 and state["pi_checkpoint"] is None
+    )
+    normalized.update(
+        schema_version=STATE_SCHEMA_VERSION,
+        campaign_phase="startup"
+        if session.get("kind") == "startup" or initial_startup
+        else "research",
+        recipe_development=None,
+    )
+    return normalized
 
 
 def read_committed_state(revision: str) -> dict:
-    state = json.loads(git("show", f"{revision}:runner/state/research_state.json"))
+    state = normalize_research_state(
+        json.loads(git("show", f"{revision}:runner/state/research_state.json"))
+    )
     validate_research_state(state, allow_missing_artifact=True)
     return state
 
@@ -2226,6 +2334,8 @@ def empty_campaign_state(
     state = {
         "schema_version": STATE_SCHEMA_VERSION,
         "campaign": campaign_copy,
+        "campaign_phase": "recipe_development",
+        "recipe_development": None,
         "human_goal": copy.deepcopy(human_goal or {"source": "contracts/scenario.md"}),
         "scientific_model": {
             "status": "pending",
@@ -2278,17 +2388,30 @@ def start_scientific_session(
         raise ValueError("the scientific model must be ready before a PI session")
     if state["scientific_session"] is not None:
         raise ValueError("a scientific session is already active")
-    if kind not in {"startup", "goal_review", "inquiry"}:
-        raise ValueError("session kind must be startup, goal_review, or inquiry")
+    if kind not in {"recipe_development", "startup", "goal_review", "inquiry"}:
+        raise ValueError(
+            "session kind must be recipe_development, startup, goal_review, or inquiry"
+        )
+    required_phase = kind if kind in {"recipe_development", "startup"} else "research"
+    if state["campaign_phase"] != required_phase:
+        raise ValueError(f"{kind} requires campaign phase {required_phase}")
     active = state["active_inquiry"]
-    if kind == "startup":
-        if (
-            active is not None
-            or state["pi_checkpoint"] is not None
-            or int(state["counters"]["session"]) != 0
+    if kind in {"recipe_development", "startup"}:
+        handoff = state["recipe_development"]
+        initial = (
+            state["pi_checkpoint"] is None and int(state["counters"]["session"]) == 0
+        )
+        after_development = (
+            kind == "startup"
+            and isinstance(handoff, dict)
+            and state["pi_checkpoint"] == handoff
+            and handoff["session_id"] == f"S{state['counters']['session']}"
+        )
+        if active is not None or not (
+            (initial and handoff is None) or after_development
         ):
             raise ValueError(
-                "startup is available only for the first scientific session"
+                f"{kind} is not available at this scientific session boundary"
             )
     elif kind == "goal_review" and active is not None:
         raise ValueError("goal review requires no active inquiry")

@@ -12,8 +12,9 @@ heading (`##`) with its content under it. Topics in a register use level-three
 headings (`###`).
 
 The analyst writes the scientific model. The scientific model states physical
-consequences and the discriminating evidence between them. It selects no
-intervention.
+consequences and the discriminating evidence between them. The analyst proposes
+a first reward and variants. The PI decides which proposals to implement and
+which method to select.
 
 The synthesis is the last register. It selects the consequences and the
 unknowns that are most likely to change the first decisions of the campaign.
@@ -27,9 +28,17 @@ the episode start and the target are transformed the same way. A measured differ
 outcomes, beyond sampling variation, is evidence about the policy, not about
 the task.
 
-The startup session receives the synthesis as the handoff. The PI also reads
-the full scientific model in the startup session and selects the initial
-direction.
+The synthesis includes `### Proposed first reward` and
+`### Proposed design variants`. The first reward is a design proposal. Each
+variant implements a distinct proposed method. The proposals state their
+physical or learning reasons and the evidence that can distinguish them. A
+variant can change any PI-owned source file and any parameter.
+
+The recipe-development session receives the synthesis and the full scientific
+model. The PI compares variants and selects a method. The startup session then
+receives the scientific model and the completed recipe-development record.
+The PI uses them to establish the initial scientific direction and the first
+useful investigation.
 
 After acceptance, the scientific model stays fixed for the campaign. Later
 session records preserve or revise its consequential conclusions. The Runner
