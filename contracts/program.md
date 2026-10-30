@@ -13,8 +13,9 @@ interpretation of evidence and the judgment of progress toward the goal also
 belong to you alone.
 
 The analyst writes the scientific model, the initial
-physical model, before your first session. The analyst proposes a first reward
-and variants. You decide which proposals to implement and which method to select.
+physical model, before your first session. The analyst proposes an initial
+scientific question for startup, a first reward and the first variants.
+You decide which proposals to implement and how to develop the recipe.
 
 The coder gives you implementation help. The coder is not a second scientific
 decision-maker. In each coding request, state the expected output precisely.
@@ -91,8 +92,8 @@ selects the items that are most likely to change your first decisions. For each
 selected item, it keeps its decision relevance, the assumptions, the source
 references and the evidence that could revise it.
 
-It also proposes a first
-reward and variants. These proposals inform your decisions. You select the
+It also proposes an initial scientific question for startup, a first reward and
+the first variants. These proposals inform your decisions. You select the
 interventions.
 
 The scientific model then stays fixed as the initial physical model of the
@@ -105,33 +106,42 @@ session follows recipe development. A goal-review session follows startup.
 
 ## Recipe-development session
 
-Build the first recipe through quick iterations on variants.
-Start from the scientific model and the analyst's proposals. You decide which
-proposals to implement and how to revise them. The proposed first reward has
-the same status as the other proposals. A variant can change any PI-owned
-source file and any parameter.
+Deliver a recipe that learns and supports the startup phase.
+Build it from the knowledge gained across all tested variants.
+Combine the design choices supported by the results.
+Measure the resulting recipe to demonstrate learning progress.
+
+Start from the scientific model, the analyst's initial scientific question and
+the first variant proposals. The initial question guides recipe development
+toward startup. You decide which proposals to implement and how to revise them.
+The proposed first reward has the same status as the other proposals.
+A variant can change any PI-owned source file and any parameter.
 
 Before training, state your comparison plan. Explain the recipe question, why
 you chose each variant and the behavior you expect. State the training length
 and justify it for this test. Explain how the results will change your next
 decision.
 
-Use short training tests. After each comparison, state what you learned and why
-you keep or revise each variant. Update the plan before further training.
+Use short training tests. After each test, state what you learned and why
+you keep or revise each variant. Create further variants from the test results.
+Update the plan before further training.
 Each variant can continue from its own saved training checkpoint.
 `contracts/instruments/training.md`
 defines how to submit variants and continue training.
 
-Recipe development is complete when the remaining scientific work primarily
-develops the selected method rather than chooses among competing methods.
-The selection is a scientific judgment from the evidence, not a score threshold
-or a prescribed number of comparisons.
+Compare the task behavior of saved candidates from different training points as
+needed to show learning. State what improved. Use this evidence to judge the
+learning progress of the resulting recipe.
 
-Save the selected method, recipe, measured differences and their limits in
-`current_synthesis`, with supporting operations in `evidence_references`.
-`decision_frontier` keeps unresolved alternatives and discriminating evidence.
-`next_question` states the next investigation, and `next_direction_or_closure`
-explains the transition. Startup receives this record unchanged with the
+In `current_synthesis`, record the resulting recipe and the evidence of learning.
+Explain how the tested variants and their design choices contributed.
+State the questions that the tests answered. Cite supporting operations in
+`evidence_references`.
+
+Use `decision_frontier` for open questions and discriminating evidence.
+Set `next_question` to the next investigation for startup.
+In `next_direction_or_closure`, explain how the recipe supports the analyst's
+initial scientific investigation. Startup receives this record unchanged with the
 scientific model. Later evidence can revise its scientific judgments.
 
 ## Startup session

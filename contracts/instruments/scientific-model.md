@@ -13,8 +13,8 @@ headings (`###`).
 
 The analyst writes the scientific model. The scientific model states physical
 consequences and the discriminating evidence between them. The analyst proposes
-a first reward and variants. The PI decides which proposals to implement and
-which method to select.
+an initial scientific question for startup, a first reward and the first variants.
+The PI decides which proposals to implement and how to develop the recipe.
 
 The synthesis is the last register. It selects the consequences and the
 unknowns that are most likely to change the first decisions of the campaign.
@@ -29,15 +29,24 @@ outcomes, beyond sampling variation, is evidence about the policy, not about
 the task.
 
 The synthesis includes `### Proposed first reward` and
-`### Proposed design variants`. The first reward is a design proposal. Each
-variant tests a proposed method. The proposals state the recipe questions,
+`### Proposed design variants`. The first reward is a design proposal.
+The variant proposals state an initial scientific question for startup.
+They explain how the first variants can help develop a recipe that supports
+this question.
+
+Each variant tests a proposed method. The proposals state the recipe questions,
 their physical or learning reasons and the behavior that the analyst expects.
 Short training tests give evidence for the next recipe decision. A variant can
 change any PI-owned source file and any parameter.
 
 The recipe-development session receives the synthesis and the full scientific
-model. The PI uses quick variant comparisons to guide the first recipe. The
-startup session then receives the scientific model and the completed
+model. The PI creates further variants from the test results.
+The PI develops a recipe that learns and supports the initial scientific
+question for startup. The recipe uses knowledge across all tested variants.
+The PI combines design choices supported by the results.
+The PI measures the resulting recipe to demonstrate learning progress.
+
+The startup session then receives the scientific model and the completed
 recipe-development record.
 The PI uses them to establish the initial scientific direction and the first
 useful investigation.
