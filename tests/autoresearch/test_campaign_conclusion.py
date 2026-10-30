@@ -32,6 +32,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
     )
+    state["campaign_phase"] = "research"
     state["scientific_model"] = {
         "status": "ready",
         "path": "pi_workspace/scientific_model.md",

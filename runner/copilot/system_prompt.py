@@ -119,12 +119,10 @@ TOOLS = (
 )
 
 SYSTEM_NOTIFICATIONS = (
-    "The runtime may send <system_notification>-wrapped status updates, such as "
-    "background-task or shell completion. Incorporate them and continue the "
-    "task; acknowledge briefly only when relevant, and if idle take the "
-    "appropriate action (for example, read completed agent results).\n\n"
-    "Never repeat notifications verbatim, explain them, generate them, or "
-    "output <system_notification> tags yourself; only the runtime provides them."
+    "The runtime provides status messages in <system_notification> tags. "
+    "Use relevant results in your scientific decisions. "
+    "Report their scientific consequences. "
+    "The tags are internal runtime markup, not part of your report."
 )
 
 REFERENCE_HEADER = (

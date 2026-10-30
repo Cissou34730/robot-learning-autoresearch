@@ -295,13 +295,13 @@ def _active_inquiry_lines(state: dict) -> list[str]:
         if session["kind"] == "recipe_development":
             return [
                 "- None. The current session is `recipe_development`.",
-                "- The startup session follows the recipe development checkpoint.",
+                "- The startup session follows the checkpoint operation for recipe development.",
             ]
         if session["kind"] == "startup":
             return [
                 (
                     "- None. The current session is `startup`. "
-                    "The startup checkpoint completes the startup phase."
+                    "The checkpoint operation completes the startup phase."
                 )
             ]
         if session["kind"] == "goal_review":
@@ -352,8 +352,8 @@ def _checkpoint_lines(state: dict, *, development: bool = False) -> list[str]:
         ]
     return [
         *historical_context,
-        f"- Session: `{checkpoint['session_id']}`",
-        f"- Scientific commit: `{checkpoint['scientific_commit']}`",
+        f"- Session: `{checkpoint.get('session_id', '-')}`",
+        f"- Scientific commit: `{checkpoint.get('scientific_commit', '-')}`",
         f"- Inquiry: `{checkpoint['inquiry_id'] or '-'}`",
         f"- Connection to the goal: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
@@ -361,7 +361,7 @@ def _checkpoint_lines(state: dict, *, development: bool = False) -> list[str]:
         f"- {question_label}: {checkpoint['next_question']}",
         "- Evidence references: "
         + (
-            ", ".join(f"`{item}`" for item in checkpoint["evidence_references"])
+            ", ".join(f"`{item}`" for item in checkpoint.get("evidence_references", []))
             or "none"
         ),
         "- Completed operations: "

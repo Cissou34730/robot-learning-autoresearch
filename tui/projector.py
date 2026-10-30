@@ -216,9 +216,10 @@ def _stage_text(state: dict) -> tuple[str, str, str]:
     inquiry_id = _inquiry_identity(state.get("active_inquiry"))
     if state.get("terminal_state"):
         return terminal_stage_text(state), session_id, inquiry_id
-    if "campaign_phase" in state and _as_dict(state.get("scientific_model")).get(
-        "status"
-    ) == "pending":
+    if (
+        "campaign_phase" in state
+        and _as_dict(state.get("scientific_model")).get("status") == "pending"
+    ):
         return "Preparation - PI scientific model pending", "", ""
     if session:
         kind = str(session.get("kind") or "scientific session")

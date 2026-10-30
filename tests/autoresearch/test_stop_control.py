@@ -190,6 +190,7 @@ def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tm
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
     )
+    state["campaign_phase"] = "startup"
     state["scientific_model"] = {
         "status": "ready",
         "path": "pi_workspace/scientific_model.md",

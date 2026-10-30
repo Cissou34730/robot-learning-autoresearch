@@ -178,6 +178,7 @@ def _requested_assessment_state(monkeypatch, tmp_path):
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="ready for goal review",
     )
+    state["campaign_phase"] = "research"
     state["scientific_model"] = {
         "status": "ready",
         "path": "pi_workspace/scientific_model.md",

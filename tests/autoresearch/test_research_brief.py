@@ -26,6 +26,7 @@ def test_startup_brief_exposes_phase_operations_and_artifact_root(
         },
         last_verdict="fresh campaign",
     )
+    state["campaign_phase"] = "startup"
     state["scientific_model"] = {
         "status": "ready",
         "path": "pi_workspace/scientific_model.md",
@@ -87,7 +88,18 @@ def test_goal_gap_keeps_unassessed_pi_checkpoint():
     assert brief._goal_gap(state) == checkpoint["current_goal_gap"]
 
 
-def test_assessed_checkpoint_preserves_historical_pi_data():
+@pytest.mark.parametrize(
+    "metadata",
+    [
+        {},
+        {
+            "session_id": "S1",
+            "scientific_commit": "a" * 40,
+            "evidence_references": ["T1"],
+        },
+    ],
+)
+def test_assessed_checkpoint_preserves_historical_pi_data(metadata):
     checkpoint = {
         field: f"pi-{field}"
         for field in (
@@ -102,6 +114,7 @@ def test_assessed_checkpoint_preserves_historical_pi_data():
         )
     }
     checkpoint.update(inquiry_id=None, completed_operations=[])
+    checkpoint.update(metadata)
     state = {
         "official_assessment": {"summary": "official-result"},
         "pi_checkpoint": checkpoint,
@@ -114,4 +127,6 @@ def test_assessed_checkpoint_preserves_historical_pi_data():
     for value in checkpoint.values():
         if isinstance(value, str):
             assert any(value in line for line in lines)
+    for reference in checkpoint.get("evidence_references", []):
+        assert any(reference in line for line in lines)
     assert json.dumps(state, sort_keys=True) == before
