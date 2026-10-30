@@ -804,7 +804,7 @@ or mutated by this review; the evidence-fidelity RCA remains deferred.
 
 **Status and description review: 30 October 2026.**
 
-Two issues require work. No changes need more evidence. Fifty-four issues
+One issue requires work. No changes need more evidence. Fifty-five issues
 are closed. Seven entries are inactive. All 63 issue IDs remain.
 
 On 26 October OI-041 and OI-049 closed, OI-051 moved to implemented, and
@@ -827,7 +827,8 @@ is limited. OI-047 concerned the first OpenCode implementation.
 The maintainer then closed OI-043 because prompt replays are done manually.
 OI-050 closed because the maintainer no longer considers the process-overhead concern current.
 OI-012 closed without implementing publication independent of training.
-OI-044 remains a proposal related to evidence reuse under OI-024.
+The maintainer then merged OI-024 into OI-044 and closed OI-024 as superseded.
+OI-044 remains a proposal for finding and reusing recorded training and measurement evidence.
 
 The maintainer approved closure of OI-005, OI-014 and OI-036.
 The maintainer also closed OI-033 and OI-037 without a verified recovery claim,
@@ -836,14 +837,13 @@ OI-040 to OI-047 replace the former follow-up items outside the register.
 OI-006 is withdrawn because the training allocation remains a fixed constraint.
 Withdrawal does not claim that this allocation is optimal.
 
-### Open issues — 2
+### Open issues — 1
 
-These issues need investigation or design before a repair.
+This issue needs investigation or design before a repair.
 This register does not authorize runtime changes or campaign operations.
 
 | ID | Issue | Status | Next action |
 |---|---|---|---|
-| OI-024 | The PI repeats measurements because the first request omits required diagnostic fields. The prompt guidance did not prevent this pattern. | **Open** | Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse of prior results. Preserve PI judgment. No automatic duplicate gate is approved. |
 | OI-063 | A coder on a Copilot GPT model has no file editor when the PI session runs on an external provider. The Copilot CLI offers `apply_patch` only to GPT models and `create`/`edit` only to other models, and a coder subagent gets only the editors that both its own model and the session model allow. In `6ea55e42` (29 October, DeepSeek PI) every `scientific_coding` request returned `needs_pi` with no change: the Luna coder reported "no file-editing tool is available". Probes on 30 October: a Luna coder in a DeepSeek session (all three editors), a Luna coder in a Luna session (`create`/`edit` only) and a DeepSeek coder in a DeepSeek session (`apply_patch` only) had no editor; a DeepSeek coder with `create`/`edit` edited the file and the Luna review passed. | **Open** | Workaround of 30 October: with an external-provider PI, the coder runs on the PI's model with `create`/`edit` limited to its authorized files; the reviewer stays on Copilot Luna. Target: one editor set for every model and a coder model chosen independently of the PI, for example a harness-defined JSON editor tool (as for `rg`, `glob` and `read`) or a separate coder session. |
 
 ### Changes that need more evidence — 0
@@ -852,7 +852,7 @@ No entries remain in this category. The maintainer closed OI-008, OI-051,
 OI-053, OI-055 and OI-056 on 30 October. Their closure records preserve the
 implementation evidence and its limits.
 
-### Closed issues — 54
+### Closed issues — 55
 
 Most closures reflect recorded repairs.
 OI-021, OI-026, OI-033, OI-037, OI-038 and OI-046 were closed by maintainer
@@ -862,6 +862,7 @@ On the same date the maintainer closed OI-008, OI-051, OI-053, OI-055,
 OI-056 and OI-007.
 The maintainer then closed OI-025, OI-062, OI-042 and OI-047.
 OI-043, OI-050 and OI-012 also closed on 30 October.
+OI-024 closed as superseded by OI-044 on the same date.
 Closure does not establish scientific success or cover every future case.
 An unrelated official assessment is not a condition for closure.
 
@@ -919,10 +920,10 @@ An unrelated official assessment is not a condition for closure.
 | OI-062 | The PI and analyst can guess nonexistent paths or query fields and repeat refused reads. | **Closed** | Closed by maintainer decision on 30 October. The maintainer reports that these errors are now very rare. Earlier evidence includes nonexistent paths, refused reference reads, guessed fields and traversal-budget refusals in the 29 October batch. The analyst shell was removed on 29 October. No further file map, refusal-text change or failure-count study remains scheduled under this issue. Closure does not claim that every such error is eliminated. |
 | OI-042 | A tool could supply named context sections instead of whole files. | **Closed** | Closed by maintainer decision on 30 October because the expected additional gain is limited. The named-sections tool was not approved or implemented. Existing context reductions remain in place under closed OI-008. This closure ends the proposal rather than claiming delivery of the tool. |
 | OI-047 | External-provider-specific code was proposed for removal when the PI uses GitHub Copilot. | **Closed** | Closed by maintainer decision on 30 October. The concern applied to the first OpenCode implementation. No removal of current external-provider support is requested or claimed. This closure schedules no change to `read`, `read_alias` or `json_editors`. |
-
 | OI-043 | Prompt changes could be compared at a recorded decision point without running a full campaign. | **Closed** | Closed by maintainer decision on 30 October. The maintainer performs these comparisons manually. The method holds the recorded evidence fixed and compares decisions under old and new prompts without operations. It was used for 37 blinded replays on 28 October for `270b37b0`. Those replays are not campaign evidence. No automated framework or additional test infrastructure is required under this issue. |
 | OI-050 | The formal research lifecycle could cost too much time and AI usage compared with useful experiments. | **Closed** | Closed by maintainer decision on 30 October. The maintainer no longer considers this a current issue. The earlier concern arose from `efd58acc`, which used 32 sessions, 14 inquiries and about 126 AIU over about 6 h. A related minimal-recipe experiment, `05229297`, ran about 6 h 45 min and used about 150 AIU. It reached at best 2.8% after 14 training runs and 110 measurement records. The experiment was removed on 26 October. It did not isolate the cost of the lifecycle itself. Closure schedules no lifecycle redesign or further overhead study and does not claim that every process cost is optimal. |
 | OI-012 | A frozen policy could be published as a candidate independently of training. | **Closed** | Closed on 30 October under the maintainer's instruction to end this proposal unless it remains useful. No present need justifies a second publication route. The current coding contract deliberately creates candidates through training, with fresh or transfer initialization. Runtime changes tested on frozen weights remain diagnostics until a training run carries them into a candidate. The separate publication route was not approved or implemented. Closure changes neither that contract nor campaign recovery permissions. |
+| OI-024 | The PI can repeat measurements because earlier evidence is hard to find or required diagnostic fields were omitted. | **Closed** | Closed by maintainer decision on 30 October as superseded by OI-044. Its scope now belongs to the proposal for finding and reusing recorded training and measurement evidence. Distinguish avoidable repeats from fresh panels, matched controls, missing diagnostics and deliberate replications. Preserve PI judgment. This merge does not implement a lookup or approve an automatic duplicate gate. |
 
 ### Inactive entries — 7
 
@@ -935,7 +936,7 @@ The historical evidence remains valid.
 | OI-010 | The old protocol log raised a separate access concern. | **Withdrawn** | Reclassified from Retired to Withdrawn by maintainer decision on 30 October. No current defect supports a separate repair. General file-access concerns belong to OI-011 and OI-023. This status does not claim a new repair. |
 | OI-013 | The proposal removes the fifteen-inquiry limit. | **Withdrawn** | The maintainer retained the limit. The campaign pauses after a saved checkpoint when it reaches that limit. The resume mechanism is unchanged. |
 | OI-020 | One proposed issue combined unrelated assessment concerns and task-specific terms. | **Withdrawn** | The generic issue was invalid. Assessment decisions remain under OI-005. Task-specific observations remain in their campaign analysis. This entry does not authorize a generic repair. |
-| OI-044 | The PI can attribute a recorded measurement to the wrong candidate or lose track of earlier measurements in a long campaign. | **Proposal** | Retain a candidate-history lookup proposal: retrieve a candidate's recorded measurements with their operation, instrument, panel and result identities. E11 in `49e58c12` attributed T1's 192/200 to T2. Recorded references in `success_rate_pass_probability` already cover the counts behind pass estimates. Related OI-024 concerns avoidable repeated measurements. Better discovery can support evidence reuse, but it cannot supply diagnostics that were never recorded. Existing `artifact_evidence_query` operation and metadata queries remain available. No new action, automatic reuse decision or duplicate-measurement gate is approved by this clarification. |
+| OI-044 | The PI can lose track of prior training and measurement evidence, attribute results to the wrong candidate or repeat work unnecessarily. | **Proposal** | OI-024 merged here by maintainer decision on 30 October. The proposed lookup finds prior training configurations, seeds, candidate and checkpoint identities, and recorded measurements with their instruments, panels, diagnostics and results. Its purpose is evidence reuse before another training or measurement run. E11 in `49e58c12` attributed T1's 192/200 to T2. Recorded pass-probability references and existing `artifact_evidence_query` operation and metadata queries remain available. Check their coverage before adding an action. Identical parameters alone do not make a run redundant. Fresh panels, matched controls and deliberate replications remain valid. Missing diagnostics can require a new measurement. The PI decides whether prior evidence answers the question. This merge authorizes no runtime implementation or automatic duplicate gate. |
 | OI-054 | The PI is told the campaign is judged on time and AI usage, but sees neither number. In `38ad68c6` the coder and reviewer used 54 of 123 AIU (44%) on diagnostics. | **Withdrawn** | Withdrawn by the maintainer on 27 October and removed from the PI's resource line. It was added in `4ce2fdb1` (elapsed time and AI usage of completed sessions by role). Round 4, the only round with it, passed 0 of 3; its PIs repeated the line in their records 36 to 55 times per campaign, mostly as bookkeeping, and `c7be4376` requested the assessment after 1 h 47 at an estimated 41% pass chance. Three campaigns cannot attribute the result to the line. On 20 October cost guidance had already been removed from PI decisions for the same risk of early assessment. |
 | OI-058 | The PI and the analyst treat task physics as a cause of failure, separate from the policy. Round 5: `923f335d` wrote that its labels "do not identify its physical cause"; the `0c12d136` model listed "branch/joint-limit difficulty" among failure classes and the PI explained its failures by the shoulder limit. | **Withdrawn** | Withdrawn by the maintainer after round 6. `abd40fae` (27 October) had the analyst list constraints "that make some situations more demanding than others" and told the PI that the task defines "how demanding each situation is". In round 6 no PI tested whether its negative-angle failures were a property of the policy; two described them as harder bearings (see [Round 6](#parallel-round-6-27-october)). The analyst bullet is back to the round-5 wording ("constraints that create qualitatively different classes of behavior or failure"); the PI system prompt keeps "The task is fixed for every policy that you test. The episode outcomes of a policy measure the behavior of that policy under the task" and "Each explanation of a policy result states how the behavior of the policy produces that result". Four campaigns cannot separate its effect from chance. |
 
@@ -946,8 +947,9 @@ The historical evidence remains valid.
    which added PI time in startup and no benefit (round 11). The no-recipe
    experiment runs two campaigns; analyse it when they end (6 h or 120 AIU
    cap).
-2. Classify OI-024 reruns by their actual information gain or corrected
-   defect. Do not equate all repetition with waste.
+2. OI-024 is closed as superseded by OI-044. Retain the combined evidence-reuse
+   proposal without implementing it. Check existing query coverage before a new action.
+   Do not equate all repetition with waste.
 3. Earlier check, still unanswered: whether frozen-weight runtime tests lead to
    a training run that carries the change (rule B in
    `contracts/instruments/coding.md`), instead of repeated controller variants
@@ -965,6 +967,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-10-30 | OI-024 merged into OI-044 and closed | The maintainer merged avoidable repeated work into the proposal for finding and reusing recorded training and measurement evidence. OI-044 includes configuration, seed, candidate, checkpoint, panel and diagnostic identities. The PI retains the decision to reuse evidence or run a justified replication or new measurement. OI-024 is closed as superseded, not as an implemented repair. OI-063 is the only open issue. OI-044 is the only proposal. There are 55 closed issues and six withdrawn concerns. No runtime code, campaign state or evidence changed. |
 | 2026-10-30 | Maintainer-directed closure of OI-043, OI-050 and OI-012; OI-044 clarified | Prompt replays remain a manual maintainer practice under closed OI-043. OI-050 is no longer a current concern according to the maintainer. OI-012 ends without changing the training-only candidate route. OI-044 remains a candidate-history proposal related to, but distinct from, repeated-measurement issue OI-024. Two issues remain open, none await more evidence, 54 are closed and seven are inactive. The inactive entries comprise OI-044 and six withdrawn concerns. No runtime code, campaign state or evidence changed. |
 | 2026-10-30 | Maintainer-directed closure of OI-025, OI-062, OI-042 and OI-047 | OI-025 ends the interpretation-error investigation. The maintainer reports that OI-062 errors are now very rare. OI-042 ends because its expected additional gain is limited. OI-047 concerned the first OpenCode implementation, not removal of current provider support. Two issues remain open, none await more evidence, 51 are closed and 10 are inactive. The inactive entries comprise four proposals and six withdrawn concerns. OI-043 and OI-050 remain proposals, pending clarification. No runtime code, campaign state or evidence changed. |
 | 2026-10-30 | Maintainer-directed closure of OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007 | Recorded six closures in this register and the HTML overview. Closure preserves the implementation evidence and its limits without requiring further campaign verification. OI-006 and OI-010 changed from Retired to Withdrawn. Four issues remain open, none await more evidence, 47 are closed and 12 are inactive. The inactive entries comprise six proposals and six withdrawn concerns. No runtime code, campaign state or evidence changed. |

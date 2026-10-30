@@ -690,9 +690,11 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">54 closed issues; two open investigations</h3>
+          <h3 style="margin-top: 12px">55 closed issues; one open investigation</h3>
           <ul>
-            <li>All 63 issue IDs remain visible. Two are open (OI-024, OI-063).</li>
+            <li>All 63 issue IDs remain visible. OI-063 is the only open issue.</li>
+            <li>The maintainer merged OI-024 into OI-044 and closed OI-024 as superseded on 30 October.
+              OI-044 covers finding and reusing recorded training and measurement evidence before repeating work.</li>
             <li>The maintainer closed OI-025, OI-062, OI-042 and OI-047 on 30 October.
               OI-062 errors are now very rare according to the maintainer. OI-042 has limited expected gain.
               OI-047 concerned the first OpenCode implementation.</li>
@@ -702,7 +704,7 @@
               No changes need more evidence. Seven inactive entries remain: OI-044 and six withdrawn concerns.</li>
             <li>OI-043 closed because prompt replays are done manually. OI-050 is no longer a current concern
               according to the maintainer. OI-012 closed without adding publication independent of training.
-              OI-044 remains a candidate-history proposal related to OI-024.</li>
+              OI-044 remains the combined evidence-reuse proposal.</li>
             <li>OI-006 and OI-010 changed from Retired to Withdrawn on 30 October. OI-054 (time and AI usage shown to
               the PI) and OI-058 (task and policy framing) were withdrawn on 27 October.</li>
             <li>On 29 October OI-061 (CLI notification text in the fixed system prompt) and OI-062 (guessed paths and
@@ -2077,14 +2079,15 @@
       <p>The maintainer then closed OI-043 because prompt replays are done manually.
         OI-050 closed because the maintainer no longer considers the process-overhead concern current.
         OI-012 closed without implementing publication independent of training.
-        OI-044 remains a proposal related to evidence reuse under OI-024.</p>
+        The maintainer then merged OI-024 into OI-044 and closed OI-024 as superseded.
+        OI-044 remains a proposal for finding and reusing recorded training and measurement evidence.</p>
       <p>Each description states the problem without internal campaign labels. The next column states the required
         action or the completed repair. Historical evidence remains separate.</p>
       <p>This register owns current status decisions. Older review tables and campaign reports preserve their
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">2</p>
+          <p class="metric">1</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
@@ -2092,7 +2095,7 @@
           <p class="metric-label">Changes that need more evidence</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">54</p>
+          <p class="metric">55</p>
           <p class="metric-label">Closed issues</p>
         </article>
         <article class="card metric-card">
@@ -2188,8 +2191,8 @@
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 2</h3>
-      <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
+      <h3 id="open-issues">Open issues — 1</h3>
+      <p>This issue needs investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
         <table>
@@ -2202,14 +2205,6 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>OI-024</td>
-              <td>The PI repeats measurements because the first request omits required diagnostic fields. The prompt
-                guidance did not prevent this pattern.</td>
-              <td><span class="tag">Open</span></td>
-              <td>Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse
-                of prior results. Preserve PI judgment. No automatic duplicate gate is approved.</td>
-            </tr>
             <tr>
               <td>OI-063</td>
               <td>A coder on a Copilot GPT model has no file editor when the PI session runs on an external provider.
@@ -2235,18 +2230,19 @@
       <h3 id="observed-issues">Changes that need more evidence — 0</h3>
       <p>No entries remain in this category. The maintainer closed OI-008, OI-051, OI-053, OI-055 and OI-056 on
         30 October. Their closure records preserve the implementation evidence and its limits.</p>
-      <h3 id="closed-issues">Closed issues — 54</h3>
+      <h3 id="closed-issues">Closed issues — 55</h3>
       <p>Most closures reflect recorded repairs. OI-021, OI-026, OI-033, OI-037, OI-038 and OI-046 were closed by
         maintainer decision; OI-033 and OI-037 without verified recovery.
         The maintainer also closed OI-039, OI-040, OI-057 and OI-061 on 30 October.
         On the same date the maintainer closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007.
         The maintainer then closed OI-025, OI-062, OI-042 and OI-047.
         OI-043, OI-050 and OI-012 also closed on 30 October.
+        OI-024 closed as superseded by OI-044 on the same date.
         Closure does not establish scientific success
         or cover every future case.
         An unrelated official assessment is not a condition for closure.</p>
       <details>
-        <summary>Show the 54 closed issues and their closure basis</summary>
+        <summary>Show the 55 closed issues and their closure basis</summary>
         <div class="details-body">
           <div class="table-wrap wide">
             <table>
@@ -2769,6 +2765,15 @@
                     The separate publication route was not approved or implemented.
                     Closure changes neither that contract nor campaign recovery permissions.</td>
                 </tr>
+                <tr>
+                  <td>OI-024</td>
+                  <td>The PI can repeat measurements because earlier evidence is hard to find or required diagnostic fields were omitted.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October as superseded by OI-044.
+                    Its scope now belongs to the proposal for finding and reusing recorded training and measurement evidence.
+                    Distinguish avoidable repeats from fresh panels, matched controls, missing diagnostics and deliberate replications.
+                    Preserve PI judgment. This merge does not implement a lookup or approve an automatic duplicate gate.</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -2826,17 +2831,21 @@
                 </tr>
                 <tr>
                   <td>OI-044</td>
-                  <td>The PI can attribute a recorded measurement to the wrong candidate or lose track of earlier
-                    measurements in a long campaign.</td>
+                  <td>The PI can lose track of prior training and measurement evidence, attribute results to the wrong
+                    candidate or repeat work unnecessarily.</td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>Retain a candidate-history lookup proposal: retrieve a candidate's recorded measurements with their
-                    operation, instrument, panel and result identities.
+                  <td>OI-024 merged here by maintainer decision on 30 October.
+                    The proposed lookup finds prior training configurations, seeds, candidate and checkpoint identities,
+                    and recorded measurements with their instruments, panels, diagnostics and results.
+                    Its purpose is evidence reuse before another training or measurement run.
                     E11 in <code>49e58c12</code> attributed T1's 192/200 to T2.
-                    Recorded references in <code>success_rate_pass_probability</code> already cover the counts behind pass estimates.
-                    Related OI-024 concerns avoidable repeated measurements.
-                    Better discovery can support evidence reuse, but it cannot supply diagnostics that were never recorded.
-                    Existing <code>artifact_evidence_query</code> operation and metadata queries remain available.
-                    No new action, automatic reuse decision or duplicate-measurement gate is approved by this clarification.</td>
+                    Recorded pass-probability references and existing <code>artifact_evidence_query</code> operation and
+                    metadata queries remain available. Check their coverage before adding an action.
+                    Identical parameters alone do not make a run redundant.
+                    Fresh panels, matched controls and deliberate replications remain valid.
+                    Missing diagnostics can require a new measurement.
+                    The PI decides whether prior evidence answers the question.
+                    This merge authorizes no runtime implementation or automatic duplicate gate.</td>
                 </tr>
                 <tr>
                   <td>OI-054</td>
@@ -2925,8 +2934,8 @@
           OI-060 closed) without the startup sentence, which added PI time in startup and no benefit (round 11). The
           no-recipe experiment runs two campaigns; analyse it when they end.
         </li>
-        <li>Classify OI-024 reruns by their actual information gain or corrected defect.
-          Do not equate all repetition with waste.</li>
+        <li>OI-024 is closed as superseded by OI-044. Retain the combined evidence-reuse proposal without implementing it.
+          Check existing query coverage before a new action. Do not equate all repetition with waste.</li>
         <li>Earlier check, still unanswered: whether frozen-weight runtime tests lead to a training run that carries
           the change, instead of repeated controller variants or attempts to preserve a runtime in a measurement
           artifact. In round 3, <code>de7af8af</code> tested the reflection on frozen T4 weights first, then trained
@@ -3252,6 +3261,16 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: OI-024 merged into OI-044 and closed</h3>
+        <p>The maintainer merged avoidable repeated work into the proposal for finding and reusing recorded training
+          and measurement evidence. OI-044 includes configuration, seed, candidate, checkpoint, panel and diagnostic identities.
+          The PI retains the decision to reuse evidence or run a justified replication or new measurement.
+          OI-024 is closed as superseded, not as an implemented repair.
+          OI-063 is the only open issue. OI-044 is the only proposal.
+          There are 55 closed issues and six withdrawn concerns.
+          No runtime code, campaign state or evidence changed.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">30 October: OI-043, OI-050 and OI-012 closed; OI-044 clarified</h3>
         <p>Prompt replays remain a manual maintainer practice under closed OI-043.
