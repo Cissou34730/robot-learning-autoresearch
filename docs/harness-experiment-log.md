@@ -15,10 +15,10 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 - The assistant may inspect and edit approved maintainer-owned files, but must
   never launch, resume, reset, train, measure or evaluate a campaign without
   explicit maintainer authorization for that bounded task.
-- Never edit or commit harness runtime code (`runner/`, `benchmark/`,
-  `contracts/`, `tools/`, `pyproject.toml`, `uv.lock`) while a campaign runs;
-  the pre-commit hook refuses such commits. Since 27 October, documentation
-  edits and commits do not affect a running campaign.
+- Never edit or commit any harness file while a campaign runs in either
+  `robot-learning-campaigns` or `robot-learning-campaigns-norecipe`. This includes
+  documentation and editor settings. Check all slot locks before edits. Update
+  the repository backlog and follow-up records only after the campaigns stop.
 - A harness implementation check is not evidence of scientific effectiveness.
 - A campaign observation does not prove causality unless the comparison
   isolates the claimed change.
@@ -943,6 +943,28 @@ The historical evidence remains valid.
    `e7dbbece` (2.88) and `49e58c12` (5.10). Do not make the tools mandatory.
 
 These priorities authorize neither repairs nor campaign operations.
+
+### No-recipe next-run work (30 October)
+
+Run 5 evidence is in the
+[maintainer report](research-overview/no-recipe-run-5-2026-10-30.html).
+The maintainer selected a startup phase centered on comparing and revising
+variants. Permission to change files is already explicit. Another permission
+sentence does not address the design problem. Final campaign wording still
+needs review before implementation.
+
+| Work | Maintainer decision and current state | Next action |
+|---|---|---|
+| Startup purpose and variant definition | Review as one phase, not separate wording patches. `contracts/glossary.md` has no definition of variant. Startup still means choosing the initial direction. The program and analyst prompt describe a variant as changing one design choice. | Define variant, comparison, iteration and startup completion together. Describe distinct methods and the scientific question that their comparison answers. Keep full code and parameter freedom. Derive the training budget from that comparison. Avoid a fixed number of rounds or steps unless the maintainer approves one. |
+| Coherent campaign instructions | The analyst proposes designs and the PI decides. The maintainer expects the PI to use the analysis as its starting point, then improve the recipe through startup comparisons. The earlier permission-only proposal is insufficient. | Review the glossary, program, analyst and PI system prompts, session prompts, instrument descriptions and coding guidance as one package. Use positive statements, consistent terms and simple English. Add no examples, option lists or solutions from earlier campaigns. Show the complete proposed wording before edits. |
+| Training-step scaffold anchor | Removing the trainer's `default=100_000` is approved. It remains unimplemented. The Runner already supplies the step count. | Make the argument required in the skeleton recipe. Preserve `skeleton-v3` and use a new tag. Keep the existing permitted range. Make the budget explanation follow the variant comparison rather than another suggested number. |
+| Editor-created Mypy cache | Root cause found, not a campaign type-check command. VS Code checked external campaign-2 `robot_learning/train.py` at 02:18:30 local (01:18:30 UTC), with `robot_learning` as its working directory. Cache writes began at 01:20:14 UTC. The ownership gate rejected them before Mypy finished at 01:27:13 UTC. The maintainer removed Mypy. Obsolete workspace Mypy settings were removed and JSON validation passed. Ruff and the color theme were left unchanged. | Use non-editor reads of campaign Python during runs. No ownership-gate relaxation or harness cache repair is approved. Preserve the failed session and completed training evidence. |
+| DeepSeek accounting | Token counts are sufficient for the maintainer. | Keep token and time summaries. No new cost or AIU conversion work is requested. |
+| Next experiment | No launch or reset is authorized by this backlog. | Preserve run 5 before resetting any slot. Review the coherent phase proposal and validate approved changes before requesting launch approval. This experiment branch remains local. |
+
+The repository is the maintainer record for this work. Assistant memory may
+support continuity, but it does not replace the repository backlog. This entry
+changes no campaign contract, runtime code or recipe.
 
 ## Change ledger
 

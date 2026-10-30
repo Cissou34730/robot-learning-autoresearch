@@ -1,0 +1,1368 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Maintainer report for no-recipe run 5: startup results, time, tokens, designs, rewards and lessons.">
+    <title>No-recipe experiment: Run 5 | 30 October 2026</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            letter-spacing: 0;
+        }
+
+        html {
+            scroll-padding-top: 24px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cp-surface);
+            color: var(--cp-text);
+            font: 16px/1.6 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        a {
+            color: var(--cp-link);
+            text-underline-offset: 3px;
+        }
+
+        a:hover {
+            color: var(--cp-accent-hover);
+        }
+
+        a:focus-visible,
+        summary:focus-visible {
+            outline: 3px solid var(--cp-accent);
+            outline-offset: 4px;
+        }
+
+        code,
+        .formula {
+            font-family: Consolas, "Courier New", Courier, monospace;
+            font-size: 0.9em;
+            overflow-wrap: anywhere;
+        }
+
+        h1,
+        h2,
+        h3 {
+            line-height: 1.2;
+        }
+
+        h1 {
+            margin: 8px 0 16px;
+            font-size: 2.25rem;
+            font-weight: 650;
+        }
+
+        h2 {
+            margin: 0 0 20px;
+            font-size: 1.5rem;
+            font-weight: 650;
+        }
+
+        h3 {
+            margin: 28px 0 12px;
+            font-size: 1.125rem;
+        }
+
+        p {
+            margin: 0 0 16px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        ul,
+        ol {
+            padding-left: 24px;
+        }
+
+        .masthead {
+            border-top: 6px solid var(--cp-accent);
+            border-bottom: 1px solid var(--cp-border);
+        }
+
+        .masthead-inner,
+        .layout {
+            max-width: 1280px;
+            margin: auto;
+            padding: 32px;
+        }
+
+        .eyebrow {
+            color: var(--cp-accent);
+            font-size: 0.875rem;
+            font-weight: 650;
+        }
+
+        .lead {
+            max-width: 850px;
+            font-size: 1.125rem;
+        }
+
+        .meta {
+            color: var(--cp-text-muted);
+            font-size: 0.875rem;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 28px;
+            border-top: 1px solid var(--cp-border);
+        }
+
+        .metric {
+            padding: 16px 16px 0 0;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 1.75rem;
+            line-height: 1.3;
+        }
+
+        .metric span {
+            color: var(--cp-text-muted);
+            font-size: 0.875rem;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 180px minmax(0, 1fr);
+            gap: 40px;
+            align-items: start;
+        }
+
+        .contents {
+            position: sticky;
+            top: 24px;
+            font-size: 0.875rem;
+        }
+
+        .contents strong {
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .contents a {
+            display: block;
+            padding: 6px 0;
+            color: var(--cp-text-muted);
+            text-decoration: none;
+        }
+
+        .contents a:hover {
+            color: var(--cp-accent);
+            text-decoration: underline;
+        }
+
+        main {
+            min-width: 0;
+        }
+
+        section {
+            padding: 8px 0 36px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--cp-border);
+        }
+
+        .note {
+            padding: 16px 20px;
+            border-left: 3px solid var(--cp-accent);
+            background: var(--cp-accent-soft);
+            margin: 20px 0;
+        }
+
+        .note p:last-child {
+            margin-bottom: 0;
+        }
+
+        .failure {
+            border-color: var(--cp-danger);
+        }
+
+        .muted,
+        .table-note {
+            color: var(--cp-text-muted);
+        }
+
+        .table-note {
+            font-size: 0.875rem;
+            margin-top: 12px;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 0.875rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        caption {
+            text-align: left;
+            font-weight: 650;
+            margin-bottom: 12px;
+            color: var(--cp-text);
+        }
+
+        th {
+            text-align: left;
+            font-weight: 650;
+            background: var(--cp-surface-soft);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--cp-border);
+            vertical-align: top;
+        }
+
+        thead th {
+            border-top: 1px solid var(--cp-border);
+        }
+
+        tbody th {
+            background: var(--cp-surface);
+        }
+
+        .number {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .total th,
+        .total td {
+            border-top: 2px solid var(--cp-border-strong);
+            font-weight: 650;
+        }
+
+        .wide {
+            min-width: 720px;
+        }
+
+        .chart {
+            margin: 24px 0;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 100px minmax(0, 1fr) 70px;
+            gap: 12px;
+            align-items: center;
+            margin: 14px 0;
+            font-size: 0.875rem;
+        }
+
+        .track {
+            height: 18px;
+            position: relative;
+            background: var(--cp-surface-soft);
+        }
+
+        .track::after {
+            content: "";
+            position: absolute;
+            left: 98%;
+            top: -3px;
+            height: 24px;
+            border-left: 2px solid var(--cp-border-strong);
+        }
+
+        .bar {
+            width: var(--value);
+            height: 18px;
+            background: var(--cp-accent);
+        }
+
+        .best .bar {
+            background: var(--cp-success);
+        }
+
+        .chart-value {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .missing {
+            color: var(--cp-text-muted);
+        }
+
+        .chart figcaption {
+            color: var(--cp-text-muted);
+            font-size: 0.875rem;
+            margin-top: 16px;
+        }
+
+        .definition-list {
+            display: grid;
+            grid-template-columns: 120px minmax(0, 1fr);
+            gap: 8px 20px;
+        }
+
+        .definition-list dt {
+            font-weight: 650;
+        }
+
+        .definition-list dd {
+            margin: 0;
+        }
+
+        .formula {
+            display: block;
+            line-height: 1.8;
+            min-width: 320px;
+        }
+
+        details {
+            margin: 20px 0;
+            border-top: 1px solid var(--cp-border);
+            border-bottom: 1px solid var(--cp-border);
+            padding: 16px 0;
+        }
+
+        summary {
+            font-weight: 650;
+            cursor: pointer;
+        }
+
+        details[open] summary {
+            margin-bottom: 16px;
+        }
+
+        .source-path {
+            overflow-wrap: anywhere;
+        }
+
+        footer {
+            padding: 0 0 24px;
+            font-size: 0.875rem;
+            color: var(--cp-text-muted);
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                display: block;
+            }
+
+            .contents {
+                position: static;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px 20px;
+                margin-bottom: 32px;
+                border-bottom: 1px solid var(--cp-border);
+                padding-bottom: 16px;
+            }
+
+            .contents strong {
+                flex-basis: 100%;
+            }
+        }
+
+        @media (max-width: 580px) {
+
+            .masthead-inner,
+            .layout {
+                padding: 24px 16px;
+            }
+
+            h1 {
+                font-size: 1.875rem;
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .metric {
+                padding-bottom: 12px;
+            }
+
+            .metric strong {
+                font-size: 1.5rem;
+            }
+
+            .chart-row {
+                grid-template-columns: 84px minmax(0, 1fr) 62px;
+                gap: 8px;
+            }
+
+            .definition-list {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .definition-list dd {
+                margin-bottom: 12px;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media print {
+            html {
+                color-scheme: light;
+            }
+
+            body {
+                background: var(--cp-surface);
+                font-size: 10pt;
+            }
+
+            .masthead-inner,
+            .layout {
+                max-width: none;
+                padding: 18px 0;
+            }
+
+            .layout {
+                display: block;
+            }
+
+            .contents {
+                display: none;
+            }
+
+            .table-scroll {
+                overflow: visible;
+            }
+
+            .wide {
+                min-width: 0;
+            }
+
+            table {
+                font-size: 8pt;
+            }
+
+            th,
+            td {
+                padding: 6px;
+            }
+
+            tr,
+            .chart-row,
+            .note {
+                break-inside: avoid;
+            }
+
+            h2,
+            h3,
+            caption {
+                break-after: avoid;
+            }
+
+            section {
+                margin-bottom: 16px;
+                padding-bottom: 16px;
+            }
+
+            .formula {
+                min-width: 0;
+            }
+
+            a {
+                color: var(--cp-text);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="masthead">
+        <div class="masthead-inner">
+            <div class="eyebrow">Robot learning / Maintainer report / 30 October 2026</div>
+            <h1>No-recipe experiment: Run 5</h1>
+            <p class="lead">Better physical analysis led to useful design comparisons. First-recipe quality still
+                varied. Four startup sessions completed. One session failed after training.</p>
+            <p class="meta">Completed restart of run 5. Harness at launch: <code>33435311</code>, branch
+                <code>experiment/no-recipe</code>. Recipe: <code>skeleton-v3</code>.</p>
+            <div class="metrics" aria-label="Run summary">
+                <div class="metric"><strong>4 of 5</strong><span>Startup sessions completed</span></div>
+                <div class="metric"><strong>171 / 200</strong><span>Best task-reference result, not official</span>
+                </div>
+                <div class="metric"><strong>11</strong><span>Training variants across five operations</span></div>
+                <div class="metric"><strong>3.1 million</strong><span>Requested training steps across all
+                        variants</span></div>
+            </div>
+        </div>
+    </header>
+    <div class="layout">
+        <nav class="contents" aria-label="Report contents">
+            <strong>In This Report</strong>
+            <a href="#purpose">Purpose and setup</a>
+            <a href="#outcomes">Measured outcomes</a>
+            <a href="#time">Time</a>
+            <a href="#tokens">Tokens and cost</a>
+            <a href="#designs">Environment and designs</a>
+            <a href="#rewards">Implemented rewards</a>
+            <a href="#worked">What worked</a>
+            <a href="#improvements">What needs improvement</a>
+            <a href="#history">Earlier runs</a>
+            <a href="#sources">Sources and limits</a>
+        </nav>
+        <main>
+            <section id="purpose">
+                <h2>Purpose And Setup</h2>
+                <p>The main question is whether an analyst can give the PI enough scientific understanding to build a
+                    correct first recipe.</p>
+                <p>The skeleton supplies the training system but no reward. The analyst proposes a first reward and
+                    design variants. The PI implements and tests its choices.</p>
+                <dl class="definition-list">
+                    <dt>Final goal</dt>
+                    <dd>At least 196 successes in the official 200-episode assessment.</dd>
+                    <dt>This test</dt>
+                    <dd>Five fresh campaigns. Each stops after the startup session. The launch used
+                        <code>--max-inquiries 0</code>.</dd>
+                    <dt>Analyst</dt>
+                    <dd><code>opencode-go/deepseek-v4.1-flash</code>, reasoning <code>max</code>.</dd>
+                    <dt>PI and helpers</dt>
+                    <dd><code>gpt-6-luna</code>, reasoning <code>high</code>. Helpers are the coder and reviewer.</dd>
+                    <dt>Launch date</dt>
+                    <dd>30 October 2026. Times in this report use UTC.</dd>
+                    <dt>Prompt repair</dt>
+                    <dd>The harness sent the same fixed system prompt across model families. Both previously missing
+                        analyst paragraphs reached all five sessions.</dd>
+                </dl>
+                <div class="note">
+                    <p><strong>No official assessment ran.</strong> Research evaluation and task-reference evaluation
+                        are separate from the official assessment. Their scores do not establish a pass.</p>
+                </div>
+            </section>
+
+            <section id="outcomes">
+                <h2>Measured Outcomes</h2>
+                <p>Research evaluation used 400 episodes. Task-reference evaluation used 200 episodes. A missing result
+                    is not a zero score.</p>
+                <figure class="chart" aria-label="Best measured research success by campaign">
+                    <div class="chart-row best"><span>Campaign 1</span>
+                        <div class="track">
+                            <div class="bar" style="--value:83%"></div>
+                        </div><strong class="chart-value">83.0%</strong>
+                    </div>
+                    <div class="chart-row missing"><span>Campaign 2</span>
+                        <div class="track"></div><span class="chart-value">No test</span>
+                    </div>
+                    <div class="chart-row"><span>Campaign 3</span>
+                        <div class="track">
+                            <div class="bar" style="--value:3.25%"></div>
+                        </div><strong class="chart-value">3.25%</strong>
+                    </div>
+                    <div class="chart-row"><span>Campaign 4</span>
+                        <div class="track">
+                            <div class="bar" style="--value:50.25%"></div>
+                        </div><strong class="chart-value">50.25%</strong>
+                    </div>
+                    <div class="chart-row"><span>Campaign 5</span>
+                        <div class="track">
+                            <div class="bar" style="--value:60.5%"></div>
+                        </div><strong class="chart-value">60.5%</strong>
+                    </div>
+                    <figcaption>The vertical marker shows the 98% goal rate. These bars show research results, not
+                        official results.</figcaption>
+                </figure>
+                <div class="table-scroll">
+                    <table class="wide" id="scores-table">
+                        <caption>All measured variants</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Campaign</th>
+                                <th scope="col">Variant</th>
+                                <th scope="col" class="number">Evaluated step</th>
+                                <th scope="col" class="number">Research</th>
+                                <th scope="col" class="number">Task-reference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-campaign="1" data-variant="baseline" data-research="294" data-reference="148">
+                                <th scope="row">1</th>
+                                <td>Direct baseline</td>
+                                <td class="number">301,056</td>
+                                <td class="number">294/400 (73.5%)</td>
+                                <td class="number">148/200 (74.0%)</td>
+                            </tr>
+                            <tr data-campaign="1" data-variant="actionscale" data-research="332" data-reference="171">
+                                <th scope="row">1</th>
+                                <td>Output gain 0.1</td>
+                                <td class="number">301,056</td>
+                                <td class="number"><strong>332/400 (83.0%)</strong></td>
+                                <td class="number"><strong>171/200 (85.5%)</strong></td>
+                            </tr>
+                            <tr data-campaign="1" data-variant="logstd" data-research="136" data-reference="73">
+                                <th scope="row">1</th>
+                                <td>Reduced exploration</td>
+                                <td class="number">301,056</td>
+                                <td class="number">136/400 (34.0%)</td>
+                                <td class="number">73/200 (36.5%)</td>
+                            </tr>
+                            <tr data-campaign="2" data-variant="default">
+                                <th scope="row">2</th>
+                                <td>Default exploration</td>
+                                <td class="number">Not evaluated</td>
+                                <td class="number">Not measured</td>
+                                <td class="number">Not measured</td>
+                            </tr>
+                            <tr data-campaign="2" data-variant="low_std">
+                                <th scope="row">2</th>
+                                <td>Reduced exploration</td>
+                                <td class="number">Not evaluated</td>
+                                <td class="number">Not measured</td>
+                                <td class="number">Not measured</td>
+                            </tr>
+                            <tr data-campaign="3" data-variant="identity" data-research="0">
+                                <th scope="row">3</th>
+                                <td>Direct baseline</td>
+                                <td class="number">200,704</td>
+                                <td class="number">0/400 (0%)</td>
+                                <td class="number">Not measured</td>
+                            </tr>
+                            <tr data-campaign="3" data-variant="scaled" data-research="13">
+                                <th scope="row">3</th>
+                                <td>Output gain 0.1</td>
+                                <td class="number">200,704</td>
+                                <td class="number"><strong>13/400 (3.25%)</strong></td>
+                                <td class="number">Not measured</td>
+                            </tr>
+                            <tr data-campaign="4" data-variant="torque" data-research="201" data-reference="98">
+                                <th scope="row">4</th>
+                                <td>Direct output</td>
+                                <td class="number">190,464</td>
+                                <td class="number"><strong>201/400 (50.25%)</strong></td>
+                                <td class="number"><strong>98/200 (49.0%)</strong></td>
+                            </tr>
+                            <tr data-campaign="4" data-variant="servo" data-research="127" data-reference="63">
+                                <th scope="row">4</th>
+                                <td>Joint-target feedback</td>
+                                <td class="number">190,464</td>
+                                <td class="number">127/400 (31.75%)</td>
+                                <td class="number">63/200 (31.5%)</td>
+                            </tr>
+                            <tr data-campaign="5" data-variant="direct" data-research="242">
+                                <th scope="row">5</th>
+                                <td>Direct output</td>
+                                <td class="number">501,760</td>
+                                <td class="number"><strong>242/400 (60.5%)</strong></td>
+                                <td class="number">Not measured</td>
+                            </tr>
+                            <tr data-campaign="5" data-variant="pdtarget" data-research="181">
+                                <th scope="row">5</th>
+                                <td>Joint-target PD feedback</td>
+                                <td class="number">491,520</td>
+                                <td class="number">181/400 (45.25%)</td>
+                                <td class="number">Not measured</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="table-note">Campaign 4 repeated its research panel to add diagnostics. The repeated scores
+                    appear once above. Campaign 5 evaluated different saved steps despite equal training budgets.</p>
+                <h3>What The Comparisons Changed</h3>
+                <ul>
+                    <li><strong>Campaign 1:</strong> reduced output gain improved research success by 9.5 percentage
+                        points and task-reference success by 11.5 points. Reduced exploration alone performed worse.
+                    </li>
+                    <li><strong>Campaign 3:</strong> reduced gain improved success from zero, but 3.25% remained far
+                        below the goal.</li>
+                    <li><strong>Campaign 4:</strong> direct output beat joint-target feedback. Of 204 direct-policy
+                        episodes that entered tolerance, 201 completed the hold. Acquisition was the main measured
+                        failure.</li>
+                    <li><strong>Campaign 5:</strong> direct output beat joint-target PD feedback. The PI selected direct
+                        output for further work.</li>
+                </ul>
+                <div class="note failure">
+                    <p><strong>Campaign 2 failed after training.</strong> The ownership gate rejected generated files
+                        under <code>robot_learning/.mypy_cache/</code>. The PI exited with code 2 before measurement or
+                        a startup checkpoint. This is an execution failure, not a measured failure of its learned
+                        policies.</p>
+                </div>
+            </section>
+
+            <section id="time">
+                <h2>Time</h2>
+                <p>Total time runs from the first launcher log entry to the PI exit record. Small differences between
+                    phase sums and totals include launcher overhead.</p>
+                <div class="table-scroll">
+                    <table id="time-table">
+                        <caption>Elapsed minutes</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Campaign</th>
+                                <th scope="col" class="number">Total</th>
+                                <th scope="col" class="number">Analyst</th>
+                                <th scope="col" class="number">PI startup</th>
+                                <th scope="col" class="number">Training per variant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-campaign="1" data-total="71.0" data-analyst="15.0" data-startup="55.5">
+                                <th scope="row">1</th>
+                                <td class="number">71.0</td>
+                                <td class="number">15.0</td>
+                                <td class="number">55.5</td>
+                                <td class="number">37.5-38.0</td>
+                            </tr>
+                            <tr data-campaign="2" data-total="50.6" data-analyst="18.2" data-startup="31.9">
+                                <th scope="row">2</th>
+                                <td class="number">50.6</td>
+                                <td class="number">18.2</td>
+                                <td class="number">31.9</td>
+                                <td class="number">26.3-27.0</td>
+                            </tr>
+                            <tr data-campaign="3" data-total="54.9" data-analyst="13.2" data-startup="41.3">
+                                <th scope="row">3</th>
+                                <td class="number">54.9</td>
+                                <td class="number">13.2</td>
+                                <td class="number">41.3</td>
+                                <td class="number">23.1-23.4</td>
+                            </tr>
+                            <tr data-campaign="4" data-total="68.9" data-analyst="14.3" data-startup="54.2">
+                                <th scope="row">4</th>
+                                <td class="number">68.9</td>
+                                <td class="number">14.3</td>
+                                <td class="number">54.2</td>
+                                <td class="number">26.4-26.6</td>
+                            </tr>
+                            <tr data-campaign="5" data-total="71.5" data-analyst="13.2" data-startup="57.7">
+                                <th scope="row">5</th>
+                                <td class="number">71.5</td>
+                                <td class="number">13.2</td>
+                                <td class="number">57.7</td>
+                                <td class="number">46.4-46.9</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>PI startup includes helper work, training and evaluation. Training times come from the PPO logs.
+                    Variants ran concurrently, so their times do not add to elapsed campaign time.</p>
+                <p>The full batch took about 72 minutes. The monitor recorded all campaigns ended at
+                    <code>01:43:30 UTC</code>, after it generated the five automatic reports.</p>
+            </section>
+
+            <section id="tokens">
+                <h2>Tokens And Cost</h2>
+                <p>A token is a unit of model input or output. These counts add all calls in a session. They are not
+                    document lengths.</p>
+                <div class="table-scroll">
+                    <table class="wide" id="tokens-table">
+                        <caption>Recorded token counts for the current campaign IDs</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Campaign</th>
+                                <th scope="col" class="number">Analyst input</th>
+                                <th scope="col" class="number">Analyst output</th>
+                                <th scope="col" class="number">All input</th>
+                                <th scope="col" class="number">All output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-campaign="1" data-analyst-input="4695231" data-analyst-output="115918"
+                                data-input="6114694" data-output="148303">
+                                <th scope="row">1</th>
+                                <td class="number">4,695,231</td>
+                                <td class="number">115,918</td>
+                                <td class="number">6,114,694</td>
+                                <td class="number">148,303</td>
+                            </tr>
+                            <tr data-campaign="2" data-analyst-input="4832999" data-analyst-output="148525"
+                                data-input="5341004" data-output="155136">
+                                <th scope="row">2</th>
+                                <td class="number">4,832,999</td>
+                                <td class="number">148,525</td>
+                                <td class="number">5,341,004</td>
+                                <td class="number">155,136</td>
+                            </tr>
+                            <tr data-campaign="3" data-analyst-input="3054332" data-analyst-output="102145"
+                                data-input="4576090" data-output="137928">
+                                <th scope="row">3</th>
+                                <td class="number">3,054,332</td>
+                                <td class="number">102,145</td>
+                                <td class="number">4,576,090</td>
+                                <td class="number">137,928</td>
+                            </tr>
+                            <tr data-campaign="4" data-analyst-input="3657475" data-analyst-output="105875"
+                                data-input="5886939" data-output="152501">
+                                <th scope="row">4</th>
+                                <td class="number">3,657,475</td>
+                                <td class="number">105,875</td>
+                                <td class="number">5,886,939</td>
+                                <td class="number">152,501</td>
+                            </tr>
+                            <tr data-campaign="5" data-analyst-input="5531616" data-analyst-output="126792"
+                                data-input="6858021" data-output="157329">
+                                <th scope="row">5</th>
+                                <td class="number">5,531,616</td>
+                                <td class="number">126,792</td>
+                                <td class="number">6,858,021</td>
+                                <td class="number">157,329</td>
+                            </tr>
+                            <tr class="total">
+                                <th scope="row">Total</th>
+                                <td class="number">21,771,653</td>
+                                <td class="number">599,255</td>
+                                <td class="number">28,776,748</td>
+                                <td class="number">751,197</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>All-session totals include the analyst, PI, coder and reviewer. The records contain seven coder
+                    sessions and seven reviewer sessions across the batch.</p>
+                <p>Recorded cached input was <strong>26,406,827 tokens</strong>, about 92% of all input. The analysts
+                    generated about 80% of all output tokens.</p>
+                <div class="table-scroll">
+                    <table>
+                        <caption>Analysis size and recorded Copilot usage</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Campaign</th>
+                                <th scope="col" class="number">Report characters</th>
+                                <th scope="col" class="number">Analyst cached input</th>
+                                <th scope="col" class="number">Copilot AIU only</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td class="number">66,971</td>
+                                <td class="number">4,344,320</td>
+                                <td class="number">4.959</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td class="number">64,473</td>
+                                <td class="number">4,411,264</td>
+                                <td class="number">2.327</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td class="number">54,505</td>
+                                <td class="number">2,692,096</td>
+                                <td class="number">5.768</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">4</th>
+                                <td class="number">48,127</td>
+                                <td class="number">3,354,624</td>
+                                <td class="number">6.655</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">5</th>
+                                <td class="number">62,575</td>
+                                <td class="number">5,460,736</td>
+                                <td class="number">4.797</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p><strong>The DeepSeek records contain no AIU value.</strong> The Copilot figures exclude the analyst.
+                    They are not total campaign costs. This run cannot establish an AIU comparison with Terra or Sol.
+                </p>
+            </section>
+
+            <section id="designs">
+                <h2>Environment And Designs</h2>
+                <p>The campaigns retained the same physical environment and observations. They changed the reward and
+                    the mapping from network output to motor command.</p>
+                <div class="table-scroll">
+                    <table>
+                        <caption>Shared training environment</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Part</th>
+                                <th scope="col">Setting</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Robot</th>
+                                <td>Two planar joints. Link lengths 0.12 m and 0.10 m. Joint limits +/-170 degrees.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Actuation</th>
+                                <td>Motor command from -1 to 1. Gear 5. Damping 0.5. Joint armature 0.01.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Episode start</th>
+                                <td>Zero joint angles and velocities.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Target</th>
+                                <td>Random angle. Radius from 0.06 m to 0.20 m. Target in the arm plane.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Timing and success</th>
+                                <td>20 ms control steps. At most 500 steps. Hold within 1 cm for 100 consecutive steps.
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Observation</th>
+                                <td>Seven values: two joint angles, two joint velocities and three end-effector position
+                                    offsets from the target.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Policy</th>
+                                <td>PPO. Two hidden layers of 64 units. Tanh activation. Observation normalization. No
+                                    reward normalization.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">PPO settings</th>
+                                <td>Learning rate 0.0003. Discount 0.99. GAE lambda 0.95. Rollout 2,048 steps. Batch
+                                    size 64. Entropy coefficient zero.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Execution</th>
+                                <td>One environment per variant. Checkpoint target interval 10,000 steps. PPO saves
+                                    after a complete rollout, so step counts round upward.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-scroll">
+                    <table class="wide" id="training-table">
+                        <caption>What each variant actually trained</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Campaign / variant</th>
+                                <th scope="col">Change</th>
+                                <th scope="col" class="number">Actual steps</th>
+                                <th scope="col" class="number">PPO time</th>
+                                <th scope="col" class="number">Final training success</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-campaign="1" data-variant="baseline" data-steps="301056" data-seconds="2250">
+                                <th scope="row">1 / baseline</th>
+                                <td>Direct motor output.</td>
+                                <td class="number">301,056</td>
+                                <td class="number">37m 30s</td>
+                                <td class="number">64%</td>
+                            </tr>
+                            <tr data-campaign="1" data-variant="actionscale" data-steps="301056" data-seconds="2267">
+                                <th scope="row">1 / actionscale</th>
+                                <td>Output multiplied by 0.1. Effort coefficient changes from 0.01 to 1.</td>
+                                <td class="number">301,056</td>
+                                <td class="number">37m 47s</td>
+                                <td class="number">69%</td>
+                            </tr>
+                            <tr data-campaign="1" data-variant="logstd" data-steps="301056" data-seconds="2282">
+                                <th scope="row">1 / logstd</th>
+                                <td>Direct output. Initial log standard deviation -2.5.</td>
+                                <td class="number">301,056</td>
+                                <td class="number">38m 02s</td>
+                                <td class="number">42%</td>
+                            </tr>
+                            <tr data-campaign="2" data-variant="default" data-steps="200704" data-seconds="1620">
+                                <th scope="row">2 / default</th>
+                                <td>Direct output. Default exploration.</td>
+                                <td class="number">200,704</td>
+                                <td class="number">27m 00s</td>
+                                <td class="number">0%</td>
+                            </tr>
+                            <tr data-campaign="2" data-variant="low_std" data-steps="200704" data-seconds="1579">
+                                <th scope="row">2 / low_std</th>
+                                <td>Direct output. Initial log standard deviation -2.</td>
+                                <td class="number">200,704</td>
+                                <td class="number">26m 19s</td>
+                                <td class="number">30%</td>
+                            </tr>
+                            <tr data-campaign="3" data-variant="identity" data-steps="200704" data-seconds="1385">
+                                <th scope="row">3 / identity</th>
+                                <td>Direct motor output.</td>
+                                <td class="number">200,704</td>
+                                <td class="number">23m 05s</td>
+                                <td class="number">0%</td>
+                            </tr>
+                            <tr data-campaign="3" data-variant="scaled" data-steps="200704" data-seconds="1405">
+                                <th scope="row">3 / scaled</th>
+                                <td>Output multiplied by 0.1.</td>
+                                <td class="number">200,704</td>
+                                <td class="number">23m 25s</td>
+                                <td class="number">0%</td>
+                            </tr>
+                            <tr data-campaign="4" data-variant="torque" data-steps="200704" data-seconds="1596">
+                                <th scope="row">4 / torque</th>
+                                <td>Direct motor output.</td>
+                                <td class="number">200,704</td>
+                                <td class="number">26m 36s</td>
+                                <td class="number">0%</td>
+                            </tr>
+                            <tr data-campaign="4" data-variant="servo" data-steps="200704" data-seconds="1585">
+                                <th scope="row">4 / servo</th>
+                                <td>Network selects joint targets. Proportional feedback uses gain 1.1.</td>
+                                <td class="number">200,704</td>
+                                <td class="number">26m 25s</td>
+                                <td class="number">0%</td>
+                            </tr>
+                            <tr data-campaign="5" data-variant="direct" data-steps="501760" data-seconds="2785">
+                                <th scope="row">5 / direct</th>
+                                <td>Direct motor output.</td>
+                                <td class="number">501,760</td>
+                                <td class="number">46m 25s</td>
+                                <td class="number">45%</td>
+                            </tr>
+                            <tr data-campaign="5" data-variant="pdtarget" data-steps="501760" data-seconds="2811">
+                                <th scope="row">5 / pdtarget</th>
+                                <td>Network selects joint targets. Proportional-derivative feedback uses position and
+                                    velocity.</td>
+                                <td class="number">501,760</td>
+                                <td class="number">46m 51s</td>
+                                <td class="number">45%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="table-note">Training success is a recent training-buffer statistic under stochastic actions.
+                    It is not the measured success of the saved policy.</p>
+                <p>Requested lengths were 300,000 steps for campaign 1, 200,000 for campaigns 2-4, and 500,000 for
+                    campaign 5. Actual training totaled 3,110,912 steps.</p>
+                <p>The variants selected different branches in shared source code. None used a separate variant source
+                    folder. The source-overlay feature still permits independent reward implementations.</p>
+                <p>Campaigns 3 and 4 later added evaluation diagnostics. They did not change training physics or
+                    observations. No campaign changed its reward after training.</p>
+            </section>
+
+            <section id="rewards">
+                <h2>Implemented Rewards</h2>
+                <p>Each campaign replaced the empty reward with one formula. No comparison tested different reward
+                    formulas within the same campaign.</p>
+                <dl class="definition-list">
+                    <dt><code>d</code></dt>
+                    <dd>Current distance to the target, in metres. <code>delta_d</code> is the previous distance minus
+                        the current distance.</dd>
+                    <dt><code>epsilon</code></dt>
+                    <dd>The tolerance, 0.01 m. <code>inside</code> is 1 inside tolerance and 0 outside.</dd>
+                    <dt><code>delta_h</code></dt>
+                    <dd>The change in the consecutive hold count. Losing the hold gives a negative reset.</dd>
+                    <dt><code>success</code></dt>
+                    <dd>1 when the policy completes the required hold, and 0 otherwise.</dd>
+                    <dt><code>sum_u2</code></dt>
+                    <dd>The sum of the two squared applied motor commands. <code>mean_u2</code> is half this sum.</dd>
+                </dl>
+                <div class="table-scroll">
+                    <table>
+                        <caption>Reward formulas used in training</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Campaign</th>
+                                <th scope="col">Formula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td><span class="formula">20 * delta_d + 0.10 * inside<br>- 0.05 * inside * (d /
+                                        epsilon)^2<br>+ 10 * success - w * sum_u2</span></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td><span class="formula">delta_d / epsilon + 0.01 * inside<br>+ 10 * success - 0.001 *
+                                        sum_u2</span></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td><span class="formula">-2 * d + delta_h<br>+ 10 * success - 0.05 * mean_u2</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">4</th>
+                                <td><span class="formula">20 * delta_d + 0.5 * delta_h<br>+ 30 * success - 0.02 *
+                                        mean_u2</span></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">5</th>
+                                <td><span class="formula">2 * delta_d / epsilon + inside<br>+ 10 * success - 0.02 *
+                                        mean_u2</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>Campaign 1 uses <code>w = 0.01</code> for the baseline and reduced-exploration designs. It uses
+                    <code>w = 1</code> for the output-gain-0.1 design.</p>
+                <p>The larger coefficient compensates for squaring commands that are ten times smaller. This is a
+                    coefficient change, not a separate reward structure.</p>
+                <h3>A Wrong Claim In Campaign 5</h3>
+                <p>The analyst states that the dwell reward cannot reward repeated entry and exit. It also states that
+                    dwell reward is bounded by 100 steps per episode.</p>
+                <p>The hold counter resets when the robot leaves tolerance. A policy can collect more paid inside steps
+                    without completing 100 consecutive steps.</p>
+                <div class="table-scroll">
+                    <table>
+                        <caption>Discounted incentive check with campaign 5's discount of 0.99</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Sequence</th>
+                                <th scope="col" class="number">Dwell and completion return</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">100 inside steps, then successful termination</th>
+                                <td class="number">67.09</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Repeat 99 inside steps and one outside step, over 500 steps</th>
+                                <td class="number">98.76</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>This calculation isolates dwell and completion rewards. It omits movement costs and progress rewards.
+                    It does not show that the learned policy used this behavior.</p>
+                <p><strong>The analyst's claimed protection is wrong.</strong> Correct mechanics did not prevent an
+                    error in reward reasoning.</p>
+            </section>
+
+            <section id="worked">
+                <h2>What Worked</h2>
+                <h3>The Analysis Identified The Main Dynamics</h3>
+                <p>All five reports identify a velocity response of about 20-24 ms and a full-command speed of about 10
+                    rad/s.</p>
+                <p>The reports connect these dynamics to action scale, exploration and the 1 cm tolerance. Earlier Terra
+                    and Luna comparisons missed this mechanism.</p>
+                <h3>The Prompt Repair Reached Every Analyst</h3>
+                <p>The recorded system messages contain both paragraphs that the earlier DeepSeek attempt missed. This
+                    checks delivery, not scientific correctness.</p>
+                <h3>The Comparisons Tested Consequential Choices</h3>
+                <p>Campaigns compared control authority, exploration scale and action interfaces. These were more
+                    consequential than run 4's small parameter changes.</p>
+                <p>Campaign 1 found a useful gain change. Campaigns 4 and 5 kept direct output after feedback
+                    alternatives performed worse.</p>
+                <h3>The PI Could Revise An Initial Explanation</h3>
+                <p>Campaign 4 initially emphasized holding. Its measurements instead showed that most failures came
+                    before target acquisition.</p>
+                <p>The PI used this result to propose an observation study rather than continue developing the weaker
+                    feedback interface.</p>
+                <h3>Training Logs Alone Were Not The Verdict</h3>
+                <p>Campaign 4 logged zero training success, yet its direct-output policy achieved 50.25% in research
+                    evaluation.</p>
+                <p>Stochastic training behavior and evaluated policy behavior differed. A zero training statistic did
+                    not establish that the policy learned nothing.</p>
+            </section>
+
+            <section id="improvements">
+                <h2>What Needs Improvement</h2>
+                <p>These are proposed maintainer changes. This report does not implement them.</p>
+                <h3>1. Keep The First Reward Provisional</h3>
+                <p>The analyst prompt gives one first reward a special status. The PI prompt warns against local
+                    adjustments of parameters or reward.</p>
+                <p>The PI receives full variant permissions. The analyst does not receive the training-variants contract
+                    directly in its system reference.</p>
+                <p>The analyst ranks variants, and startup asks the PI to select the leading scientific distinction. All
+                    five reports put action choices first.</p>
+                <p>Campaign 2 proposes a reward alternative at V7. The PI did not select it for its first comparison.
+                </p>
+                <p><strong>Needed:</strong> consistent information about full design freedom. Keep the first reward open
+                    to revision. Do not require a reward variant.</p>
+                <h3>2. Remove Contradictory Role Text</h3>
+                <p>The contracts say that the analyst selects no intervention. The launch prompt asks it to propose a
+                    reward and design variants.</p>
+                <p><strong>Needed:</strong> distinguish a proposal from a PI decision. Give both roles the same account
+                    of this boundary.</p>
+                <h3>3. Give Better Grounds For Training Length</h3>
+                <p>The PI chose all lengths explicitly. There was no fixed 200,000-step requirement.</p>
+                <p>Reports treated roughly 100,000 steps as a screen and larger lengths as grounds for a stronger
+                    conclusion. Those thresholds lacked campaign evidence.</p>
+                <p>The trainer also contains a 100,000-step default. The maintainer identified this scaffold value as an
+                    anchor in the analyst's reasoning.</p>
+                <p><strong>Needed:</strong> separate task limits, scaffold choices and evidence about learning. Relate
+                    the budget to the question and available learning signals.</p>
+                <p>Do not replace 100,000 with another fixed suggestion. A shorter run is not automatically more useful.
+                </p>
+                <h3>4. Improve Reward Reasoning</h3>
+                <p>The campaign 5 error concerns the relation between termination, repeated entry and discounted return.
+                    A plausible term-by-term explanation did not catch it.</p>
+                <p><strong>Needed:</strong> sound analysis of complete behavior and incentives. Do not treat the first
+                    proposed formula as validated.</p>
+                <h3>5. Resolve The Execution Block</h3>
+                <p>Campaign 2's training completed, but generated cache files triggered the ownership gate. There is no
+                    evaluated score for either variant.</p>
+                <p><strong>Needed:</strong> investigate and repair this block in the main harness when authorized.
+                    Preserve the completed training evidence.</p>
+                <h3>6. Record Comparable Cost</h3>
+                <p>DeepSeek has token and time records but no AIU value. Copilot AIU does not include that
+                    external-provider analysis.</p>
+                <p><strong>Needed:</strong> record an appropriate external-provider cost measure. Do not compare a
+                    missing analyst cost with Terra or Sol AIU.</p>
+                <div class="note">
+                    <p><strong>Overall decision:</strong> DeepSeek remains a promising analyst candidate. It improved
+                        the physical model, but correct first-recipe construction is not yet reliable.</p>
+                    <p>Campaign 1 is the strongest candidate for continuation. It still needs 25 more successes per 200
+                        to reach the nominal goal.</p>
+                    <p>Before another full five-campaign batch, address the instruction inconsistencies and the
+                        execution block. Do not alter the scientific evidence.</p>
+                </div>
+            </section>
+
+            <section id="history">
+                <h2>Earlier Runs</h2>
+                <p>The following history comes from the maintainer's handover. This report did not repeat the earlier
+                    experiments.</p>
+                <ol>
+                    <li><strong>Run 1:</strong> two campaigns started from skeleton-v1. Training length was fixed at
+                        120,000 steps. Both chose joint targets with feedback. Convergence failed. Later changes allowed
+                        free training length and added reward-term logs.</li>
+                    <li><strong>Run 2:</strong> none of five full campaigns passed. The best reached 186/200
+                        task-reference. Direct commands outperformed the repeated joint-target approach. Later changes
+                        added parallel variants, a richer analyst task and skeleton-v3.</li>
+                    <li><strong>Run 3:</strong> Terra supplied the analysis. No PI used variants. The maintainer found
+                        useful insights but weak correctness. Both Terra and Luna missed the fast velocity dynamics.
+                    </li>
+                    <li><strong>Run 4:</strong> Sol supplied the analysis. PIs used variants, but mostly changed small
+                        parameters. Examples and parameter-only variants constrained the choices. Reported analyst cost
+                        was 24-36 AIU per analysis.</li>
+                    <li><strong>Earlier run 5 attempt:</strong> DeepSeek sessions stopped before completion. Copilot
+                        omitted two analyst paragraphs. The fixed system prompt repaired this before the current
+                        restart.</li>
+                </ol>
+                <p>Direct inspection of the run 4 archive found no completed evaluation operations. Its training
+                    statistics cannot serve as measured research scores.</p>
+                <p>The supported improvement is clearer dynamics, broader design comparisons and useful evaluated
+                    outcomes. It is not a claimed numerical score gain over run 4.</p>
+            </section>
+
+            <section id="sources">
+                <h2>Sources And Limits</h2>
+                <p>This is a maintainer snapshot. Campaign operation records remain the scientific evidence. Failed
+                    execution is history, not evidence of policy performance.</p>
+                <div class="table-scroll">
+                    <table>
+                        <caption>Campaign identities</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Slot</th>
+                                <th scope="col">Campaign ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td class="source-path"><code>8fa76cd2-b46e-4e1c-9ab7-978660fa7113</code></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td class="source-path"><code>fc9edb9e-fd97-4822-8567-dd19ed3bf6b7</code></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td class="source-path"><code>ee21082c-2015-4a80-aad3-9a09a0f66cb8</code></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">4</th>
+                                <td class="source-path"><code>8e553c86-9caa-4bf0-a4ba-9224d1e455cc</code></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">5</th>
+                                <td class="source-path"><code>d392b817-10c3-4136-af56-fbf32b9afa51</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ul>
+                    <li>Campaign root: <code>robot-learning-campaigns-norecipe/campaign-1</code> through
+                        <code>campaign-5</code>, beside the harness worktree.</li>
+                    <li>Scores and decisions: <code>runner/state/research_state.json</code>, completed operations and
+                        startup session records.</li>
+                    <li>Time and tokens: <code>reports/launcher/</code>, current-ID files in
+                        <code>reports/session_usage/</code>, and <code>campaigns/training_logs/</code>.</li>
+                    <li>Scientific reasoning: each <code>pi_workspace/scientific_model.md</code>. Implementation:
+                        accepted training revisions and PI-owned source files.</li>
+                    <li>Prompt delivery:
+                        <code>%USERPROFILE%/.copilot/session-state/&lt;session-id&gt;/events.jsonl</code>, event type
+                        <code>system.message</code>.</li>
+                    <li>Batch completion: <code>%TEMP%/robot-learning/parallel-20261030T003055/monitor.log</code>.</li>
+                </ul>
+                <p>Instruction sources: <a href="../../runner/launcher/prompts.py">session prompts</a>, <a
+                        href="../../runner/copilot/system_prompt.py">system prompts</a>, <a
+                        href="../../contracts/program.md">research program</a> and <a
+                        href="../../contracts/instruments/training.md">training contract</a>.</p>
+                <p>Measured scores concern selected checkpoints and panels. No campaign reached the official assessment.
+                    Campaign 2 has no evaluated score.</p>
+                <p>The reward counterexample checks incentives only. It is not a robot simulation or a claim about
+                    learned behavior.</p>
+                <p>Only current campaign IDs contribute to the time and token summaries. Old interrupted-session usage
+                    files do not contribute.</p>
+            </section>
+            <footer>Prepared on 30 October 2026. No campaign data or harness runtime code changed during report
+                preparation.</footer>
+        </main>
+    </div>
+</body>
+
+</html>
