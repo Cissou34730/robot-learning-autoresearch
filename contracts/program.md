@@ -117,6 +117,13 @@ toward startup. You decide which proposals to implement and how to revise them.
 The proposed first reward has the same status as the other proposals.
 A variant can change any PI-owned source file and any parameter.
 
+Start from the robot and the physical behavior that the task requires. Use the
+scientific model to explain how observations and motor commands relate to that
+behavior. From this explanation, identify what the policy must learn and how the
+recipe can help it. Predict the effect of each proposed change on the robot's
+behavior. Use variant comparisons to test that prediction and guide the next
+recipe decision.
+
 Before training, state your comparison plan. Explain the recipe question, why
 you chose each variant and the behavior you expect. State the training length
 and justify it for this test. Explain how the results will change your next

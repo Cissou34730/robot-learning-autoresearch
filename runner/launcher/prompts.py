@@ -513,7 +513,10 @@ def scientific_session_prompt(
             "Start from the scientific model and the analyst's proposals. You "
             "decide which proposals to implement and how to revise them. The "
             "proposed first reward has the same status as the other proposals. "
-            "A variant can change any PI-owned source file and any parameter."
+            "A variant can change any PI-owned source file and any parameter. "
+            "Ground each variant choice in the robot and the physical behavior that "
+            "the task requires. Use this explanation to identify what the policy must "
+            "learn."
             if pstext.same(kind, "recipe_development")
             else ""
         ),
