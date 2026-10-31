@@ -118,11 +118,20 @@ The proposed first reward has the same status as the other proposals.
 A variant can change any PI-owned source file and any parameter.
 
 Start from the robot and the physical behavior that the task requires. Use the
-scientific model to explain how observations and motor commands relate to that
-behavior. From this explanation, identify what the policy must learn and how the
-recipe can help it. Predict the effect of each proposed change on the robot's
-behavior. Use variant comparisons to test that prediction and guide the next
-recipe decision.
+scientific model and observed robot behavior to explain what the policy must
+learn. Develop the reward and training environment together from this
+explanation. Treat their current design as a hypothesis.
+
+Explain how the reward favors progress toward the complete task behavior. Judge
+its incentives with the discount factor and episode-end conditions that
+training actually uses.
+
+Explain how the training environment gives the policy the information and
+experience needed to learn that behavior. Identify what the policy must infer
+from its observations. Predict how the environment design affects that learning.
+
+Use comparisons to test these explanations. Revise the design choices that
+observed behavior does not support.
 
 Before training, state your comparison plan. Explain the recipe question, why
 you chose each variant and the behavior you expect. State the observations of
