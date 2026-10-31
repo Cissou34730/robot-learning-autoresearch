@@ -270,6 +270,7 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "question, why you chose each variant and the behavior you expect. "
                 "State the observations of robot behavior needed to answer the "
                 "recipe question. "
+                "State what the comparison can distinguish and what it cannot.\n\n"
                 "State the training length and justify it for this test. Explain "
                 "how the results will change your next decision. Use observed "
                 "behavior to test your predictions and guide the explanation and "
