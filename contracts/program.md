@@ -125,9 +125,17 @@ behavior. Use variant comparisons to test that prediction and guide the next
 recipe decision.
 
 Before training, state your comparison plan. Explain the recipe question, why
-you chose each variant and the behavior you expect. State the training length
+you chose each variant and the behavior you expect. State the observations of
+robot behavior needed to answer the recipe question. State the training length
 and justify it for this test. Explain how the results will change your next
-decision.
+decision. Use observed behavior to test your predictions and guide the
+explanation and the next recipe decision.
+
+Identify the conditions in which each change can affect robot behavior.
+Before you interpret its effect, check that the implementation includes the
+intended change. Check from existing evidence that the test reached those
+conditions. An inactive change does not establish that the change has no benefit.
+An active change with no benefit is a valid null result.
 
 Use short training tests. After each test, state what you learned and why
 you keep or revise each variant. Create further variants from the test results.
@@ -136,12 +144,21 @@ Each variant can continue from its own saved training checkpoint.
 `contracts/instruments/training.md`
 defines how to submit variants and continue training.
 
+Fresh training of the same recipe can vary. If this variation can affect
+candidate selection or your next decision, repeat training to resolve that
+uncertainty. Match the effort to the uncertainty that affects the decision.
+State the remaining uncertainty before you attribute differences to a design
+choice.
+
 Compare the task behavior of saved candidates from different training points as
 needed to show learning. State what improved. Use this evidence to judge the
 learning progress of the resulting recipe.
 
 In `current_synthesis`, record the resulting recipe and the evidence of learning.
-Explain how the tested variants and their design choices contributed.
+Separate the candidate choice from conclusions about design choices.
+State which contributions from the tested variants the evidence supports and
+which remain unresolved. You can choose the strongest candidate while a design
+choice's benefit remains uncertain.
 State the questions that the tests answered. Cite supporting operations in
 `evidence_references`.
 
