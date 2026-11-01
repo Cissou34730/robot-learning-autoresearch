@@ -825,6 +825,19 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
         )
         pending["progress"] = "restoring"
         repository.write_state(state)
+    candidate = protocol.resolve_candidate(state, plan["candidate_id"])
+    destination = repository.durable_artifact_destination(
+        campaign_id=repository.current_campaign_id(state),
+        origin_operation=candidate["origin_operation"],
+        candidate=candidate["name"],
+        fingerprint=candidate["fingerprint"],
+    )
+    publication = {
+        "source": candidate["artifact"],
+        "destination": repository.repo_relative_path(destination),
+        "fingerprint": candidate["fingerprint"],
+    }
+    repository.publish_artifact(publication)
     repository.apply_recipe_restore(plan)
     restored = research_config.load_experiment_config()
     if restored != plan["parameters"]:
@@ -839,6 +852,10 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
     def apply(current: dict, _result: dict) -> None:
         session = current["scientific_session"]
         session["scientific_parent_commit"] = plan["parent"]
+        current["candidates"][plan["candidate_id"]]["artifact"] = publication[
+            "destination"
+        ]
+        current["model_roles"]["working"] = plan["candidate_id"]
 
     _complete_operation(
         state,
@@ -846,7 +863,9 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
             "status": "restored",
             "candidate": plan["candidate_id"],
             "scientific_commit": plan["parent"],
-            "restored_paths": [*plan["restore"], *plan["remove_created"]],
+            "parameters": copy.deepcopy(plan["parameters"]),
+            "restored_paths": list(plan["restore"]),
+            "removed_paths": list(plan["remove_created"]),
         },
         apply,
     )

@@ -1455,21 +1455,37 @@ def test_official_assessment_rejects_role_backed_only_by_failed_evidence(
 def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
     monkeypatch, tmp_path
 ):
-    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Return to the recorded scientific recipe.")
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    candidate["scientific_commit"] = "source"
+    state["candidates"][candidate["id"]] = candidate
     source = tmp_path / "robot_learning" / "scenario"
     source.mkdir(parents=True)
     edited = source / "edited.py"
     deleted = source / "deleted.py"
     edited.write_text("value = 1\n", encoding="utf-8")
     deleted.write_text("present = True\n", encoding="utf-8")
+    parameters = tmp_path / "robot_learning" / "training" / "current_params.json"
+    parameters.parent.mkdir(parents=True)
     snapshot = {
         "robot_learning/scenario/edited.py": "value = 1\n",
         "robot_learning/scenario/deleted.py": "present = True\n",
+        "robot_learning/training/current_params.json": json.dumps(
+            candidate["parameters"]
+        ),
     }
+    parameters.write_text('{"training": {"n_envs": 2}}', encoding="utf-8")
     edited.write_text("value = 2\n", encoding="utf-8")
     deleted.unlink()
     added = source / "added.py"
     added.write_text("extra = True\n", encoding="utf-8")
+    laboratory = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
+    laboratory.parent.mkdir(parents=True)
+    laboratory.write_text("diagnostic = True\n", encoding="utf-8")
+    history = '{"id": "failed-attempt"}\n'
+    paths.RESULTS_PATH.write_text(history, encoding="utf-8")
 
     def restore_paths(commit: str, restorable: list[str]) -> None:
         assert commit == "source"
@@ -1480,17 +1496,62 @@ def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
 
     monkeypatch.setattr(repository, "restore_paths", restore_paths)
     monkeypatch.setattr(repository, "git", lambda *_args, **_kwargs: "")
-    plan = {
-        "parent": "source",
-        "restore": list(snapshot),
-        "remove_created": ["robot_learning/scenario/added.py"],
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda _commit: [*snapshot, "robot_learning/scenario/added.py"],
+    )
+    monkeypatch.setattr(
+        repository, "tracked_at_commit", lambda _commit, path: path in snapshot
+    )
+    request = {
+        "candidate": candidate["id"],
+        "reason": "Return to the selected checkpoint.",
     }
-    repository.apply_recipe_restore(plan)
+    protocol.validate_operation_shape("restore_recipe", request)
+    plan = protocol.plan_recipe_restore(request, state)
+    result = {}
+
+    def complete_operation(current, restored_result, apply):
+        repository._validate_completed_event_result("restore_recipe", restored_result)
+        result.update(restored_result)
+        apply(current, restored_result)
+
+    monkeypatch.setattr(run_experiment, "_complete_operation", complete_operation)
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: json.loads(parameters.read_text(encoding="utf-8")),
+    )
+    retained = tmp_path / "retained" / "candidate"
+    monkeypatch.setattr(
+        repository, "durable_artifact_destination", lambda **_kwargs: retained
+    )
+    pending = {"progress": "restoring", "data": {"plan": plan}}
+    assert run_experiment._execute_recipe_restore(state, pending) == 0
 
     assert repository.recipe_paths_match_commit(plan)
     assert edited.read_text(encoding="utf-8") == "value = 1\n"
     assert deleted.read_text(encoding="utf-8") == "present = True\n"
+    assert json.loads(parameters.read_text(encoding="utf-8")) == candidate["parameters"]
     assert not added.exists()
+    assert laboratory.read_text(encoding="utf-8") == "diagnostic = True\n"
+    assert paths.RESULTS_PATH.read_text(encoding="utf-8") == history
+    assert repository.artifact_fingerprint(artifact) == candidate["fingerprint"]
+    assert repository.artifact_fingerprint(retained) == candidate["fingerprint"]
+    assert candidate["artifact"] == repository.repo_relative_path(retained)
+    assert state["model_roles"]["working"] == candidate["id"]
+    assert state["model_roles"]["best_known"] is None
+    assert state["model_roles"]["retained"] == {}
+    assert state["scientific_session"]["scientific_parent_commit"] == "source"
+    assert result == {
+        "status": "restored",
+        "candidate": candidate["id"],
+        "scientific_commit": "source",
+        "parameters": candidate["parameters"],
+        "restored_paths": list(snapshot),
+        "removed_paths": ["robot_learning/scenario/added.py"],
+    }
 
 
 def test_task_reference_uses_frozen_protected_contract(monkeypatch, tmp_path):

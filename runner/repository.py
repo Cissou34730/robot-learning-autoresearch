@@ -1800,6 +1800,7 @@ def _validate_completed_event_result(kind: str, result: dict) -> None:
         fields = {"status", "action", "candidate", "evidence"}
     elif kind == "restore_recipe":
         fields = {"status", "candidate", "scientific_commit", "restored_paths"}
+        fields |= {"parameters", "removed_paths"} & result.keys()
     else:
         fields = {"status", "model"}
     _require_exact_fields(result, fields, f"completed {kind} result")

@@ -121,23 +121,32 @@ changes only the requested role.
 {
   "restore_recipe": {
     "candidate": {"type": "string"},
-    "reason": {"type": "string"},
-    "paths": {"type": "array", "items": {"type": "string"}}
+    "reason": {"type": "string"}
   }
 }
 ```
 
-All fields are required. The candidate and the reason must not be empty.
-`paths` is a list of exact, different scientific files, relative to the
-repository. It must not be empty. To restore the recorded parameters, include
-`robot_learning/training/current_params.json`.
+Both fields are required. The candidate and the reason must not be empty.
 
-The operation restores only these files from the recorded recipe of the
-candidate. When a selected file is not in that recipe, the operation removes
-it. Source files that you did not select do not change. You cannot select the
-laboratory tools of the campaign. The Runner refuses folders and wildcards.
+This operation returns you to the selected candidate and its complete
+scientific recipe. It restores the PI-owned recipe source and training
+parameters from the candidate's recorded code version. It removes recipe
+files that were added after that version. It sets the working role to the
+selected candidate. The saved candidate stays unchanged. The operation does
+not rerun training.
+
+The campaign history, session records, measurements and other saved candidates
+stay available. Laboratory tools are not restored or removed. The best-known
+and retained roles stay unchanged.
+
+Current recipe changes are replaced. Request this operation before you
+implement a new method change. A transfer training request does not restore
+source code.
+
+The result identifies the candidate, code version, parameters, restored files
+and removed files. The Runner checks that the restored recipe matches the
+recorded code version and parameters.
 
 The Runner does not infer which code implements learning and which code
 implements measurement. When one source file contains both, the restoration of
-the file restores both. No operation restores a complete recipe automatically.
-The operation verifies the result. It does not assign a role.
+the file restores both.
