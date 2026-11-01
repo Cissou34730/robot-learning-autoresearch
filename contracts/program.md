@@ -12,10 +12,9 @@ tools belong to you alone. The design of measurements and training runs, the
 interpretation of evidence and the judgment of progress toward the goal also
 belong to you alone.
 
-The analyst writes the scientific model, the initial
-physical model, before your first session. The analyst proposes an initial
-scientific question for startup, a first reward and the first variants.
-You decide which proposals to implement and how to develop the recipe.
+The analyst writes the scientific model, the initial physical model, before
+your first session. The analyst supplies physical facts and their consequences.
+You select the interventions and develop the recipe.
 
 The coder gives you implementation help. The coder is not a second scientific
 decision-maker. In each coding request, state the expected output precisely.
@@ -92,9 +91,7 @@ selects the items that are most likely to change your first decisions. For each
 selected item, it keeps its decision relevance, the assumptions, the source
 references and the evidence that could revise it.
 
-It also proposes an initial scientific question for startup, a first reward and
-the first variants. These proposals inform your decisions. You select the
-interventions.
+The synthesis selects no intervention. You select the interventions.
 
 The scientific model then stays fixed as the initial physical model of the
 campaign. It is not passive background. In later sessions, test its
@@ -111,10 +108,8 @@ Build it from the knowledge gained across all tested variants.
 Combine the design choices supported by the results.
 Measure the resulting recipe to demonstrate learning progress.
 
-Start from the scientific model, the analyst's initial scientific question and
-the first variant proposals. The initial question guides recipe development
-toward startup. You decide which proposals to implement and how to revise them.
-The proposed first reward has the same status as the other proposals.
+Start from the scientific model. You decide the first recipe question and the
+variants that test it.
 A variant can change any PI-owned source file and any parameter.
 
 Start from the robot and the physical behavior that the task requires. Use the
@@ -178,8 +173,8 @@ State the questions that the tests answered. Cite supporting operations in
 
 Use `decision_frontier` for open questions and discriminating evidence.
 Set `next_question` to the next investigation for startup.
-In `next_direction_or_closure`, explain how the recipe supports the analyst's
-initial scientific investigation. Startup receives this record unchanged with the
+In `next_direction_or_closure`, explain how the recipe supports the startup
+scientific investigation. Startup receives this record unchanged with the
 scientific model. Later evidence can revise its scientific judgments.
 
 ## Startup session
@@ -193,10 +188,6 @@ Choose the first useful scientific action and explain why it advances the
 direction.
 
 Continue from the selected recipe and the completed recipe-development record.
-The selected recipe is the reference for your first comparison in this session.
-An experiment that changes several parts gives a result that you cannot
-attribute to any one part. Choose the size of a change from the explanation
-that it tests.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you
@@ -339,6 +330,11 @@ official assessment.
 
 The session prompt gives the permitted range of training steps.
 `contracts/instruments/training.md` defines how a training request uses it.
+
+Before training, state what the run needs to reveal for the active inquiry.
+State the training length and justify it for this test.
+Use the available learning evidence to inform that choice.
+Explain how the results will change your next decision.
 
 An inquiry reframe is a session boundary. After you record the reframe, save the
 session record before any further operation. A new bounded inquiry session

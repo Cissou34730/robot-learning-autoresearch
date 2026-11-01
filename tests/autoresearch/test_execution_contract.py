@@ -17,6 +17,7 @@ from runner import (
     repository,
     run_experiment,
 )
+from runner.launcher import options
 
 
 def _checked(tmp_path: Path) -> tuple[int, str]:
@@ -63,6 +64,8 @@ def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") ->
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
     monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
     monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
+    if session_kind == "recipe_development":
+        monkeypatch.setattr(execution, "RECIPE_MIN_TRAINING_STEPS", 10)
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
@@ -77,6 +80,19 @@ def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") ->
         if session_kind in {"recipe_development", "startup"}
         else "research"
     )
+    if session_kind == "inquiry":
+        state["active_inquiry"] = {
+            "id": "I1",
+            "question": "Question",
+            "goal_connection": "Connection",
+            "closure_condition": "Condition",
+            "rationale": "Rationale",
+            "opened_in_session": "S0",
+            "handoff_conclusion": "Conclusion",
+            "handoff_question": "Question",
+            "handoff_source_session_id": "S0",
+            "reframes": [],
+        }
     repository.start_scientific_session(
         state,
         kind=session_kind,
@@ -170,13 +186,44 @@ def test_training_variant_parent_request_rules(initialization, root, variants, v
 def test_training_range_default_and_maintainer_override(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
     arguments = run_experiment.parse_args()
-    assert (arguments.timesteps, arguments.max_timesteps) == (10_000, 500_000)
-    monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--timesteps", "60000"])
-    assert run_experiment.parse_args().timesteps == 60_000
+    assert (arguments.timesteps, arguments.max_timesteps) == (120_000, 360_000)
+    assert (options.DEFAULT_TIMESTEPS, options.DEFAULT_MAX_TIMESTEPS) == (
+        120_000,
+        360_000,
+    )
+    for session_kind, expected in (
+        ("startup", (1, 120_000)),
+        ("inquiry", (120_000, 360_000)),
+        ("recipe_development", (10_000, 500_000)),
+    ):
+        assert (
+            execution.training_step_range(
+                session_kind, arguments.timesteps, arguments.max_timesteps
+            )
+            == expected
+        )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["run_experiment.py", "--timesteps", "60000", "--max-timesteps", "180000"],
+    )
+    arguments = run_experiment.parse_args()
+    assert (arguments.timesteps, arguments.max_timesteps) == (60_000, 180_000)
+    for session_kind, expected in (
+        ("startup", (1, 60_000)),
+        ("inquiry", (60_000, 180_000)),
+        ("recipe_development", (10_000, 500_000)),
+    ):
+        assert (
+            execution.training_step_range(
+                session_kind, arguments.timesteps, arguments.max_timesteps
+            )
+            == expected
+        )
 
 
 @pytest.mark.parametrize(
-    ("steps", "accepted"), [(5, False), (10, True), (30, True), (31, False)]
+    ("steps", "accepted"), [(0, False), (1, True), (5, True), (10, True), (11, False)]
 )
 def test_startup_training_requests_stay_within_the_range(
     monkeypatch, tmp_path, steps, accepted
@@ -199,8 +246,11 @@ def test_startup_training_requests_stay_within_the_range(
         assert run_experiment.check_operation() == 0
         assert repository.read_state() == pending_state
     else:
-        with pytest.raises(ValueError, match="needs between 10 and 30 steps"):
+        with pytest.raises(ValueError):
             run_experiment.accept_operation(request, state)
+        if steps > 0:
+            with pytest.raises(ValueError, match="needs between 1 and 10 steps"):
+                run_experiment._training_allocation(request["training"], state)
         assert repository.read_state() == before
         assert state == before
 
@@ -208,30 +258,111 @@ def test_startup_training_requests_stay_within_the_range(
 @pytest.mark.parametrize(
     ("steps", "accepted"), [(5, False), (10, True), (30, True), (31, False)]
 )
-def test_inquiry_training_requests_stay_within_the_range(monkeypatch, steps, accepted):
-    monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
+def test_inquiry_training_requests_stay_within_the_range(
+    monkeypatch, tmp_path, steps, accepted
+):
+    state = _configure(monkeypatch, tmp_path, session_kind="inquiry")
     monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 30)
+    request = _training()
+    request["training"]["steps"] = steps
+    _write_request(request)
+    before = repository.read_state()
+
+    assert run_experiment.check_operation() == (0 if accepted else 1)
+    assert repository.read_state() == before
+    if accepted:
+        assert run_experiment.accept_operation(request, state)["request"] == request
+        _write_request(request)
+        pending_state = repository.read_state()
+        assert run_experiment.check_operation() == 0
+        assert repository.read_state() == pending_state
+    else:
+        with pytest.raises(ValueError, match="needs between") as error:
+            run_experiment.accept_operation(request, state)
+        assert "maintainer" not in str(error.value)
+        assert repository.read_state() == before
+        assert state == before
+
+
+@pytest.mark.parametrize(
+    ("steps", "accepted"),
+    [(9_999, False), (10_000, True), (500_000, True), (500_001, False)],
+)
+def test_recipe_training_requests_stay_within_the_range(monkeypatch, steps, accepted):
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 60_000)
+    monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 180_000)
     request = _training()["training"]
     request["steps"] = steps
-    state = {"scientific_session": {"kind": "inquiry"}}
-
+    state = {"scientific_session": {"kind": "recipe_development"}}
     if accepted:
         assert run_experiment._training_allocation(request, state) == steps
     else:
-        with pytest.raises(ValueError, match="needs between") as error:
+        with pytest.raises(ValueError, match="needs between 10,000 and 500,000 steps"):
             run_experiment._training_allocation(request, state)
-        assert "maintainer" not in str(error.value)
 
 
-def test_changed_maintainer_range_refuses_pending_training_without_mutation(
-    monkeypatch, tmp_path
+@pytest.mark.parametrize("session_kind", ["startup", "inquiry"])
+@pytest.mark.parametrize("variants", [None, [], [{"label": "a"}, {"label": "b"}]])
+def test_nonrecipe_training_variants_refuse_check_and_accept_without_mutation(
+    monkeypatch, tmp_path, session_kind, variants
 ):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind=session_kind)
     request = _training()
-    request["training"]["steps"] = 500_000
+    request["training"]["variants"] = variants
+    _write_request(request)
+    before = repository.read_state()
+    assert run_experiment.check_operation() == 1
+    with pytest.raises((ValueError, TypeError)):
+        run_experiment.accept_operation(request, state)
+    with pytest.raises(ValueError, match="only in recipe development"):
+        run_experiment._training_allocation(request["training"], state)
+    assert repository.read_state() == before
+    assert state == before
+
+
+@pytest.mark.parametrize("session_kind", ["startup", "inquiry"])
+@pytest.mark.parametrize(
+    "progress", ["accepted", "recipe_published", "training_dispatched"]
+)
+def test_nonrecipe_training_variants_refuse_pending_execution_without_mutation(
+    monkeypatch, tmp_path, session_kind, progress
+):
+    state = _configure(monkeypatch, tmp_path, session_kind=session_kind)
+    pending = run_experiment.accept_operation(_training(), state)
+    pending["request"]["training"]["variants"] = [{"label": "a"}, {"label": "b"}]
+    pending["request_fingerprint"] = run_experiment._canonical_fingerprint(
+        pending["request"]
+    )
+    pending["data"]["variant_parents"] = {"a": None, "b": None}
+    pending["progress"] = progress
+    repository.write_state(state)
+    before = repository.read_state()
+    monkeypatch.setattr(
+        run_experiment,
+        "_write_accepted_request_handoff",
+        lambda *_args: pytest.fail("wrote handoff"),
+    )
+    with pytest.raises(ValueError, match="only in recipe development"):
+        run_experiment.execute_pending_operation()
+    assert repository.read_state() == before
+    assert state == before
+
+
+@pytest.mark.parametrize("session_kind", ["startup", "inquiry"])
+def test_changed_maintainer_range_refuses_pending_training_without_mutation(
+    monkeypatch, tmp_path, session_kind
+):
+    state = _configure(monkeypatch, tmp_path, session_kind=session_kind)
+    monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 30)
+    request = _training()
+    if session_kind == "inquiry":
+        request["training"]["steps"] = 30
     run_experiment.accept_operation(request, state)
     before = repository.read_state()
-    monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 120_000)
+    if session_kind == "startup":
+        monkeypatch.setattr(run_experiment, "TIMESTEPS", 5)
+    else:
+        monkeypatch.setattr(run_experiment, "MAX_TIMESTEPS", 20)
 
     with pytest.raises(ValueError, match="needs between"):
         run_experiment.execute_pending_operation()
@@ -506,7 +637,7 @@ def _add_training_parent(state, tmp_path, name):
 def test_unknown_training_parent_refuses_acceptance_without_mutation(
     monkeypatch, tmp_path, missing_at, replacement
 ):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="recipe_development")
     parent = _add_training_parent(state, tmp_path, "parent")
     if replacement:
         pending = run_experiment.accept_operation(_training(), state)
@@ -531,7 +662,7 @@ def test_unknown_training_parent_refuses_acceptance_without_mutation(
 def test_pending_variant_parent_mapping_rejects_corruption(
     monkeypatch, tmp_path, corruption
 ):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="recipe_development")
     parent = _add_training_parent(state, tmp_path, "parent")
     request = _training()
     request["training"].update(
@@ -556,7 +687,7 @@ def test_pending_variant_parent_mapping_rejects_corruption(
 
 
 def test_variant_parent_is_revalidated_before_any_training(monkeypatch, tmp_path):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="recipe_development")
     parent = _add_training_parent(state, tmp_path, "parent")
     request = _training()
     request["training"].update(
@@ -587,6 +718,7 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     monkeypatch, tmp_path, failure_point, requested_steps
 ):
     state = _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", requested_steps)
     invocation_result.configure(tmp_path / "execution-result.json")
     monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
     request = _training()
@@ -699,7 +831,7 @@ def test_completed_training_transaction_retries_publication_without_retraining(
 def test_training_variants_train_together_and_record_candidates_per_variant(
     monkeypatch, tmp_path, parent_mode, publication
 ):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="recipe_development")
     invocation_result.configure(tmp_path / "execution-result.json")
     active = {"ppo": {"gamma": 0.99, "n_steps": 64}, "training": {"n_envs": 1}}
     monkeypatch.setattr(

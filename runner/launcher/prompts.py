@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from runner.execution import training_step_range
 from runner.launcher import pstext
 from runner.launcher.pstext import field, items, text
 from runner.launcher.summaries import completed_events, latest_session_result
@@ -19,8 +20,7 @@ RECIPE_DEVELOPMENT_OBJECTIVE = (
     "contracts/program.md defines this phase."
 )
 STARTUP_OBJECTIVE = (
-    "Establish the initial scientific direction, the tools and the first useful "
-    "investigation from the selected recipe. The section 'Startup session' "
+    "Establish the initial scientific direction, as the section 'Startup session' "
     "of contracts/program.md defines this session."
 )
 GOAL_REVIEW_OBJECTIVE = (
@@ -33,7 +33,7 @@ GOAL_REVIEW_OBJECTIVE = (
     "this campaign, or open one bounded inquiry about the gap to the goal."
 )
 # The PowerShell here-string carried the checkout's CRLF line endings; keep them.
-SCIENTIFIC_MODEL_OBJECTIVE = """Construct the physical and scientific model of the robot, of the task and of the learning problem. The scientific model exists before any training or campaign evidence.
+SCIENTIFIC_MODEL_OBJECTIVE = """Construct the physical and scientific model of the robot and of the task. The scientific model exists before any training or campaign evidence.
 
 Work from first principles and from the human-owned definitions of the robot, the simulator and the task. Explain the robot as an embodied dynamical system. Show how its morphology, actuation, sensing, control loop, simulator and task geometry together determine the behaviors that are possible, constrained or scientifically uncertain.
 
@@ -49,27 +49,10 @@ Analyze these items from first principles and from the human-owned definitions:
 * the coupled physical capabilities that success requires, including reaching, trajectory control, convergence and stabilization, and the physically justified interactions between them.
 * the sensing and observation model: which physical state is observable, which is derived, which is ambiguous and which is unavailable.
 * the relation between observation, control action, robot motion and episode outcome.
-* the alternative physical configurations or solutions available to the robot.
-* the invariances of the definitions, and what each makes equal or different across configurations, targets and behavior.
+* the alternative physical configurations or solutions available to the robot, for example multiple kinematic solutions.
+* the invariances of the definitions, for example symmetries and conserved quantities, and what each makes equal or different across configurations, targets and behavior.
 * the physical, kinematic, dynamic, control and observability constraints that create qualitatively different classes of behavior or failure.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
-
-The PI trains the policy with reinforcement learning, from the starting recipe that contracts/scenario.md describes. Analyze the learning problem that the starting recipe and the task create:
-
-* how the transformation of the network output into the motor command affects exploration, the motion that random network outputs produce and the speed of learning.
-* how the next variant decision and the observed learning dynamics inform the training length and the limits of a weak result.
-* the quantities in the training log that show progress before task success occurs.
-* for each reward term that you consider, the behavior that the term makes cheapest for the policy, including behavior that collects reward without task success.
-* the relation between the reward, the end of the episode, the hold requirement and the discount factor.
-* the design choices where the analysis cannot tell before training which option the robot learns better.
-
-Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI decides whether to implement or revise the proposal. Do not write code.
-
-Propose the first variants for quick learning tests under `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that tests a proposed method. Differences between variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
-
-Propose an initial scientific question for startup in this section. Explain how the first variants can help develop a recipe that supports this question.
-
-For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
 
 For each consequential physical implication and each unknown, state:
 
@@ -78,11 +61,11 @@ For each consequential physical implication and each unknown, state:
 3. The source references in the implementation or in the contracts.
 4. The observation or the evidence that would support it, weaken it or revise it.
 
-The scientific model states consequences, proposals and the evidence that discriminates between them. The PI selects all interventions and the method.
+The scientific model states physical consequences and the evidence that discriminates between them. The PI selects the interventions.
 
 End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.
 
-The PI receives this section and the full scientific model in the recipe-development session. The PI uses quick tests to develop a recipe that learns and supports your initial scientific question. The PI creates further variants from the test results.
+The PI receives this section and the full scientific model in the recipe-development session. The section states consequences and discriminating evidence. The PI selects the interventions.
 
 The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the scientific model and the completed recipe-development record. The PI establishes the initial scientific direction and the first useful investigation from the selected recipe.
 
@@ -323,7 +306,7 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "Use `decision_frontier` for open questions and discriminating "
                 "evidence. Set `next_question` to the next investigation for "
                 "startup. In `next_direction_or_closure`, explain how the recipe "
-                "supports the analyst's initial scientific investigation."
+                "supports the startup scientific investigation."
             ),
         ]
     goal_review = pstext.same(kind, "goal_review")
@@ -345,6 +328,13 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             "your next decision toward the goal."
         ),
     ]
+    if pstext.same(kind, "inquiry"):
+        lines.append(
+            "Before training, state what the run needs to reveal for the active "
+            "inquiry. State the training length and justify it for this test. "
+            "Use the available learning evidence to inform that choice. "
+            "Explain how the results will change your next decision."
+        )
     if goal_review:
         lines += [
             (
@@ -436,9 +426,19 @@ def _training_allocation(
 ) -> str:
     if transition is not None or pstext.same(kind, "goal_review"):
         return ""
+    minimum, maximum = training_step_range(
+        text(kind).lower(), context.timesteps, context.max_timesteps
+    )
+    if pstext.same(kind, "startup"):
+        return f"Training allocation: up to {maximum} requested steps per run."
+    if pstext.same(kind, "inquiry"):
+        return (
+            f"Training length: for each run, you choose `steps` between "
+            f"{minimum:,} and {maximum:,}."
+        )
     return (
         f"Training length: for each run, you choose `steps` between "
-        f"{context.timesteps:,} and {context.max_timesteps:,}. One "
+        f"{minimum:,} and {maximum:,}. One "
         "training operation can train 2 to 4 design variants at the same time, "
         "with the same seed and steps."
     )
@@ -533,9 +533,8 @@ def scientific_session_prompt(
         *_handoff_context(state, kind, checkpoint, synthesis),
         (
             "Build the first recipe through quick iterations on variants. "
-            "Start from the scientific model and the analyst's proposals. You "
-            "decide which proposals to implement and how to revise them. The "
-            "proposed first reward has the same status as the other proposals. "
+            "Start from the scientific model. You decide the first recipe "
+            "question and the variants that test it. "
             "A variant can change any PI-owned source file and any parameter. "
             "\n\nStart from the robot and the physical behavior that the task requires. "
             "Use the scientific model to explain how observations and motor commands "
@@ -559,20 +558,12 @@ def scientific_session_prompt(
             else ""
         ),
         (
-            (
-                "From the selected recipe, the recipe-development record and the "
-                "scientific model, establish the initial scientific direction "
-                "toward the goal. Develop the tools that this direction needs. "
-                "Choose the first useful investigation and explain how its "
-                "possible findings can change the direction."
-                if pstext.truthy(field(state, "recipe_development"))
-                else "From the decision-relevant synthesis of the scientific model, select the "
-                "scientific distinction or the capability question that should determine "
-                "the initial direction. State which findings would change that decision, "
-                "and how the first action follows from it. Treat the interpretations of "
-                "the scientific model as revisable in light of evidence. Do not require a "
-                "measurement only to restate the scientific model."
-            )
+            "From the decision-relevant synthesis of the scientific model, select the "
+            "scientific distinction or the capability question that should determine "
+            "the initial direction. State which findings would change that decision, "
+            "and how the first action follows from it. Treat the interpretations of "
+            "the scientific model as revisable in light of evidence. Do not require a "
+            "measurement only to restate the scientific model."
             if pstext.same(kind, "startup")
             else ""
         ),

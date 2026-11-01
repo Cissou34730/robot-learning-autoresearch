@@ -24,6 +24,8 @@ from runner import reporting as console
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
+RECIPE_MIN_TRAINING_STEPS = 10_000
+RECIPE_MAX_TRAINING_STEPS = 500_000
 # Candidates are ordinary cadence artifacts; none may mark the end of training.
 CANDIDATE_NAME_PATTERN = re.compile(r"checkpoint-\d+")
 # Evaluation progress is polled every second and published when its counters
@@ -290,6 +292,18 @@ def training_budget(
 ) -> int:
     del _initialization, _baseline, _accepted_training_steps
     return standard_timesteps
+
+
+def training_step_range(
+    session_kind: str, allocation: int, maximum: int
+) -> tuple[int, int]:
+    if session_kind == "recipe_development":
+        return RECIPE_MIN_TRAINING_STEPS, RECIPE_MAX_TRAINING_STEPS
+    if session_kind == "startup":
+        return 1, allocation
+    if session_kind == "inquiry":
+        return allocation, maximum
+    raise ValueError(f"Training is not available in the {session_kind} session.")
 
 
 def announce_training_checkpoints(

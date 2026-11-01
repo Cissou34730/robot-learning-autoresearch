@@ -23,9 +23,11 @@ Set `initialization` to `fresh` or `transfer`. The `seed`, `steps`,
 negative. The `description` and `rationale` strings must not be empty. The
 `steps` value must be a positive integer.
 
-The session prompt gives the shortest and the longest permitted run. In a
-recipe-development, startup or inquiry session, you choose `steps` in that range
-for each run.
+In a recipe-development session, you choose `steps` from 10,000 through 500,000
+for each run. In startup, you choose a positive `steps` value up to the
+configured allocation. In an inquiry, you choose `steps` from the configured
+allocation through the maximum. The session prompt gives the allocation and
+the maximum for that session.
 
 Transfer training starts from the saved training checkpoint of a parent candidate.
 A single transfer run requires a non-empty `parent` string.
@@ -54,10 +56,13 @@ The Runner preserves the parent training checkpoint.
 }
 ```
 
-The `variants` field is optional. Use it to compare 2 to 4 designs in one
-training operation. Each variant has a `label`. A label starts with a lowercase
-letter and contains only lowercase letters, digits and underscores. It has a
-maximum of 16 characters. Each label must be unique in the request.
+The `variants` field is optional and is permitted only in a recipe-development
+session. You can always train a single design without it.
+
+Use it to compare 2 to 4 designs in one training operation.
+Each variant has a `label`. A label starts with a lowercase letter and contains
+only lowercase letters, digits and underscores. It has a maximum of
+16 characters. Each label must be unique in the request.
 
 A variant can change any PI-owned source file and any parameter:
 

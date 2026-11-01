@@ -1257,6 +1257,12 @@ def _validate_session_operation(
             f"{kind} is not available in the current {session_kind} session"
         )
     if (
+        kind == "training"
+        and session_kind != "recipe_development"
+        and "variants" in request
+    ):
+        raise ValueError("Training variants are available only in recipe development.")
+    if (
         session_kind == "goal_review"
         and kind == "inquiry"
         and request.get("action") != "open"

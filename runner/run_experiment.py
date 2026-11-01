@@ -38,8 +38,8 @@ PROPOSAL_ERRORS = (
 )
 ACCEPTED_REQUEST_KEY = "_runner_accepted_operation"
 ACCEPTED_REQUEST_VERSION = 1
-TIMESTEPS = 10_000
-MAX_TIMESTEPS = 500_000
+TIMESTEPS = 120_000
+MAX_TIMESTEPS = 360_000
 PUBLICATION_FAILURE_EXIT_CODE = 3
 REPEATS_FIELD = "repeats_earlier_measurements"
 EXPOSURE_FIELD = "episodes_seen_in_earlier_measurements"
@@ -397,12 +397,16 @@ def _validate_new_operation_scientific_delta(state: dict) -> None:
 
 
 def _training_allocation(request: dict, state: dict) -> int:
-    shortest = execution.training_budget(TIMESTEPS, request["initialization"], False, 0)
-    protocol.require_active_session(state)
-    if not shortest <= request["steps"] <= MAX_TIMESTEPS:
+    session = protocol.require_active_session(state)
+    if session["kind"] != "recipe_development" and "variants" in request:
+        raise ValueError("Training variants are available only in recipe development.")
+    shortest, longest = execution.training_step_range(
+        session["kind"], TIMESTEPS, MAX_TIMESTEPS
+    )
+    if not shortest <= request["steps"] <= longest:
         raise ValueError(
             f"A training request needs between {shortest:,} and "
-            f"{MAX_TIMESTEPS:,} steps. The request has {request['steps']!r}."
+            f"{longest:,} steps. The request has {request['steps']!r}."
         )
     return request["steps"]
 
