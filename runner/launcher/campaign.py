@@ -30,14 +30,19 @@ def prepare(phases: Phases) -> None:
         )
     ):
         phases.recipe_delivery()
+    # Before a session starts, this backend is unused: the check passes.
+    backend = options.session(
+        pstext.text(pstext.field(state.get("scientific_session"), "kind"))
+        or "goal_review"
+    )
     outcome = phases.runner.runner(
         "--validate-session-backend",
         "--backend-adapter",
         "copilot",
         "--backend-model",
-        options.model,
+        backend.model,
         "--backend-reasoning",
-        options.reasoning,
+        backend.reasoning,
     )
     if outcome.exit_code != 0:
         raise LauncherError(

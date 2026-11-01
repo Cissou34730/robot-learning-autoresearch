@@ -265,6 +265,17 @@ def test_settings_preserve_omitted_arguments():
         stop_timeout_seconds=180,
     )
     assert "--provider" not in settings.launcher_arguments()
+    assert control.LaunchSettings(
+        phase_models={"analyst": "opencode-go/a"},
+        phase_reasoning={"research": "xhigh"},
+    ).launcher_arguments() == [
+        "--analyst-model",
+        "opencode-go/a",
+        "--research-reasoning",
+        "xhigh",
+    ]
+    with pytest.raises(control.CommandError):
+        control.LaunchSettings(phase_reasoning={"startup": "huge"}).launcher_arguments()
     assert settings.launcher_arguments() == [
         "--model",
         "gpt-6-luna",

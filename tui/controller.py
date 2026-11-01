@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
 
+from runner.launcher.options import PHASES, REASONING_LEVELS
 from runner.paths import reset_marker_path, stop_request_path
 from tui import commands
 from tui.commands import MAX_SLOTS, CommandError, parse_command
@@ -93,6 +94,9 @@ class LaunchSettings:
     max_timesteps: int | None = None
     max_inquiries: int | None = None
     stop_timeout_seconds: int | None = None
+    # Per-phase overrides of ``model`` / ``reasoning``, keyed by launcher phase.
+    phase_models: dict[str, str] = field(default_factory=dict)
+    phase_reasoning: dict[str, str] = field(default_factory=dict)
 
     def launcher_arguments(self) -> list[str]:
         if self.provider is not None and self.provider not in {
@@ -103,14 +107,14 @@ class LaunchSettings:
             raise CommandError(
                 "Provider must be github-copilot, opencode or opencode-go."
             )
-        if self.reasoning is not None and self.reasoning not in {
-            "low",
-            "medium",
-            "high",
-            "xhigh",
-            "max",
-        }:
-            raise CommandError("Reasoning must be low, medium, high, xhigh or max.")
+        for value in (self.reasoning, *self.phase_reasoning.values()):
+            if value is not None and value not in REASONING_LEVELS:
+                raise CommandError("Reasoning must be low, medium, high, xhigh or max.")
+        unknown = set(self.phase_models) | set(self.phase_reasoning)
+        if unknown - set(PHASES):
+            raise CommandError(
+                f"Unknown launch phase: {sorted(unknown - set(PHASES))}."
+            )
         for name, value, maximum in (
             ("Timesteps", self.timesteps, 2147483647),
             ("MaxTimesteps", self.max_timesteps, 2147483647),
@@ -126,6 +130,11 @@ class LaunchSettings:
             arguments += ["--provider", self.provider]
         if self.reasoning:
             arguments += ["--reasoning", self.reasoning]
+        for phase in PHASES:
+            if self.phase_models.get(phase):
+                arguments += [f"--{phase}-model", self.phase_models[phase]]
+            if self.phase_reasoning.get(phase):
+                arguments += [f"--{phase}-reasoning", self.phase_reasoning[phase]]
         if self.timesteps is not None:
             arguments += ["--timesteps", str(self.timesteps)]
         if self.max_timesteps is not None:

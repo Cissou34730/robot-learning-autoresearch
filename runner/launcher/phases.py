@@ -190,6 +190,7 @@ class Phases:
 
     def start_session(self, state: dict) -> int:
         kind = session_kind(state)
+        backend = self.options.session(kind)
         arguments = [
             "--start-session",
             kind,
@@ -200,9 +201,9 @@ class Phases:
             "--backend-adapter",
             "copilot",
             "--backend-model",
-            self.options.model,
+            backend.model,
             "--backend-reasoning",
-            self.options.reasoning,
+            backend.reasoning,
         ]
         if self.options.max_inquiries_explicit:
             arguments += ["--max-inquiries", str(self.options.max_inquiries)]

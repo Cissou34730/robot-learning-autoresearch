@@ -16,7 +16,7 @@ from runner.launcher.environment import (
     bind_campaign,
     require_clean_harness,
 )
-from runner.launcher.options import LaunchOptions, resolve_model
+from runner.launcher.options import LaunchOptions, PhaseBackend, resolve_model
 from runner.launcher.runner_client import LauncherError
 
 HARNESS_ROOT = Path(__file__).resolve().parents[2]
@@ -57,11 +57,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--model")
     parser.add_argument("--provider", choices=defaults.PROVIDERS)
     parser.add_argument("--list-models", action="store_true")
-    parser.add_argument(
-        "--reasoning",
-        choices=defaults.REASONING_LEVELS,
-        default=defaults.DEFAULT_REASONING,
-    )
+    # --model and --reasoning set every phase; a phase flag overrides them.
+    parser.add_argument("--reasoning", choices=defaults.REASONING_LEVELS)
+    for phase in defaults.PHASES:
+        parser.add_argument(f"--{phase}-model")
+        parser.add_argument(f"--{phase}-reasoning", choices=defaults.REASONING_LEVELS)
     # 0 pauses the campaign after its startup session.
     parser.add_argument("--max-inquiries", type=_non_negative)
     parser.add_argument(
@@ -78,8 +78,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     # Ends the run once the scientific model is published, before the startup session.
     parser.add_argument("--stop-after-preparation", action="store_true")
     arguments = parser.parse_args(argv)
-    if arguments.model is not None and not arguments.model:
-        parser.error("--model must not be empty")
+    for name in ("model", *(f"{phase}_model" for phase in defaults.PHASES)):
+        if getattr(arguments, name) is not None and not getattr(arguments, name):
+            parser.error(f"--{name.replace('_', '-')} must not be empty")
     return arguments
 
 
@@ -102,12 +103,26 @@ def list_models(provider: str | None) -> int:
     return subprocess.run(command, cwd=HARNESS_ROOT, check=False).returncode
 
 
+def phase_backends(arguments: argparse.Namespace) -> dict[str, PhaseBackend]:
+    return {
+        phase: PhaseBackend(
+            model=resolve_model(
+                getattr(arguments, f"{phase}_model") or arguments.model,
+                arguments.provider,
+            ),
+            reasoning=getattr(arguments, f"{phase}_reasoning")
+            or arguments.reasoning
+            or defaults.DEFAULT_REASONING[phase],
+        )
+        for phase in defaults.PHASES
+    }
+
+
 def launch_options(arguments: argparse.Namespace, campaign_root: Path) -> LaunchOptions:
     return LaunchOptions(
         harness_root=HARNESS_ROOT,
         campaign_root=campaign_root,
-        model=resolve_model(arguments.model, arguments.provider),
-        reasoning=arguments.reasoning,
+        backends=phase_backends(arguments),
         max_inquiries=defaults.DEFAULT_MAX_INQUIRIES
         if arguments.max_inquiries is None
         else arguments.max_inquiries,

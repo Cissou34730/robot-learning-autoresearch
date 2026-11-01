@@ -9,7 +9,15 @@ from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
 from textual.widgets import Button, Checkbox, Input, Select, Static
 
+from runner.launcher.options import PHASES
 from tui.controller import LaunchSettings, ResetConfig
+
+PHASE_LABELS = {
+    "analyst": ("Analyst", "max"),
+    "recipe": ("Recipe development", "high"),
+    "startup": ("Startup", "high"),
+    "research": ("Research (goal review, inquiries)", "high"),
+}
 
 
 class CommandInputs:
@@ -23,6 +31,7 @@ class CommandInputs:
         "cmd-max-timesteps",
         "cmd-max-inquiries",
         "cmd-stop-timeout",
+        *(f"cmd-{phase}-{part}" for phase in PHASES for part in ("model", "reasoning")),
     )
 
     def __init__(self, values: dict | None = None) -> None:
@@ -55,6 +64,16 @@ class CommandInputs:
             max_timesteps=number("cmd-max-timesteps"),
             max_inquiries=number("cmd-max-inquiries"),
             stop_timeout_seconds=number("cmd-stop-timeout"),
+            phase_models={
+                phase: value
+                for phase in PHASES
+                if (value := text(f"cmd-{phase}-model"))
+            },
+            phase_reasoning={
+                phase: value
+                for phase in PHASES
+                if (value := text(f"cmd-{phase}-reasoning"))
+            },
         )
 
     def reset_config(self) -> ResetConfig:
@@ -86,6 +105,9 @@ class SharedSettings(ModalScreen[dict | None]):
     #launch-fields { height: auto; grid-size: 3; grid-rows: 2; grid-gutter: 1 2; }
     SharedSettings.narrow #launch-fields { grid-size: 1; }
     SharedSettings.standard #launch-fields { grid-size: 2; }
+    #phase-heading { height: 1; margin-top: 1; text-style: bold; }
+    #phase-fields { height: auto; grid-size: 2; grid-rows: 2; grid-gutter: 1 2; }
+    SharedSettings.narrow #phase-fields { grid-size: 1; }
     .setting-field { height: 2; }
     .setting-field Static { height: 1; }
     .setting-field Input { height: 1; border: none; padding: 0 1; background: $boost; }
@@ -108,13 +130,17 @@ class SharedSettings(ModalScreen[dict | None]):
 
     def compose(self) -> ComposeResult:
         fields = (
-            ("cmd-model", "Model", "Launcher-selected model"),
+            ("cmd-model", "Model (all phases)", "gpt-6-luna (launcher default)"),
             (
                 "cmd-provider",
                 "Provider",
                 "Auto / github-copilot / opencode / opencode-go",
             ),
-            ("cmd-reasoning", "Reasoning", "high (launcher default)"),
+            (
+                "cmd-reasoning",
+                "Reasoning (all phases)",
+                "Analyst max, other phases high",
+            ),
             ("cmd-timesteps", "Training timesteps", "120000 (launcher default)"),
             ("cmd-max-timesteps", "Maximum timesteps", "360000 (launcher default)"),
             (
@@ -140,6 +166,25 @@ class SharedSettings(ModalScreen[dict | None]):
                                 placeholder=placeholder,
                                 id=field,
                             )
+                yield Static(
+                    "Per-phase backend — overrides Model / Reasoning",
+                    id="phase-heading",
+                )
+                with Grid(id="phase-fields"):
+                    for phase in PHASES:
+                        label, reasoning = PHASE_LABELS[phase]
+                        for part, placeholder in (
+                            ("model", "Model (all phases)"),
+                            ("reasoning", f"Reasoning (all phases), else {reasoning}"),
+                        ):
+                            field = f"cmd-{phase}-{part}"
+                            with Vertical(classes="setting-field"):
+                                yield Static(f"{label} {part}")
+                                yield Input(
+                                    value=self.values[field],
+                                    placeholder=placeholder,
+                                    id=field,
+                                )
                 yield Static(
                     "Reset options — used only by run / reset", id="reset-heading"
                 )

@@ -10,6 +10,7 @@ import uuid
 from collections.abc import Callable
 
 from runner.launcher.child import ChildRunner, kill_tree
+from runner.launcher.options import PhaseBackend
 from runner.launcher.runner_client import LauncherError
 from runner.launcher.stop import StopControl, StopDeadlineExceeded
 
@@ -20,14 +21,14 @@ _BOOTSTRAP_GRACE_SECONDS = 5
 
 
 class CopilotRuntime:
-    """Starts the adapter once per launcher run and exchanges bound messages."""
+    """Runs the adapter on one PI backend at a time and exchanges bound messages."""
 
     def __init__(
         self,
         *,
         children: ChildRunner,
         stop: StopControl,
-        command: Callable[[int, str], list[str]],
+        command: Callable[[int, str, PhaseBackend], list[str]],
         before_start: Callable[[], None],
     ) -> None:
         self._children = children
@@ -37,8 +38,10 @@ class CopilotRuntime:
         self._process: subprocess.Popen | None = None
         self._connection: socket.socket | None = None
         self._buffer = b""
+        self._backend: PhaseBackend | None = None
 
-    def start(self) -> None:
+    def start(self, backend: PhaseBackend) -> None:
+        """Start the runtime on ``backend``; a session boundary may switch it."""
         if self._stop.requested():
             return
         if self._process is not None:
@@ -46,13 +49,16 @@ class CopilotRuntime:
                 raise LauncherError(
                     "The owned Copilot runtime stopped; refusing an in-run replacement."
                 )
-            return
+            if self._backend == backend:
+                return
+            self.stop()
         self._before_start()
         listener = socket.create_server(("127.0.0.1", 0))
         try:
             token = str(uuid.uuid4()) + str(uuid.uuid4())
             port = listener.getsockname()[1]
-            self._process = self._children.start(self._command(port, token))
+            self._process = self._children.start(self._command(port, token, backend))
+            self._backend = backend
             listener.settimeout(_SLICE_SECONDS)
             deadline = time.monotonic() + _CONNECT_SECONDS
             while True:
@@ -145,6 +151,8 @@ class CopilotRuntime:
                 self._connection.close()
                 self._connection = None
             self._process = None
+            self._backend = None
+            self._buffer = b""
 
     def _cancel_bootstrap(self) -> None:
         """No session was sent without a channel; end only the bootstrap tree."""

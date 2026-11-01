@@ -113,6 +113,111 @@ def test_missing_root_without_recovery_marker_is_still_refused(tmp_path):
         campaign_lock.mutex_name(root, recovery=True)
 
 
+def test_each_phase_resolves_its_own_backend():
+    from runner.launcher import cli
+    from runner.launcher.pi_session import PISessions
+
+    def backends(*argv):
+        resolved = cli.phase_backends(cli.parse_args(list(argv)))
+        return {phase: (b.model, b.reasoning) for phase, b in resolved.items()}
+
+    assert backends() == {
+        "analyst": ("gpt-6-luna", "max"),
+        "recipe": ("gpt-6-luna", "high"),
+        "startup": ("gpt-6-luna", "high"),
+        "research": ("gpt-6-luna", "high"),
+    }
+    assert set(backends("--model", "m", "--reasoning", "low").values()) == {
+        ("m", "low")
+    }
+    assert backends(
+        "--model",
+        "m",
+        "--analyst-model",
+        "opencode-go/a",
+        "--research-reasoning",
+        "xhigh",
+    ) == {
+        "analyst": ("opencode-go/a", "max"),
+        "recipe": ("m", "high"),
+        "startup": ("m", "high"),
+        "research": ("m", "xhigh"),
+    }
+    options = cli.launch_options(
+        cli.parse_args(["--recipe-model", "r", "--startup-model", "s"]), Path(".")
+    )
+    sessions = PISessions(
+        campaign_root=Path("."),
+        options=options,
+        runtime=None,
+        bridge=None,
+        trust=None,
+        stop=None,
+        events=None,
+    )
+    for kind, model in (
+        ("recipe_development", "r"),
+        ("startup", "s"),
+        ("goal_review", "gpt-6-luna"),
+        ("inquiry", "gpt-6-luna"),
+    ):
+        state = {"scientific_session": {"kind": kind}}
+        assert sessions._backend(state, preliminary=False).model == model
+    assert sessions._backend({}, preliminary=True) == options.analyst()
+
+
+def test_runtime_restarts_only_when_the_next_session_changes_backend(tmp_path):
+    import socket
+    import threading
+
+    from runner.launcher.copilot_runtime import CopilotRuntime
+    from runner.launcher.options import PhaseBackend
+    from runner.launcher.stop import StopControl
+
+    started, connections, threads = [], [], []
+
+    class Process:
+        def poll(self):
+            return None
+
+        def wait(self, timeout=None):
+            return 0
+
+    def start(command):
+        port, token, backend = command
+        started.append(backend)
+
+        def connect():
+            connection = socket.create_connection(("127.0.0.1", port))
+            ready = json.dumps({"type": "ready", "token": token}) + "\n"
+            connection.sendall(ready.encode("utf-8"))
+            connections.append(connection)
+
+        threads.append(threading.Thread(target=connect))
+        threads[-1].start()
+        return Process()
+
+    runtime = CopilotRuntime(
+        children=SimpleNamespace(start=start),
+        stop=StopControl(tmp_path / "stop", 180, started_at=0.0),
+        command=lambda port, token, backend: [port, token, backend],
+        before_start=lambda: None,
+    )
+    analyst = PhaseBackend("gpt-6-luna", "max")
+    research = PhaseBackend("gpt-6-luna", "high")
+    try:
+        runtime.start(analyst)
+        runtime.start(analyst)
+        runtime.start(research)
+        assert started == [analyst, research]
+    finally:
+        runtime.stop()
+        for thread in threads:
+            thread.join()
+        for connection in connections:
+            connection.close()
+
+
 @requires_windows
 def test_recovery_keeps_the_same_mutex_when_the_root_is_archived(tmp_path):
     from runner import paths

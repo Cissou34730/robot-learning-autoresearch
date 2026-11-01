@@ -7,7 +7,14 @@ from pathlib import Path
 
 PROVIDERS = ("github-copilot", "opencode", "opencode-go")
 REASONING_LEVELS = ("low", "medium", "high", "xhigh", "max")
-DEFAULT_REASONING = "high"
+# Each phase has its own PI backend; goal review and inquiries share "research".
+PHASES = ("analyst", "recipe", "startup", "research")
+DEFAULT_REASONING = {
+    "analyst": "max",
+    "recipe": "high",
+    "startup": "high",
+    "research": "high",
+}
 DEFAULT_MAX_INQUIRIES = 15
 DEFAULT_TIMESTEPS = 120000
 DEFAULT_MAX_TIMESTEPS = 360000
@@ -35,15 +42,37 @@ def resolve_model(model: str | None, provider: str | None) -> str:
     return model
 
 
+def phase_of(session_kind: str) -> str:
+    """The launch phase whose backend serves a scientific session kind."""
+    if session_kind == "recipe_development":
+        return "recipe"
+    if session_kind == "startup":
+        return "startup"
+    if session_kind in {"goal_review", "inquiry"}:
+        return "research"
+    raise ValueError(f"No launch phase serves the session kind {session_kind!r}.")
+
+
+@dataclass(frozen=True)
+class PhaseBackend:
+    model: str
+    reasoning: str
+
+
 @dataclass(frozen=True)
 class LaunchOptions:
     harness_root: Path
     campaign_root: Path
-    model: str
-    reasoning: str
+    backends: dict[str, PhaseBackend]
     max_inquiries: int
     max_inquiries_explicit: bool
     timesteps: int
     max_timesteps: int
     stop_timeout_seconds: int
     stop_after_preparation: bool = False
+
+    def analyst(self) -> PhaseBackend:
+        return self.backends["analyst"]
+
+    def session(self, session_kind: str) -> PhaseBackend:
+        return self.backends[phase_of(session_kind)]
