@@ -287,6 +287,13 @@ def test_settings_preserve_omitted_arguments():
     ]
     with pytest.raises(control.ControllerError):
         control.ResetConfig(mode="Baseline").arguments()
+    assert "--skip-recipe-development" in (
+        control.ResetConfig(skip_recipe_development=True).arguments()
+    )
+    with pytest.raises(control.CommandError):
+        control.ResetConfig(
+            mode="Baseline", baseline_ref="x", skip_recipe_development=True
+        ).arguments()
 
 
 def test_run_initializes_missing_folder_then_reset_and_launch(tmp_path):

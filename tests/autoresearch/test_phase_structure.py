@@ -418,7 +418,7 @@ def test_schema8_state_and_model_are_the_only_fresh_start_contract():
         last_verdict="fresh",
     )
     assert state["schema_version"] == 8
-    assert state["recipe_delivery_mode"] == "isolated_v1"
+    assert state["recipe_phase"] == "included"
     assert state["campaign_phase"] == "recipe_development"
     assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
@@ -428,29 +428,35 @@ def test_schema8_state_and_model_are_the_only_fresh_start_contract():
     assert state["scientific_session"] is None
 
 
-@pytest.mark.parametrize("version", [6, 7])
-def test_legacy_recipe_delivery_normalizes_without_rewriting(
-    tmp_path, monkeypatch, version
+def test_skipped_recipe_phase_starts_at_startup():
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+        recipe_phase="skipped",
+    )
+    assert state["recipe_phase"] == "skipped"
+    assert state["campaign_phase"] == "startup"
+    assert phases.session_kind(state) == "startup"
+
+
+def test_schema6_state_normalizes_to_skipped_recipe_phase_without_rewriting(
+    tmp_path, monkeypatch
 ):
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
     )
-    state.pop("recipe_delivery_mode")
-    state["schema_version"] = version
-    if version == 6:
-        state.pop("campaign_phase")
-        state.pop("recipe_development")
+    for field in ("recipe_phase", "campaign_phase", "recipe_development"):
+        state.pop(field)
+    state["schema_version"] = 6
     state_path = tmp_path / "research_state.json"
     repository.atomic_write_json(state_path, state)
     before = state_path.read_bytes()
     monkeypatch.setattr(runner_paths, "STATE_PATH", state_path)
     loaded = repository.load_state(allow_missing_artifact=True)
-    assert loaded["recipe_delivery_mode"] == "legacy"
+    assert loaded["recipe_phase"] == "skipped"
     assert loaded["schema_version"] == 8
-    assert loaded["campaign_phase"] == (
-        "startup" if version == 6 else "recipe_development"
-    )
+    assert loaded["campaign_phase"] == "startup"
     assert state_path.read_bytes() == before
 
 

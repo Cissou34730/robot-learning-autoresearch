@@ -145,12 +145,18 @@ class ResetConfig:
     clean: bool = True
     recipe_ref: str | None = DEFAULT_RECIPE_REF
     baseline_ref: str | None = None
+    skip_recipe_development: bool = False
 
     def arguments(self) -> list[str]:
         if self.mode not in {"Fresh", "Baseline"}:
             raise CommandError("Reset mode must be Fresh or Baseline.")
         if self.mode == "Fresh" and self.baseline_ref:
             raise CommandError("Fresh reset does not accept a baseline ref.")
+        if self.mode == "Baseline" and self.skip_recipe_development:
+            raise CommandError(
+                "Baseline reset always skips recipe development; "
+                "the option is Fresh only."
+            )
         arguments = ["--mode", self.mode.lower()]
         if self.mode == "Baseline":
             if not self.baseline_ref:
@@ -158,6 +164,8 @@ class ResetConfig:
             arguments += ["--baseline-ref", self.baseline_ref]
         elif self.recipe_ref:
             arguments += ["--recipe-ref", self.recipe_ref]
+        if self.skip_recipe_development:
+            arguments.append("--skip-recipe-development")
         if self.clean:
             arguments.append("--clean")
         arguments.append("--force")
@@ -683,6 +691,11 @@ class CampaignController:
                 reset.baseline_ref
                 if reset.mode == "Baseline"
                 else (reset.recipe_ref or DEFAULT_RECIPE_REF),
+                *(
+                    ["--skip-recipe-development"]
+                    if reset.mode == "Fresh" and reset.skip_recipe_development
+                    else []
+                ),
             ]
         )
         if completed.returncode != 0:

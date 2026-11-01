@@ -457,11 +457,7 @@ def build_development_snapshot(
             else "delivering"
         )
     elif handoff:
-        phase = (
-            "delivered"
-            if state.get("recipe_delivery_mode") != "isolated_v1"
-            else "delivering"
-        )
+        phase = "delivering"
     elif pending.get("failure") or state.get("terminal_state"):
         phase = "failed"
     elif _object(state.get("scientific_session")).get("status") in {

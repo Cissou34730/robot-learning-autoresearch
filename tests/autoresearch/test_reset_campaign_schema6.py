@@ -83,7 +83,13 @@ def _prepared_source_state(candidate: dict) -> dict:
     return state
 
 
-def test_fresh_campaign_writes_only_schema7_memory(monkeypatch, tmp_path):
+@pytest.mark.parametrize(
+    ("recipe_phase", "campaign_phase"),
+    [("included", "recipe_development"), ("skipped", "startup")],
+)
+def test_fresh_campaign_writes_only_schema7_memory(
+    monkeypatch, tmp_path, recipe_phase, campaign_phase
+):
     research = _bind_paths(monkeypatch, tmp_path)
     obsolete = (
         "pi_workspace/operation_request.json",
@@ -105,10 +111,11 @@ def test_fresh_campaign_writes_only_schema7_memory(monkeypatch, tmp_path):
     (research / "results.jsonl").write_text('{"legacy": true}\n', encoding="utf-8")
     monkeypatch.setattr(reset_campaign, "git", lambda *_args, **_kwargs: "head\n")
 
-    state = reset_campaign.write_fresh_campaign(None)
+    state = reset_campaign.write_fresh_campaign(None, recipe_phase=recipe_phase)
 
     assert state["schema_version"] == repository.STATE_SCHEMA_VERSION
-    assert state["campaign_phase"] == "recipe_development"
+    assert state["campaign_phase"] == campaign_phase
+    assert state["recipe_phase"] == recipe_phase
     assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
     assert state["scientific_model"] == {
@@ -519,7 +526,7 @@ def test_recipe_analysis_preserves_analyst_validation_result(
         )
 
 
-@pytest.mark.parametrize("schema", [6, 7])
+@pytest.mark.parametrize("schema", [6, repository.STATE_SCHEMA_VERSION])
 def test_baseline_import_builds_clean_startup_state(monkeypatch, schema):
     candidate = _candidate("f" * 64)
     source_state = _prepared_source_state(candidate)
@@ -527,6 +534,7 @@ def test_baseline_import_builds_clean_startup_state(monkeypatch, schema):
         source_state["schema_version"] = 6
         source_state.pop("campaign_phase")
         source_state.pop("recipe_development")
+        source_state.pop("recipe_phase")
     original = copy.deepcopy(source_state)
 
     state = reset_campaign.baseline_state(
@@ -539,6 +547,7 @@ def test_baseline_import_builds_clean_startup_state(monkeypatch, schema):
     assert state["campaign"]["id"] != source_state["campaign"]["id"]
     assert state["schema_version"] == repository.STATE_SCHEMA_VERSION
     assert state["campaign_phase"] == "startup"
+    assert state["recipe_phase"] == "skipped"
     assert state["recipe_development"] is None
     assert source_state == original
     assert state["campaign"]["recipe_source_commit"] == candidate["scientific_commit"]
@@ -569,18 +578,14 @@ def test_baseline_import_builds_clean_startup_state(monkeypatch, schema):
     repository.validate_research_state(state, allow_missing_artifact=True)
 
 
-@pytest.mark.parametrize("schema", [6, 7])
-def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch, schema):
+def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch):
     candidate = _candidate("f" * 64)
     source_state = _prepared_source_state(candidate)
     source_state["counters"]["session"] = 2
-    source_state["schema_version"] = schema
-    source_state.pop("recipe_delivery_mode")
-    if schema == 6:
-        source_state.pop("campaign_phase")
-        source_state.pop("recipe_development")
-    else:
-        source_state["campaign_phase"] = "research"
+    source_state["schema_version"] = 6
+    source_state.pop("campaign_phase")
+    source_state.pop("recipe_development")
+    source_state.pop("recipe_phase")
     original = copy.deepcopy(source_state)
     monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: source_state)
     monkeypatch.setattr(reset_campaign, "resolve_commit", lambda value, _label: value)
@@ -602,6 +607,7 @@ def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch, s
 
     assert normalized["schema_version"] == repository.STATE_SCHEMA_VERSION
     assert normalized["campaign_phase"] == "research"
+    assert normalized["recipe_phase"] == "skipped"
     assert normalized["recipe_development"] is None
     assert imported == candidate
     assert source_state == original
@@ -625,7 +631,7 @@ def test_baseline_import_seeds_operation_counters_before_first_training():
     assert state["candidates"] == {candidate["id"]: candidate}
 
 
-@pytest.mark.parametrize("schema", [6, 7])
+@pytest.mark.parametrize("schema", [6, repository.STATE_SCHEMA_VERSION])
 def test_baseline_evidence_lookup_accepts_legacy_measurement_history(
     monkeypatch, tmp_path, schema
 ):
@@ -638,10 +644,10 @@ def test_baseline_evidence_lookup_accepts_legacy_measurement_history(
     artifact.write_text('{"measurement": 1}\n', encoding="utf-8")
     historical = copy.deepcopy(source_state)
     historical["schema_version"] = schema
-    historical.pop("recipe_delivery_mode")
     if schema == 6:
         historical.pop("campaign_phase")
         historical.pop("recipe_development")
+        historical.pop("recipe_phase")
     historical["operation_events"] = [
         {
             "id": "M1",
@@ -776,7 +782,10 @@ def test_baseline_reset_restores_its_local_evaluation_without_a_backup(
     assert not list(tmp_path.rglob("research-reset-backups"))
 
 
-def test_baseline_cli_validates_source_before_cleaning(monkeypatch):
+@pytest.mark.parametrize("skip_recipe_development", [False, True])
+def test_baseline_cli_validates_source_before_cleaning(
+    monkeypatch, skip_recipe_development
+):
     monkeypatch.setattr(
         reset_campaign,
         "parse_args",
@@ -785,9 +794,18 @@ def test_baseline_cli_validates_source_before_cleaning(monkeypatch):
             clean=True,
             recipe_ref=None,
             baseline_ref="source",
+            skip_recipe_development=skip_recipe_development,
         ),
     )
-    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda *_args: "source")
+    monkeypatch.setattr(
+        reset_campaign,
+        "resolve_commit",
+        lambda *_args: (
+            pytest.fail("baseline must reject the skip option first")
+            if skip_recipe_development
+            else "source"
+        ),
+    )
     monkeypatch.setattr(
         reset_campaign,
         "verify_baseline_source",
@@ -845,7 +863,11 @@ def test_reset_record_exists_only_once_campaign_changes_start(monkeypatch, tmp_p
         reset_campaign,
         "parse_args",
         lambda: reset_campaign.argparse.Namespace(
-            mode="fresh", clean=False, recipe_ref=None, baseline_ref=None
+            mode="fresh",
+            clean=False,
+            recipe_ref=None,
+            baseline_ref=None,
+            skip_recipe_development=True,
         ),
     )
     monkeypatch.setattr(reset_campaign, "ensure_clean_repository", lambda **_k: None)
@@ -863,7 +885,7 @@ def test_reset_record_exists_only_once_campaign_changes_start(monkeypatch, tmp_p
     assert reset_campaign.main() == 1
     assert not marker.exists()
 
-    def interrupted(_source):
+    def interrupted(_source, **_kwargs):
         raise OSError("interrupted")
 
     monkeypatch.setattr(reset_campaign, "preflight_targets", lambda _targets: None)
@@ -871,10 +893,13 @@ def test_reset_record_exists_only_once_campaign_changes_start(monkeypatch, tmp_p
     assert reset_campaign.main() == 1
     assert marker.exists()
 
-    monkeypatch.setattr(
-        reset_campaign,
-        "write_fresh_campaign",
-        lambda _source: {"campaign": {"id": "new"}},
-    )
+    phases = []
+
+    def written(_source, *, recipe_phase):
+        phases.append(recipe_phase)
+        return {"campaign": {"id": "new"}}
+
+    monkeypatch.setattr(reset_campaign, "write_fresh_campaign", written)
     assert reset_campaign.main() == 0
     assert not marker.exists()
+    assert phases == ["skipped"]

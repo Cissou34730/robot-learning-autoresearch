@@ -35,7 +35,7 @@ OFFICIAL_OPERATION = "official"
 
 
 def observation_namespace(state: dict) -> str:
-    if state.get("recipe_delivery_mode") == "isolated_v1" and (
+    if state.get("recipe_phase") == "included" and (
         state.get("campaign_phase") == "recipe_development"
         or state.get("recipe_development") is not None
     ):

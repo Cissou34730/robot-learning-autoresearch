@@ -33,6 +33,7 @@ class CommandInputs:
                 "reset-clean": True,
                 "reset-recipe": ResetConfig().recipe_ref,
                 "reset-baseline": "",
+                "reset-skip-recipe": False,
             }
         )
         self.values.update(values or {})
@@ -67,6 +68,8 @@ class CommandInputs:
             baseline_ref=str(self.values["reset-baseline"]).strip() or None
             if mode == "Baseline"
             else None,
+            skip_recipe_development=bool(self.values["reset-skip-recipe"])
+            and mode == "Fresh",
         )
 
 
@@ -91,8 +94,8 @@ class SharedSettings(ModalScreen[dict | None]):
     #reset-controls { height: 3; }
     #reset-mode { width: 20; }
     SharedSettings SelectCurrent { border: solid $panel; }
-    #reset-clean { width: auto; border: none; padding: 1 0; }
-    SharedSettings.narrow #reset-controls { layout: vertical; height: 6; }
+    #reset-clean, #reset-skip-recipe { width: auto; border: none; padding: 1 0; }
+    SharedSettings.narrow #reset-controls { layout: vertical; height: 9; }
     #reset-warning { height: auto; color: $warning; margin-top: 1; }
     #settings-error { height: auto; color: $error; }
     #settings-actions { height: 3; align-horizontal: right; }
@@ -152,6 +155,11 @@ class SharedSettings(ModalScreen[dict | None]):
                         value=self.values["reset-clean"],
                         id="reset-clean",
                     )
+                    yield Checkbox(
+                        "Skip recipe development (Fresh)",
+                        value=self.values["reset-skip-recipe"],
+                        id="reset-skip-recipe",
+                    )
                 with Vertical(classes="setting-field", id="reset-recipe-field"):
                     yield Static("Recipe ref (Fresh)")
                     yield Input(value=self.values["reset-recipe"], id="reset-recipe")
@@ -186,6 +194,7 @@ class SharedSettings(ModalScreen[dict | None]):
     def _reset_fields(self) -> None:
         fresh = self.query_one("#reset-mode", Select).value == "Fresh"
         self.query_one("#reset-recipe-field").display = fresh
+        self.query_one("#reset-skip-recipe").display = fresh
         self.query_one("#reset-baseline-field").display = not fresh
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -202,6 +211,9 @@ class SharedSettings(ModalScreen[dict | None]):
                     "reset-clean": self.query_one("#reset-clean", Checkbox).value,
                     "reset-recipe": self.query_one("#reset-recipe", Input).value,
                     "reset-baseline": self.query_one("#reset-baseline", Input).value,
+                    "reset-skip-recipe": self.query_one(
+                        "#reset-skip-recipe", Checkbox
+                    ).value,
                 }
             )
             try:

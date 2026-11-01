@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -64,17 +63,29 @@ For each consequential physical implication and each unknown, state:
 
 The scientific model states physical consequences and the evidence that discriminates between them. The PI selects the interventions.
 
-End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.
-
-The PI receives this section and the full scientific model in the recipe-development session. The section states consequences and discriminating evidence. The PI selects the interventions.
+End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.""".replace(
+    "\n", "\r\n"
+)
+_SCIENTIFIC_MODEL_HANDOFF = {
+    "included": """The PI receives this section and the full scientific model in the recipe-development session. The section states consequences and discriminating evidence. The PI selects the interventions.
 
 The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress.
 
-The startup session then receives the same scientific model and the delivered recipe. It starts with fresh scientific state and no recipe-development evidence. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.
+The startup session then receives the same scientific model and the delivered recipe. It starts with fresh scientific state and no recipe-development evidence. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.""",
+    "skipped": """The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.""",
+}
+_SCIENTIFIC_MODEL_RESULT = "The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically."
 
-The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically.""".replace(
-    "\n", "\r\n"
-)
+
+def scientific_model_objective(recipe_phase: str) -> str:
+    return "\r\n\r\n".join(
+        [
+            SCIENTIFIC_MODEL_OBJECTIVE,
+            _SCIENTIFIC_MODEL_HANDOFF[recipe_phase].replace("\n", "\r\n"),
+            _SCIENTIFIC_MODEL_RESULT,
+        ]
+    )
+
 
 _FENCE = "````"
 _CONTRACT_FILES = {
@@ -224,10 +235,7 @@ def _inquiry_line(state: dict, transition: Transition | None) -> str:
 def _handoff_context(
     state: dict, kind: object, checkpoint: object, synthesis: str
 ) -> list[str]:
-    if (
-        pstext.same(kind, "startup")
-        and state.get("recipe_delivery_mode") == "isolated_v1"
-    ):
+    if pstext.same(kind, "startup") and state.get("recipe_phase") == "included":
         return [
             (
                 "Startup begins from the delivered recipe and the same accepted "
@@ -236,22 +244,17 @@ def _handoff_context(
                 "this session."
             )
         ]
-    inquiry = field(state, "active_inquiry")
-    recipe_development = field(state, "recipe_development")
-    if pstext.same(kind, "startup") and pstext.truthy(recipe_development):
+    if pstext.same(kind, "startup"):
         return [
             (
-                "Completed recipe-development session record, unchanged:\n"
-                f"{_FENCE}json\n"
-                f"{json.dumps(recipe_development, ensure_ascii=False, indent=2)}\n"
-                f"{_FENCE}"
-            ),
-            (
-                "Continue from the selected recipe, its measured differences and "
-                "the unresolved alternatives in this record. The record stays "
-                "fixed. Its scientific judgments remain revisable from evidence."
-            ),
+                "The inherited recipe is the reference for your first comparison. A "
+                "first experiment that changes several parts of the recipe at once "
+                "gives a result that you cannot attribute to any one of them. After "
+                "the first comparison, choose the size of a change from the "
+                "explanation that it tests."
+            )
         ]
+    inquiry = field(state, "active_inquiry")
     if pstext.same(kind, "goal_review") and pstext.truthy(checkpoint):
         return [
             (
@@ -530,8 +533,7 @@ def scientific_session_prompt(
     validation_error: str = "",
 ) -> SessionPrompt:
     if (
-        state.get("recipe_delivery_mode") == "isolated_v1"
-        and state.get("campaign_phase") == "startup"
+        state.get("campaign_phase") == "startup"
         and state.get("recipe_development") is not None
     ):
         raise RuntimeError("Recipe delivery must finish before a startup prompt.")
@@ -687,7 +689,7 @@ def repair_prompt(session_prompt: str, pending: dict) -> str:
     )
 
 
-def scientific_model_prompt(goal: str) -> str:
+def scientific_model_prompt(goal: str, recipe_phase: str) -> str:
     return "\n\n".join(
         [
             (
@@ -695,7 +697,7 @@ def scientific_model_prompt(goal: str) -> str:
                 "describes."
             ),
             f"Goal: {goal}",
-            f"Session objective: {SCIENTIFIC_MODEL_OBJECTIVE}",
+            f"Session objective: {scientific_model_objective(recipe_phase)}",
             (
                 "Base the scientific model on contracts/scenario.md and on the "
                 "human-owned definitions of the robot, the simulator and the task in "

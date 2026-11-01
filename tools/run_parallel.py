@@ -58,6 +58,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--stop-after-preparation", action="store_true")
     parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument("--no-reset", action="store_true")
+    parser.add_argument("--skip-recipe-development", action="store_true")
     parser.add_argument("--control-directory", type=Path)
     parser.add_argument("--monitor", action="store_true")
     return parser.parse_args(argv)
@@ -218,12 +219,23 @@ def standard_roots(arguments: argparse.Namespace) -> list[Path]:
     for slot in range(1, arguments.count + 1):
         folder = root / f"campaign-{slot}"
         if not folder.exists():
-            initialize(folder, existing[0], arguments.recipe_ref)
+            initialize(
+                folder,
+                existing[0],
+                arguments.recipe_ref,
+                skip_recipe_development=arguments.skip_recipe_development,
+            )
         roots.append(folder)
     return roots
 
 
-def initialize(folder: Path, source: Path, recipe_ref: str) -> None:
+def initialize(
+    folder: Path,
+    source: Path,
+    recipe_ref: str,
+    *,
+    skip_recipe_development: bool = False,
+) -> None:
     completed = subprocess.run(
         _python(
             "-m",
@@ -234,6 +246,7 @@ def initialize(folder: Path, source: Path, recipe_ref: str) -> None:
             str(source),
             "--recipe-ref",
             recipe_ref,
+            *(["--skip-recipe-development"] if skip_recipe_development else []),
         ),
         cwd=HARNESS,
         check=False,
@@ -258,7 +271,9 @@ def require_ready(roots: list[Path]) -> None:
             raise SystemExit(f"A launcher already owns {root}.")
 
 
-def reset(roots: list[Path], recipe_ref: str) -> None:
+def reset(
+    roots: list[Path], recipe_ref: str, *, skip_recipe_development: bool = False
+) -> None:
     for root in roots:
         completed = subprocess.run(
             _python(
@@ -271,6 +286,7 @@ def reset(roots: list[Path], recipe_ref: str) -> None:
                 "--clean",
                 "--recipe-ref",
                 recipe_ref,
+                *(["--skip-recipe-development"] if skip_recipe_development else []),
                 "--force",
             ),
             cwd=HARNESS,
@@ -304,7 +320,11 @@ def launch(arguments: argparse.Namespace) -> int:
     roots = [Path(os.path.abspath(root)) for root in roots]
     require_ready(roots)
     if not arguments.no_reset:
-        reset(roots, arguments.recipe_ref)
+        reset(
+            roots,
+            arguments.recipe_ref,
+            skip_recipe_development=arguments.skip_recipe_development,
+        )
     control = arguments.control_directory or (
         Path(os.environ.get("TEMP", HARNESS))
         / "robot-learning"

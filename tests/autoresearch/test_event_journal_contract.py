@@ -89,7 +89,7 @@ def test_development_observations_do_not_collide_with_fresh_ids(tmp_path):
     state_path.write_text(
         json.dumps(
             {
-                "recipe_delivery_mode": "isolated_v1",
+                "recipe_phase": "included",
                 "campaign_phase": "recipe_development",
             }
         ),
@@ -121,7 +121,7 @@ def test_development_observations_do_not_collide_with_fresh_ids(tmp_path):
     state_path.write_text(
         json.dumps(
             {
-                "recipe_delivery_mode": "isolated_v1",
+                "recipe_phase": "included",
                 "campaign_phase": "startup",
                 "recipe_development": None,
             }

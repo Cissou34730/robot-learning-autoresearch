@@ -52,7 +52,7 @@ def _variant_paths(
     state: dict, plan: dict, *, full_recipe: bool = False
 ) -> dict[str, str] | None:
     if (
-        state["recipe_delivery_mode"] != "isolated_v1"
+        state["recipe_phase"] != "included"
         or state["campaign_phase"] != "recipe_development"
     ):
         return None
@@ -441,7 +441,7 @@ def _validate_marker(marker: dict, inputs: dict, head: str) -> None:
 
 def queue(state: dict, parameters: dict) -> None:
     """Keep delivery inputs durable while the development invocation finishes."""
-    if state["recipe_delivery_mode"] == "legacy" or state["recipe_development"] is None:
+    if state["recipe_development"] is None:
         return
     root = paths.ROOT.resolve()
     _require_separate_root(root)
@@ -473,7 +473,7 @@ def queue(state: dict, parameters: dict) -> None:
 def deliver() -> bool:
     """Publish the queued recipe after its backend invocation has closed."""
     state = repository.load_state(allow_missing_artifact=True)
-    if state["recipe_delivery_mode"] == "legacy" or state["recipe_development"] is None:
+    if state["recipe_development"] is None:
         return False
     pending = state["pending_operation"]
     if pending is not None:
@@ -486,8 +486,6 @@ def deliver() -> bool:
 
 def publish(state: dict, parameters: dict) -> bool:
     """Mechanically deliver the active recipe after its checkpoint is finalized."""
-    if state["recipe_delivery_mode"] == "legacy":
-        return False
     if state["recipe_development"] is None:
         return False
     if (

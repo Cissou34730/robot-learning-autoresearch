@@ -81,7 +81,9 @@ class Phases:
         goal = human_goal_summary(state, self.options.harness_root)
         self.sessions.forget()
         self.sessions.run(
-            prompts.scientific_model_prompt(goal), "scientific model", preliminary=True
+            prompts.scientific_model_prompt(goal, state["recipe_phase"]),
+            "scientific model",
+            preliminary=True,
         )
         if self.stopped_after(self.sessions.exit_code, "PI session"):
             return STOPPED

@@ -72,6 +72,7 @@ SAVED_MODEL_MEMBERS = {
     "additional_tensor_state": "pytorch_variables.pth",
 }
 
+RECIPE_PHASES = {"included", "skipped"}
 STATE_FIELDS = {
     "schema_version",
     "campaign",
@@ -79,7 +80,7 @@ STATE_FIELDS = {
     "scientific_model",
     "campaign_phase",
     "recipe_development",
-    "recipe_delivery_mode",
+    "recipe_phase",
     "active_inquiry",
     "pi_checkpoint",
     "scientific_session",
@@ -835,6 +836,10 @@ def _validate_campaign_phase(state: dict) -> None:
     phase = state["campaign_phase"]
     session = state["scientific_session"]
     handoff = state["recipe_development"]
+    if state["recipe_phase"] == "skipped" and (
+        phase == "recipe_development" or handoff is not None
+    ):
+        raise ValueError("a campaign that skips recipe development cannot enter it")
     if phase != "research" and state["active_inquiry"] is not None:
         raise ValueError("active_inquiry requires campaign phase research")
     if session is not None:
@@ -2165,8 +2170,8 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         )
     if state["campaign_phase"] not in {"recipe_development", "startup", "research"}:
         raise ValueError("campaign_phase is unsupported")
-    if state["recipe_delivery_mode"] not in {"isolated_v1", "legacy"}:
-        raise ValueError("recipe_delivery_mode is unsupported")
+    if state["recipe_phase"] not in RECIPE_PHASES:
+        raise ValueError("recipe_phase is unsupported")
     campaign = _require_exact_fields(state["campaign"], CAMPAIGN_FIELDS, "campaign")
     for field in ("id", "started_at", "base_commit"):
         _nonempty(campaign, field, f"campaign {field}")
@@ -2398,20 +2403,15 @@ def read_state() -> dict:
 
 
 def normalize_research_state(state: dict) -> dict:
-    version = state.get("schema_version")
-    if version not in {6, 7}:
+    if state.get("schema_version") != 6:
         return state
-    legacy_fields = STATE_FIELDS - {"recipe_delivery_mode"}
-    if version == 6:
-        legacy_fields -= {"campaign_phase", "recipe_development"}
-    if set(state) != legacy_fields:
-        raise RuntimeError(f"research state fields are invalid for schema {version}")
+    if set(state) != STATE_FIELDS - {
+        "campaign_phase",
+        "recipe_development",
+        "recipe_phase",
+    }:
+        raise RuntimeError("research state fields are invalid for schema 6")
     normalized = copy.deepcopy(state)
-    normalized.update(
-        schema_version=STATE_SCHEMA_VERSION, recipe_delivery_mode="legacy"
-    )
-    if version == 7:
-        return normalized
     session = state.get("scientific_session") or {}
     initial_startup = (
         state["counters"]["session"] == 0 and state["pi_checkpoint"] is None
@@ -2422,6 +2422,7 @@ def normalize_research_state(state: dict) -> dict:
         if session.get("kind") == "startup" or initial_startup
         else "research",
         recipe_development=None,
+        recipe_phase="skipped",
     )
     return normalized
 
@@ -2447,7 +2448,10 @@ def empty_campaign_state(
     campaign: dict,
     last_verdict: str,
     human_goal: dict | None = None,
+    recipe_phase: str = "included",
 ) -> dict:
+    if recipe_phase not in RECIPE_PHASES:
+        raise ValueError("recipe_phase is unsupported")
     campaign_copy = copy.deepcopy(campaign)
     campaign_id = str(campaign_copy.get("id") or "").strip()
     if not campaign_id:
@@ -2457,9 +2461,11 @@ def empty_campaign_state(
     state = {
         "schema_version": STATE_SCHEMA_VERSION,
         "campaign": campaign_copy,
-        "campaign_phase": "recipe_development",
+        "campaign_phase": "recipe_development"
+        if recipe_phase == "included"
+        else "startup",
         "recipe_development": None,
-        "recipe_delivery_mode": "isolated_v1",
+        "recipe_phase": recipe_phase,
         "human_goal": copy.deepcopy(human_goal or {"source": "contracts/scenario.md"}),
         "scientific_model": {
             "status": "pending",
@@ -2519,11 +2525,7 @@ def start_scientific_session(
     required_phase = kind if kind in {"recipe_development", "startup"} else "research"
     if state["campaign_phase"] != required_phase:
         raise ValueError(f"{kind} requires campaign phase {required_phase}")
-    if (
-        state["recipe_delivery_mode"] == "isolated_v1"
-        and kind == "startup"
-        and state["recipe_development"] is not None
-    ):
+    if kind == "startup" and state["recipe_development"] is not None:
         raise ValueError("Isolated recipe delivery must finish before startup.")
     active = state["active_inquiry"]
     if kind in {"recipe_development", "startup"}:

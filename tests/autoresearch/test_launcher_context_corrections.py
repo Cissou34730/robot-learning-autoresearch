@@ -134,6 +134,27 @@ def test_first_session_context_delivers_current_recipe_not_variant_sources(
     assert "CURRENT_REWARD_CONTEXT" not in resumed.text
 
 
+def test_recipe_phase_selects_startup_handoff_and_analyst_objective(
+    tmp_path, monkeypatch
+):
+    from runner.launcher import prompts
+
+    context = prompts.PromptContext(tmp_path, tmp_path, 10_000, 500_000, False)
+    rendered = {}
+    for recipe_phase in ("included", "skipped"):
+        state = _ready_state(monkeypatch)
+        state["recipe_phase"] = recipe_phase
+        availability = protocol.session_operation_availability(state)
+        rendered[recipe_phase] = (
+            prompts.scientific_session_prompt(state, availability, context).text,
+            prompts.scientific_model_prompt("Goal", recipe_phase),
+        )
+    assert rendered["included"][0] != rendered["skipped"][0]
+    assert rendered["included"][1] != rendered["skipped"][1]
+    assert "recipe-development" not in rendered["skipped"][1]
+    assert "recipe-development" in rendered["included"][1]
+
+
 def test_transitional_isolated_handoff_cannot_generate_startup_context(
     tmp_path, monkeypatch
 ):

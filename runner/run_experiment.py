@@ -614,7 +614,7 @@ def _complete_operation(
 
 def _recipe_checkpoint_finalized_in_git(state: dict, pending: dict) -> bool:
     if (
-        state["recipe_delivery_mode"] != "isolated_v1"
+        state["recipe_phase"] != "included"
         or state["recipe_development"] is None
         or state["campaign_phase"] != "startup"
         or state["scientific_session"] is not None

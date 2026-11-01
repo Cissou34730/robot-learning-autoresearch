@@ -322,27 +322,17 @@ def _active_inquiry_lines(state: dict) -> list[str]:
     ]
 
 
-def _checkpoint_lines(state: dict, *, development: bool = False) -> list[str]:
-    checkpoint = state["recipe_development"] if development else state["pi_checkpoint"]
+def _checkpoint_lines(state: dict) -> list[str]:
+    checkpoint = state["pi_checkpoint"]
     if not isinstance(checkpoint, dict):
-        return [
-            "- No recipe development record is saved."
-            if development
-            else "- No session record has been saved."
-        ]
+        return ["- No session record has been saved."]
     question_label = (
         "Active inquiry question"
-        if not development and isinstance(state["active_inquiry"], dict)
+        if isinstance(state["active_inquiry"], dict)
         else "Proposed next inquiry question"
     )
     historical_context = []
-    if development:
-        historical_context = [
-            "- This record describes recipe development at completion. Later sessions do not change this record.",
-            f"- Goal gap at completion: {checkpoint['current_goal_gap']}",
-        ]
-        question_label = "Next question at completion"
-    elif isinstance(state["official_assessment"], dict):
+    if isinstance(state["official_assessment"], dict):
         historical_context = [
             (
                 "- This session record predates the official assessment. Its "
@@ -550,10 +540,7 @@ def render_research_brief() -> str:
         json.loads(state_path.read_text(encoding="utf-8"))
     )
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
-    if (
-        state["recipe_delivery_mode"] == "isolated_v1"
-        and state["recipe_development"] is not None
-    ):
+    if state["recipe_development"] is not None:
         return "# Research brief\n\nRecipe delivery is pending.\n"
     lines = [
         "# Research brief",
@@ -580,16 +567,6 @@ def render_research_brief() -> str:
         "",
         *_active_inquiry_lines(state),
         "",
-        *(
-            [
-                "## Recipe development record",
-                "",
-                *_checkpoint_lines(state, development=True),
-                "",
-            ]
-            if state["recipe_delivery_mode"] == "legacy"
-            else []
-        ),
         "## Latest session record",
         "",
         *_checkpoint_lines(state),

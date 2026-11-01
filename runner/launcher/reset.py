@@ -36,6 +36,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--recipe-ref")
     parser.add_argument("--baseline-ref")
+    parser.add_argument("--skip-recipe-development", action="store_true")
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--force", action="store_true")
     return parser.parse_args(argv)
@@ -51,10 +52,13 @@ def validate(arguments: argparse.Namespace) -> None:
             "Fresh accepts optional --recipe-ref only; --baseline-ref is Baseline-only."
         )
     if arguments.mode == "baseline" and (
-        not arguments.baseline_ref or arguments.recipe_ref
+        not arguments.baseline_ref
+        or arguments.recipe_ref
+        or arguments.skip_recipe_development
     ):
         raise ResetRefused(
-            "Baseline requires --baseline-ref and does not accept --recipe-ref."
+            "Baseline requires --baseline-ref and does not accept --recipe-ref "
+            "or --skip-recipe-development."
         )
 
 
@@ -74,6 +78,8 @@ def reset_command(arguments: argparse.Namespace) -> list[str]:
         command += ["--recipe-ref", arguments.recipe_ref]
     if arguments.baseline_ref:
         command += ["--baseline-ref", arguments.baseline_ref]
+    if arguments.skip_recipe_development:
+        command.append("--skip-recipe-development")
     if arguments.clean:
         command.append("--clean")
     return command

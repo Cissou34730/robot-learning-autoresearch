@@ -650,7 +650,9 @@ def validate_restored_recipe() -> None:
         )
 
 
-def empty_state(base_commit: str, recipe_source: str | None) -> dict:
+def empty_state(
+    base_commit: str, recipe_source: str | None, *, recipe_phase: str = "included"
+) -> dict:
     campaign_id = str(uuid.uuid4())
     return repository.empty_campaign_state(
         campaign={
@@ -660,6 +662,7 @@ def empty_state(base_commit: str, recipe_source: str | None) -> dict:
             "recipe_source_commit": recipe_source,
         },
         last_verdict="fresh campaign initialized; scientific model pending",
+        recipe_phase=recipe_phase,
     )
 
 
@@ -669,11 +672,13 @@ def write_campaign_memory(state: dict) -> None:
     repository.atomic_write_text(paths.LOG_PATH, repository.render_operation_log([]))
 
 
-def write_fresh_campaign(recipe_source: str | None) -> dict:
+def write_fresh_campaign(
+    recipe_source: str | None, *, recipe_phase: str = "included"
+) -> dict:
     for relative in CAMPAIGN_PATHS:
         remove_path(relative)
     base_commit = str(git("rev-parse", "HEAD")).strip()
-    state = empty_state(base_commit, recipe_source)
+    state = empty_state(base_commit, recipe_source, recipe_phase=recipe_phase)
     paths.CAMPAIGNS_DIR.mkdir(parents=True, exist_ok=True)
     paths.PI_WORKSPACE_DIR.mkdir(parents=True, exist_ok=True)
     paths.RUNNER_STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -692,7 +697,7 @@ def baseline_state(
         raise ValueError(
             "imported candidate requires at least one preserved evaluation artifact"
         )
-    state = empty_state(base_commit, recipe_source)
+    state = empty_state(base_commit, recipe_source, recipe_phase="skipped")
     candidate_id = str(candidate["id"])
     origin = re.fullmatch(r"T([1-9]\d*)", str(candidate["origin_operation"]))
     if origin is None:
@@ -700,7 +705,6 @@ def baseline_state(
             "imported candidate origin_operation must be a strict training operation ID"
         )
     state["scientific_model"] = copy.deepcopy(source_state["scientific_model"])
-    state["campaign_phase"] = "startup"
     state["counters"]["measurement"] = source_state["counters"]["measurement"]
     state["counters"]["training"] = max(
         source_state["counters"]["training"],
@@ -723,7 +727,9 @@ def reset_failure(original_head: str, error: Exception) -> RuntimeError:
     )
 
 
-def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None]:
+def reset_fresh(
+    recipe_ref: str | None, *, skip_recipe_development: bool = False
+) -> tuple[str, str | None]:
     source = resolve_commit(recipe_ref, "RecipeRef") if recipe_ref else None
     plan = scientific_plan(source) if source else None
     analysis = verify_recipe_source(source) if source else None
@@ -742,7 +748,10 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None]:
                 plan_paths(plan),
                 "recipe",
             )
-        state = write_fresh_campaign(source)
+        state = write_fresh_campaign(
+            source,
+            recipe_phase="skipped" if skip_recipe_development else "included",
+        )
         if analysis is not None:
             repository.atomic_write_bytes(paths.SCIENTIFIC_MODEL_PATH, analysis)
             repository.mark_scientific_model_ready(state, str(source))
@@ -816,6 +825,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--recipe-ref")
     parser.add_argument("--baseline-ref")
+    parser.add_argument("--skip-recipe-development", action="store_true")
     return parser.parse_args()
 
 
@@ -825,9 +835,10 @@ def main() -> int:
         if args.mode == "fresh":
             if args.baseline_ref:
                 raise ValueError("fresh accepts --recipe-ref only")
-        elif not args.baseline_ref or args.recipe_ref:
+        elif not args.baseline_ref or args.recipe_ref or args.skip_recipe_development:
             raise ValueError(
-                "baseline requires --baseline-ref and rejects --recipe-ref"
+                "baseline requires --baseline-ref and rejects --recipe-ref "
+                "and --skip-recipe-development"
             )
         baseline_source = None
         if args.mode == "baseline":
@@ -838,7 +849,10 @@ def main() -> int:
             recipe_ref=args.recipe_ref if args.mode == "fresh" else None,
         )
         if args.mode == "fresh":
-            campaign_id, source = reset_fresh(args.recipe_ref)
+            campaign_id, source = reset_fresh(
+                args.recipe_ref,
+                skip_recipe_development=args.skip_recipe_development,
+            )
             print("=== Research state reset ===")
             print(
                 f"Source recipe revision: {source or 'current HEAD (science preserved)'}"

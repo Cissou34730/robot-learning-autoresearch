@@ -152,8 +152,12 @@ def test_invalid_analysis_rejects_before_destination_creation(recipe_source, ana
     assert not any(arguments[0] == "archive" for _, arguments in git_calls)
 
 
+@pytest.mark.parametrize(
+    ("skip_recipe_development", "recipe_phase", "campaign_phase"),
+    [(False, "included", "recipe_development"), (True, "skipped", "startup")],
+)
 def test_real_git_prepared_recipe_initializes_and_publishes_fresh_campaign(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, skip_recipe_development, recipe_phase, campaign_phase
 ):
     if shutil.which("git") is None:
         pytest.skip("Git is not installed")
@@ -238,7 +242,9 @@ def test_real_git_prepared_recipe_initializes_and_publishes_fresh_campaign(
     monkeypatch.setattr(reset_campaign, "validate_restored_recipe", lambda: None)
     monkeypatch.setattr(initialize_campaign.subprocess, "run", dispatch_reset)
 
-    initialize_campaign.initialize(root, source, REFERENCE)
+    initialize_campaign.initialize(
+        root, source, REFERENCE, skip_recipe_development=skip_recipe_development
+    )
 
     local_revision = initialize_campaign.source_git(
         root, "rev-parse", f"{REFERENCE}^{{commit}}"
@@ -261,7 +267,8 @@ def test_real_git_prepared_recipe_initializes_and_publishes_fresh_campaign(
         "commit": local_revision.decode(),
     }
     assert state["campaign"]["recipe_source_commit"] == local_revision.decode()
-    assert state["campaign_phase"] == "recipe_development"
+    assert state["recipe_phase"] == recipe_phase
+    assert state["campaign_phase"] == campaign_phase
     assert state["recipe_development"] is None
     assert state["counters"] == dict.fromkeys(
         ("inquiry", "session", "measurement", "training", "event"), 0

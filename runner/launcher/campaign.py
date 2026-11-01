@@ -17,7 +17,7 @@ def prepare(phases: Phases) -> None:
     state = load_state(options.campaign_root)
     pending = state.get("pending_operation")
     if (
-        state.get("recipe_delivery_mode") == "isolated_v1"
+        state.get("recipe_phase") == "included"
         and state.get("recipe_development") is not None
         and state.get("scientific_session") is None
         and (
@@ -89,9 +89,7 @@ def step(phases: Phases) -> int | None:
         if status == 0:
             phases.update_brief()
         return None
-    if state.get("recipe_delivery_mode") == "isolated_v1" and state.get(
-        "recipe_development"
-    ):
+    if state.get("recipe_phase") == "included" and state.get("recipe_development"):
         phases.recipe_delivery()
         return None
     terminal = state.get("terminal_state")

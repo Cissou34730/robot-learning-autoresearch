@@ -827,11 +827,13 @@ def test_reset_options_failure_popup_and_persistent_details(tmp_path):
             await pilot.pause()
             assert isinstance(app.screen, SharedSettings)
             settings = app.screen
+            settings.query_one("#reset-skip-recipe", Checkbox).value = True
             settings.query_one("#reset-mode", Select).value = "Baseline"
             settings.query_one("#reset-baseline", Input).value = "selected-baseline"
             settings.query_one("#reset-clean", Checkbox).value = False
             await pilot.pause()
             assert not settings.query_one("#reset-recipe-field").display
+            assert not settings.query_one("#reset-skip-recipe").display
             assert settings.query_one("#reset-baseline-field").display
             await pilot.click("#settings-apply")
             await pilot.pause()
@@ -839,6 +841,7 @@ def test_reset_options_failure_popup_and_persistent_details(tmp_path):
             assert len(calls) == 2
             assert "baseline" in calls[0] and "selected-baseline" in calls[0]
             assert "--recipe-ref" not in calls[0] and "--clean" not in calls[0]
+            assert "--skip-recipe-development" not in calls[0]
             assert "--force" in calls[0]
             assert machinery.started == []
             assert isinstance(app.screen, ConsoleDetail)

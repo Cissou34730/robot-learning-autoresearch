@@ -380,7 +380,7 @@ def test_development_receipt_commit_identity(
 
     sources = _DevelopmentSources()
     sources.state["campaign"]["recipe_source_commit"] = "initial_recipe_hash"
-    sources.state["recipe_delivery_mode"] = "isolated_v1"
+    sources.state["recipe_phase"] = "included"
     if development_commit is not None:
         sources.state["recipe_development"] = {
             "session_id": "S1",
@@ -413,8 +413,7 @@ def test_development_receipt_commit_identity(
         assert development_commit in receipt
 
 
-@pytest.mark.parametrize("legacy", [False, True])
-def test_development_delivery_archive_is_read_only_and_retains_selection(legacy):
+def test_development_delivery_archive_is_read_only_and_retains_selection():
     from textual.widgets import Select, Tabs
 
     from tui.development_view import DevelopmentView
@@ -444,11 +443,7 @@ def test_development_delivery_archive_is_read_only_and_retains_selection(legacy)
                 "candidates": {},
                 "scientific_session": {"id": "S1", "kind": "startup"},
             }
-            if legacy:
-                sources.state.update(sources.current_state)
-                sources.state["recipe_delivery_mode"] = "legacy_coupled"
-            else:
-                sources.archived = True
+            sources.archived = True
             sources.epoch += 1
             app.refresh_snapshot()
             view.refresh_source()

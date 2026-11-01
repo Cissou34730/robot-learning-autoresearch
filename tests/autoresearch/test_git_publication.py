@@ -365,6 +365,7 @@ def test_recipe_delivery_is_fresh_and_development_git_is_private(
             )
             assert result["status"] == "artifact_unavailable"
         assert fresh["campaign_phase"] == "startup"
+        assert fresh["recipe_phase"] == "included"
         assert fresh["campaign"]["id"] == state["campaign"]["id"]
         assert fresh["recipe_development"] is fresh["pi_checkpoint"] is None
         assert (
@@ -779,7 +780,7 @@ def test_full_variant_recipe_restore_materializes_all_effective_sources_and_para
     assert result["removed_paths"] == [added]
 
 
-@pytest.mark.parametrize("mode", ["isolated", "legacy", "inquiry"])
+@pytest.mark.parametrize("mode", ["isolated", "skipped", "inquiry"])
 def test_selected_overlay_only_file_requires_isolated_recipe_development(
     git_repository, monkeypatch, mode
 ):
@@ -799,8 +800,8 @@ def test_selected_overlay_only_file_requires_isolated_recipe_development(
         pi_checkpoint=None,
         scientific_session={"id": "S2", "kind": "recipe_development"},
     )
-    if mode == "legacy":
-        state["recipe_delivery_mode"] = "legacy"
+    if mode == "skipped":
+        state["recipe_phase"] = "skipped"
     candidate = state["candidates"]["T1:checkpoint-10"]
     candidate.update(
         name="other-checkpoint-10",

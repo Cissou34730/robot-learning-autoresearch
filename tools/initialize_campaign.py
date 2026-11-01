@@ -60,7 +60,13 @@ def trust_folder(root: Path) -> None:
         )
 
 
-def initialize(root: Path, source: Path, reference: str) -> None:
+def initialize(
+    root: Path,
+    source: Path,
+    reference: str,
+    *,
+    skip_recipe_development: bool = False,
+) -> None:
     root = root.resolve()
     source = source.resolve()
     if root.exists():
@@ -153,6 +159,7 @@ def initialize(root: Path, source: Path, reference: str) -> None:
             "fresh",
             "--recipe-ref",
             reference,
+            *(["--skip-recipe-development"] if skip_recipe_development else []),
         ],
         cwd=paths.HARNESS_ROOT,
         env=paths.python_environment(root),
@@ -172,9 +179,15 @@ def main() -> int:
     parser.add_argument("--campaign-root", type=Path, required=True)
     parser.add_argument("--source-repository", type=Path, default=paths.HARNESS_ROOT)
     parser.add_argument("--recipe-ref", default="baseline-distinct-episodes-v3")
+    parser.add_argument("--skip-recipe-development", action="store_true")
     args = parser.parse_args()
     try:
-        initialize(args.campaign_root, args.source_repository, args.recipe_ref)
+        initialize(
+            args.campaign_root,
+            args.source_repository,
+            args.recipe_ref,
+            skip_recipe_development=args.skip_recipe_development,
+        )
     except (OSError, RuntimeError, ValueError, zipfile.BadZipFile) as error:
         print(f"Initialization failed: {error}", file=sys.stderr)
         return 1

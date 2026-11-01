@@ -101,7 +101,7 @@ def _development_trial():
     }
     state = {
         "campaign": {"id": "current"},
-        "recipe_delivery_mode": "isolated_v1",
+        "recipe_phase": "included",
         "campaign_phase": "recipe_development",
         "scientific_session": {"id": "S1", "kind": "recipe_development"},
         "candidates": {
@@ -312,7 +312,6 @@ def test_development_sources_bind_archive_identity_cache_and_read_only_files(
         state["campaign"]["id"] = "other"
     if mode == "legacy":
         state.update(
-            recipe_delivery_mode="legacy_coupled",
             campaign_phase="startup",
             scientific_session={"id": "S2", "kind": "startup"},
             recipe_development={"session_id": "S1"},
