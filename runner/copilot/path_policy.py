@@ -83,6 +83,7 @@ RESERVED_MODULES = (
     "runner.assessment",
     "runner.migrate_policy_runtime",
     "runner.reset_campaign",
+    "runner.recipe_development",
     "runner.launcher",
     "runner.launcher.reset",
     "tools.run_parallel",

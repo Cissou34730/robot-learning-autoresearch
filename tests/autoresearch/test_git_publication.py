@@ -2,17 +2,26 @@
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import stat
 import subprocess
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
 
-from runner import paths, protocol, repository
+from runner import (
+    execution,
+    paths,
+    protocol,
+    recipe_development,
+    repository,
+    run_experiment,
+)
 
 
 def _remove_readonly(function, value, error):
@@ -113,6 +122,842 @@ def test_initialized_campaign_keeps_generated_outputs_out_of_scientific_delta(
         (root / relative).read_text(encoding="utf-8") == "generated output\n"
         for relative in ignored_outputs
     )
+
+
+def _development_delivery(git_repository, monkeypatch):
+    from tools.initialize_campaign import CAMPAIGN_GITIGNORE
+
+    root = git_repository
+    (root / ".gitignore").write_text(CAMPAIGN_GITIGNORE, encoding="utf-8")
+    monkeypatch.setattr(paths, "SPLIT", True)
+    for name, relative in {
+        "STATE_PATH": "runner/state/research_state.json",
+        "RESULTS_PATH": "campaigns/results.jsonl",
+        "LOG_PATH": "campaigns/EXPERIMENTS.md",
+        "OPERATION_REQUEST_PATH": "pi_workspace/operation_request.json",
+    }.items():
+        monkeypatch.setattr(paths, name, root / relative)
+    files = {
+        "robot_learning/__init__.py": b"",
+        "robot_learning/training/reward.py": b"VALUE = 'chosen'\n",
+        "robot_learning/training/current_params.json": b'{"training": {"n_envs": 1}}\n',
+        "robot_learning/training/reward_config.json": b'{"progress": 10}\r\n',
+        "robot_learning/scenario/assets/task.xml": b'<task name="chosen"/>\r\n',
+        "robot_learning/scenario/assets/texture.bin": b"\x00\xffrecipe asset\x80",
+        "robot_learning/scenario/assets/targets.jsonl": b'{"target": [1, 2]}\n',
+        "robot_learning/training/training_metrics.json": b'{"score": 0.3}',
+        "robot_learning/training/train.log": b"private training history\n",
+        "robot_learning/training/checkpoints/step-10/model.zip": b"trained policy",
+        "robot_learning/lab/trial.py": b"VALUE = 'private'\n",
+        "robot_learning/variants/other/training/reward.py": b"VALUE = 'alternative'\n",
+        "pi_workspace/scientific_model.md": b"Accepted model\r\nExact bytes.\r\n",
+        "models/candidates/campaign/t1/model.zip": b"old trained policy",
+        "campaigns/training_logs/campaign/t1.log": b"private training history",
+        "campaigns/evaluations/campaign/panel.json": b'{"score": 0.3}',
+        ".copilot/session-state/development/session.json": b"private session",
+        "reports/session_usage/campaign.jsonl": b'{"aiu": 12}\n',
+    }
+    for relative, content in files.items():
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+    repository.git("add", "--", ".")
+    repository.git("commit", "--quiet", "-m", "development history")
+    old_commit = repository.git("rev-parse", "HEAD").strip()
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": old_commit},
+        last_verdict="development",
+    )
+    state["scientific_model"].update(status="ready", commit=old_commit)
+    request = {
+        key: "Development conclusion."
+        for key in repository.CHECKPOINT_FIELDS
+        - {
+            "session_id",
+            "inquiry_id",
+            "scientific_commit",
+            "evidence_references",
+            "completed_operations",
+        }
+    }
+    request.update(evidence_references=[], completed_operations=[])
+    checkpoint = {
+        **request,
+        "session_id": "S1",
+        "inquiry_id": None,
+        "scientific_commit": old_commit,
+    }
+    state.update(
+        campaign_phase="startup",
+        recipe_development=checkpoint,
+        pi_checkpoint=checkpoint,
+    )
+    state["counters"].update(session=1, event=1)
+    state["operation_events"] = [
+        {
+            "id": "E1",
+            "kind": "checkpoint",
+            "session_id": "S1",
+            "inquiry_id": None,
+            "request": request,
+            "result": {"status": "checkpointed", "session_id": "S1"},
+            "status": "completed",
+            "error": None,
+            "supersedes": None,
+            "superseded_by": None,
+            "completed_at": "now",
+        }
+    ]
+    state["candidates"]["T1:checkpoint-10"] = {
+        "id": "T1:checkpoint-10",
+        "artifact": "models/candidates/campaign/t1",
+        "fingerprint": "a" * 64,
+        "origin_operation": "T1",
+        "name": "checkpoint-10",
+        "parameters": {"training": {"n_envs": 1}},
+        "scientific_commit": old_commit,
+        "training_steps": 10,
+        "evaluation_artifacts": [],
+    }
+    state["model_roles"]["working"] = "T1:checkpoint-10"
+    repository.write_state(state)
+    repository.git("add", "--", "runner/state/research_state.json")
+    repository.git("commit", "--quiet", "-m", "finalized development checkpoint")
+    archive = paths.recipe_development_archive(root, "campaign")
+    paths.recipe_handoff_directory(root).mkdir(parents=True, exist_ok=True)
+    return state, old_commit, files, archive
+
+
+def test_recipe_delivery_preserves_tracked_canonical_assets_without_training_state(
+    git_repository, monkeypatch
+):
+    state, _old_commit, files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    untracked = (
+        "robot_learning/training/model.zip",
+        "robot_learning/training/policy.optimizer.pth",
+        "robot_learning/training/vecnormalize.pkl",
+        "robot_learning/training/untracked_config.json",
+    )
+    for logical in untracked:
+        (git_repository / logical).write_bytes(b"untracked development output")
+    try:
+        assert recipe_development.publish(state, {"training": {"n_envs": 1}})
+        for logical in (
+            "robot_learning/training/reward_config.json",
+            "robot_learning/scenario/assets/task.xml",
+            "robot_learning/scenario/assets/texture.bin",
+            "robot_learning/scenario/assets/targets.jsonl",
+        ):
+            assert (git_repository / logical).read_bytes() == files[logical]
+            repository.require_path_at_commit("HEAD", logical)
+        assert json.loads(
+            (git_repository / "robot_learning/training/current_params.json").read_text()
+        ) == {"training": {"n_envs": 1}}
+        for logical in (
+            *untracked,
+            "robot_learning/training/training_metrics.json",
+            "robot_learning/training/train.log",
+            "robot_learning/training/checkpoints",
+        ):
+            assert not (git_repository / logical).exists()
+        assert (git_repository / "pi_workspace/scientific_model.md").read_bytes() == (
+            files["pi_workspace/scientific_model.md"]
+        )
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+@pytest.mark.parametrize(
+    "name", ["model.zip", "policy.optimizer.pth", "vecnormalize.pkl"]
+)
+def test_recipe_delivery_rejects_tracked_trained_artifacts_before_archiving(
+    git_repository, monkeypatch, name
+):
+    state, _old_commit, _files, archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    artifact = git_repository / "robot_learning/training" / name
+    artifact.write_bytes(b"serialized development state")
+    reward = git_repository / "robot_learning/training/reward.py"
+    reward.write_text(
+        "from pathlib import Path\n"
+        f"VALUE = Path(__file__).with_name({name!r}).read_bytes()\n",
+        encoding="utf-8",
+    )
+    repository.git("add", "--", "robot_learning/training")
+    repository.git("commit", "--quiet", "-m", "canonical trained dependency")
+    head = repository.git("rev-parse", "HEAD").strip()
+    state["recipe_development"]["scientific_commit"] = head
+    repository.write_state(state)
+    repository.git("add", "--", "runner/state/research_state.json")
+    repository.git("commit", "--quiet", "-m", "record canonical trained dependency")
+    head = repository.git("rev-parse", "HEAD").strip()
+    try:
+        with pytest.raises(RuntimeError, match="excluded trained artifact"):
+            recipe_development.publish(state, {"training": {"n_envs": 1}})
+        assert not archive.exists()
+        assert repository.git("rev-parse", "HEAD").strip() == head
+        assert artifact.read_bytes() == b"serialized development state"
+        assert repository.load_state(allow_missing_artifact=True)["candidates"]
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+@pytest.mark.parametrize("change", ["modified", "missing", "hardlink"])
+def test_recipe_delivery_validates_canonical_assets_before_archiving(
+    git_repository, monkeypatch, change
+):
+    state, _old_commit, _files, archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    source = git_repository / "robot_learning/training/reward_config.json"
+    if change == "modified":
+        source.write_bytes(b'{"progress": 20}\n')
+    elif change == "missing":
+        source.unlink()
+    else:
+        os.link(source, git_repository / "robot_learning/lab/config_alias.json")
+    try:
+        with pytest.raises((ValueError, RuntimeError)):
+            recipe_development.publish(state, {"training": {"n_envs": 1}})
+        assert not archive.exists()
+        assert repository.load_state(allow_missing_artifact=True)["candidates"]
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+def test_recipe_delivery_is_fresh_and_development_git_is_private(
+    git_repository, monkeypatch
+):
+    state, old_commit, files, archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    try:
+        assert recipe_development.publish(state, {"training": {"n_envs": 1}})
+        fresh = repository.load_state(allow_missing_artifact=True)
+        from runner import artifact_evidence_query, build_brief
+
+        monkeypatch.setattr(build_brief, "RESEARCH_DIR", paths.CAMPAIGNS_DIR)
+        transitional = git_repository / "runner/state/research_state.json"
+        fresh_bytes = transitional.read_bytes()
+        transitional.write_text(json.dumps(state), encoding="utf-8")
+        assert "Development conclusion." not in build_brief.render_research_brief()
+        transitional.write_bytes(fresh_bytes)
+        assert "Development conclusion." not in build_brief.render_research_brief()
+        index = json.loads(
+            artifact_evidence_query.query_artifact({"action": "operations"}, "campaign")
+        )
+        assert index["result"]["matches"] == []
+        for action in ("metadata", "read", "query", "discover"):
+            request = {"action": action, "operation_id": "E1"}
+            if action == "query":
+                request["path"] = "/"
+            result = json.loads(
+                artifact_evidence_query.query_artifact(request, "campaign")
+            )
+            assert result["status"] == "artifact_unavailable"
+        assert fresh["campaign_phase"] == "startup"
+        assert fresh["campaign"]["id"] == state["campaign"]["id"]
+        assert fresh["recipe_development"] is fresh["pi_checkpoint"] is None
+        assert (
+            fresh["scientific_session"]
+            is fresh["pending_operation"]
+            is fresh["active_inquiry"]
+            is None
+        )
+        assert fresh["candidates"] == {}
+        with pytest.raises(KeyError, match="unknown candidate"):
+            protocol.resolve_candidate(fresh, "T1:checkpoint-10")
+        assert fresh["model_roles"] == {
+            "working": None,
+            "best_known": None,
+            "retained": {},
+        }
+        assert fresh["operation_events"] == []
+        archived_state = json.loads(
+            (archive / "runner/state/research_state.json").read_text(encoding="utf-8")
+        )
+        assert archived_state["candidates"] == state["candidates"]
+        assert archived_state["operation_events"] == state["operation_events"]
+        assert set(fresh["counters"].values()) == {0}
+        assert (
+            git_repository / "pi_workspace/scientific_model.md"
+        ).read_bytes() == files["pi_workspace/scientific_model.md"]
+        assert (
+            git_repository / "reports/session_usage/campaign.jsonl"
+        ).read_bytes() == files["reports/session_usage/campaign.jsonl"]
+        for relative, content in files.items():
+            assert (archive / relative).read_bytes() == content
+        for relative in (
+            "models",
+            ".copilot",
+            "robot_learning/lab",
+            "robot_learning/variants",
+            "campaigns/evaluations",
+            "campaigns/training_logs",
+        ):
+            assert not (git_repository / relative).exists()
+        repository.require_path_at_commit(
+            fresh["scientific_model"]["commit"], fresh["scientific_model"]["path"]
+        )
+        repository.require_resolvable_commit(fresh["campaign"]["base_commit"])
+        with pytest.raises(RuntimeError, match="does not resolve"):
+            repository.require_resolvable_commit(old_commit)
+        assert not recipe_development.publish(fresh, {"training": {"n_envs": 1}})
+        assert not recipe_development.recover()
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+@pytest.mark.parametrize("boundary", ["staged", "archived", "replaced"])
+def test_recipe_delivery_recovers_without_rebuilding_or_losing_archive(
+    git_repository, monkeypatch, boundary
+):
+    state, old_commit, files, archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    original_finish = recipe_development._finish_swap
+    original_replace = Path.replace
+
+    def replace(source, target):
+        result = original_replace(source, target)
+        if (boundary == "archived" and target.resolve() == archive.resolve()) or (
+            boundary == "replaced" and target.resolve() == git_repository.resolve()
+        ):
+            raise OSError("interrupted directory swap")
+        return result
+
+    def finish(root, marker):
+        raise OSError("interrupted after staging")
+
+    try:
+        if boundary == "staged":
+            monkeypatch.setattr(recipe_development, "_finish_swap", finish)
+        else:
+            monkeypatch.setattr(Path, "replace", replace)
+        with pytest.raises(OSError, match="interrupted"):
+            recipe_development.publish(state, {"training": {"n_envs": 1}})
+        monkeypatch.setattr(recipe_development, "_finish_swap", original_finish)
+        monkeypatch.setattr(Path, "replace", original_replace)
+        monkeypatch.setattr(
+            recipe_development,
+            "_build_public_tree",
+            lambda *_args: pytest.fail("recovery must not rebuild publication"),
+        )
+        assert recipe_development.recover()
+        fresh = repository.load_state(allow_missing_artifact=True)
+        assert fresh["campaign_phase"] == "startup"
+        assert fresh["operation_events"] == []
+        assert (
+            repository._git_at(
+                archive,
+                ("-c", f"safe.directory={archive}", "cat-file", "-t", old_commit),
+            ).strip()
+            == "commit"
+        )
+        for relative, content in files.items():
+            assert (archive / relative).read_bytes() == content
+        assert not recipe_development.recover()
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+def test_queued_recipe_delivery_from_runner_child(git_repository, monkeypatch):
+    from runner.launcher.campaign_lock import CampaignLock
+    from runner.launcher.child import ChildRunner, RunLog
+    from runner.launcher.phases import Phases
+    from runner.launcher.runner_client import RunnerClient
+
+    state, _old_commit, _files, archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    original_directory = Path.cwd()
+    log = RunLog(git_repository / "reports/launcher/test.log")
+    stop = SimpleNamespace(
+        path=paths.stop_request_path(git_repository),
+        deadline_passed=lambda: False,
+        requested=lambda: False,
+    )
+    children = ChildRunner(cwd=git_repository, stop=stop, log=log)
+    client = RunnerClient(
+        harness_root=paths.HARNESS_ROOT,
+        children=children,
+        trust=SimpleNamespace(verify=lambda: None, refresh=lambda: None),
+        timesteps=10_000,
+        max_timesteps=500_000,
+    )
+    phase = Phases(
+        options=SimpleNamespace(
+            campaign_root=git_repository, harness_root=paths.HARNESS_ROOT
+        ),
+        runner=client,
+        sessions=SimpleNamespace(close_runtime=lambda: None, forget=lambda: None),
+        stop=stop,
+        events=SimpleNamespace(),
+        home=Path.home(),
+    )
+    try:
+        with CampaignLock(git_repository, "busy"):
+            recipe_development.queue(state, {"training": {"n_envs": 1}})
+            monkeypatch.setenv(paths.CAMPAIGN_ROOT_ENV, str(git_repository))
+            monkeypatch.setenv(
+                "PYTHONPATH",
+                os.pathsep.join((str(git_repository), str(paths.HARNESS_ROOT))),
+            )
+            os.chdir(git_repository)
+            assert phase.recipe_delivery() == 0
+            assert Path.cwd().resolve() == git_repository.resolve()
+        assert repository.load_state(allow_missing_artifact=True)["candidates"] == {}
+        assert (archive / "reports/launcher/test.log").is_file()
+        assert (
+            paths.recipe_handoff_directory(git_repository) / "launcher-delivery.log"
+        ).is_file()
+    finally:
+        os.chdir(original_directory)
+        client.close()
+        log.close()
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+def test_preparing_recipe_recovers_in_selected_uv_child_under_campaign_lock(
+    git_repository, monkeypatch
+):
+    from runner.launcher.campaign_lock import CampaignLock
+    from runner.launcher.runner_client import uv_executable
+
+    state, _old_commit, _files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+
+    def interrupted(*_args):
+        raise OSError("interrupted during preparation")
+
+    monkeypatch.setattr(recipe_development, "_build_public_tree", interrupted)
+    try:
+        with CampaignLock(git_repository, "busy"):
+            with pytest.raises(OSError, match="interrupted during preparation"):
+                recipe_development.publish(state, {"training": {"n_envs": 1}})
+            result = subprocess.run(
+                [
+                    uv_executable(),
+                    "run",
+                    "--project",
+                    str(paths.HARNESS_ROOT),
+                    "python",
+                    "-m",
+                    "runner.recipe_development",
+                ],
+                cwd=paths.HARNESS_ROOT,
+                env=paths.python_environment(git_repository),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            assert result.returncode == 0, result.stderr
+        fresh = repository.load_state(allow_missing_artifact=True)
+        assert fresh["campaign_phase"] == "startup"
+        assert fresh["operation_events"] == []
+        assert fresh["candidates"] == {}
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+@pytest.mark.parametrize(
+    "mismatch", ["parameters", "source", "head", "foreign", "campaign", "stage"]
+)
+def test_recipe_delivery_rejects_mismatched_inputs_without_mutation(
+    git_repository, monkeypatch, mismatch
+):
+    state, _old_commit, _files, archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    parameters = {"training": {"n_envs": 1}}
+    recipe_development.queue(state, parameters)
+    marker_path = paths.recipe_handoff_directory(git_repository) / "handoff.json"
+    marker = json.loads(marker_path.read_text())
+    if mismatch == "parameters":
+        marker["parameters"] = {"training": {"n_envs": 99}}
+    elif mismatch == "source":
+        marker["scientific_commit"] = "f" * 40
+    elif mismatch == "head":
+        marker["development_head"] = "f" * 40
+    elif mismatch == "foreign":
+        marker.update(campaign_id="previous", stage="published")
+        parameters = {"training": {"n_envs": 99}}
+    elif mismatch == "campaign":
+        state["campaign"]["id"] = "foreign-campaign"
+    else:
+        marker["stage"] = "invalid"
+    marker_path.write_text(json.dumps(marker), encoding="utf-8")
+    before = marker_path.read_bytes()
+    head = repository.git("rev-parse", "HEAD").strip()
+    try:
+        with pytest.raises(RuntimeError, match="Recipe delivery"):
+            recipe_development.publish(state, parameters)
+        assert marker_path.read_bytes() == before
+        assert repository.git("rev-parse", "HEAD").strip() == head
+        assert not archive.exists()
+        assert not (archive.parent / "public").exists()
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+def test_selected_variant_materializes_effective_files_without_changing_restore_schema(
+    git_repository, monkeypatch
+):
+    state, old_commit, files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    state["campaign_phase"] = "recipe_development"
+    state["recipe_development"] = state["pi_checkpoint"] = None
+    state["operation_events"] = [
+        {"id": "T1", "kind": "training", "request": {"variants": [{"label": "other"}]}}
+    ]
+    state["candidates"]["T1:checkpoint-10"]["name"] = "other-checkpoint-10"
+    selected = [
+        "robot_learning/training/reward.py",
+        "robot_learning/training/current_params.json",
+    ]
+    plan = {
+        **protocol.plan_recipe_paths(old_commit, selected),
+        "candidate_id": "T1:checkpoint-10",
+        "parameters": {"training": {"n_envs": 4}},
+        "session_id": "S1",
+    }
+    assert recipe_development.restore_variant(state, plan)
+    assert recipe_development.variant_matches(state, plan)
+    assert (git_repository / selected[0]).read_bytes() == files[
+        "robot_learning/variants/other/training/reward.py"
+    ]
+    assert json.loads((git_repository / selected[1]).read_text()) == plan["parameters"]
+    assert (git_repository / "robot_learning/__init__.py").read_bytes() == files[
+        "robot_learning/__init__.py"
+    ]
+    assert set(plan) == {
+        "parent",
+        "restore",
+        "remove_created",
+        "candidate_id",
+        "parameters",
+        "session_id",
+    }
+
+
+@pytest.mark.parametrize("mode", ["isolated", "legacy", "inquiry"])
+def test_selected_overlay_only_file_requires_isolated_recipe_development(
+    git_repository, monkeypatch, mode
+):
+    state, _old_commit, files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    helper = "robot_learning/training/variant_helper.py"
+    overlay = "robot_learning/variants/other/training/variant_helper.py"
+    content = b"VALUE = 'selected overlay only'\n"
+    (git_repository / overlay).write_bytes(content)
+    repository.git("add", "--", overlay)
+    repository.git("commit", "--quiet", "-m", "record overlay-only helper")
+    parent = repository.git("rev-parse", "HEAD").strip()
+    state.update(
+        campaign_phase="recipe_development" if mode != "inquiry" else "research",
+        recipe_development=None,
+        pi_checkpoint=None,
+        scientific_session={"id": "S2", "kind": "recipe_development"},
+    )
+    if mode == "legacy":
+        state["recipe_delivery_mode"] = "legacy"
+    candidate = state["candidates"]["T1:checkpoint-10"]
+    candidate.update(
+        name="other-checkpoint-10",
+        scientific_commit=parent,
+        parameters={"training": {"n_envs": 4}},
+    )
+    artifact = git_repository / candidate["artifact"]
+    for filename in {*repository.ARTIFACT_FILES, *repository.INFERENCE_ARTIFACT_FILES}:
+        (artifact / filename).write_bytes(b"recorded candidate artifact")
+    candidate["fingerprint"] = repository.artifact_fingerprint(artifact)
+    state["operation_events"] = [
+        {"id": "T1", "kind": "training", "request": {"variants": [{"label": "other"}]}}
+    ]
+    parameters_path = "robot_learning/training/current_params.json"
+    request = {
+        "candidate": candidate["id"],
+        "reason": "Restore the selected recorded variant.",
+        "paths": [helper, parameters_path],
+    }
+    assert not (git_repository / helper).exists()
+    assert not repository.tracked_at_commit(parent, helper)
+    if mode != "isolated":
+        with pytest.raises(ValueError, match="existing or recorded file"):
+            protocol.plan_recipe_restore(request, state)
+        assert not (git_repository / helper).exists()
+        assert (git_repository / parameters_path).read_bytes() == files[parameters_path]
+        return
+    plan = protocol.plan_recipe_restore(request, state)
+    assert plan["remove_created"] == [helper]
+    assert plan["restore"] == [parameters_path]
+    assert set(plan) == {
+        "parent",
+        "restore",
+        "remove_created",
+        "candidate_id",
+        "parameters",
+        "session_id",
+    }
+    assert recipe_development.restore_variant(state, plan)
+    assert recipe_development.variant_matches(state, plan)
+    assert (git_repository / helper).read_bytes() == content
+    assert (
+        json.loads((git_repository / parameters_path).read_text())
+        == candidate["parameters"]
+    )
+    assert (git_repository / "robot_learning/__init__.py").read_bytes() == files[
+        "robot_learning/__init__.py"
+    ]
+
+
+@pytest.mark.parametrize(
+    "protected",
+    [
+        "robot_learning/__init__.py",
+        "robot_learning/scenario/__init__.py",
+        "robot_learning/variants/other/__init__.py",
+        "robot_learning/variants/other/scenario/__init__.py",
+        "robot_learning/variants/other/SCENARIO/__INIT__.py",
+    ],
+)
+def test_overlay_restore_rejects_protected_initializer_aliases(
+    git_repository, monkeypatch, protected
+):
+    state, _old_commit, files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    state.update(
+        campaign_phase="recipe_development",
+        recipe_development=None,
+        pi_checkpoint=None,
+        scientific_session={"id": "S2", "kind": "recipe_development"},
+    )
+    candidate = state["candidates"]["T1:checkpoint-10"]
+    artifact = git_repository / candidate["artifact"]
+    for filename in {*repository.ARTIFACT_FILES, *repository.INFERENCE_ARTIFACT_FILES}:
+        (artifact / filename).write_bytes(b"recorded candidate artifact")
+    candidate["fingerprint"] = repository.artifact_fingerprint(artifact)
+    with pytest.raises(ValueError, match="not a learning-recipe source"):
+        protocol.plan_recipe_restore(
+            {
+                "candidate": "T1:checkpoint-10",
+                "reason": "Restore selected source.",
+                "paths": [protected, "robot_learning/training/current_params.json"],
+            },
+            state,
+        )
+    assert (git_repository / "robot_learning/__init__.py").read_bytes() == files[
+        "robot_learning/__init__.py"
+    ]
+
+
+@pytest.mark.parametrize(
+    "queue_gap",
+    [
+        "none",
+        "missing",
+        "previous",
+        "interrupted",
+        "interrupted_launcher",
+        "different_pending",
+    ],
+)
+def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
+    git_repository, monkeypatch, queue_gap
+):
+    state, old_commit, _files, archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    request = {
+        key: value
+        for key, value in state["recipe_development"].items()
+        if key not in {"scientific_commit", "session_id", "inquiry_id"}
+    }
+    state.update(
+        campaign_phase="recipe_development",
+        recipe_development=None,
+        pi_checkpoint=None,
+        operation_events=[],
+    )
+    state["counters"].update(session=0, event=0)
+    repository.start_scientific_session(
+        state,
+        kind="recipe_development",
+        objective="Select the complete recipe.",
+        backend_adapter="copilot",
+        backend_model="model",
+        backend_reasoning="high",
+    )
+    repository.write_state(state)
+    monkeypatch.setattr(
+        run_experiment, "_load_experiment_config", lambda: {"training": {"n_envs": 1}}
+    )
+    monkeypatch.setattr(
+        execution,
+        "train_candidate",
+        lambda *_args, **_kwargs: pytest.fail("delivery must not train"),
+    )
+    try:
+        run_experiment.accept_operation({"checkpoint": request}, state)
+        original_commit = repository.commit_runner_memory
+        marker_path = paths.recipe_handoff_directory(git_repository) / "handoff.json"
+
+        def interrupt_after_finalization(message):
+            result = original_commit(message)
+            if message.startswith("finalize "):
+                raise OSError("interrupted after finalization commit")
+            return result
+
+        interrupted = queue_gap in {
+            "interrupted",
+            "interrupted_launcher",
+            "different_pending",
+        }
+        if interrupted:
+            monkeypatch.setattr(
+                repository, "commit_runner_memory", interrupt_after_finalization
+            )
+            with pytest.raises(OSError, match="after finalization commit"):
+                run_experiment.execute_pending_operation()
+            assert (
+                repository.read_state()["pending_operation"]["progress"] == "completed"
+            )
+            assert repository.read_committed_state("HEAD")["pending_operation"] is None
+            monkeypatch.setattr(
+                repository,
+                "commit_runner_memory",
+                lambda *_args: pytest.fail(
+                    "already finalized checkpoint must not commit"
+                ),
+            )
+        else:
+            assert run_experiment.execute_pending_operation() == 0
+        finalized_head = repository.git("rev-parse", "HEAD").strip()
+        if queue_gap == "different_pending":
+            different = repository.read_state()
+            different["pending_operation"]["id"] = "E2"
+            repository.write_state(different)
+            state_bytes = paths.STATE_PATH.read_bytes()
+            marker_bytes = marker_path.read_bytes()
+            request_bytes = paths.OPERATION_REQUEST_PATH.read_bytes()
+            with pytest.raises(RuntimeError, match="fully finalized"):
+                recipe_development.deliver()
+            assert paths.STATE_PATH.read_bytes() == state_bytes
+            assert marker_path.read_bytes() == marker_bytes
+            assert paths.OPERATION_REQUEST_PATH.read_bytes() == request_bytes
+            assert repository.git("rev-parse", "HEAD").strip() == finalized_head
+            assert not archive.exists()
+            return
+        if queue_gap == "missing":
+            marker_path.unlink()
+        elif queue_gap == "previous":
+            marker = json.loads(marker_path.read_text())
+            marker.update(
+                campaign_id="previous-campaign",
+                stage="published",
+                parameters={"training": {"n_envs": 99}},
+            )
+            marker_path.write_text(json.dumps(marker), encoding="utf-8")
+        assert not archive.exists()
+        completed = repository.load_state(allow_missing_artifact=True)
+        assert (completed["pending_operation"] is not None) == interrupted
+        with pytest.raises(ValueError, match="delivery must finish"):
+            repository.start_scientific_session(
+                completed,
+                kind="startup",
+                objective="Start fresh.",
+                backend_adapter="copilot",
+                backend_model="model",
+                backend_reasoning="high",
+            )
+        final_session = git_repository / ".copilot/session-state/development/final.json"
+        final_session.write_bytes(b"final backend session record")
+        if queue_gap == "interrupted_launcher":
+            from runner.launcher import campaign
+
+            commands = []
+
+            def runner(*arguments):
+                assert archive.exists()
+                assert repository.read_state()["pending_operation"] is None
+                commands.append(arguments[0])
+                return SimpleNamespace(exit_code=0)
+
+            campaign.prepare(
+                SimpleNamespace(
+                    options=SimpleNamespace(
+                        campaign_root=git_repository,
+                        model="new-model",
+                        reasoning="low",
+                        max_inquiries_explicit=True,
+                        max_inquiries=7,
+                    ),
+                    recipe_delivery=recipe_development.deliver,
+                    runner=SimpleNamespace(runner=runner),
+                    events=SimpleNamespace(status=lambda *_args, **_kwargs: None),
+                )
+            )
+            assert commands == [
+                "--validate-session-backend",
+                "--synchronize-max-inquiries",
+            ]
+        else:
+            assert recipe_development.deliver()
+        assert json.loads(marker_path.read_text())["development_head"] == finalized_head
+        fresh = repository.load_state(allow_missing_artifact=True)
+        archived_state = json.loads(
+            (archive / "runner/state/research_state.json").read_text(encoding="utf-8")
+        )
+        assert archived_state["pending_operation"] is None
+        assert archived_state["recipe_development"] == archived_state["pi_checkpoint"]
+        assert archived_state["operation_events"][0]["status"] == "completed"
+        assert not (archive / "pi_workspace/operation_request.json").exists()
+        assert (
+            archive / ".copilot/session-state/development/final.json"
+        ).read_bytes() == b"final backend session record"
+        assert not (git_repository / ".copilot").exists()
+        assert fresh["candidates"] == {}
+        assert json.loads(
+            (git_repository / "robot_learning/training/current_params.json").read_text()
+        ) == {"training": {"n_envs": 1}}
+        session = repository.start_scientific_session(
+            fresh,
+            kind="startup",
+            objective="Start fresh from the recipe.",
+            backend_adapter="copilot",
+            backend_model="model",
+            backend_reasoning="high",
+        )
+        assert session["id"] == "S1"
+        assert session["scientific_parent_commit"] != old_commit
+        assert set(fresh["counters"].values()) == {0, 1}
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
 
 
 def test_campaign_memory_publication_excludes_science_and_local_artifacts(

@@ -160,3 +160,12 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
   would still exclude each other. Directory restoration is no longer needed:
   each runs in its own process. The trust snapshot of both roots is unchanged
   in scope (`runner/launcher/trust.py`).
+- Recipe-only decoupling: new schema-8 campaigns use
+  `recipe_delivery_mode="isolated_v1"`. Delivery archives the development Git,
+  state and artifacts outside the public repository. The same campaign root
+  and ID then contain clean Git history, the canonical recipe, the unchanged
+  accepted scientific model and fresh scientific state. Schema-6/7 records
+  remain readable as legacy coupled campaigns, without automatic conversion
+  or live migration. Prepared Baseline compatibility is unchanged. See
+  [Recipe-only delivery](runtime-mechanics.md#recipe-only-delivery) for the
+  recovery marker, mutex and Windows release ordering.

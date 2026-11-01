@@ -86,6 +86,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
+    state["recipe_delivery_mode"] = "legacy"
     repository.write_state(state)
     return state
 
@@ -215,7 +216,7 @@ def _checkpoint(state: dict) -> dict:
     }
 
 
-def test_state_is_a_strict_schema7_operation_state(monkeypatch, tmp_path):
+def test_state_is_a_strict_schema8_operation_state(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
 
     assert state["model_roles"] == {
@@ -246,6 +247,7 @@ def test_schema6_read_normalizes_without_writing(
         _start_session(state, kind, "Continue the existing scientific session.")
     state.pop("campaign_phase")
     state.pop("recipe_development")
+    state.pop("recipe_delivery_mode")
     state["schema_version"] = 6
     state["counters"]["session"] = sessions
     serialized = json.dumps(state)
@@ -253,7 +255,8 @@ def test_schema6_read_normalizes_without_writing(
 
     loaded = repository.load_state(allow_missing_artifact=True)
 
-    assert loaded["schema_version"] == 7
+    assert loaded["schema_version"] == 8
+    assert loaded["recipe_delivery_mode"] == "legacy"
     assert loaded["campaign_phase"] == phase
     assert loaded["recipe_development"] is None
     assert paths.STATE_PATH.read_text(encoding="utf-8") == serialized
@@ -267,7 +270,7 @@ def test_schema6_read_normalizes_without_writing(
 
 
 @pytest.mark.parametrize("cap", [0, 15])
-def test_fresh_flow_checkpoints_both_initial_phases_before_the_inquiry_cap(
+def test_legacy_flow_checkpoints_both_initial_phases_before_the_inquiry_cap(
     monkeypatch, tmp_path, cap
 ):
     state = _configure(monkeypatch, tmp_path)
@@ -507,6 +510,7 @@ def test_brief_normalizes_legacy_state_without_rewriting_it(monkeypatch, tmp_pat
     state["schema_version"] = 6
     state.pop("campaign_phase")
     state.pop("recipe_development")
+    state.pop("recipe_delivery_mode")
     serialized = json.dumps(state)
     paths.STATE_PATH.write_text(serialized, encoding="utf-8")
     assert "`startup`" in build_brief.render_research_brief()

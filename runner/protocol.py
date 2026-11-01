@@ -1120,6 +1120,19 @@ def plan_recipe_restore(request: dict, state: dict) -> dict:
         historical = repository.tracked_at_commit(
             candidate["scientific_commit"], relative
         )
+        if not historical:
+            from runner import recipe_development
+
+            recorded_variant = recipe_development._variant_paths(
+                state,
+                {
+                    "candidate_id": candidate["id"],
+                    "parent": candidate["scientific_commit"],
+                    "restore": [relative],
+                    "remove_created": [],
+                },
+            )
+            historical = recorded_variant is not None and relative in recorded_variant
         if current.is_dir() or (not historical and not current.is_file()):
             raise ValueError(
                 f"restore_recipe requires an existing or recorded file: {relative}"

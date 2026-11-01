@@ -378,12 +378,14 @@ def test_report_requires_exact_current_state(tmp_path):
         campaign_report.load_campaign(tmp_path)
 
 
-@pytest.mark.parametrize("schema_version", [6, repository.STATE_SCHEMA_VERSION])
+@pytest.mark.parametrize("schema_version", [6, 7, repository.STATE_SCHEMA_VERSION])
 def test_report_reads_supported_state_without_rewriting_or_rewinding(
     tmp_path, schema_version
 ):
     state = _campaign_repository(tmp_path)
     state["schema_version"] = schema_version
+    if schema_version in {6, 7}:
+        del state["recipe_delivery_mode"]
     if schema_version == 6:
         del state["campaign_phase"]
         del state["recipe_development"]

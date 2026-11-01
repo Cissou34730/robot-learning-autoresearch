@@ -612,18 +612,51 @@ def _complete_operation(
     _finalize_operation(state, pending)
 
 
+def _recipe_checkpoint_finalized_in_git(state: dict, pending: dict) -> bool:
+    if (
+        state["recipe_delivery_mode"] != "isolated_v1"
+        or state["recipe_development"] is None
+        or state["campaign_phase"] != "startup"
+        or state["scientific_session"] is not None
+        or pending["kind"] != "checkpoint"
+        or pending["progress"] != "completed"
+        or pending["failure"] is not None
+        or repository.git("log", "-1", "--format=%s", "HEAD").strip()
+        != repository.campaign_commit_message(f"finalize {pending['id']}")
+    ):
+        return False
+    committed = repository.read_committed_state("HEAD")
+    previous = repository.read_committed_state("HEAD^")
+    return (
+        committed == {**state, "pending_operation": None}
+        and previous["pending_operation"] == pending
+        and previous["recipe_development"] == state["recipe_development"]
+    )
+
+
 def _finalize_operation(state: dict, pending: dict) -> None:
+    already_finalized = _recipe_checkpoint_finalized_in_git(state, pending)
     if pending["kind"] == "measurement":
         _verify_completed_measurement_result(state, pending)
+    if pending["kind"] == "checkpoint" and state["recipe_development"] is not None:
+        from runner import recipe_development
+
+        recipe_development.queue(state, pending["data"]["effective_parameters"])
     state["pending_operation"] = None
     repository.write_state(state)
     try:
-        if not repository.commit_runner_memory(f"finalize {pending['id']}"):
+        if already_finalized or not repository.commit_runner_memory(
+            f"finalize {pending['id']}"
+        ):
             repository.push_head()
     except Exception:
         state["pending_operation"] = pending
         repository.write_state(state)
         raise
+    if pending["kind"] == "checkpoint" and state["recipe_development"] is not None:
+        from runner import recipe_development
+
+        recipe_development.queue(state, pending["data"]["effective_parameters"])
     _consume_accepted_request_handoff(str(pending["id"]))
 
 
@@ -678,6 +711,10 @@ def _recover_interrupted_finalization(
     if pending["kind"] == "measurement":
         _verify_completed_measurement_result(previous, pending)
     repository.push_head()
+    if pending["kind"] == "checkpoint" and state["recipe_development"] is not None:
+        from runner import recipe_development
+
+        recipe_development.queue(state, pending["data"]["effective_parameters"])
     if _consume_accepted_request_handoff(operation_id):
         return "published", _completion_presentation(previous, pending)
     return None
@@ -715,6 +752,10 @@ def _execute_inquiry(state: dict, pending: dict) -> int:
 def _execute_checkpoint(state: dict, pending: dict) -> int:
     data = pending["data"]
     _revalidate_frozen_science(data, "session scientific surface")
+    if _load_experiment_config() != data["effective_parameters"]:
+        raise FrozenOperationMismatch(
+            "checkpoint training configuration changed after acceptance"
+        )
     if data["scientific_commit"] is None:
         changed_paths = [entry["path"] for entry in data["scientific_manifest"]]
         if changed_paths:
@@ -820,6 +861,8 @@ def _execute_model_role(state: dict, pending: dict) -> int:
 
 
 def _execute_recipe_restore(state: dict, pending: dict) -> int:
+    from runner import recipe_development
+
     plan = pending["data"]["plan"]
     if pending["progress"] == "accepted":
         live_plan = protocol.plan_recipe_restore(
@@ -836,13 +879,14 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
         )
         pending["progress"] = "restoring"
         repository.write_state(state)
-    repository.apply_recipe_restore(plan)
+    if not recipe_development.restore_variant(state, plan):
+        repository.apply_recipe_restore(plan)
     restored = research_config.load_experiment_config()
     if restored != plan["parameters"]:
         raise FrozenOperationMismatch(
             "restored training configuration differs from selected candidate"
         )
-    if not repository.recipe_paths_match_commit(plan):
+    if not recipe_development.variant_matches(state, plan):
         raise FrozenOperationMismatch(
             "restored scientific surface differs from selected candidate"
         )
@@ -2734,6 +2778,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-operation", action="store_true")
     parser.add_argument("--check-operation-input", action="store_true")
     parser.add_argument("--execute-pending", action="store_true")
+    parser.add_argument("--publish-recipe-delivery", action="store_true")
     parser.add_argument(
         "--start-session",
         choices=("recipe_development", "startup", "goal_review", "inquiry"),
@@ -2766,6 +2811,14 @@ def main() -> int:
     invocation_result.configure(args.result_path)
     TIMESTEPS = args.timesteps
     MAX_TIMESTEPS = args.max_timesteps
+    from runner import recipe_development
+
+    recovered_delivery = recipe_development.recover()
+    if args.publish_recipe_delivery:
+        recipe_development.deliver()
+        return 0
+    if recovered_delivery and args.execute_pending:
+        return 0
     if args.validate_session_backend:
         if not all(
             (

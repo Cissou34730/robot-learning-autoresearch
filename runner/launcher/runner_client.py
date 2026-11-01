@@ -98,9 +98,18 @@ class RunnerClient:
             "--result-path",
             str(result_path),
         )
-        exit_code = self._children.run(
-            command, operation="research runner", input_text=input_text
-        )
+        if "--publish-recipe-delivery" in arguments:
+            with self._children.delivery_log():
+                exit_code = self._children.run(
+                    command,
+                    operation="research runner",
+                    input_text=input_text,
+                    cwd=self._harness,
+                )
+        else:
+            exit_code = self._children.run(
+                command, operation="research runner", input_text=input_text
+            )
         if refresh_trust:
             self._trust.refresh()
         return RunnerOutcome(exit_code, _read_result(result_path))

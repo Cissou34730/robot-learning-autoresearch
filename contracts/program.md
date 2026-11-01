@@ -163,19 +163,31 @@ Compare the task behavior of saved candidates from different training points as
 needed to show learning. State what improved. Use this evidence to judge the
 learning progress of the resulting recipe.
 
+Consolidate the recipe in the canonical source files and parameters.
+Encode each training stage and its transitions in the recipe source.
+The delivered recipe must train from fresh initialization without recipe-development artifacts.
+You judge whether the recipe is adequate for delivery.
+The Runner validates the files, not scientific adequacy.
+It does not select a recipe by score or impose a performance threshold.
+
+Startup receives only the delivered recipe and the same accepted scientific model.
+It does not receive trial scores, alternatives or session records.
+It does not receive training checkpoints, optimizer state or normalization state.
+Development candidates remain usable for tests and explicit recipe restoration during recipe development.
+They are unavailable after delivery.
+
 In `current_synthesis`, record the resulting recipe and the evidence of learning.
-Separate the candidate choice from conclusions about design choices.
 State which contributions from the tested variants the evidence supports and
-which remain unresolved. You can choose the strongest candidate while a design
-choice's benefit remains uncertain.
+which remain unresolved.
 State the questions that the tests answered. Cite supporting operations in
 `evidence_references`.
 
 Use `decision_frontier` for open questions and discriminating evidence.
-Set `next_question` to the next investigation for startup.
-In `next_direction_or_closure`, explain how the recipe supports the startup
-scientific investigation. Startup receives this record unchanged with the
-scientific model. Later evidence can revise its scientific judgments.
+Set `next_question` to a remaining recipe-development question.
+This question belongs to the development record, not the startup plan.
+In `next_direction_or_closure`, explain how the delivered recipe supports startup.
+These fields preserve your validation and recipe-development history.
+Startup does not receive this record.
 
 ## Startup session
 
@@ -187,7 +199,8 @@ methods where you need them. These capabilities can support later inquiries.
 Choose the first useful scientific action and explain why it advances the
 direction.
 
-Continue from the selected recipe and the completed recipe-development record.
+Start from the delivered recipe and the same accepted scientific model.
+The scientific state is fresh, without recipe-development evidence or candidates.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you

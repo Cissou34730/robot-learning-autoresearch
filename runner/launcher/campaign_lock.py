@@ -32,12 +32,15 @@ class CampaignBusy(RuntimeError):
     """Another launcher or reset owns this campaign checkout."""
 
 
-def mutex_name(worktree: Path) -> str:
+def mutex_name(worktree: Path, *, recovery: bool = False) -> str:
     resolved = Path(os.path.abspath(worktree))
     if not resolved.exists():
-        raise FileNotFoundError(
-            f"Cannot find path '{worktree}' because it does not exist."
-        )
+        from runner.recipe_development import recovery_pending
+
+        if not recovery or not recovery_pending(resolved):
+            raise FileNotFoundError(
+                f"Cannot find path '{worktree}' because it does not exist."
+            )
     canonical = str(resolved).replace("\\", "/").rstrip("/")
     if os.name == "nt":
         canonical = canonical.lower()
@@ -59,8 +62,8 @@ def is_held(worktree: Path) -> bool:
 class CampaignLock:
     """Owns the campaign mutex for the lifetime of a ``with`` block."""
 
-    def __init__(self, worktree: Path, refusal: str) -> None:
-        self._name = mutex_name(worktree)
+    def __init__(self, worktree: Path, refusal: str, *, recovery: bool = False) -> None:
+        self._name = mutex_name(worktree, recovery=recovery)
         self._refusal = refusal
         self._handle = None
 

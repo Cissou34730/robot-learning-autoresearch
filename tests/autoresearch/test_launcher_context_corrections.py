@@ -97,6 +97,56 @@ def test_startup_session_persists_backend_identity_and_has_strict_shape(monkeypa
         repository.validate_research_state(state, allow_missing_artifact=True)
 
 
+@pytest.mark.parametrize("kind", ["recipe_development", "startup", "inquiry"])
+def test_first_session_context_delivers_current_recipe_not_variant_sources(
+    tmp_path, monkeypatch, kind
+):
+    from runner.launcher import prompts
+
+    state = _ready_state(monkeypatch, session_kind=kind)
+    files = {
+        "campaigns/brief.md": "BRIEF_CONTEXT",
+        "pi_workspace/scientific_model.md": "PHYSICAL_MODEL_CONTEXT",
+        "robot_learning/training/reward.py": "CURRENT_REWARD_CONTEXT",
+        "robot_learning/training/current_params.json": '{"learning_rate": 0.001}',
+        "robot_learning/variants/old/training/reward.py": "PRIVATE_VARIANT_CONTEXT",
+        "robot_learning/lab/analysis.py": "LAB_CONTEXT",
+    }
+    for relative, content in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    context = prompts.PromptContext(tmp_path, tmp_path, 10_000, 500_000, False)
+    availability = protocol.session_operation_availability(state)
+    result = prompts.scientific_session_prompt(state, availability, context)
+    assert all(
+        content in result.text
+        for relative, content in files.items()
+        if "/variants/" not in relative and "/lab/" not in relative
+    )
+    assert "PRIVATE_VARIANT_CONTEXT" not in result.text
+    assert "LAB_CONTEXT" not in result.text
+    resumed = prompts.scientific_session_prompt(
+        state,
+        availability,
+        prompts.PromptContext(tmp_path, tmp_path, 10_000, 500_000, True),
+    )
+    assert "CURRENT_REWARD_CONTEXT" not in resumed.text
+
+
+def test_transitional_isolated_handoff_cannot_generate_startup_context(
+    tmp_path, monkeypatch
+):
+    from runner.launcher import prompts
+
+    state = _ready_state(monkeypatch)
+    state["recipe_development"] = {"current_synthesis": "PRIVATE_DEVELOPMENT_RECORD"}
+    with pytest.raises(RuntimeError, match="Recipe delivery"):
+        prompts.scientific_session_prompt(
+            state, {}, prompts.PromptContext(tmp_path, tmp_path, 10_000, 500_000, False)
+        )
+
+
 @pytest.mark.parametrize(
     ("session_kind", "kind", "action", "allowed"),
     [

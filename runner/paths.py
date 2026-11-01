@@ -12,6 +12,7 @@ are the same folder. Repository-relative paths form one logical namespace that
 `locate` maps to the owning root.
 """
 
+import hashlib
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
@@ -118,6 +119,18 @@ def reset_marker_path(campaign_root: Path) -> Path:
 def stop_request_path(campaign_root: Path) -> Path:
     """The one cooperative stop request of a campaign, whoever launched it."""
     return git_admin_path(campaign_root) / "stop-request"
+
+
+def recipe_handoff_directory(campaign_root: Path) -> Path:
+    """Private recovery namespace independent of the public campaign Git."""
+    root = campaign_root.resolve()
+    identity = hashlib.sha256(os.path.normcase(str(root)).encode()).hexdigest()[:24]
+    return root.parent / ".recipe-development-private" / identity
+
+
+def recipe_development_archive(campaign_root: Path, campaign_id: str) -> Path:
+    identity = hashlib.sha256(campaign_id.encode()).hexdigest()
+    return recipe_handoff_directory(campaign_root) / identity / "development"
 
 
 CAMPAIGNS_DIR = ROOT / "campaigns"

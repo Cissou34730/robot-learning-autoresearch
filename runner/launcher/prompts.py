@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from runner import protocol
 from runner.execution import training_step_range
 from runner.launcher import pstext
 from runner.launcher.pstext import field, items, text
@@ -67,7 +68,9 @@ End with a substantive section with the heading `## Decision-relevant synthesis`
 
 The PI receives this section and the full scientific model in the recipe-development session. The section states consequences and discriminating evidence. The PI selects the interventions.
 
-The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the scientific model and the completed recipe-development record. The PI establishes the initial scientific direction and the first useful investigation from the selected recipe.
+The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress.
+
+The startup session then receives the same scientific model and the delivered recipe. It starts with fresh scientific state and no recipe-development evidence. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.
 
 The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically.""".replace(
     "\n", "\r\n"
@@ -126,6 +129,31 @@ def first_message_files(
                 f"File {relative} (current at session start):\n{_FENCE}\n{content}\n{_FENCE}"
             )
     return blocks
+
+
+def _recipe_files(campaign_root: Path) -> list[str]:
+    from runner.copilot.copilot_scoped_search import linked_path
+
+    package = campaign_root / "robot_learning"
+    files = []
+    for source in sorted(package.rglob("*.py")):
+        relative = source.relative_to(campaign_root).as_posix()
+        if any(
+            part in {"variants", "lab", "__pycache__", ".mypy_cache", ".pytest_cache"}
+            for part in source.relative_to(package).parts
+        ) or linked_path(campaign_root, source):
+            continue
+        if (
+            protocol.is_researcher_owned(relative)
+            or relative in protocol.PROTECTED_BENCHMARK_PATHS
+        ):
+            files.append(relative)
+    parameters = "robot_learning/training/current_params.json"
+    if (campaign_root / parameters).is_file() and not linked_path(
+        campaign_root, campaign_root / parameters
+    ):
+        files.append(parameters)
+    return files
 
 
 @dataclass(frozen=True)
@@ -196,6 +224,18 @@ def _inquiry_line(state: dict, transition: Transition | None) -> str:
 def _handoff_context(
     state: dict, kind: object, checkpoint: object, synthesis: str
 ) -> list[str]:
+    if (
+        pstext.same(kind, "startup")
+        and state.get("recipe_delivery_mode") == "isolated_v1"
+    ):
+        return [
+            (
+                "Startup begins from the delivered recipe and the same accepted "
+                "scientific model. Its scientific state is fresh. "
+                "Recipe-development records and artifacts are not available in "
+                "this session."
+            )
+        ]
     inquiry = field(state, "active_inquiry")
     recipe_development = field(state, "recipe_development")
     if pstext.same(kind, "startup") and pstext.truthy(recipe_development):
@@ -288,6 +328,22 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "Measure the resulting recipe to demonstrate learning progress."
             ),
             (
+                "Consolidate the recipe in the canonical Python source files and "
+                "parameters. Encode each training stage and its transitions in "
+                "the recipe source. The delivered recipe must train from fresh "
+                "initialization without recipe-development artifacts. "
+                "You judge whether the recipe is adequate for delivery. "
+                "The Runner checks the files, not scientific adequacy."
+            ),
+            (
+                "Startup receives only the delivered recipe and the same accepted "
+                "scientific model. It does not receive trial scores, alternatives "
+                "or session records. It does not receive training checkpoints, "
+                "optimizer state or normalization state. Development candidates "
+                "remain usable for tests and explicit recipe restoration during "
+                "recipe development. They are unavailable after delivery."
+            ),
+            (
                 "Compare the task behavior of saved candidates from different "
                 "training points as needed to show learning. State what improved. "
                 "Use this evidence to judge the learning progress of the resulting "
@@ -295,18 +351,22 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             ),
             (
                 "In `current_synthesis`, record the resulting recipe and the "
-                "evidence of learning. Separate the candidate choice from "
-                "conclusions about design choices. State which contributions from "
+                "evidence of learning. State which contributions from "
                 "the tested variants the evidence supports and which remain "
-                "unresolved. You can choose the strongest candidate while a design "
-                "choice's benefit remains uncertain. State the questions that the tests "
+                "unresolved. State the questions that the tests "
                 "answered. Cite supporting operations in `evidence_references`."
             ),
             (
                 "Use `decision_frontier` for open questions and discriminating "
-                "evidence. Set `next_question` to the next investigation for "
-                "startup. In `next_direction_or_closure`, explain how the recipe "
-                "supports the startup scientific investigation."
+                "evidence. Set `next_question` to a remaining recipe-development "
+                "question. This question belongs to the development record, not "
+                "the startup plan. In `next_direction_or_closure`, explain how "
+                "the delivered recipe supports startup."
+            ),
+            (
+                "These fields preserve "
+                "your validation and recipe-development history. "
+                "Startup does not receive this record."
             ),
         ]
     goal_review = pstext.same(kind, "goal_review")
@@ -470,6 +530,12 @@ def scientific_session_prompt(
     *,
     validation_error: str = "",
 ) -> SessionPrompt:
+    if (
+        state.get("recipe_delivery_mode") == "isolated_v1"
+        and state.get("campaign_phase") == "startup"
+        and state.get("recipe_development") is not None
+    ):
+        raise RuntimeError("Recipe delivery must finish before a startup prompt.")
     checkpoint = field(state, "pi_checkpoint")
     session = field(state, "scientific_session")
     kind = field(session, "kind")
@@ -497,6 +563,8 @@ def scientific_session_prompt(
         if not context.conversation_exists and transition is None
         else []
     )
+    if context_files and kind in {"recipe_development", "startup", "inquiry"}:
+        context_files += _recipe_files(context.campaign_root)
     included = first_message_files(
         context_files,
         harness_root=context.harness_root,
@@ -522,8 +590,8 @@ def scientific_session_prompt(
             f"{', '.join(context_files)} ({(characters + 500) // 1000}k chars)"
         )
         source_guidance = (
-            "The scientific model is at the start of this message, and "
-            "campaigns/brief.md is at the end. The summary of the latest session "
+            "This message includes the scientific model and the current campaign "
+            "files. The summary of the latest session "
             "record is above. Read other evidence when the scientific question "
             "needs it."
         )

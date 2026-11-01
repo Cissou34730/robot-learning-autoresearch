@@ -1,6 +1,7 @@
 """Focused tests for the external cooperative-stop bridge."""
 
 import asyncio
+import json
 import os
 import subprocess
 import threading
@@ -232,12 +233,21 @@ def _bound_process(monkeypatch, tmp_path):
     monkeypatch.setenv("PYTHONPATH", "")
 
 
-@pytest.mark.parametrize("mode", ["conflict", "missing"])
+@pytest.mark.parametrize("mode", ["conflict", "missing", "invalid_marker"])
 def test_launcher_refusals_return_failure_before_any_work(
     monkeypatch, tmp_path, _bound_process, mode
 ):
     campaign = tmp_path / "campaign"
     (campaign / ".git").mkdir(parents=True)
+    monkeypatch.chdir(campaign)
+    if mode == "invalid_marker":
+        marker = paths.recipe_handoff_directory(campaign) / "handoff.json"
+        marker.parent.mkdir(parents=True)
+        marker.write_text(
+            json.dumps({"version": 1, "root": "foreign", "stage": "ready"}),
+            encoding="utf-8",
+        )
+    before = sorted(str(path.relative_to(campaign)) for path in campaign.rglob("*"))
     monkeypatch.setattr(cli, "require_clean_harness", lambda _root: None)
     monkeypatch.setattr(
         cli,
@@ -254,8 +264,14 @@ def test_launcher_refusals_return_failure_before_any_work(
             "opencode/test-model",
         ],
         "missing": ["--campaign-root", str(tmp_path / "missing")],
+        "invalid_marker": ["--campaign-root", str(campaign)],
     }[mode]
     assert cli.main(arguments) == 1
+    assert Path.cwd() == campaign
+    assert (
+        sorted(str(path.relative_to(campaign)) for path in campaign.rglob("*"))
+        == before
+    )
 
 
 @pytest.mark.parametrize("reset_exit_code", [0, 1, 130])

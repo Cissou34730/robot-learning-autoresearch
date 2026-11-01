@@ -107,7 +107,7 @@ def test_fresh_campaign_writes_only_schema7_memory(monkeypatch, tmp_path):
 
     state = reset_campaign.write_fresh_campaign(None)
 
-    assert state["schema_version"] == 7
+    assert state["schema_version"] == repository.STATE_SCHEMA_VERSION
     assert state["campaign_phase"] == "recipe_development"
     assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
@@ -366,7 +366,7 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema7_campaign(
     )
     assert resolved_source == source
     assert campaign_id == state["campaign"]["id"]
-    assert state["schema_version"] == 7
+    assert state["schema_version"] == repository.STATE_SCHEMA_VERSION
     assert state["campaign_phase"] == "recipe_development"
     assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
@@ -537,7 +537,7 @@ def test_baseline_import_builds_clean_startup_state(monkeypatch, schema):
     )
 
     assert state["campaign"]["id"] != source_state["campaign"]["id"]
-    assert state["schema_version"] == 7
+    assert state["schema_version"] == repository.STATE_SCHEMA_VERSION
     assert state["campaign_phase"] == "startup"
     assert state["recipe_development"] is None
     assert source_state == original
@@ -574,8 +574,9 @@ def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch, s
     candidate = _candidate("f" * 64)
     source_state = _prepared_source_state(candidate)
     source_state["counters"]["session"] = 2
+    source_state["schema_version"] = schema
+    source_state.pop("recipe_delivery_mode")
     if schema == 6:
-        source_state["schema_version"] = 6
         source_state.pop("campaign_phase")
         source_state.pop("recipe_development")
     else:
@@ -599,7 +600,7 @@ def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch, s
         "source"
     )
 
-    assert normalized["schema_version"] == 7
+    assert normalized["schema_version"] == repository.STATE_SCHEMA_VERSION
     assert normalized["campaign_phase"] == "research"
     assert normalized["recipe_development"] is None
     assert imported == candidate
@@ -636,8 +637,9 @@ def test_baseline_evidence_lookup_accepts_legacy_measurement_history(
     artifact.parent.mkdir(parents=True)
     artifact.write_text('{"measurement": 1}\n', encoding="utf-8")
     historical = copy.deepcopy(source_state)
+    historical["schema_version"] = schema
+    historical.pop("recipe_delivery_mode")
     if schema == 6:
-        historical["schema_version"] = 6
         historical.pop("campaign_phase")
         historical.pop("recipe_development")
     historical["operation_events"] = [

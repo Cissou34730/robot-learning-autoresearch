@@ -79,6 +79,93 @@ def test_strict_mode_rejects_an_event_without_its_owner():
         typed_events.emit("tool_call_started", {})
 
 
+def test_development_observations_do_not_collide_with_fresh_ids(tmp_path):
+    from tui.journal import JournalFeed
+    from tui.timeline import TimelineReducer
+
+    root = tmp_path / "campaign"
+    state_path = root / "runner/state/research_state.json"
+    state_path.parent.mkdir(parents=True)
+    state_path.write_text(
+        json.dumps(
+            {
+                "recipe_delivery_mode": "isolated_v1",
+                "campaign_phase": "recipe_development",
+            }
+        ),
+        encoding="utf-8",
+    )
+    journal = root / "reports/tui_observations/campaign-1.events.v2.jsonl"
+    typed_events.configure(journal)
+    typed_events.emit(
+        "session_started",
+        {"kind": "recipe_development"},
+        session_id="S1",
+        event_id="session:S1",
+    )
+    typed_events.emit(
+        "operation_completed",
+        {"kind": "training"},
+        session_id="S1",
+        operation_id="T1",
+        event_id="operation:T1",
+    )
+    typed_events.emit(
+        "operation_completed",
+        {"kind": "checkpoint"},
+        session_id="S1",
+        operation_id="E1",
+        event_id="operation:E1",
+    )
+    typed_events.emit("campaign_usage", {"aiu": 12})
+    state_path.write_text(
+        json.dumps(
+            {
+                "recipe_delivery_mode": "isolated_v1",
+                "campaign_phase": "startup",
+                "recipe_development": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    typed_events.set_namespace("")
+    typed_events.emit(
+        "session_started", {"kind": "startup"}, session_id="S1", event_id="session:S1"
+    )
+    typed_events.emit(
+        "training_progress",
+        {"steps": 10, "target": 100},
+        session_id="S1",
+        operation_id="T1",
+        event_id="operation:T1",
+    )
+    typed_events.emit(
+        "operation_requested",
+        {"kind": "checkpoint"},
+        session_id="S1",
+        operation_id="E1",
+        event_id="operation:E1",
+    )
+    records = [json.loads(line) for line in journal.read_text().splitlines()]
+    assert all(not validate_record(record) for record in records)
+    assert records[0]["session_id"] == "recipe_development:S1"
+    assert records[1]["operation_id"] == "recipe_development:T1"
+    assert records[2]["operation_id"] == "recipe_development:E1"
+    assert records[2]["event_id"] != records[-1]["event_id"]
+    assert records[3]["payload"]["aiu"] == 12
+    reducer = TimelineReducer()
+    for event in JournalFeed(journal, "campaign-1").poll():
+        reducer.ingest(event)
+    assert set(reducer._sessions) == {"recipe_development:S1", "S1"}
+    assert set(reducer._operations) == {
+        "recipe_development:T1",
+        "T1",
+        "recipe_development:E1",
+        "E1",
+    }
+    assert reducer.activity.training_progress().operation_id == "T1"
+
+
 def test_launcher_events_name_their_owner(tmp_path):
     root = tmp_path / "campaign"
     state = root / "runner" / "state"

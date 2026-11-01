@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 import time
@@ -125,15 +126,48 @@ def main(argv: list[str] | None = None) -> int:
         return list_models(arguments.provider)
     try:
         require_clean_harness(HARNESS_ROOT)
-        campaign_root = bind_campaign(HARNESS_ROOT, arguments.campaign_root)
+        campaign_root = arguments.campaign_root.absolute()
         options = launch_options(arguments, campaign_root)
+        from runner import paths, recipe_development
+        from runner.launcher.runner_client import uv_executable
+
+        recovery_pending = recipe_development.recovery_pending(campaign_root)
+        if not campaign_root.exists() and not recovery_pending:
+            raise LaunchRefused(
+                f"Cannot find path '{campaign_root}' because it does not exist."
+            )
         with CampaignLock(
             campaign_root,
             "Another robot autoresearch loop is already running in this worktree.",
+            recovery=True,
         ):
+            if recipe_development.recovery_pending(campaign_root):
+                os.chdir(HARNESS_ROOT)
+                recovery = subprocess.run(
+                    [
+                        uv_executable(),
+                        "run",
+                        "--project",
+                        str(HARNESS_ROOT),
+                        "python",
+                        "-m",
+                        "runner.recipe_development",
+                    ],
+                    cwd=HARNESS_ROOT,
+                    env=paths.python_environment(campaign_root),
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if recovery.returncode:
+                    raise LaunchRefused(
+                        "Recipe delivery recovery failed; no campaign was started.\n"
+                        + recovery.stderr.strip()
+                    )
+            campaign_root = bind_campaign(HARNESS_ROOT, campaign_root)
             from runner.launcher.assembly import run_campaign
 
             return run_campaign(options, started_at=started_at)
-    except (LaunchRefused, CampaignBusy, LauncherError, ValueError) as error:
+    except (CampaignBusy, LauncherError, OSError, RuntimeError, ValueError) as error:
         print(str(error), file=sys.stderr)
         return 1

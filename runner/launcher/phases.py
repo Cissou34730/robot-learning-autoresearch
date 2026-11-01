@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import os
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
-from runner import protocol
+from runner import protocol, typed_events
 from runner.launcher import prompts, pstext
 from runner.launcher.events import LauncherEvents
 from runner.launcher.options import LaunchOptions
@@ -47,6 +48,28 @@ class Phases:
 
     def update_brief(self) -> None:
         self.runner.build_brief()
+
+    def recipe_delivery(self) -> int:
+        self.sessions.close_runtime()
+        previous_directory = Path.cwd()
+        inside_campaign = previous_directory.resolve().is_relative_to(
+            self.campaign_root.resolve()
+        )
+        if inside_campaign:
+            os.chdir(self.options.harness_root)
+        try:
+            outcome = self.runner.runner("--publish-recipe-delivery")
+        finally:
+            if inside_campaign and self.campaign_root.exists():
+                os.chdir(self.campaign_root)
+        if outcome.exit_code != 0:
+            raise LauncherError(
+                "Recipe delivery remains unfinished; resume without retraining."
+            )
+        self.sessions.forget()
+        typed_events.set_namespace("")
+        self.update_brief()
+        return 0
 
     def scientific_model_feedback(self) -> str:
         outcome = self.runner.runner(

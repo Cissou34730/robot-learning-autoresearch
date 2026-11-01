@@ -135,6 +135,50 @@ It does not replay a tool call or fabricate checkpoint content. Main SDK
 resumes disable automatic unfinished-work continuation; the resume prompt
 includes current durable Runner metadata.
 
+## Recipe-only delivery
+
+New state uses schema 8 and `recipe_delivery_mode="isolated_v1"`.
+`runner.recipe_development.queue()` records delivery inputs only after the
+recipe-development checkpoint is finalized. The launcher closes the development
+backend before `deliver()` publishes those inputs. The PI consolidates the
+canonical recipe and judges adequacy. Publication checks files, not scores,
+and does not choose a candidate or require another training round.
+
+`runner.paths.recipe_handoff_directory(root)` resolves outside the public
+campaign repository, below its parent's `.recipe-development-private/` folder.
+Its namespace is the first 24 hexadecimal characters of SHA-256 of the
+normalized absolute campaign-root path. `recipe_development_archive(root, id)`
+adds the campaign ID's SHA-256 and `development/`. This deterministic private
+archive retains the entire old repository, including Git, state and artifacts.
+Publication stages a clean public repository there and swaps it into the same
+campaign root. The archive and recovery marker are outside agent read access.
+
+The public repository has new Git history and fresh scientific state under the
+same campaign ID. Delivery copies canonical source files and parameters,
+not variants, lab files or serialized policies.
+Any training stages must therefore be encoded in the recipe source. The ready
+scientific model retains its exact bytes and binds to the new recipe commit.
+Candidates, roles, scientific logs, operation history, session records and the
+next question start empty. Scientific counters restart at S1/T1. Operator-only
+observation journals and session-usage reports remain available for cumulative
+AI usage accounting. Development event IDs use the `recipe_development:`
+namespace, distinct from the fresh scientific IDs. They are not startup evidence.
+
+The private `handoff.json` marker records `awaiting_session_end`, `preparing`,
+`ready` and `published` stages. Recovery uses the same campaign mutex before
+campaign binding, trust checks or public-state reads. A missing public root is
+recoverable only with a valid ready marker, archive and staged Git repository.
+On Windows, publication moves the launcher and child working directories to
+the harness and closes the campaign log handle before the directory swap.
+The delivery log uses the private namespace. The public launcher log reopens
+only when public Git exists. After delivery, the launcher forgets the old
+session identity, clears the event namespace and rebuilds the fresh brief.
+
+Schema-6/7 records normalize in memory with `recipe_delivery_mode="legacy"`.
+Existing coupled campaigns retain their historical records and prompt handoff.
+There is no automatic conversion or live-campaign migration. Prepared Baseline
+reset compatibility remains unchanged.
+
 ## Operation submission
 
 `submit_operation` is bound by the trusted launcher to the active campaign and

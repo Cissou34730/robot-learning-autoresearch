@@ -550,6 +550,11 @@ def render_research_brief() -> str:
         json.loads(state_path.read_text(encoding="utf-8"))
     )
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
+    if (
+        state["recipe_delivery_mode"] == "isolated_v1"
+        and state["recipe_development"] is not None
+    ):
+        return "# Research brief\n\nRecipe delivery is pending.\n"
     lines = [
         "# Research brief",
         "",
@@ -575,10 +580,16 @@ def render_research_brief() -> str:
         "",
         *_active_inquiry_lines(state),
         "",
-        "## Recipe development record",
-        "",
-        *_checkpoint_lines(state, development=True),
-        "",
+        *(
+            [
+                "## Recipe development record",
+                "",
+                *_checkpoint_lines(state, development=True),
+                "",
+            ]
+            if state["recipe_delivery_mode"] == "legacy"
+            else []
+        ),
         "## Latest session record",
         "",
         *_checkpoint_lines(state),

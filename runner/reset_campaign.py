@@ -471,6 +471,7 @@ def baseline_restore_paths(
             historical_state = git_json(revision, "runner/state/research_state.json")
             if historical_state.get("schema_version") not in {
                 6,
+                7,
                 repository.STATE_SCHEMA_VERSION,
             }:
                 continue

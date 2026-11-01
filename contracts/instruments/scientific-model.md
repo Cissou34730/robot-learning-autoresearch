@@ -34,10 +34,10 @@ The recipe uses knowledge across all tested variants.
 The PI combines design choices supported by the results.
 The PI measures the resulting recipe to demonstrate learning progress.
 
-The startup session then receives the unchanged scientific model and the completed
-recipe-development record.
+The startup session then receives the unchanged scientific model and the delivered recipe.
+It starts with fresh scientific state and no recipe-development evidence.
 The PI also reads the full scientific model in the startup session and selects
-the initial direction from the selected recipe and the completed evidence.
+the initial direction from the delivered recipe and evidence from startup.
 
 After acceptance, the scientific model stays fixed for the campaign. Later
 session records preserve or revise its consequential conclusions. The Runner

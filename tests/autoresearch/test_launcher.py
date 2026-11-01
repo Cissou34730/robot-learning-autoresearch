@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import time
+from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -19,6 +20,129 @@ from tui import controller as control
 requires_windows = pytest.mark.skipif(
     os.name != "nt", reason="the campaign exclusion is a Windows mutex"
 )
+
+
+@pytest.mark.parametrize(
+    "stage,missing,nested",
+    [
+        ("preparing", False, False),
+        ("preparing", False, True),
+        ("ready", False, False),
+        ("ready", False, True),
+        ("ready", True, False),
+    ],
+)
+def test_launcher_recovers_root_under_lock_before_binding(
+    tmp_path, monkeypatch, stage, missing, nested
+):
+    from runner import paths, recipe_development
+    from runner.launcher import assembly, cli
+
+    campaign = tmp_path / "campaign"
+    archive = paths.recipe_development_archive(campaign, "delivery")
+    archive.mkdir(parents=True)
+    (archive.parent / "public" / ".git").mkdir(parents=True)
+    marker = paths.recipe_handoff_directory(campaign) / "handoff.json"
+    marker.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "root": str(campaign.resolve()),
+                "stage": stage,
+                "campaign_id": "delivery",
+                "public_head": "public",
+            }
+        ),
+        encoding="utf-8",
+    )
+    if not missing:
+        campaign.mkdir()
+        directory = campaign / "nested" if nested else campaign
+        directory.mkdir(exist_ok=True)
+        monkeypatch.chdir(directory)
+    order = []
+
+    @contextmanager
+    def lock(root, _refusal, *, recovery=False):
+        assert root == campaign and recovery
+        campaign_lock.mutex_name(root, recovery=recovery)
+        order.append("lock")
+        yield
+        order.append("unlock")
+
+    def recover_child(command, *, cwd, env, capture_output, text, check):
+        assert order == ["clean", "lock"]
+        assert command[-1] == "runner.recipe_development"
+        assert cwd == cli.HARNESS_ROOT
+        assert Path.cwd().resolve() == cli.HARNESS_ROOT.resolve()
+        assert env[paths.CAMPAIGN_ROOT_ENV] == str(campaign)
+        assert capture_output and text and not check
+        assert campaign.exists() is not missing
+        if not missing:
+            archive.rmdir()
+            campaign.replace(archive)
+        (archive.parent / "public").replace(campaign)
+        order.append("recover")
+        return SimpleNamespace(returncode=0)
+
+    def bind(_harness, root):
+        assert root.exists()
+        os.chdir(root)
+        order.append("bind")
+        return root
+
+    monkeypatch.setattr(
+        cli, "require_clean_harness", lambda _root: order.append("clean")
+    )
+    monkeypatch.setattr(cli, "CampaignLock", lock)
+    monkeypatch.setattr(cli.subprocess, "run", recover_child)
+    monkeypatch.setattr(cli, "bind_campaign", bind)
+    monkeypatch.setattr(
+        assembly, "run_campaign", lambda *_args, **_kwargs: order.append("run") or 0
+    )
+    monkeypatch.setattr("runner.launcher.runner_client.uv_executable", lambda: "uv")
+    assert recipe_development.recovery_pending(campaign)
+    assert cli.main(["--campaign-root", str(campaign)]) == 0
+    assert Path.cwd() == campaign
+    assert order == ["clean", "lock", "recover", "bind", "run", "unlock"]
+
+
+def test_missing_root_without_recovery_marker_is_still_refused(tmp_path):
+    root = tmp_path / "missing"
+    with pytest.raises(FileNotFoundError):
+        campaign_lock.mutex_name(root, recovery=True)
+
+
+@requires_windows
+def test_recovery_keeps_the_same_mutex_when_the_root_is_archived(tmp_path):
+    from runner import paths
+
+    root = tmp_path / "campaign"
+    root.mkdir()
+    archive = paths.recipe_development_archive(root, "campaign")
+    (archive.parent / "public" / ".git").mkdir(parents=True)
+    marker = paths.recipe_handoff_directory(root) / "handoff.json"
+    marker.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "root": str(root.resolve()),
+                "stage": "ready",
+                "campaign_id": "campaign",
+                "public_head": "public",
+            }
+        ),
+        encoding="utf-8",
+    )
+    name = campaign_lock.mutex_name(root)
+    with campaign_lock.CampaignLock(root, "busy"):
+        root.replace(archive)
+        assert campaign_lock.mutex_name(root, recovery=True) == name
+        with (
+            pytest.raises(campaign_lock.CampaignBusy),
+            campaign_lock.CampaignLock(root, "busy", recovery=True),
+        ):
+            pass
 
 
 @requires_windows

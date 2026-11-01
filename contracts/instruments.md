@@ -168,7 +168,7 @@ so that each count comes from the record of the cited operation and candidate.
 
 `next_question` depends on the kind of session:
 
-- recipe-development session: the next investigation for the startup session
+- recipe-development session: a remaining recipe-development question, not the startup plan
 - startup session, or inquiry session that closed its inquiry: the proposed
   question for the next goal-review session
 - goal-review session: the exact question of the inquiry that you opened in
@@ -176,12 +176,17 @@ so that each count comes from the record of the cited operation and candidate.
 - inquiry session in which the inquiry stays active: the exact question of the
   active inquiry
 
-In a recipe-development session, `current_synthesis` identifies the selected
-method, its recipe and the measured differences that support the selection.
+In a recipe-development session, `current_synthesis` identifies the delivered
+recipe and the evidence of learning that supports its design choices.
 `decision_frontier` preserves the unresolved alternatives and the evidence that
-can distinguish them. `next_direction_or_closure` explains why later inquiries
-will primarily develop the selected method. The Runner preserves the completed
-session record as the handoff to startup.
+can distinguish them. `next_direction_or_closure` explains how the delivered
+recipe supports startup. The completed session record preserves your validation
+and recipe-development history. Startup does not receive this record.
+
+The accepted recipe-development `checkpoint` ends the session and initiates recipe delivery.
+Delivery contains only the canonical source files and parameters, with the same accepted scientific model.
+Startup starts with fresh scientific state, without development evidence or saved policies.
+The Runner validates the delivery files, not scientific adequacy.
 
 `completed_operations` must be exactly the completed operation identities of
 the active session. When you open, reframe or close an inquiry, the session

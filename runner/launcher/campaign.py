@@ -14,6 +14,22 @@ from runner.launcher.summaries import campaign_resource_summary, load_state
 def prepare(phases: Phases) -> None:
     """Session-backend and inquiry-cap checks before the first PI turn."""
     options = phases.options
+    state = load_state(options.campaign_root)
+    pending = state.get("pending_operation")
+    if (
+        state.get("recipe_delivery_mode") == "isolated_v1"
+        and state.get("recipe_development") is not None
+        and state.get("scientific_session") is None
+        and (
+            pending is None
+            or (
+                pending.get("kind") == "checkpoint"
+                and pending.get("progress") == "completed"
+                and pending.get("failure") is None
+            )
+        )
+    ):
+        phases.recipe_delivery()
     outcome = phases.runner.runner(
         "--validate-session-backend",
         "--backend-adapter",
@@ -72,6 +88,11 @@ def step(phases: Phases) -> int | None:
             return STOPPED
         if status == 0:
             phases.update_brief()
+        return None
+    if state.get("recipe_delivery_mode") == "isolated_v1" and state.get(
+        "recipe_development"
+    ):
+        phases.recipe_delivery()
         return None
     terminal = state.get("terminal_state")
     if terminal:

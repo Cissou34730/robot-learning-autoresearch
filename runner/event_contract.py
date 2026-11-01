@@ -33,6 +33,16 @@ JOURNAL_SUFFIX = ".events.v2.jsonl"
 PREPARATION_SESSION = "preparation"
 OFFICIAL_OPERATION = "official"
 
+
+def observation_namespace(state: dict) -> str:
+    if state.get("recipe_delivery_mode") == "isolated_v1" and (
+        state.get("campaign_phase") == "recipe_development"
+        or state.get("recipe_development") is not None
+    ):
+        return "recipe_development"
+    return ""
+
+
 ENVELOPE_FIELDS = (
     "schema_version",
     "event_id",

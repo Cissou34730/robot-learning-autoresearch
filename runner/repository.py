@@ -26,7 +26,7 @@ class PublicationError(RuntimeError):
     """Local commits could not be published to origin."""
 
 
-STATE_SCHEMA_VERSION = 7
+STATE_SCHEMA_VERSION = 8
 DEFAULT_MAX_INQUIRIES = 15
 WINDOWS_COMMAND_LINE_LIMIT = 32_767
 ARTIFACT_CONTENTS_MAX_BYTES = 4_096
@@ -79,6 +79,7 @@ STATE_FIELDS = {
     "scientific_model",
     "campaign_phase",
     "recipe_development",
+    "recipe_delivery_mode",
     "active_inquiry",
     "pi_checkpoint",
     "scientific_session",
@@ -2151,6 +2152,8 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         )
     if state["campaign_phase"] not in {"recipe_development", "startup", "research"}:
         raise ValueError("campaign_phase is unsupported")
+    if state["recipe_delivery_mode"] not in {"isolated_v1", "legacy"}:
+        raise ValueError("recipe_delivery_mode is unsupported")
     campaign = _require_exact_fields(state["campaign"], CAMPAIGN_FIELDS, "campaign")
     for field in ("id", "started_at", "base_commit"):
         _nonempty(campaign, field, f"campaign {field}")
@@ -2382,12 +2385,20 @@ def read_state() -> dict:
 
 
 def normalize_research_state(state: dict) -> dict:
-    if state.get("schema_version") != 6:
+    version = state.get("schema_version")
+    if version not in {6, 7}:
         return state
-    legacy_fields = STATE_FIELDS - {"campaign_phase", "recipe_development"}
+    legacy_fields = STATE_FIELDS - {"recipe_delivery_mode"}
+    if version == 6:
+        legacy_fields -= {"campaign_phase", "recipe_development"}
     if set(state) != legacy_fields:
-        raise RuntimeError("research state fields are invalid for schema 6")
+        raise RuntimeError(f"research state fields are invalid for schema {version}")
     normalized = copy.deepcopy(state)
+    normalized.update(
+        schema_version=STATE_SCHEMA_VERSION, recipe_delivery_mode="legacy"
+    )
+    if version == 7:
+        return normalized
     session = state.get("scientific_session") or {}
     initial_startup = (
         state["counters"]["session"] == 0 and state["pi_checkpoint"] is None
@@ -2435,6 +2446,7 @@ def empty_campaign_state(
         "campaign": campaign_copy,
         "campaign_phase": "recipe_development",
         "recipe_development": None,
+        "recipe_delivery_mode": "isolated_v1",
         "human_goal": copy.deepcopy(human_goal or {"source": "contracts/scenario.md"}),
         "scientific_model": {
             "status": "pending",
@@ -2494,6 +2506,12 @@ def start_scientific_session(
     required_phase = kind if kind in {"recipe_development", "startup"} else "research"
     if state["campaign_phase"] != required_phase:
         raise ValueError(f"{kind} requires campaign phase {required_phase}")
+    if (
+        state["recipe_delivery_mode"] == "isolated_v1"
+        and kind == "startup"
+        and state["recipe_development"] is not None
+    ):
+        raise ValueError("Isolated recipe delivery must finish before startup.")
     active = state["active_inquiry"]
     if kind in {"recipe_development", "startup"}:
         handoff = state["recipe_development"]

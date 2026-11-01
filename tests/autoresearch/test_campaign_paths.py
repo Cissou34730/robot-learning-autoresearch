@@ -386,6 +386,53 @@ def test_trusted_runtime_uses_each_repositories_own_head(split_roots, monkeypatc
     ]
 
 
+def test_recipe_private_archive_and_markers_are_not_readable_or_writable(
+    split_roots, monkeypatch
+):
+    from runner.copilot import path_policy
+    from runner.copilot.copilot_scoped_search import GlobParams, ScopedSearch
+    from runner.copilot.tool_policy import scoped_tool_hook
+
+    _harness, campaign = split_roots
+    monkeypatch.setattr(path_policy, "ROOT", campaign)
+    assert path_policy.is_reserved_execution("runner.recipe_development")
+    private = paths.recipe_development_archive(campaign, "campaign")
+    source = private / "robot_learning/training/reward.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("PRIVATE_DEVELOPMENT_SOURCE", encoding="utf-8")
+    marker = paths.recipe_handoff_directory(campaign) / "handoff.json"
+    marker.write_text("{}", encoding="utf-8")
+    search = ScopedSearch(
+        campaign, path_policy.file_read_denial, None, lambda _invocation: None
+    )
+    hook = scoped_tool_hook(preliminary=True)
+    for target in (
+        source,
+        marker,
+        campaign / ".." / source.relative_to(campaign.parent),
+    ):
+        assert path_policy.file_read_denial(str(target))
+        assert path_policy.file_edit_denial(str(target))
+        assert path_policy.file_edit_denial(str(target), preliminary=True)
+        assert (
+            hook({"toolName": "view", "toolArgs": {"path": str(target)}}, {})[
+                "permissionDecision"
+            ]
+            == "deny"
+        )
+        with pytest.raises(ValueError):
+            search.target(str(target))
+    alias = campaign / "robot_learning/private_alias.py"
+    alias.parent.mkdir(parents=True)
+    alias.hardlink_to(source)
+    assert path_policy.file_read_denial(str(alias))
+    assert path_policy.file_edit_denial(str(alias))
+    result = search.glob(GlobParams(pattern="**/*"), None)
+    assert "private_alias" not in result
+    assert "handoff.json" not in result
+    assert "reward.py" not in result
+
+
 def test_pi_cannot_read_the_observation_feed(split_roots, monkeypatch):
     from runner.copilot import path_policy
 

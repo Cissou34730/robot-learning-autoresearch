@@ -5,6 +5,8 @@ from __future__ import annotations
 import os
 import subprocess
 import time
+from collections.abc import Iterator
+from contextlib import AbstractContextManager, contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import BinaryIO
@@ -41,6 +43,22 @@ class RunLog:
     def close(self) -> None:
         self._stream.close()
 
+    @contextmanager
+    def recipe_delivery(self, campaign_root: Path) -> Iterator[None]:
+        from runner import paths
+
+        original = self.path
+        self.close()
+        self.__init__(
+            paths.recipe_handoff_directory(campaign_root) / "launcher-delivery.log"
+        )
+        try:
+            yield
+        finally:
+            if (campaign_root / ".git").exists():
+                self.close()
+                self.__init__(original)
+
 
 def kill_tree(process: subprocess.Popen) -> None:
     """Terminate a child and all its descendants."""
@@ -72,25 +90,34 @@ class ChildRunner:
         return environment
 
     def start(
-        self, command: list[str], *, stdin=subprocess.DEVNULL
+        self, command: list[str], *, stdin=subprocess.DEVNULL, cwd: Path | None = None
     ) -> subprocess.Popen:
         self._log.write("start: " + subprocess.list2cmdline(command))
         return subprocess.Popen(
             command,
-            cwd=self._cwd,
+            cwd=self._cwd if cwd is None else cwd,
             env=self.environment(),
             stdin=stdin,
             stdout=self._log.stream,
             stderr=self._log.stream,
         )
 
+    def delivery_log(self) -> AbstractContextManager[None]:
+        return self._log.recipe_delivery(self._cwd)
+
     def run(
-        self, command: list[str], *, operation: str, input_text: str | None = None
+        self,
+        command: list[str],
+        *,
+        operation: str,
+        input_text: str | None = None,
+        cwd: Path | None = None,
     ) -> int:
         """Wait for a child; kill its tree once the stop deadline has passed."""
         process = self.start(
             command,
             stdin=subprocess.PIPE if input_text is not None else subprocess.DEVNULL,
+            cwd=cwd,
         )
         if input_text is not None:
             process.stdin.write(input_text.encode("utf-8"))

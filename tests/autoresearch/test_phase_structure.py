@@ -345,13 +345,80 @@ def test_publication_failure_guard_preserves_other_recovery_routes(progress):
     phases.require_publication_recovered({"pending_operation": pending})
 
 
-def test_schema7_state_and_model_are_the_only_fresh_start_contract():
+def test_recipe_delivery_closes_runtime_before_publication_and_forgets_session(
+    tmp_path,
+):
+    calls = []
+    phase = phases.Phases(
+        options=SimpleNamespace(campaign_root=tmp_path),
+        runner=SimpleNamespace(
+            runner=lambda *arguments: (
+                calls.append(arguments) or SimpleNamespace(exit_code=0)
+            ),
+            build_brief=lambda: calls.append("brief"),
+        ),
+        sessions=SimpleNamespace(
+            close_runtime=lambda: calls.append("close"),
+            forget=lambda: calls.append("forget"),
+        ),
+        stop=SimpleNamespace(),
+        events=SimpleNamespace(),
+        home=tmp_path,
+    )
+    assert phase.recipe_delivery() == 0
+    assert calls == ["close", ("--publish-recipe-delivery",), "forget", "brief"]
+
+
+def test_queued_recipe_is_delivered_before_resume_backend_and_cap_checks(
+    tmp_path, monkeypatch
+):
+    from runner.launcher import campaign
+
+    calls = []
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+    state.update(campaign_phase="startup", recipe_development={"session_id": "S1"})
+
+    def deliver():
+        calls.append("deliver")
+        state["recipe_development"] = None
+
+    def runner(*arguments):
+        assert state["recipe_development"] is None
+        calls.append(arguments[0])
+        return SimpleNamespace(exit_code=0)
+
+    monkeypatch.setattr(campaign, "load_state", lambda _root: state)
+    phase = SimpleNamespace(
+        options=SimpleNamespace(
+            campaign_root=tmp_path,
+            model="model",
+            reasoning="high",
+            max_inquiries_explicit=True,
+            max_inquiries=2,
+        ),
+        recipe_delivery=deliver,
+        runner=SimpleNamespace(runner=runner),
+        events=SimpleNamespace(status=lambda *_args, **_kwargs: None),
+    )
+    campaign.prepare(phase)
+    assert calls == [
+        "deliver",
+        "--validate-session-backend",
+        "--synchronize-max-inquiries",
+    ]
+
+
+def test_schema8_state_and_model_are_the_only_fresh_start_contract():
     assert "pi_workspace/operation_request.json" in reset_campaign.CAMPAIGN_PATHS
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
     )
-    assert state["schema_version"] == 7
+    assert state["schema_version"] == 8
+    assert state["recipe_delivery_mode"] == "isolated_v1"
     assert state["campaign_phase"] == "recipe_development"
     assert state["recipe_development"] is None
     assert set(state) == repository.STATE_FIELDS
@@ -359,6 +426,32 @@ def test_schema7_state_and_model_are_the_only_fresh_start_contract():
     assert state["active_inquiry"] is None
     assert state["pi_checkpoint"] is None
     assert state["scientific_session"] is None
+
+
+@pytest.mark.parametrize("version", [6, 7])
+def test_legacy_recipe_delivery_normalizes_without_rewriting(
+    tmp_path, monkeypatch, version
+):
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+    state.pop("recipe_delivery_mode")
+    state["schema_version"] = version
+    if version == 6:
+        state.pop("campaign_phase")
+        state.pop("recipe_development")
+    state_path = tmp_path / "research_state.json"
+    repository.atomic_write_json(state_path, state)
+    before = state_path.read_bytes()
+    monkeypatch.setattr(runner_paths, "STATE_PATH", state_path)
+    loaded = repository.load_state(allow_missing_artifact=True)
+    assert loaded["recipe_delivery_mode"] == "legacy"
+    assert loaded["schema_version"] == 8
+    assert loaded["campaign_phase"] == (
+        "startup" if version == 6 else "recipe_development"
+    )
+    assert state_path.read_bytes() == before
 
 
 def test_scientific_model_and_request_paths_remain_protected():

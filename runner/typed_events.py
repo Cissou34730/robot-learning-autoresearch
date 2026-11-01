@@ -17,7 +17,12 @@ from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
-from runner.event_contract import JOURNAL_SUFFIX, SCHEMA_VERSION, validate_record
+from runner.event_contract import (
+    JOURNAL_SUFFIX,
+    SCHEMA_VERSION,
+    observation_namespace,
+    validate_record,
+)
 
 FEED_ENV = "TUI_TYPED_EVENTS"
 _FEED_DIR = Path("reports") / "tui_observations"
@@ -27,6 +32,7 @@ _IDENTITY_KEYS = ("operation_id", "session_id", "inquiry_id", "attempt", "actor"
 _path: Path | None = None
 _resolved = False
 _campaign_id: str | None = None
+_namespace = ""
 # Each process owns one piece of work at a time (one PI invocation, one
 # operation). The owner is process-wide, not task-local: the Copilot SDK calls
 # its handlers from its own tasks, which would not see a task-local value.
@@ -51,20 +57,32 @@ def default_path(campaign_id: str) -> Path:
     return feed_directory() / f"{campaign_id}{JOURNAL_SUFFIX}"
 
 
-def _state_campaign_id() -> str | None:
+def _state() -> dict:
     from runner import paths
 
+    state_path = paths.STATE_PATH
+    if (
+        _path is not None
+        and _path.parent.name == "tui_observations"
+        and _path.parent.parent.name == "reports"
+    ):
+        state_path = _path.parents[2] / "runner/state/research_state.json"
     try:
-        state = json.loads(paths.STATE_PATH.read_text(encoding="utf-8-sig"))
+        state = json.loads(state_path.read_text(encoding="utf-8-sig"))
     except (OSError, ValueError):
-        return None
+        return {}
+    return state if isinstance(state, dict) else {}
+
+
+def _state_campaign_id() -> str | None:
+    state = _state()
     campaign = state.get("campaign")
     value = campaign.get("id") if isinstance(campaign, dict) else None
     return str(value) if value else None
 
 
 def configure(path: Path | None = None) -> None:
-    global _path, _resolved, _campaign_id, failures
+    global _path, _resolved, _campaign_id, _namespace, failures
     if path is None:
         override = os.environ.get(FEED_ENV)
         if override is not None and override.strip().casefold() in _DISABLED_VALUES:
@@ -81,6 +99,7 @@ def configure(path: Path | None = None) -> None:
                 return
             path = default_path(campaign)
     _path = Path(path)
+    _namespace = observation_namespace(_state())
     _resolved = True
     try:
         _path.parent.mkdir(parents=True, exist_ok=True)
@@ -90,11 +109,23 @@ def configure(path: Path | None = None) -> None:
 
 
 def reset() -> None:
-    global _path, _resolved, _campaign_id
+    global _path, _resolved, _campaign_id, _namespace
     _path = None
     _resolved = False
     _campaign_id = None
+    _namespace = ""
     _owner.clear()
+
+
+def set_namespace(namespace: str) -> None:
+    global _namespace
+    _namespace = namespace
+
+
+def _qualified(value: str) -> str:
+    if _namespace and value and value != "preparation":
+        return f"{_namespace}:{value}"
+    return value
 
 
 def set_campaign(campaign_id: object) -> None:
@@ -207,7 +238,7 @@ def emit(
         }
         record = {
             "schema_version": SCHEMA_VERSION,
-            "event_id": event_id or str(uuid.uuid4()),
+            "event_id": _qualified(event_id) if event_id else str(uuid.uuid4()),
             "campaign_id": _campaign_id,
             "ts": datetime.now(UTC).isoformat(),
             "kind": kind,
@@ -216,6 +247,8 @@ def emit(
             **{key: explicit[key] or current.get(key, "") for key in _IDENTITY_KEYS},
             "payload": payload or {},
         }
+        for key in ("session_id", "operation_id", "inquiry_id"):
+            record[key] = _qualified(record[key])
         if strict:
             problems = validate_record(record)
             if problems:
