@@ -310,6 +310,7 @@ class CampaignPanel(Widget):
     # ------------------------------------------------------------------
 
     def compose(self) -> ComposeResult:
+        yield Static("Loading campaign report...", id="context")
         yield Tabs(
             Tab("Recipe Development", id="recipe-view"),
             Tab("Campaign", id="campaign-view"),
@@ -318,7 +319,6 @@ class CampaignPanel(Widget):
         )
         yield Static("", id="development-receipt")
         yield DevelopmentView(self._sources, id="development-view")
-        yield Static("Loading campaign report...", id="context")
         yield Static("PI-assigned models", id="models-heading")
         table = DataTable(
             id="models",
@@ -1132,7 +1132,6 @@ class CampaignPanel(Widget):
         development = self.query_one("#phase-views", Tabs).active == "recipe-view"
         if development:
             for identity in (
-                "context",
                 "models-heading",
                 "models",
                 "progress",
@@ -1140,12 +1139,7 @@ class CampaignPanel(Widget):
             ):
                 self.query_one(f"#{identity}").display = False
         self.query_one("#development-view").display = development
-        view = self.query_one(DevelopmentView)
-        self.query_one("#development-receipt").display = (
-            not development
-            and view.snapshot is not None
-            and view.snapshot.phase == "delivered"
-        )
+        self.query_one("#development-receipt").display = False
         key = (
             size.width,
             size.height,
@@ -1189,12 +1183,13 @@ class CampaignPanel(Widget):
         self.query_one("#output-heading", Static).display = (
             not compact and not development
         )
-        self.query_one("#now", Static).display = not compact
+        show_now = not compact and (not development or size.height >= 20)
+        self.query_one("#now", Static).display = show_now
         self.query_one("#log-search", Input).display = (
             not compact and self._search_visible
         )
         self.query_one("#reading", Static).display = not compact and self._show_hints
-        self._now_rows = 0 if compact else 1
+        self._now_rows = int(show_now)
         context = self.query_one("#context")
         context.styles.margin = (
             0,

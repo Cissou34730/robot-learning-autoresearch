@@ -15,7 +15,7 @@ from tui import projector
 
 def context_budget(width: int, height: int) -> int:
     if width < 60:
-        return 4
+        return 5
     if width < 120 or height < 40:
         return 6
     return 8

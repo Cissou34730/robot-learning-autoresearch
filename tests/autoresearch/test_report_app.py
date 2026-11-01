@@ -130,6 +130,10 @@ def test_live_development_phase_loads_off_thread_without_rebinding(tmp_path):
             assert view.snapshot.phase == "preparing"
             assert app.query_one("#phase-views", Tabs).active == "recipe-view"
             assert view.display
+            context = app.query_one("#context")
+            assert context.display
+            assert context.region.bottom <= app.query_one("#phase-views").region.y
+            assert context.region.bottom <= view.region.y
             assert not app.query_one("#models").display
             assert app.query_one("#output").display
             assert sources.reader_thread != threading.get_ident()
@@ -161,9 +165,14 @@ class _DevelopmentSources(DemoSources):
         self.epoch = 1
         self.reader_threads = []
         self.stamp_threads = []
+        self.usage_rows = []
 
     def read(self):
-        return self.current_state, [] if self.archived else self.records, []
+        return (
+            self.current_state,
+            [] if self.archived else self.records,
+            self.usage_rows,
+        )
 
     def development_stamp(self):
         import threading
@@ -198,11 +207,13 @@ class _DevelopmentSources(DemoSources):
 def test_development_variants_responsive_selection_details_and_progress(size, tmp_path):
     import threading
 
-    from textual.widgets import DataTable, Select, Static
+    from textual.widgets import DataTable, Select, Static, Tabs
 
+    from tui import projector
     from tui.development_view import DevelopmentDetailScreen, DevelopmentView
 
     sources = _DevelopmentSources()
+    sources.usage_rows = [{"campaign_id": "current", "aiu": 12.34}]
     app = CampaignReport(sources=sources)
 
     async def scenario():
@@ -211,6 +222,24 @@ def test_development_variants_responsive_selection_details_and_progress(size, tm
             await pilot.pause()
             view = app.query_one(DevelopmentView)
             table = view.query_one("#development-variants", DataTable)
+            context = app.query_one("#context", Static)
+            tabs = app.query_one("#phase-views", Tabs)
+            header_region = context.region
+            assert context.display
+            assert header_region.bottom <= tabs.region.y
+            assert app.snapshot.usage.total_aiu == 12.34
+            assert projector.usage_text(app.snapshot.usage)[: size[0] - 2] in str(
+                context.render()
+            )
+            assert not view.query_one("#development-summary").display
+            tabs.active = "campaign-view"
+            await pilot.pause()
+            assert context.display
+            assert context.region == header_region
+            tabs.active = "recipe-view"
+            await pilot.pause()
+            assert context.display
+            assert context.region == header_region
             assert view.comparison_id == "T2"
             assert [key.value for key in table.rows] == ["delta", "alpha"]
             assert table.cursor_type == "row"
@@ -433,9 +462,14 @@ def test_development_delivery_archive_is_read_only_and_retains_selection(legacy)
             assert "Recipe delivered" in view.receipt()
             assert "Canonical recipe commit canonical-commit" in view.receipt()
             assert "Current phase startup" in view.receipt()
-            assert app.query_one("#development-receipt").display
+            assert not app.query_one("#development-receipt").display
+            context = app.query_one("#context")
+            header_region = context.region
+            assert context.display
             tabs.active = "recipe-view"
             await pilot.pause()
+            assert context.display
+            assert context.region == header_region
             assert view.comparison_id == "T1"
             assert view.snapshot.comparisons
             assert view.display
@@ -449,6 +483,7 @@ def test_development_delivery_archive_is_read_only_and_retains_selection(legacy)
             await pilot.pause()
             assert view.comparison_id == "T1"
             assert "Stale" in view.query_one("#development-summary").tooltip
+            assert view.query_one("#development-summary").display
             assert view.snapshot.comparisons
 
     _run(scenario())

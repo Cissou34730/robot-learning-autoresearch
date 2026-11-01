@@ -496,6 +496,12 @@ class DevelopmentView(Widget):
         if snapshot.phase == "delivered":
             summary += " | " + self.receipt()
         summary_widget = self.query_one("#development-summary", Static)
+        summary_widget.display = bool(
+            stale
+            or snapshot.archived
+            or snapshot.phase == "delivered"
+            or not snapshot.source_available
+        )
         summary_widget.tooltip = summary
         summary_widget.update(fit_text(Text(summary), width))
         choices = tuple((f"Dev:{item.id}", item.id) for item in snapshot.comparisons)
@@ -628,11 +634,18 @@ class DevelopmentView(Widget):
         rows = len(comparison.variants) if comparison else 0
         body.display = bool(rows)
         available = self.parent.size.height
+        compact_height = available < 20
+        self.query_one("#development-question").display = not compact_height
+        self.query_one("#development-allocation").display = (
+            not compact_height and comparison is not None
+        )
         body.styles.height = (
             max(5, min(14, available // 2))
             if wide
             else min(max(2, rows + 1), max(2, available - 10))
         )
+        if compact_height:
+            body.styles.height = min(max(3, rows + 1), max(3, available - 13))
         self.query_one("#development-side-detail").display = wide and bool(rows)
 
     def on_resize(self) -> None:
