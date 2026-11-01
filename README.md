@@ -278,18 +278,21 @@ The launcher has four PI phases: `analyst` (scientific model),
 inquiries). `--model` and `--reasoning` set every phase. Each phase accepts
 `--<phase>-model` and `--<phase>-reasoning`, which override them for that
 phase only. Without any option, every phase uses `gpt-6-luna`; the analyst
-uses `max` reasoning and the other phases `high`. `--provider` applies to
-every unqualified model ID.
+uses `max` reasoning and the other phases `high`. `--provider` qualifies every
+unqualified model ID, and a provider-qualified ID must match it. To mix
+providers across phases, omit `--provider` and give qualified IDs.
 
 ```powershell
 .\run_research.ps1 --analyst-model opencode-go/deepseek-v4.1-flash --research-reasoning xhigh
+uv run python -m tools.run_parallel --count 3 --analyst-model opencode-go/deepseek-v4.1-flash
 ```
 
 The model can change only between sessions. The launcher restarts the Copilot
 runtime when the next session uses another backend. A resumed session keeps
 the model and reasoning that it recorded at its start; relaunch with the same
 phase options until its checkpoint. The coder follows the model of the session
-it serves. The TUI F2 settings offer the same fields.
+it serves. `tools.run_parallel` forwards the same options to each launcher, and
+the TUI F2 settings offer the same fields.
 
 One `OPENCODE_API_KEY` authorizes both Zen and Go.
 Configure it locally, never in repository files or chat.

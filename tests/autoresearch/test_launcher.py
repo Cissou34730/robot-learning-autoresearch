@@ -321,6 +321,33 @@ def test_external_stop_request_is_the_campaigns_own_file(tmp_path):
     assert stop_request_path(folder).is_file()
 
 
+def test_batch_launcher_forwards_only_the_backend_options_set():
+    assert (
+        run_parallel.backend_arguments(run_parallel.parse_args(["--count", "2"])) == []
+    )
+    assert run_parallel.backend_arguments(
+        run_parallel.parse_args(
+            [
+                "--count",
+                "2",
+                "--reasoning",
+                "medium",
+                "--analyst-model",
+                "opencode-go/a",
+                "--research-reasoning",
+                "xhigh",
+            ]
+        )
+    ) == [
+        "--reasoning",
+        "medium",
+        "--analyst-model",
+        "opencode-go/a",
+        "--research-reasoning",
+        "xhigh",
+    ]
+
+
 def _monitored(tmp_path: Path, *, aiu: float) -> tuple[run_parallel.Monitor, Path]:
     root = tmp_path / "campaign"
     state = root / "runner" / "state" / "research_state.json"
