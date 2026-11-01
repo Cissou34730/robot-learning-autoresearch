@@ -43,7 +43,7 @@ def test_model_listing_uses_public_controller_execution_boundary(tmp_path):
 
     layout = _layout(tmp_path)
     controller = control.CampaignController(layout, FakeMachinery(), runner=run)
-    result = controller.list_models(control.LaunchSettings(provider="opencode"))
+    result = controller.list_models()
     assert result.stdout == "models"
     assert calls == [
         [
@@ -55,8 +55,6 @@ def test_model_listing_uses_public_controller_execution_boundary(tmp_path):
             "-m",
             "runner.launcher",
             "--list-models",
-            "--provider",
-            "opencode",
         ]
     ]
 
@@ -257,14 +255,12 @@ def test_settings_preserve_omitted_arguments():
     assert control.LaunchSettings().launcher_arguments() == []
     settings = control.LaunchSettings(
         model="gpt-6-luna",
-        provider=None,
         reasoning="high",
         timesteps=None,
         max_timesteps=360000,
         max_inquiries=15,
         stop_timeout_seconds=180,
     )
-    assert "--provider" not in settings.launcher_arguments()
     assert control.LaunchSettings(
         phase_models={"analyst": "opencode-go/a"},
         phase_reasoning={"research": "xhigh"},

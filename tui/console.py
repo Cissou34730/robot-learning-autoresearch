@@ -528,7 +528,7 @@ class CampaignConsole(App):
         try:
             settings = (
                 self._settings_reader.settings()
-                if verb in {"run", "start", "models"}
+                if verb in {"run", "start"}
                 else LaunchSettings()
             )
             settings.launcher_arguments()
@@ -554,13 +554,13 @@ class CampaignConsole(App):
                 f"> {text}\nTargets: "
                 + ", ".join(str(self._layout.folder(s)) for s in slots)
             )
-        self._log(
-            "Launcher options: "
-            + (
-                " ".join(settings.launcher_arguments())
-                or "launcher defaults (including 180s stop timeout)"
+            self._log(
+                "Launcher options: "
+                + (
+                    " ".join(settings.launcher_arguments())
+                    or "launcher defaults (including 180s stop timeout)"
+                )
             )
-        )
         if reset is not None:
             self._log(
                 "Reset options: "
@@ -601,7 +601,7 @@ class CampaignConsole(App):
     ) -> None:
         try:
             if verb == "models":
-                result = self._controller.list_models(settings)
+                result = self._controller.list_models()
                 if result.returncode:
                     message = "> " + text + "\nModel listing failed."
                     self.call_from_thread(
@@ -611,10 +611,10 @@ class CampaignConsole(App):
                         ),
                     )
                 else:
-                    choices = model_choices(result.stdout)
-                    if not settings.provider:
-                        self._model_choices = choices
-                    message = f"> {text}\n{len(choices)} usable models listed."
+                    self._model_choices = model_choices(result.stdout)
+                    message = (
+                        f"> {text}\n{len(self._model_choices)} usable models listed."
+                    )
                     self.call_from_thread(
                         self.push_screen,
                         ConsoleDetail("Available models", result.stdout.strip()),

@@ -88,7 +88,6 @@ class LaunchSettings:
     """
 
     model: str | None = None
-    provider: str | None = None
     reasoning: str | None = None
     timesteps: int | None = None
     max_timesteps: int | None = None
@@ -99,14 +98,6 @@ class LaunchSettings:
     phase_reasoning: dict[str, str] = field(default_factory=dict)
 
     def launcher_arguments(self) -> list[str]:
-        if self.provider is not None and self.provider not in {
-            "github-copilot",
-            "opencode",
-            "opencode-go",
-        }:
-            raise CommandError(
-                "Provider must be github-copilot, opencode or opencode-go."
-            )
         for value in (self.reasoning, *self.phase_reasoning.values()):
             if value is not None and value not in REASONING_LEVELS:
                 raise CommandError("Reasoning must be low, medium, high, xhigh or max.")
@@ -126,8 +117,6 @@ class LaunchSettings:
         arguments: list[str] = []
         if self.model:
             arguments += ["--model", self.model]
-        if self.provider:
-            arguments += ["--provider", self.provider]
         if self.reasoning:
             arguments += ["--reasoning", self.reasoning]
         for phase in PHASES:
@@ -555,25 +544,24 @@ class CampaignController:
         record = outcome.record(action, target, status, detail)
         return record
 
-    def list_models(self, settings: LaunchSettings) -> subprocess.CompletedProcess[str]:
-        settings.launcher_arguments()
-        arguments = [
-            "uv",
-            "run",
-            "--project",
-            str(self._layout.harness_root),
-            "python",
-            "-m",
-            "runner.launcher",
-            "--list-models",
-        ]
-        if settings.provider:
-            arguments += ["--provider", settings.provider]
-        return self._runner(arguments)
+    def list_models(self) -> subprocess.CompletedProcess[str]:
+        """The provider-qualified models of every provider."""
+        return self._runner(
+            [
+                "uv",
+                "run",
+                "--project",
+                str(self._layout.harness_root),
+                "python",
+                "-m",
+                "runner.launcher",
+                "--list-models",
+            ]
+        )
 
     def model_choices(self) -> list[tuple[str, str]]:
         """Every usable model of every provider, for the settings picker."""
-        result = self.list_models(LaunchSettings())
+        result = self.list_models()
         if result.returncode:
             detail = (result.stderr or result.stdout).strip().splitlines()
             raise ControllerError(detail[-1] if detail else "Model listing failed.")

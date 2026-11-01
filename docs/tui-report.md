@@ -211,7 +211,7 @@ the interface from opening.
   `filter`, `help` and `quit`; `tui/commands.py` defines them once for the
   parser, the list, the help and the unknown-command message. `start` resumes
   the active campaign without resetting; `run` resets and starts it.
-- **F2** (or `/settings`) opens one labelled, scrollable dialog for Model, Provider,
+- **F2** (or `/settings`) opens one labelled, scrollable dialog for Model,
   Reasoning, Timesteps, MaxTimesteps, MaxInquiries and StopTimeoutSeconds, a
   model and reasoning per phase, plus reset options. The model fields are
   pickers over one merged `provider/model` list of GitHub Copilot, OpenCode Zen

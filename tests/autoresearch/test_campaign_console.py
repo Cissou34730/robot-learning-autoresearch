@@ -927,7 +927,7 @@ def test_model_listing_opens_the_list_and_feeds_the_settings_picker(tmp_path):
 
     app, _layout = _console(tmp_path, FakeMachinery())
     listing = "github-copilot/gpt-6-sol\nopencode/old\tdeprecated\n"
-    app._controller.list_models = lambda _settings: subprocess.CompletedProcess(
+    app._controller.list_models = lambda: subprocess.CompletedProcess(
         [], 0, stdout=listing, stderr=""
     )
     app._load_model_choices = lambda: pytest.fail("the listing is already known")

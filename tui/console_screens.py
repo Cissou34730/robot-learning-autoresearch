@@ -33,7 +33,6 @@ class CommandInputs:
 
     FIELD_IDS = (
         "cmd-model",
-        "cmd-provider",
         "cmd-reasoning",
         "cmd-timesteps",
         "cmd-max-timesteps",
@@ -68,7 +67,6 @@ class CommandInputs:
 
         return LaunchSettings(
             model=text("cmd-model"),
-            provider=text("cmd-provider"),
             reasoning=text("cmd-reasoning"),
             timesteps=number("cmd-timesteps"),
             max_timesteps=number("cmd-max-timesteps"),
@@ -168,11 +166,6 @@ class SharedSettings(ModalScreen[dict | None]):
     def compose(self) -> ComposeResult:
         fields = (
             ("cmd-model", "Model (all phases)", "gpt-6-luna (launcher default)"),
-            (
-                "cmd-provider",
-                "Provider",
-                "Auto / github-copilot / opencode / opencode-go",
-            ),
             (
                 "cmd-reasoning",
                 "Reasoning (all phases)",
