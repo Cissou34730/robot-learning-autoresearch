@@ -42,15 +42,15 @@ def build(options: LaunchOptions, *, started_at: float, log: RunLog) -> Phases:
     runtime = CopilotRuntime(
         children=children,
         stop=stop,
-        command=lambda port, token: runner.adapter_command(
+        command=lambda port, token, backend: runner.adapter_command(
             "--controller-port",
             str(port),
             "--controller-token",
             token,
             "--model",
-            options.model,
+            backend.model,
             "--reasoning",
-            options.reasoning,
+            backend.reasoning,
         ),
         before_start=trust.verify,
     )
@@ -63,8 +63,7 @@ def build(options: LaunchOptions, *, started_at: float, log: RunLog) -> Phases:
     )
     sessions = PISessions(
         campaign_root=options.campaign_root,
-        model=options.model,
-        reasoning=options.reasoning,
+        options=options,
         runtime=runtime,
         bridge=bridge,
         trust=trust,

@@ -31,6 +31,7 @@ HARNESS = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HARNESS))
 
 from runner.launcher import campaign_lock
+from runner.launcher.options import PHASES, PROVIDERS, REASONING_LEVELS
 from runner.paths import stop_request_path
 
 DEFAULT_RECIPE = "baseline-distinct-episodes-v3-robot"
@@ -52,7 +53,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--recipe-ref", default=DEFAULT_RECIPE)
     parser.add_argument("--max-hours", type=float, default=6.0)
     parser.add_argument("--max-aiu", type=float, default=120.0)
-    parser.add_argument("--provider", default="github-copilot")
+    parser.add_argument("--provider", choices=PROVIDERS)
+    # Forwarded to each launcher: --model/--reasoning set every phase.
+    parser.add_argument("--model")
+    parser.add_argument("--reasoning", choices=REASONING_LEVELS)
+    for phase in PHASES:
+        parser.add_argument(f"--{phase}-model")
+        parser.add_argument(f"--{phase}-reasoning", choices=REASONING_LEVELS)
     # 0 pauses each campaign after its startup session.
     parser.add_argument("--max-inquiries", type=int)
     parser.add_argument("--stop-after-preparation", action="store_true")
@@ -314,6 +321,22 @@ def start_hidden(command: list[str], log: Path) -> subprocess.Popen:
         )
 
 
+def backend_arguments(arguments: argparse.Namespace) -> list[str]:
+    """The provider, model and reasoning options that the operator set."""
+    names = [
+        "provider",
+        "model",
+        "reasoning",
+        *(f"{phase}_{part}" for phase in PHASES for part in ("model", "reasoning")),
+    ]
+    forwarded: list[str] = []
+    for name in names:
+        value = getattr(arguments, name)
+        if value:
+            forwarded += [f"--{name.replace('_', '-')}", value]
+    return forwarded
+
+
 def launch(arguments: argparse.Namespace) -> int:
     roots = standard_roots(arguments) if arguments.count else arguments.campaign_roots
     # The launcher derives its exclusion name from the absolute, unresolved path.
@@ -338,8 +361,7 @@ def launch(arguments: argparse.Namespace) -> int:
                 "runner.launcher",
                 "--campaign-root",
                 str(root),
-                "--provider",
-                arguments.provider,
+                *backend_arguments(arguments),
                 *(
                     []
                     if arguments.max_inquiries is None

@@ -25,6 +25,7 @@ from runner import (
     protocol as runner_protocol,
 )
 from runner.launcher import phases, runner_client
+from runner.launcher.options import PhaseBackend
 from runner.launcher.runner_client import LauncherError, RunnerClient
 from runner.launcher.trust import TrustSnapshot, TrustViolation, protected_files
 
@@ -394,8 +395,7 @@ def test_queued_recipe_is_delivered_before_resume_backend_and_cap_checks(
     phase = SimpleNamespace(
         options=SimpleNamespace(
             campaign_root=tmp_path,
-            model="model",
-            reasoning="high",
+            session=lambda _kind: PhaseBackend("model", "high"),
             max_inquiries_explicit=True,
             max_inquiries=2,
         ),

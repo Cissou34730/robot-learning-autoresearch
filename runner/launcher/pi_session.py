@@ -11,6 +11,7 @@ from runner.launcher import pstext
 from runner.launcher.copilot_runtime import CopilotRuntime
 from runner.launcher.events import LauncherEvents
 from runner.launcher.operation_bridge import OperationBridge, operation_state
+from runner.launcher.options import LaunchOptions, PhaseBackend
 from runner.launcher.runner_client import LauncherError
 from runner.launcher.stop import StopControl
 from runner.launcher.summaries import load_state
@@ -26,8 +27,7 @@ class PISessions:
         self,
         *,
         campaign_root: Path,
-        model: str,
-        reasoning: str,
+        options: LaunchOptions,
         runtime: CopilotRuntime,
         bridge: OperationBridge,
         trust: TrustGuard,
@@ -35,8 +35,7 @@ class PISessions:
         events: LauncherEvents,
     ) -> None:
         self._campaign_root = campaign_root
-        self._model = model
-        self._reasoning = reasoning
+        self._options = options
         self._runtime = runtime
         self._bridge = bridge
         self._trust = trust
@@ -84,6 +83,7 @@ class PISessions:
             else pstext.text(pstext.field(state.get("scientific_session"), "id"))
         )
         invocation_id = str(uuid.uuid4())
+        backend = self._backend(state, preliminary=preliminary)
         self._events.card(f"PI | {stage}", scope="pi", session_id=owner)
         self._events.observe(
             "session_start",
@@ -99,13 +99,22 @@ class PISessions:
             actor="pi",
         )
         self.exit_code = self._converse(
-            self._arguments(state, phase, resume=resume, preliminary=preliminary),
+            self._arguments(
+                state, phase, backend, resume=resume, preliminary=preliminary
+            ),
             prompt,
             state,
+            backend,
             preliminary=preliminary,
             invocation_id=invocation_id,
         )
         return self.exit_code
+
+    def _backend(self, state: dict, *, preliminary: bool) -> PhaseBackend:
+        if preliminary:
+            return self._options.analyst()
+        kind = pstext.field(state.get("scientific_session"), "kind")
+        return self._options.session(pstext.text(kind))
 
     def require_success(self) -> None:
         if self.exit_code != 0:
@@ -145,15 +154,21 @@ class PISessions:
         return phase.replace("_", " ")
 
     def _arguments(
-        self, state: dict, phase: str, *, resume: bool, preliminary: bool
+        self,
+        state: dict,
+        phase: str,
+        backend: PhaseBackend,
+        *,
+        resume: bool,
+        preliminary: bool,
     ) -> list[str]:
         arguments = [
             "--session-id",
             self.session_id,
             "--model",
-            self._model,
+            backend.model,
             "--reasoning",
-            self._reasoning,
+            backend.reasoning,
             "--phase",
             phase,
             "--attempt",
@@ -175,11 +190,12 @@ class PISessions:
         arguments: list[str],
         prompt: str,
         state: dict,
+        backend: PhaseBackend,
         *,
         preliminary: bool,
         invocation_id: str,
     ) -> int:
-        self._runtime.start()
+        self._runtime.start(backend)
         if self._stop.requested():
             return STOPPED
         binding = {

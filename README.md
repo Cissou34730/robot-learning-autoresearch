@@ -271,6 +271,31 @@ For an authorized campaign launch, select the provider and model:
 .\run_research.ps1 --model opencode-go/kimi-k3
 ```
 
+### Select a model per phase
+
+The launcher has four PI phases: `analyst` (scientific model),
+`recipe` (recipe development), `startup` and `research` (goal review and
+inquiries). `--model` and `--reasoning` set every phase. Each phase accepts
+`--<phase>-model` and `--<phase>-reasoning`, which override them for that
+phase only. Without any option, every phase uses `gpt-6-luna`; the analyst
+uses `max` reasoning and the other phases `high`. `--provider` qualifies every
+unqualified model ID, and a provider-qualified ID must match it. To mix
+providers across phases, omit `--provider` and give qualified IDs.
+
+```powershell
+.\run_research.ps1 --analyst-model opencode-go/deepseek-v4.1-flash --research-reasoning xhigh
+uv run python -m tools.run_parallel --count 3 --analyst-model opencode-go/deepseek-v4.1-flash
+```
+
+The model can change only between sessions. The launcher restarts the Copilot
+runtime when the next session uses another backend. A resumed session keeps
+the model and reasoning that it recorded at its start; relaunch with the same
+phase options until its checkpoint. The coder follows the model of the session
+it serves. `tools.run_parallel` forwards the same options to each launcher, and
+the TUI F2 settings offer the same fields, with a model picker over every
+provider's listed models. `github-copilot/<model>` and `<model>` name the same
+Copilot model.
+
 One `OPENCODE_API_KEY` authorizes both Zen and Go.
 Configure it locally, never in repository files or chat.
 
@@ -283,10 +308,9 @@ Unsupported selections never substitute another model.
 
 OpenCode serves the PI and the preliminary analyst. Their requests carry the
 OpenCode client identity headers and a scoped `read` tool.
-The native coder and reviewer always run on GitHub Copilot: the campaign model
-on Copilot campaigns, `gpt-6-luna` with high reasoning on OpenCode campaigns.
-OpenCode campaigns therefore also require a Copilot sign-in.
-Copilot scientific-model preparation retains `max` reasoning.
+The native reviewer always runs on GitHub Copilot: the phase model on Copilot
+phases, `gpt-6-luna` with high reasoning on OpenCode phases.
+OpenCode phases therefore also require a Copilot sign-in.
 
 OpenCode token usage and catalogue prices remain separate from Copilot AIU.
 Unknown external charges remain unavailable, not zero.

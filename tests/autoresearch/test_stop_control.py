@@ -13,6 +13,7 @@ import pytest
 from runner import execution, paths, repository, run_experiment
 from runner.launcher import cli, copilot_runtime, phases
 from runner.launcher import reset as launcher_reset
+from runner.launcher.options import PhaseBackend
 from runner.launcher.runner_client import LauncherError
 from runner.launcher.stop import StopControl
 from runner.stop_control import (
@@ -63,10 +64,10 @@ def test_launcher_stop_during_runtime_startup_starts_no_session(
     runtime = copilot_runtime.CopilotRuntime(
         children=SimpleNamespace(start=start),
         stop=_stop(request),
-        command=lambda port, token: ["copilot", str(port), token],
+        command=lambda port, token, _backend: ["copilot", str(port), token],
         before_start=lambda: None,
     )
-    runtime.start()
+    runtime.start(PhaseBackend("gpt-6-luna", "high"))
     assert bool(started) is not stop_before_start
     runtime.stop()
     if not stop_before_start:
@@ -84,7 +85,7 @@ def test_cancelled_startup_without_channel_cleans_up_bootstrap_without_failure(
     runtime = copilot_runtime.CopilotRuntime(
         children=SimpleNamespace(start=lambda _command: process),
         stop=_stop(request),
-        command=lambda port, token: [],
+        command=lambda port, token, _backend: [],
         before_start=lambda: None,
     )
     runtime._process = process

@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import os
 import subprocess
 import time
 
@@ -69,13 +68,6 @@ from runner.copilot.tool_policy import scoped_tool_hook
 from runner.copilot.usage import record_usage
 from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import stop_requested, wait_for_stop_request
-
-# The scientific-model analysis runs on its own model; PI sessions keep the launcher's.
-# Maintainer-only environment overrides allow a model comparison of the analysis.
-ANALYST_MODEL = os.environ.get(
-    "ROBOT_LEARNING_ANALYST_MODEL", "opencode-go/deepseek-v4.1-flash"
-)
-ANALYST_REASONING = os.environ.get("ROBOT_LEARNING_ANALYST_REASONING", "max")
 
 RESUMED_STATE_PROMPT = (
     "\n\nRecovered current Runner state (factual metadata, not new "
@@ -491,8 +483,6 @@ async def converse(session, args, console: SessionReporter, finished, operations
 async def run(args, *, client=None, channel=None, binding=None) -> int:
     from copilot import CopilotClient
 
-    if args.preliminary and provider_of(args.model) == "github-copilot":
-        args.model, args.reasoning = ANALYST_MODEL, ANALYST_REASONING
     await prepare_provider(args)
     console = getattr(args, "usage_console", None) or SessionReporter()
     if getattr(args, "session_id", ""):
