@@ -329,7 +329,9 @@ comparisons when they are available. A new description does not establish a
 new method. An inconclusive result alone does not justify another attempt or
 the abandonment of the method.
 
-When you repeat work, state the additional evidence or development that it can give.
+For the next operation, state what progress or evidence toward the goal you
+expect. Explain why that expectation is credible from the scientific model and
+the results across inquiries.
 
 An inquiry can close with unresolved causes. State which explanations remain
 open and which evidence can separate them. Carry their consequences for
