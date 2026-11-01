@@ -119,6 +119,8 @@ def help_text() -> str:
         "Tab / Shift+Tab: next/previous campaign; move focus inside dialogs\n"
         "Ctrl+Tab: next campaign if the terminal passes it through\n"
         "F6 / Shift+F6: move focus between report controls | Ctrl+C: copy only\n"
+        "Recipe Development / Campaign: Left/Right selects the phase view.\n"
+        "Development: choose a comparison; Arrows select a variant; Enter details; Esc back.\n"
         "Alt+Q (or /quit): leave the console; the campaigns keep running\n"
         "Ctrl+Q (or /quit stop): stop all owned campaigns and exit. A campaign that\n"
         "has not stopped after 30 s is offered a kill, or is left running."
@@ -365,7 +367,12 @@ class CampaignConsole(App):
         """The panel's arrow keys exist only while it is open, so the log keeps its own."""
         if action in {"command_next", "command_previous"}:
             return self._panel_open
-        return True
+        from textual.widgets import Select
+
+        return not (
+            action in {"open_commands", "filter_log", "raw_event"}
+            and isinstance(self.focused, (Input, Select))
+        )
 
     def action_open_commands(self, text: str = "") -> None:
         """``/`` and Ctrl+L: open the panel, ready to type a command."""
@@ -867,8 +874,7 @@ class CampaignConsole(App):
         tabs = self.query_one(TabbedContent)
         if tabs.display and tabs.active:
             panel = self.query_one(f"#panel-{tabs.active}", CampaignPanel)
-            output = panel.query_one("#output")
-            (output if output.display else panel.query_one("#models")).focus()
+            panel.focus_report()
         else:
             self.screen.set_focus(None)
 

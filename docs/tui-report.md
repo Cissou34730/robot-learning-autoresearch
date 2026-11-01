@@ -43,6 +43,8 @@ The existing application entry points and compatibility imports remain available
 | Phase colors, pulse and outcome markers | `tui/phase_presentation.py` |
 | Durable file collection | `tui/sources.py` |
 | Durable evidence and snapshot projection | `tui/projector.py` |
+| Read-only recipe-development projection | `tui/development.py` |
+| Development comparisons, variants and detail views | `tui/development_view.py` |
 | Live progress, phase selection and display clocks | `tui/activity.py` |
 | Historical event reduction and ownership | `tui/timeline.py` |
 | Timeline item records | `tui/timeline_items.py` |
@@ -85,6 +87,37 @@ does not reopen an operation that already completed or failed.
 The console sends model-listing requests through the public controller interface.
 Stop and kill remain independent of a running reset or start worker.
 Shutdown coordination remains separate from the prompt and emergency cleanup policy.
+
+## Recipe-development inspection
+
+Each report offers Recipe Development and Campaign views when development
+data is available. Live development opens its own view. After isolated recipe
+delivery, the report switches to fresh campaign state and keeps the development
+archive available for read-only inspection. Archive viewing never changes the
+controller's campaign root or redirects execution commands.
+
+The comparison selector preserves recorded order. Variant rows show execution
+state, new actual/requested steps and measured task results with panel size.
+The summary separates allocation per variant from total batch allocation.
+Details preserve parent exposure, parameter overrides, checkpoint proxies,
+measurement sources, PI rationale and recorded decisions. Missing measurements
+remain distinct from measured zero success. File reads run in a worker and
+cached data remains visible with a stale indication during unavailable reads.
+
+F6 moves among report controls. Left/Right selects a phase; arrows select a
+variant, Enter opens its full details and Esc returns. Existing campaign-tab,
+copy, leave-running and stop/exit bindings are unchanged.
+
+Above 120 columns, selected-variant details appear beside the table. At 80x24
+and 60-column widths, the table uses the full width and details open separately.
+Secondary columns are hidden at narrow widths without removing their details.
+The tested collapsed-control floors are 48x16 for a report and 48x19 for the
+console. Smaller views display the actual required dimensions.
+
+The delivery receipt uses a canonical recipe commit only after delivery is
+confirmed. Development source commits and trial results are not campaign
+candidate assignments or official assessment results. Comparison charts remain
+outside this iteration.
 
 ## Running the report
 

@@ -26,7 +26,7 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.geometry import Size
 from textual.widget import Widget
-from textual.widgets import DataTable, Input, Static
+from textual.widgets import DataTable, Input, Static, Tab, Tabs
 
 from runner.event_contract import LAUNCH_KINDS, LAUNCHER_STOP_CODES
 from tui import projector
@@ -37,6 +37,7 @@ from tui.activity import (
     LiveActivity,
 )
 from tui.demo import DemoSources
+from tui.development_view import DevelopmentView
 from tui.event_log import EventLog, FilterScreen, RawEventScreen
 from tui.journal import JournalFeed, journal_path_for
 from tui.observations import Observation
@@ -125,6 +126,10 @@ Screen > .screen--selection {
     height: auto;
     margin-bottom: 1;
 }
+#phase-views { height: 1; display: none; }
+#phase-views Underline { display: none; }
+#phase-views Tab { padding: 0 1; }
+#development-receipt { height: 1; display: none; }
 #models-heading {
     height: 1;
     color: $text;
@@ -280,6 +285,7 @@ class CampaignPanel(Widget):
         self._layout_key: tuple | None = None
         self._shown_text: dict[str, Text | str] = {}
         self._log_key: tuple | None = None
+        self._development_live: bool | None = None
 
     @property
     def activity(self) -> LiveActivity:
@@ -304,6 +310,14 @@ class CampaignPanel(Widget):
     # ------------------------------------------------------------------
 
     def compose(self) -> ComposeResult:
+        yield Tabs(
+            Tab("Recipe Development", id="recipe-view"),
+            Tab("Campaign", id="campaign-view"),
+            active="campaign-view",
+            id="phase-views",
+        )
+        yield Static("", id="development-receipt")
+        yield DevelopmentView(self._sources, id="development-view")
         yield Static("Loading campaign report...", id="context")
         yield Static("PI-assigned models", id="models-heading")
         table = DataTable(
@@ -940,6 +954,7 @@ class CampaignPanel(Widget):
 
     def _process_events(self, events: list[Observation], render: bool = True) -> None:
         for event in events:
+            self.query_one(DevelopmentView).observe_progress(event)
             self._timeline.ingest(event)
             if self._launcher_stopped and event.kind in LAUNCH_KINDS:
                 # A new launch began after the stop: its failure no longer stands.
@@ -1028,6 +1043,11 @@ class CampaignPanel(Widget):
         self._render_reading()
 
     def action_clear_log_filter(self) -> None:
+        from tui.development_view import DevelopmentDetailScreen
+
+        if isinstance(self.app.screen, DevelopmentDetailScreen):
+            self.app.screen.dismiss()
+            return
         if self._search_visible:
             self._search_visible = False
             search = self.query_one("#log-search", Input)
@@ -1071,7 +1091,9 @@ class CampaignPanel(Widget):
             return
         widget = self.query_one("#reading", Static)
         out = self._output()
-        if self._view_size.width < 80:
+        if self.query_one(DevelopmentView).display:
+            text = "F6 controls | Arrows select | Enter details | Esc back"
+        elif self._view_size.width < 80:
             text = (
                 "Following | Enter: open | End: live"
                 if out.following
@@ -1107,6 +1129,23 @@ class CampaignPanel(Widget):
 
     def _apply_layout(self) -> None:
         size = self._view_size
+        development = self.query_one("#phase-views", Tabs).active == "recipe-view"
+        if development:
+            for identity in (
+                "context",
+                "models-heading",
+                "models",
+                "progress",
+                "training",
+            ):
+                self.query_one(f"#{identity}").display = False
+        self.query_one("#development-view").display = development
+        view = self.query_one(DevelopmentView)
+        self.query_one("#development-receipt").display = (
+            not development
+            and view.snapshot is not None
+            and view.snapshot.phase == "delivered"
+        )
         key = (
             size.width,
             size.height,
@@ -1116,6 +1155,8 @@ class CampaignPanel(Widget):
             self._training_rows,
             self._search_visible,
             len(self.query_one("#models", DataTable).rows),
+            self.query_one("#phase-views", Tabs).active,
+            self.query_one("#phase-views", Tabs).display,
         )
         if key == self._layout_key:
             # Nothing that sizes the panels changed: leave them untouched.
@@ -1137,17 +1178,30 @@ class CampaignPanel(Widget):
                 )
             )
             return
-        compact = size.width < COMPACT_WIDTH or size.height < COMPACT_HEIGHT
+        compact = not development and (
+            size.width < COMPACT_WIDTH or size.height < COMPACT_HEIGHT
+        )
+        if development:
+            self.query_one(DevelopmentView).fit_layout()
         self._output_hidden = compact
         output = self.query_one("#output", EventLog)
         output.display = not compact
-        self.query_one("#output-heading", Static).display = not compact
+        self.query_one("#output-heading", Static).display = (
+            not compact and not development
+        )
         self.query_one("#now", Static).display = not compact
         self.query_one("#log-search", Input).display = (
             not compact and self._search_visible
         )
         self.query_one("#reading", Static).display = not compact and self._show_hints
         self._now_rows = 0 if compact else 1
+        context = self.query_one("#context")
+        context.styles.margin = (
+            0,
+            0,
+            0 if self.query_one("#phase-views").display else 1,
+            0,
+        )
         if compact and self.app.focused is output:
             self.query_one("#models", DataTable).focus()
         table = self.query_one("#models", DataTable)
@@ -1166,6 +1220,66 @@ class CampaignPanel(Widget):
         heading = Text("Output", style=f"bold {self._palette.heading}")
         heading.append(" " + "-" * (width - 8), style=self._palette.muted)
         self.query_one("#output-heading", Static).update(heading[:width])
+
+    def on_development_view_changed(self, event: DevelopmentView.Changed) -> None:
+        event.stop()
+        snapshot = event.snapshot
+        tabs = self.query_one("#phase-views", Tabs)
+        tabs.display = snapshot.source_available
+        live = event.live and snapshot.phase != "delivered"
+        view = self.query_one(DevelopmentView)
+        receipt = self.query_one("#development-receipt", Static)
+        receipt.tooltip = view.receipt()
+        receipt.update(
+            _fit_text(Text(view.receipt()), max(12, self._view_size.width - 2))
+        )
+        tabs.query_one("#recipe-view", Tab).tooltip = (
+            "Read-only development archive"
+            if snapshot.archived or snapshot.phase == "delivered"
+            else "Live recipe development"
+        )
+        if view.bundle.last_known and view.bundle.current_state is None:
+            live = self._development_live
+        if self._development_live != live:
+            first_activation = self._development_live is None
+            self._development_live = live
+            if first_activation:
+                self.call_after_refresh(self._activate_default_phase)
+            else:
+                self._activate_default_phase()
+        self._layout_key = None
+        self._apply_layout()
+
+    def _activate_phase(self, identity: str) -> None:
+        self.query_one("#phase-views", Tabs).active = identity
+        self._layout_key = None
+        self._apply_layout()
+
+    def _activate_default_phase(self) -> None:
+        self._activate_phase(
+            "recipe-view" if self._development_live else "campaign-view"
+        )
+
+    def focus_report(self) -> None:
+        if self.query_one(DevelopmentView).display:
+            view = self.query_one(DevelopmentView)
+            table = view.query_one("#development-variants", DataTable)
+            (table if table.display else self.query_one("#phase-views", Tabs)).focus()
+        else:
+            output = self.query_one("#output")
+            (output if output.display else self.query_one("#models")).focus()
+
+    def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
+        if event.tabs.id != "phase-views":
+            return
+        event.stop()
+        if event.tab.id == "campaign-view":
+            for identity in ("context", "models-heading", "models"):
+                self.query_one(f"#{identity}").display = True
+            self._render_progress()
+            self._render_training_status()
+        self._layout_key = None
+        self._apply_layout()
 
     def on_resize(self) -> None:
         if not self.is_mounted or self.snapshot is None:
@@ -1192,6 +1306,8 @@ class CampaignReport(App):
 
     BINDINGS: ClassVar[list] = [
         Binding("ctrl+c", "copy_selection", "Copy", priority=True),
+        ("f6", "focus_next", "Focus next control"),
+        ("shift+f6", "focus_previous", "Focus previous control"),
         ("ctrl+q", "quit", "Close report"),
         ("/", "search_log", "Search events"),
         ("f", "filter_log", "Filter events"),
@@ -1223,6 +1339,14 @@ class CampaignReport(App):
         text = self.screen.get_selected_text()
         if text:
             self.copy_to_clipboard(text)
+
+    def check_action(self, action: str, parameters: tuple) -> bool | None:
+        from textual.widgets import Select
+
+        return not (
+            action in {"search_log", "filter_log", "raw_event"}
+            and isinstance(self.focused, (Input, Select))
+        )
 
     def watch_theme(self, old_theme: str, new_theme: str) -> None:
         if self.is_running:

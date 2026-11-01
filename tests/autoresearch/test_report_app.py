@@ -82,6 +82,378 @@ def test_initial_single_screen_composition():
     _run(_initial())
 
 
+def test_live_development_phase_loads_off_thread_without_rebinding(tmp_path):
+    import threading
+
+    from textual.widgets import Tabs
+
+    from tui.development_view import DevelopmentView
+    from tui.sources import DevelopmentSourcesSnapshot
+
+    class Sources(DemoSources):
+        _campaign_root = tmp_path
+        reader_thread = None
+
+        def development_stamp(self):
+            return (1,)
+
+        def read_development(self):
+            self.reader_thread = threading.get_ident()
+            state = {
+                "campaign": {"id": "development-test"},
+                "campaign_phase": "recipe_development",
+                "scientific_session": {"id": "S1", "kind": "recipe_development"},
+            }
+            return DevelopmentSourcesSnapshot(
+                "development-test",
+                state,
+                state,
+                (),
+                (),
+                False,
+                True,
+                None,
+                None,
+                False,
+                {},
+                (1,),
+            )
+
+    sources = Sources()
+    app = CampaignReport(demo=True, sources=sources)
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            view = app.query_one(DevelopmentView)
+            assert view.snapshot.phase == "preparing"
+            assert app.query_one("#phase-views", Tabs).active == "recipe-view"
+            assert view.display
+            assert not app.query_one("#models").display
+            assert app.query_one("#output").display
+            assert sources.reader_thread != threading.get_ident()
+            assert sources._campaign_root == tmp_path
+
+    _run(scenario())
+
+
+class _DevelopmentSources(DemoSources):
+    def __init__(self):
+        import copy
+
+        from tests.autoresearch.test_report_projector import _development_trial
+
+        super().__init__()
+        self.state, self.records = _development_trial()
+        self.records[0]["request"]["variants"][0].update(
+            proposed_change="Recorded code change [unchanged]",
+            expected_behavior="Recorded expected behavior",
+        )
+        second = copy.deepcopy(self.records[0])
+        second.update(id="T2", status="pending", result={})
+        second["request"]["variants"] = [{"label": "delta"}, {"label": "alpha"}]
+        self.state["pending_operation"] = second
+        self.current_state = self.state
+        self.archived = False
+        self.last_known = False
+        self.explanation = None
+        self.epoch = 1
+        self.reader_threads = []
+        self.stamp_threads = []
+
+    def read(self):
+        return self.current_state, [] if self.archived else self.records, []
+
+    def development_stamp(self):
+        import threading
+
+        self.stamp_threads.append(threading.get_ident())
+        return (self.epoch,)
+
+    def read_development(self):
+        import threading
+
+        from tui.development import freeze
+        from tui.sources import DevelopmentSourcesSnapshot
+
+        self.reader_threads.append(threading.get_ident())
+        return DevelopmentSourcesSnapshot(
+            "current",
+            freeze(self.current_state),
+            freeze(self.state),
+            freeze(self.records),
+            (),
+            self.archived,
+            True,
+            self.explanation,
+            "published" if self.archived else None,
+            self.last_known,
+            {},
+            (self.epoch,),
+        )
+
+
+@pytest.mark.parametrize("size", [(160, 45), (80, 24), (60, 24), (48, 16)])
+def test_development_variants_responsive_selection_details_and_progress(size, tmp_path):
+    import threading
+
+    from textual.widgets import DataTable, Select, Static
+
+    from tui.development_view import DevelopmentDetailScreen, DevelopmentView
+
+    sources = _DevelopmentSources()
+    app = CampaignReport(sources=sources)
+
+    async def scenario():
+        async with app.run_test(size=size) as pilot:
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            view = app.query_one(DevelopmentView)
+            table = view.query_one("#development-variants", DataTable)
+            assert view.comparison_id == "T2"
+            assert [key.value for key in table.rows] == ["delta", "alpha"]
+            assert table.cursor_type == "row"
+            assert table.size.height >= 3
+            assert view.query_one("#development-side-detail").display == (size[0] > 120)
+            assert app.query_one("#output").display
+            assert app.query_one("#output").region.height >= 3
+            assert not app.query_one("#too-small").display
+            assert all(
+                identity != threading.get_ident()
+                for identity in sources.reader_threads + sources.stamp_threads
+            )
+            assert (
+                "New steps" in [column.label.plain for column in table.columns.values()]
+            ) == (size[0] >= 70)
+
+            app._process_events(
+                [
+                    Observation(
+                        "training_progress",
+                        datetime.now(tz=UTC),
+                        {
+                            "steps": 50,
+                            "target": 1000,
+                            "ep_rew_mean": 2.0,
+                            "training_success": 0.0,
+                        },
+                        operation_id="recipe_development:T2-delta",
+                        session_id="recipe_development:S1",
+                    ),
+                ]
+            )
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            assert view.selected_comparison().variants[0].actual_steps == 50
+            assert view.selected_comparison().variants[0].state == "running"
+            assert view.selected_comparison().variants[1].state == "queued"
+
+            app._process_events(
+                [
+                    Observation(
+                        "training_progress",
+                        datetime.now(tz=UTC),
+                        {
+                            "variant": label,
+                            "steps": steps,
+                            "target": 1000,
+                        },
+                        operation_id="recipe_development:T2",
+                        session_id="recipe_development:S1",
+                    )
+                    for label, steps in (("alpha", 70), ("delta", 60))
+                ]
+            )
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            assert [
+                row.actual_steps for row in view.selected_comparison().variants
+            ] == [60, 70]
+
+            selector = view.query_one(Select)
+            selector.value = "T1"
+            await pilot.pause()
+            assert table.get_cell("delta", "Measured success").plain == "0% (n=40)"
+            table.focus()
+            await pilot.press("down")
+            assert view.variant_label == "alpha"
+            before = tuple(table.rows)
+            original_clear = table.clear
+            clears = []
+
+            def counted_clear(*args, **kwargs):
+                clears.append(1)
+                return original_clear(*args, **kwargs)
+
+            table.clear = counted_clear
+            sources.records[1]["result"]["measurements"][0]["metrics"][
+                "success_percent"
+            ] = 25.0
+            sources.epoch += 1
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            assert view.comparison_id == "T1"
+            assert view.variant_label == "alpha"
+            assert tuple(table.rows) == before
+            assert not clears
+            assert table.get_cell("delta", "Measured success").plain == "25% (n=40)"
+            await pilot.press("enter")
+            assert isinstance(app.screen, DevelopmentDetailScreen)
+            body = str(
+                app.screen.query_one(".development-detail-text", Static).render()
+            )
+            assert "Parent: Dev:old-b | Prior exposure: 20000" in body
+            assert "New steps: 1024 / 1000" in body
+            app.screen.query_one("DevelopmentDetail").scroll_to(y=5, animate=False)
+            await pilot.pause()
+            offset = app.screen.query_one("DevelopmentDetail").scroll_y
+            sources.epoch += 1
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            assert app.screen.query_one("DevelopmentDetail").scroll_y == offset
+            await pilot.press("escape")
+            assert not isinstance(app.screen, DevelopmentDetailScreen)
+            assert app.is_running
+            assert view.variant_label == "alpha"
+            await pilot.press("up", "enter")
+            body = str(
+                app.screen.query_one(".development-detail-text", Static).render()
+            )
+            assert "Recorded code change [unchanged]" in body
+            assert "PI rationale: Recorded rationale" in body
+            assert "Training success PROXY: 40%" in body
+            await pilot.press("escape")
+            app.save_screenshot(
+                filename=f"development-{size[0]}x{size[1]}.svg", path=str(tmp_path)
+            )
+
+    _run(scenario())
+
+
+@pytest.mark.parametrize(
+    ("phase", "development_commit", "delivery_commit"),
+    [
+        ("comparing", None, None),
+        ("delivering", "development_scientific_hash", None),
+        ("delivered", "development_scientific_hash", "public_delivery_hash"),
+    ],
+)
+def test_development_receipt_commit_identity(
+    phase, development_commit, delivery_commit
+):
+    from tui.development import build_development_snapshot
+    from tui.development_view import DevelopmentView
+
+    sources = _DevelopmentSources()
+    sources.state["campaign"]["recipe_source_commit"] = "initial_recipe_hash"
+    sources.state["recipe_delivery_mode"] = "isolated_v1"
+    if development_commit is not None:
+        sources.state["recipe_development"] = {
+            "session_id": "S1",
+            "scientific_commit": development_commit,
+            "current_synthesis": "Recorded PI selection",
+        }
+    if delivery_commit is not None:
+        sources.current_state = {
+            "campaign": {"id": "current", "recipe_source_commit": delivery_commit},
+            "campaign_phase": "startup",
+            "scientific_session": {"id": "S1", "kind": "startup"},
+        }
+        sources.archived = True
+    view = DevelopmentView(sources)
+    view.bundle = sources.read_development()
+    view.snapshot = build_development_snapshot(
+        view.bundle.state,
+        view.bundle.records,
+        archived=view.bundle.archived,
+        current_state=view.bundle.current_state,
+        delivery_stage=view.bundle.delivery_stage,
+    )
+    assert view.snapshot.phase == phase
+    receipt = view.receipt()
+    assert "initial_recipe_hash" not in receipt
+    if delivery_commit is not None:
+        assert delivery_commit in receipt
+        assert development_commit not in receipt
+    elif development_commit is not None:
+        assert development_commit in receipt
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_development_delivery_archive_is_read_only_and_retains_selection(legacy):
+    from textual.widgets import Select, Tabs
+
+    from tui.development_view import DevelopmentView
+
+    sources = _DevelopmentSources()
+    app = CampaignReport(sources=sources)
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            view = app.query_one(DevelopmentView)
+            view.query_one(Select).value = "T1"
+            await pilot.pause()
+            sources.state["pending_operation"] = None
+            sources.state["recipe_development"] = {
+                "session_id": "S1",
+                "scientific_commit": "old-source-commit",
+                "current_synthesis": "Recorded PI selection",
+            }
+            sources.current_state = {
+                "campaign": {
+                    "id": "current",
+                    "recipe_source_commit": "canonical-commit",
+                },
+                "campaign_phase": "startup",
+                "candidates": {},
+                "scientific_session": {"id": "S1", "kind": "startup"},
+            }
+            if legacy:
+                sources.state.update(sources.current_state)
+                sources.state["recipe_delivery_mode"] = "legacy_coupled"
+            else:
+                sources.archived = True
+            sources.epoch += 1
+            app.refresh_snapshot()
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            tabs = app.query_one("#phase-views", Tabs)
+            assert tabs.active == "campaign-view"
+            assert not app.snapshot.model_rows
+            assert app.query_one("#models").display
+            assert view.snapshot.phase == "delivered"
+            assert "Recipe delivered" in view.receipt()
+            assert "Canonical recipe commit canonical-commit" in view.receipt()
+            assert "Current phase startup" in view.receipt()
+            assert app.query_one("#development-receipt").display
+            tabs.active = "recipe-view"
+            await pilot.pause()
+            assert view.comparison_id == "T1"
+            assert view.snapshot.comparisons
+            assert view.display
+            assert not app.query_one("#development-receipt").display
+            sources.last_known = True
+            sources.explanation = "Last known source"
+            sources.current_state = None
+            sources.epoch += 1
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            assert view.comparison_id == "T1"
+            assert "Stale" in view.query_one("#development-summary").tooltip
+            assert view.snapshot.comparisons
+
+    _run(scenario())
+
+
 def _cells(value) -> float:
     """Textual heights come back as Scalar for styles and int for size."""
     return float(getattr(value, "value", value))

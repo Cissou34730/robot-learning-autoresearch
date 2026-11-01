@@ -146,6 +146,101 @@ def _clean(machinery) -> None:
     machinery.wait_exit_code = 130
 
 
+@pytest.mark.parametrize("size", [(160, 45), (80, 24), (60, 24), (48, 19)])
+def test_console_development_focus_cycle_and_archive_keep_command_targets(
+    tmp_path, size
+):
+    from textual.widgets import DataTable, Select, TabbedContent, Tabs
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tests.autoresearch.test_report_app import _DevelopmentSources
+    from tui.development_view import DevelopmentDetailScreen, DevelopmentView
+
+    machinery = FakeMachinery()
+    app, layout = _console(tmp_path, machinery)
+    controller = app._controller
+    sources = _DevelopmentSources()
+    sources._campaign_root = layout.folder(1)
+    panel = None
+
+    async def scenario():
+        nonlocal panel
+        async with app.run_test(size=size) as pilot:
+            panel = app.query_one("#panel-campaign-1", CampaignPanel)
+            original_source = panel._sources
+            original_root = original_source._campaign_root
+            view = panel.query_one(DevelopmentView)
+            view.sources = sources
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            assert view.display
+            assert view.query_one(DataTable).region.height >= 3
+            assert panel.query_one("#output").region.height >= 3
+            if size == (80, 24):
+                chrome_rows = (
+                    app.query_one(TabbedContent).query_one(Tabs).region.height
+                    + panel.query_one("#phase-views").region.height
+                    + view.query_one(Select).region.height
+                    + 1
+                    + app.query_one("#commands-summary").region.height
+                )
+                assert chrome_rows <= 6
+            app._focus_campaign()
+            await pilot.pause()
+            assert app.focused is view.query_one("#development-variants")
+            await pilot.press("down", "enter")
+            assert isinstance(app.screen, DevelopmentDetailScreen)
+            await pilot.press("escape")
+            await pilot.press("shift+f6")
+            assert isinstance(app.focused, Select)
+            await pilot.press("f", "r")
+            assert not isinstance(app.screen, ConsoleDetail)
+            assert not app._panel_open
+            await pilot.press("tab")
+            assert app.query_one(TabbedContent).active == "campaign-2"
+            sources.epoch += 1
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.press("shift+tab")
+            assert app.query_one(TabbedContent).active == "campaign-1"
+            assert view.comparison_id == "T2"
+            assert view.variant_label == "alpha"
+            sources.state["recipe_development"] = {"session_id": "S1"}
+            sources.current_state = {
+                "campaign": {"id": "current", "recipe_source_commit": "canonical"},
+                "campaign_phase": "startup",
+                "candidates": {},
+            }
+            sources.archived = True
+            sources.epoch += 1
+            view.refresh_source()
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            phase_tabs = panel.query_one("#phase-views", Tabs)
+            assert phase_tabs.active == "campaign-view"
+            phase_tabs.active = "recipe-view"
+            await pilot.pause()
+            assert view.comparison_id == "T2"
+            assert panel._sources is original_source
+            assert original_source._campaign_root == original_root == layout.folder(1)
+            assert panel._campaign_root == layout.folder(1)
+            assert app._controller is controller
+            assert not machinery.started
+            app.save_screenshot(
+                filename=f"console-development-{size[0]}x{size[1]}.svg",
+                path=str(tmp_path),
+            )
+            if size == (48, 19):
+                await pilot.resize_terminal(48, 16)
+                await pilot.pause()
+                overlay = panel.query_one("#too-small")
+                assert overlay.display
+                assert "need 48x19" in str(overlay.render())
+
+    asyncio.run(scenario())
+
+
 async def _type(pilot, text: str) -> None:
     await pilot.press(*("space" if char == " " else char for char in text))
 

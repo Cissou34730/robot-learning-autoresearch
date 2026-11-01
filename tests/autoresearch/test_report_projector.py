@@ -5,6 +5,8 @@ specification requires: role joins, latest-completed development evidence,
 scope-preserving usage and explicit unavailable values.
 """
 
+import hashlib
+import json
 from datetime import UTC, datetime
 
 import pytest
@@ -20,6 +22,469 @@ from tui.demo import (
 
 def _now():
     return datetime.now(tz=UTC)
+
+
+def test_development_projects_all_declared_variants_without_pi_roles():
+    from tui.development import build_development_snapshot
+
+    labels = ["delta", "alpha", "gamma", "beta"]
+    request = {
+        "initialization": "fresh",
+        "steps": 1000,
+        "seed": 7,
+        "description": "Recorded comparison",
+        "rationale": "Recorded reasoning",
+        "variants": [{"label": label} for label in labels],
+    }
+    state = {
+        "scientific_session": {"id": "S1", "kind": "recipe_development"},
+        "model_roles": {},
+        "candidates": {},
+        "pending_operation": {
+            "id": "T1",
+            "kind": "training",
+            "session_id": "S1",
+            "request": {"training": request},
+        },
+    }
+    snapshot = build_development_snapshot(state, [])
+    comparison = snapshot.comparisons[0]
+    assert [variant.label for variant in comparison.variants] == labels
+    assert comparison.allocation_per_variant == 1000
+    assert comparison.total_allocation == 4000
+    assert all(variant.actual_steps is None for variant in comparison.variants)
+    result = {
+        "variants": [
+            {"label": label, "candidates": [f"T1:{label}-1000"]} for label in labels
+        ],
+        "learning_dynamics": [
+            {
+                "candidate": f"T1:{label}-1000",
+                "training_steps": 1024,
+                "ep_rew_mean": 2.5,
+                "training_success": 0.0,
+            }
+            for label in labels
+        ],
+    }
+    completed = {
+        **state["pending_operation"],
+        "status": "completed",
+        "request": request,
+        "result": result,
+    }
+    snapshot = build_development_snapshot(
+        {**state, "pending_operation": None}, [completed]
+    )
+    assert [variant.label for variant in snapshot.comparisons[0].variants] == labels
+    assert all(
+        variant.actual_steps == 1024 for variant in snapshot.comparisons[0].variants
+    )
+    assert snapshot.comparisons[0].variants[0].checkpoints[0].training_success == 0.0
+
+
+def _development_trial():
+    request = {
+        "initialization": "transfer",
+        "steps": 1000,
+        "seed": 7,
+        "description": "A recorded learning question",
+        "rationale": "Recorded rationale",
+        "variants": [
+            {
+                "label": "delta",
+                "parent": "old-a",
+                "parameters": {"nested": {"values": [1, 2]}},
+            },
+            {"label": "alpha", "parent": "old-b"},
+        ],
+    }
+    state = {
+        "campaign": {"id": "current"},
+        "recipe_delivery_mode": "isolated_v1",
+        "campaign_phase": "recipe_development",
+        "scientific_session": {"id": "S1", "kind": "recipe_development"},
+        "candidates": {
+            "old-a": {"training_steps": 9000},
+            "old-b": {"training_steps": 20000},
+        },
+        "model_roles": {},
+        "operation_events": [],
+    }
+    for label in ("delta", "alpha"):
+        for steps in (512, 1024):
+            identity = f"T1:{label}-checkpoint-{steps}"
+            state["candidates"][identity] = {
+                "id": identity,
+                "name": f"{label}-checkpoint-{steps}",
+                "origin_operation": "T1",
+                "training_steps": steps,
+                "artifact": f"campaigns/checkpoints/current/{label}-{steps}",
+            }
+    training = {
+        "id": "T1",
+        "kind": "training",
+        "session_id": "S1",
+        "status": "completed",
+        "request": request,
+        "result": {
+            "variants": [
+                {
+                    "label": label,
+                    "candidates": [
+                        f"T1:{label}-checkpoint-{steps}" for steps in (512, 1024)
+                    ],
+                }
+                for label in ("delta", "alpha")
+            ],
+            "learning_dynamics": [
+                {
+                    "candidate": "T1:delta-checkpoint-1024",
+                    "training_steps": 1024,
+                    "training_success": 0.4,
+                    "ep_rew_mean": 3.0,
+                }
+            ],
+        },
+    }
+    measurement = {
+        "id": "M1",
+        "kind": "measurement",
+        "session_id": "S1",
+        "status": "completed",
+        "result": {
+            "measurements": [
+                {
+                    "candidate": "working",
+                    "candidate_id": "T1:delta-checkpoint-1024",
+                    "instrument": "research_evaluation",
+                    "metrics": {
+                        "success_percent": 0.0,
+                        "episodes": 40,
+                        "seed": 9,
+                        "evaluation_artifact": "campaigns/evaluations/current/zero.json",
+                    },
+                }
+            ]
+        },
+    }
+    return state, [training, measurement]
+
+
+@pytest.mark.parametrize(
+    "invalid_status", ["failed", "requested", "interrupted", "completed"]
+)
+def test_development_keeps_own_steps_and_only_completed_measured_evidence(
+    invalid_status,
+):
+    from tui.development import build_development_snapshot
+
+    state, records = _development_trial()
+    invalid = {
+        **records[1],
+        "id": "M2",
+        "status": invalid_status,
+        "result": {
+            "measurements": [
+                {
+                    "candidate_id": "T1:alpha-checkpoint-1024",
+                    "instrument": "task_reference",
+                    "metrics": {
+                        "success_percent": 100,
+                        "episodes": 50,
+                        "official_benchmark": invalid_status == "completed",
+                    },
+                }
+            ]
+        },
+    }
+    records.append(invalid)
+    records.append({**records[1], "id": "M3", "session_id": "S2"})
+    snapshot = build_development_snapshot(state, records)
+    comparison = snapshot.comparisons[0]
+    delta, alpha = comparison.variants
+    assert comparison.total_allocation == 2000
+    assert comparison.question is None
+    assert delta.actual_steps == alpha.actual_steps == 1024
+    assert (delta.parent_id, delta.prior_steps) == ("old-a", 9000)
+    assert (alpha.parent_id, alpha.prior_steps) == ("old-b", 20000)
+    assert delta.latest_measurement.success_percent == 0.0
+    assert (
+        delta.latest_measurement.episodes,
+        delta.latest_measurement.seed,
+        delta.latest_measurement.operation_id,
+    ) == (40, 9, "M1")
+    assert alpha.latest_measurement is None
+    assert delta.training_success == 0.4
+    assert alpha.training_reward is None
+    assert not snapshot.choices
+    with pytest.raises(TypeError):
+        delta.parameters["nested"]["values"] = ()
+    state["candidates"]["T1:delta-checkpoint-1024"]["training_steps"] = 9999
+    assert delta.actual_steps == 1024
+
+
+def test_development_pending_progress_is_variant_scoped_and_decision_is_recorded():
+    from tui.development import build_development_snapshot
+
+    state, records = _development_trial()
+    state["pending_operation"] = {
+        "id": "T2",
+        "kind": "training",
+        "session_id": "S1",
+        "progress": "training_dispatched",
+        "request": {"training": records[0]["request"]},
+    }
+    progress = {
+        "operation_id": "T2",
+        "variant": "delta",
+        "steps": 300,
+        "training_success": 0.0,
+    }
+    snapshot = build_development_snapshot(state, records, progress=progress)
+    delta, alpha = snapshot.comparisons[1].variants
+    assert delta.actual_steps == 300 and delta.prior_steps == 9000
+    assert delta.training_success == 0.0 and alpha.actual_steps is None
+    assert delta.state == "running"
+    assert alpha.state == "queued"
+    later = {
+        **records[1],
+        "id": "M2",
+        "result": {
+            "measurements": [
+                {
+                    "candidate_id": "T1:delta-checkpoint-512",
+                    "instrument": "task_reference",
+                    "metrics": {"success_percent": 25, "episodes": 80},
+                }
+            ]
+        },
+    }
+    repeated = {**records[1], "id": "M3"}
+    records.extend(
+        [
+            later,
+            repeated,
+            {
+                "id": "E1",
+                "kind": "model_role",
+                "session_id": "S1",
+                "status": "completed",
+                "request": {
+                    "action": "set_working",
+                    "candidate": "T1:alpha-checkpoint-1024",
+                },
+            },
+        ]
+    )
+    state.update(
+        recipe_development={
+            "session_id": "S1",
+            "current_synthesis": "Recorded selection",
+            "candidates_and_roles": "Recorded role reasoning",
+        },
+        campaign_phase="startup",
+        scientific_session={"id": "S2", "kind": "startup"},
+        pending_operation=None,
+        model_roles={"working": "T1:delta-checkpoint-1024"},
+    )
+    snapshot = build_development_snapshot(state, records)
+    assert snapshot.comparisons[0].variants[0].latest_measurement.operation_id == "M3"
+    assert snapshot.choices == (("working", "T1:alpha-checkpoint-1024"),)
+    assert snapshot.chosen_comparison_ids == ("T1",)
+    assert snapshot.decision == "Recorded selection"
+
+
+@pytest.mark.parametrize("mode", ["archive", "legacy", "no_archive", "other_identity"])
+def test_development_sources_bind_archive_identity_cache_and_read_only_files(
+    tmp_path, monkeypatch, mode
+):
+    from runner import paths
+    from tui import sources
+    from tui.development import build_development_snapshot
+
+    state, records = _development_trial()
+    root = tmp_path / "campaign"
+    root.mkdir()
+    archive = paths.recipe_development_archive(root, "current")
+    target = archive if mode in {"archive", "other_identity"} else root
+    if mode == "other_identity":
+        state["campaign"]["id"] = "other"
+    if mode == "legacy":
+        state.update(
+            recipe_delivery_mode="legacy_coupled",
+            campaign_phase="startup",
+            scientific_session={"id": "S2", "kind": "startup"},
+            recipe_development={"session_id": "S1"},
+        )
+    for relative, content in [
+        ("runner/state/research_state.json", json.dumps(state)),
+        (
+            "campaigns/results.jsonl",
+            "\n".join(json.dumps(record) for record in records),
+        ),
+        (
+            "reports/session_usage/current.jsonl",
+            json.dumps({"campaign_id": "current", "input_tokens": 17}),
+        ),
+    ]:
+        path = target / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    metric = (
+        target
+        / state["candidates"]["T1:alpha-checkpoint-1024"]["artifact"]
+        / "training_metrics.json"
+    )
+    metric.parent.mkdir(parents=True)
+    metric.write_text(
+        json.dumps({"timesteps": 1024, "ep_rew_mean": 1.0}), encoding="utf-8"
+    )
+    if mode != "legacy":
+        public = root / "runner/state/research_state.json"
+        public.parent.mkdir(parents=True, exist_ok=True)
+        public.write_text(
+            json.dumps(
+                {
+                    "campaign": {"id": "current"},
+                    "campaign_phase": "startup",
+                    "candidates": {},
+                }
+            ),
+            encoding="utf-8",
+        )
+    other = tmp_path / "global-other"
+    monkeypatch.setattr(paths, "ROOT", other)
+    before = {
+        str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in tmp_path.rglob("*")
+        if path.is_file()
+    }
+    reader = sources.CampaignSources(root)
+    bundle = reader.read_development()
+    assert bundle.current_state["campaign"]["id"] == "current"
+    assert bundle.source_available == (mode in {"archive", "legacy"})
+    assert bundle.archived == (mode == "archive")
+    if bundle.source_available:
+        snapshot = build_development_snapshot(
+            bundle.state,
+            bundle.records,
+            archived=bundle.archived,
+            current_state=bundle.current_state,
+            training_metrics=bundle.training_metrics,
+        )
+        assert snapshot.comparisons[0].variants[1].training_reward == 1.0
+        assert bundle.usage[0]["input_tokens"] == 17
+        with pytest.raises(TypeError):
+            bundle.state["candidates"] = {}
+    with monkeypatch.context() as scoped:
+        scoped.setattr(
+            sources,
+            "read_json",
+            lambda *_: pytest.fail("Unchanged sources must be cached"),
+        )
+        assert reader.read_development() is bundle
+    assert before == {
+        str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in tmp_path.rglob("*")
+        if path.is_file()
+    }
+    if mode == "archive":
+        assert reader.read()[0]["candidates"] == {}
+        prior_stamp = bundle.stamp
+        metric.write_text(json.dumps({"ep_rew_mean": 222.0}), encoding="utf-8")
+        refreshed = reader.read_development()
+        assert refreshed.stamp != prior_stamp
+        assert (
+            refreshed.training_metrics["T1:alpha-checkpoint-1024"]["ep_rew_mean"]
+            == 222.0
+        )
+        public.write_text(
+            json.dumps({"campaign": {"id": "new"}, "campaign_phase": "startup"}),
+            encoding="utf-8",
+        )
+        assert not reader.read_development().source_available
+
+
+def test_development_source_survives_partial_handoff_without_changing_command_root(
+    tmp_path, monkeypatch
+):
+    from runner import paths
+    from tui import sources
+    from tui.development import build_development_snapshot
+
+    state, records = _development_trial()
+    root = tmp_path / "campaign"
+    path = root / "runner/state/research_state.json"
+    path.parent.mkdir(parents=True)
+    state["operation_events"] = records
+    path.write_text(json.dumps(state), encoding="utf-8")
+    reader = sources.CampaignSources(root)
+    live = reader.read_development()
+    path.unlink()
+    transient = reader.read_development()
+    assert transient.last_known and transient.state == live.state
+    path.write_text(json.dumps(state), encoding="utf-8")
+    archive = paths.recipe_development_archive(root, "current")
+    archive.parent.mkdir(parents=True)
+    root.rename(archive)
+    moving = reader.read_development()
+    assert moving.archived and moving.current_state is None
+    assert (
+        build_development_snapshot(moving.state, moving.records, archived=True).phase
+        == "delivering"
+    )
+    public = root / "runner/state/research_state.json"
+    public.parent.mkdir(parents=True)
+    public.write_text(
+        json.dumps(
+            {
+                "campaign": {"id": "current"},
+                "campaign_phase": "startup",
+                "candidates": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    delivered = reader.read_development()
+    assert delivered.archived and delivered.current_state["candidates"] == {}
+    assert live.stamp != delivered.stamp
+    assert (
+        build_development_snapshot(live.state, live.records).comparisons
+        == build_development_snapshot(
+            delivered.state,
+            delivered.records,
+            archived=True,
+            current_state=delivered.current_state,
+        ).comparisons
+    )
+    assert reader.read()[0]["candidates"] == {}
+    original_read = sources.read_json
+    public.write_text(
+        json.dumps(
+            {
+                "campaign": {"id": "current"},
+                "campaign_phase": "startup",
+                "candidates": {},
+                "generation": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    def replace_during_read(target):
+        value = original_read(target)
+        if target == public and value.get("generation") == 1:
+            public.write_text(
+                json.dumps({**value, "generation": 222}), encoding="utf-8"
+            )
+        return value
+
+    with monkeypatch.context() as scoped:
+        scoped.setattr(sources, "read_json", replace_during_read)
+        racing = reader.read_development()
+    assert racing.current_state["generation"] == 1
+    assert reader.read_development().current_state["generation"] == 222
 
 
 def _demo_snapshot():
