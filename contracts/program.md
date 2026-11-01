@@ -97,8 +97,11 @@ campaign. It is not passive background. In later sessions, test its
 interpretation against the behavior that you observe, and carry forward what
 the campaign learns in your session records.
 
-After the analyst session, the recipe-development session starts. Your startup
-session follows recipe development. A goal-review session follows startup.
+The campaign can include a recipe-development session. When the campaign
+includes it, the recipe-development session starts after the analyst session,
+and your startup session follows recipe development. When the campaign does
+not include it, your startup session starts after the analyst session. A
+goal-review session follows startup.
 
 ## Recipe-development session
 
@@ -198,8 +201,8 @@ methods where you need them. These capabilities can support later inquiries.
 Choose the first useful scientific action and explain why it advances the
 direction.
 
-Start from the delivered recipe and the same accepted scientific model.
-The scientific state is fresh, without recipe-development evidence or candidates.
+Start from the recipe in `robot_learning/` and the same accepted scientific
+model. The session prompt states how this recipe reached the startup session.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you

@@ -83,8 +83,8 @@ names in code format are technical names. They keep their exact spelling.
 | analyst session | The first session. The analyst writes the scientific model. | preliminary session, preliminary analyst session, campaign-start session |
 | scientific model | The document `pi_workspace/scientific_model.md`: the initial physical model of the robot and the task, which the analyst derives from the definitions. It does not change during the campaign; your session records carry forward what the campaign learns. | — |
 | decision-relevant synthesis | The last section of the scientific model. It gives the facts and the unknowns that are most likely to change your first decisions. | decision-relevant |
-| recipe-development session | Your first session after the analyst session. You deliver a recipe that learns and supports startup, as canonical source and parameters. You build it from knowledge gained across all tested variants. You combine design choices supported by the results. You measure the resulting recipe to demonstrate learning progress. Its kind is `recipe_development`. | — |
-| startup session | The session after recipe development. You receive the delivered recipe and the same accepted scientific model. The scientific state is fresh. You establish the initial scientific direction, the tools and the first useful investigation from the delivered recipe. | — |
+| recipe-development session | A session that the campaign can include. When the campaign includes it, it is your first session after the analyst session. You deliver a recipe that learns and supports startup, as canonical source and parameters. You build it from knowledge gained across all tested variants. You combine design choices supported by the results. You measure the resulting recipe to demonstrate learning progress. Its kind is `recipe_development`. | — |
+| startup session | Your first session after the analyst session, or after recipe development when the campaign includes it. You start from the recipe in `robot_learning/` and the same accepted scientific model. You establish the initial scientific direction, the tools and the first useful investigation. | — |
 | goal-review session | A session in which you choose one of two actions: request the official assessment, or open one inquiry. You can measure before you choose. | goal review |
 | inquiry | A question that you open in a goal-review session, with a closure condition. You work on it in inquiry sessions until you close it. | goal-linked inquiry |
 | active inquiry | An inquiry that is open. | — |
@@ -92,10 +92,11 @@ names in code format are technical names. They keep their exact spelling.
 | session record | What the `checkpoint` operation saves: your synthesis, the goal gap, the open questions and the next step. It does not save a policy. | scientific session record |
 | checkpoint operation | The operation `checkpoint`. It saves the session record. | — |
 
-The campaign follows this cycle:
+The campaign follows this cycle. The recipe-development session occurs only
+when the campaign includes it:
 
 ```text
-analyst session -> recipe-development session -> startup session -> goal-review session
+analyst session -> [recipe-development session] -> startup session -> goal-review session
 goal-review session -> open inquiry -> inquiry sessions -> close inquiry -> goal-review session
 goal-review session -> official assessment -> end of the campaign
 ```

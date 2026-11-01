@@ -27,17 +27,19 @@ the episode start and the target are transformed the same way. A measured differ
 outcomes, beyond sampling variation, is evidence about the policy, not about
 the task.
 
-The recipe-development session receives the synthesis and the full scientific
-model. The PI selects the interventions and creates further variants from the test results.
+When the campaign includes a recipe-development session, that session receives
+the synthesis and the full scientific model. The PI selects the interventions
+and creates further variants from the test results.
 The PI develops a recipe that learns and supports startup.
 The recipe uses knowledge across all tested variants.
 The PI combines design choices supported by the results.
 The PI measures the resulting recipe to demonstrate learning progress.
 
-The startup session then receives the unchanged scientific model and the delivered recipe.
-It starts with fresh scientific state and no recipe-development evidence.
+The startup session receives the unchanged scientific model and the recipe in
+`robot_learning/`. When the campaign includes recipe development, this recipe
+is the delivered recipe, and startup receives no recipe-development evidence.
 The PI also reads the full scientific model in the startup session and selects
-the initial direction from the delivered recipe and evidence from startup.
+the initial direction.
 
 After acceptance, the scientific model stays fixed for the campaign. Later
 session records preserve or revise its consequential conclusions. The Runner
