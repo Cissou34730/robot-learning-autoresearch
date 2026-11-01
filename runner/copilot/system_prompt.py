@@ -84,6 +84,20 @@ AUTONOMY = (
     "checkpoint operation or the request for the official assessment ends it."
 )
 
+RECIPE_DEVELOPMENT_AUTONOMY = (
+    "You own recipe development in this session. The recipe-development section "
+    "of the campaign reference defines its deliverable and completion conditions. "
+    "The checkpoint operation records the evidence of learning and "
+    "delivers the canonical recipe. Startup receives the recipe and the same "
+    "scientific model, without development policies or evidence. Later sessions "
+    "pursue the campaign goal from the delivered recipe.\n\n"
+    "Only submitted operations change the campaign. Analysis moves the campaign "
+    "forward only when it leads to an operation.\n\n"
+    "Call submit_operation with the request object. The results and the changed "
+    "state return to this conversation. Continue in this conversation until the "
+    "checkpoint operation ends recipe development."
+)
+
 ANALYST_AUTONOMY = (
     "You own the physical model that this campaign starts from. Only this "
     "session writes it."
@@ -185,7 +199,7 @@ def environment() -> str:
     )
 
 
-def system_prompt(preliminary: bool) -> str:
+def system_prompt(preliminary: bool, *, session_kind: str | None = None) -> str:
     parts = [
         ANALYST_IDENTITY if preliminary else PI_IDENTITY,
         TONE,
@@ -197,13 +211,17 @@ def system_prompt(preliminary: bool) -> str:
     ]
     if preliminary:
         parts.append(_tagged("exploration_and_reading_files", ANALYST_EXPLORATION))
-    parts.append(
-        _tagged(
-            "autonomy_and_persistence", ANALYST_AUTONOMY if preliminary else AUTONOMY
-        )
-    )
+        autonomy = ANALYST_AUTONOMY
+    elif session_kind == "recipe_development":
+        autonomy = RECIPE_DEVELOPMENT_AUTONOMY
+    else:
+        autonomy = AUTONOMY
+    parts.append(_tagged("autonomy_and_persistence", autonomy))
     return "\n\n".join(parts)
 
 
-def system_message(preliminary: bool) -> dict:
-    return {"mode": "replace", "content": system_prompt(preliminary)}
+def system_message(preliminary: bool, *, session_kind: str | None = None) -> dict:
+    return {
+        "mode": "replace",
+        "content": system_prompt(preliminary, session_kind=session_kind),
+    }

@@ -192,7 +192,12 @@ def session_options(
         ),
         "tools": tools,
         "available_tools": available,
-        "system_message": system_message(args.preliminary),
+        "system_message": system_message(
+            args.preliminary,
+            session_kind=operations.state.get("session_kind")
+            if operations is not None
+            else None,
+        ),
         "working_directory": str(ROOT),
         "streaming": True,
         "enable_file_change_tracking": True,
