@@ -69,7 +69,8 @@ The tool uses `robot-learning-campaigns\campaign-1` to `campaign-<count>`,
 initializes missing slots from an existing one (adding a global Git
 `safe.directory` entry for the new folder), resets each to the recipe
 (`--recipe-ref`, default `baseline-distinct-episodes-v3-robot`; `--no-reset`
-skips this), launches each campaign as a hidden background process without a
+skips this; `--skip-recipe-development` starts the new campaigns without recipe
+development), launches each campaign as a hidden background process without a
 console window and starts a hidden monitor. The monitor stops a campaign
 cooperatively, through its stop request, at `--max-hours` of active time
 (default 6) or `--max-aiu` (default 120); campaign agents never see these caps.
@@ -131,7 +132,8 @@ Stop commands remain available while another batch is preparing/resetting.
 A reset that stops after it starts changing the campaign leaves a
 Git-administration record; TUI `start` is blocked until a reset succeeds.
 
-Reset controls retain Fresh/Baseline, Clean and recipe/baseline references.
+Reset controls retain Fresh/Baseline, Clean, Skip recipe development (Fresh
+only) and recipe/baseline references.
 The default is Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force;
 measurements and logs may be deleted without a reset backup. `start` resumes
 without resetting and leaves completed scientific outcomes unchanged. `stop`
@@ -155,8 +157,9 @@ uv run python -m tools.initialize_campaign `
 The source repository must contain the selected recipe reference. Initialization
 reads that repository without changing it, imports the scientific files into a
 new local repository, records the current task fingerprints and performs a
-Fresh recipe reset. It does not start training or an agent session. The new
-repository has no remotes. Keep its local baseline tag for future resets.
+Fresh recipe reset. Add `--skip-recipe-development` to start that campaign
+without recipe development. It does not start training or an agent session.
+The new repository has no remotes. Keep its local baseline tag for future resets.
 
 ### Reset to v3 or launch one campaign
 
@@ -172,6 +175,9 @@ uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distin
 uv run --group researcher python -m runner.launcher --provider github-copilot
 ```
 
+Fresh reset includes recipe development by default; add
+`--skip-recipe-development` to start in startup instead (Fresh only; Baseline
+always skips it). See [reset details](docs/reset-research.md#fresh).
 `.\run_research.ps1` is a shortcut for the second command and passes its
 arguments through. A reset followed by a launch:
 

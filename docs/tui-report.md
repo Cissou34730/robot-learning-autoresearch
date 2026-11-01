@@ -232,7 +232,10 @@ the interface from opening.
   Targets and options are logged before execution. Measurements/logs may be
   deleted; ignored measurements have no reset backup.
   Only the reference field for the selected reset mode is visible. `--clean`
-  is labelled as cleaning eligible changes, not merely cleaning logs.
+  is labelled as cleaning eligible changes, not merely cleaning logs. The
+  Fresh-only "Skip recipe development" checkbox (default off) passes
+  `--skip-recipe-development`; it is hidden for Baseline, which always skips
+  recipe development.
 - `run` initializes a missing standard folder from the recipe (same as
   `tools.run_parallel`), resets it (`--mode fresh --clean --recipe-ref
   baseline-distinct-episodes-v3-robot --force`) and launches it. `start`

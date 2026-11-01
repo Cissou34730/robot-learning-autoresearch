@@ -160,12 +160,16 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
   would still exclude each other. Directory restoration is no longer needed:
   each runs in its own process. The trust snapshot of both roots is unchanged
   in scope (`runner/launcher/trust.py`).
-- Recipe-only decoupling: new schema-8 campaigns use
-  `recipe_delivery_mode="isolated_v1"`. Delivery archives the development Git,
-  state and artifacts outside the public repository. The same campaign root
+- Recipe-only decoupling: campaigns that include recipe development
+  (`recipe_phase="included"`) archive the development Git,
+  state and artifacts outside the public repository at delivery. The same campaign root
   and ID then contain clean Git history, the canonical recipe, the unchanged
-  accepted scientific model and fresh scientific state. Schema-6/7 records
-  remain readable as legacy coupled campaigns, without automatic conversion
-  or live migration. Prepared Baseline compatibility is unchanged. See
+  accepted scientific model and fresh scientific state. Schema-6 records
+  normalize to `recipe_phase="skipped"`; schema 7 is no longer supported. See
   [Recipe-only delivery](runtime-mechanics.md#recipe-only-delivery) for the
   recovery marker, mutex and Windows release ordering.
+- Optional recipe development: Fresh reset, initialization and
+  `tools.run_parallel` accept `--skip-recipe-development`, and the TUI reset
+  form has a matching Fresh-only "Skip recipe development" checkbox (default
+  off). A skipped campaign records `recipe_phase="skipped"` and starts in
+  `startup`; Baseline always skips recipe development.

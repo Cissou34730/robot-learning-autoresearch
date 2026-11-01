@@ -137,7 +137,12 @@ includes current durable Runner metadata.
 
 ## Recipe-only delivery
 
-New state uses schema 8 and `recipe_delivery_mode="isolated_v1"`.
+New state uses schema 8 and `recipe_phase`, either `"included"` (the default)
+or `"skipped"`. Fresh reset accepts `--skip-recipe-development`; Baseline reset
+always writes `"skipped"`. A skipped campaign starts in `startup`; its startup
+prompt carries the inherited-recipe comparison rule instead of the delivery
+handoff, and the analyst objective omits recipe development. The rest of this
+section applies to `"included"` campaigns only.
 `runner.recipe_development.queue()` records delivery inputs only after the
 recipe-development checkpoint is finalized. The launcher closes the development
 backend before `deliver()` publishes those inputs. The PI consolidates the
@@ -174,10 +179,10 @@ The delivery log uses the private namespace. The public launcher log reopens
 only when public Git exists. After delivery, the launcher forgets the old
 session identity, clears the event namespace and rebuilds the fresh brief.
 
-Schema-6/7 records normalize in memory with `recipe_delivery_mode="legacy"`.
-Existing coupled campaigns retain their historical records and prompt handoff.
-There is no automatic conversion or live-campaign migration. Prepared Baseline
-reset compatibility remains unchanged.
+Schema-6 records normalize in memory to `recipe_phase="skipped"`. Schema 7
+(the first, coupled recipe-development design) and schema-8 states written
+before `recipe_phase` are not supported. There is no automatic conversion or
+live-campaign migration.
 
 ## Operation submission
 

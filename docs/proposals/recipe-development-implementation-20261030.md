@@ -1,8 +1,14 @@
 # Recipe Development Implementation
 
 Maintainer implementation plan, 30 October 2026. Development is approved.
-This document records the integrated implementation, validation evidence and
-remaining local commit. It does not authorize campaign execution or campaign writes.
+This document records the integrated implementation and validation evidence.
+It does not authorize campaign execution or campaign writes.
+
+Status, 1 November 2026: isolated recipe delivery replaced the record handoff
+described below. Startup receives the delivered recipe and the scientific model,
+not the recipe-development record. Recipe development is optional
+(`recipe_phase`), and schema 7 is no longer supported. See
+[Recipe-only delivery](../runtime-mechanics.md#recipe-only-delivery).
 
 ## Scope and safeguards
 
@@ -12,8 +18,7 @@ locks were free. The check covered `campaign-1` through `campaign-5` under both
 It used the launcher's canonical path and mutex naming. This documentation
 worker edits only this plan. It does not stage files, commit, create branches or push.
 
-This branch is local only. Never push it. The main agent owns integration and
-separate local stage commits. This plan does not authorize automatic campaign
+The main agent owns integration and separate stage commits. This plan does not authorize automatic campaign
 writes, resets or archival actions. Campaign folders, dependencies and other
 harness checkouts remain outside this documentation task.
 
@@ -49,8 +54,7 @@ is selective, with each variant's own learned state preserved where appropriate.
 
 Startup retains its original purpose: establish the initial scientific
 direction, develop useful tools and choose the first useful investigation.
-It receives the scientific model and the complete recipe-development record.
-Its first reference is the selected recipe, not the inherited scaffold.
+It receives the delivered recipe and the scientific model.
 The relevant original startup text was checked with `git show 511c9cfe4`.
 Later goal-review and inquiry guidance remains in place.
 
@@ -65,16 +69,15 @@ Later goal-review and inquiry guidance remains in place.
 | Combined lifecycle and instructions focused gate | Test worker and main agent | 315 passed in 50.74 seconds |
 | Independent durability audit | Independent reviewer | Complete, no concrete bug found |
 | Related fixture, brief and report repairs | Respective owners | Complete, owner checks 63 passed and 9 passed, final regression passed |
-| Final notification and brief compatibility repairs | Respective owners | Complete and validated, local follow-up commit pending |
+| Final notification and brief compatibility repairs | Respective owners | Complete, validated and committed |
 | Final full required gate and remaining completion checks | Integrator | Complete: 964 passed, 1 skipped, zero failures in 182.85 seconds |
-| Final follow-up commit | Integrator | PENDING, local only, no push |
+| Final follow-up commit | Integrator | Complete |
 
 The wording implementation adds only the missing variant term and the new
 recipe-development session term. It updates phase permissions, record meaning,
 analyst proposal ownership and the analyst's training-instrument reference.
 The runtime uses `prompts.RECIPE_DEVELOPMENT_OBJECTIVE` for the new phase.
-Startup renders the complete phase record unchanged, including in a continued
-conversation. No authority, coding or measurement excerpt boundary changed.
+No authority, coding or measurement excerpt boundary changed.
 No wording tests or new test infrastructure were added.
 
 The repair code worker completed phase ordering, the cap-zero boundary after
@@ -91,8 +94,8 @@ the harness. Neither the skeleton commit nor its tag may be pushed.
 
 Final repairs cover brief compatibility, the notification's own replacement text
 and fixture updates. The final follow-up commit also includes formatting of two
-Python files and this document. These changes are complete and validated but
-remain uncommitted, separate from the three harness stage commits.
+Python files and this document. These changes are complete, validated and committed
+separately from the three harness stage commits.
 The original startup text is restored. The agreed PI definition of done is
 unchanged. No new training cap, score threshold or fixed comparison count was
 added. Cost accounting remains token-only. No new tool was added.
@@ -163,7 +166,7 @@ Final wording checks distinguish rendered text from whole-file findings:
 - The new rendered session blocks passed STE with zero errors.
 - Two phrases in the changed brief were repaired. The changed brief and the
   notification replacement each passed STE with zero errors and zero warnings.
-  The final brief contains two sentences. These repairs remain uncommitted.
+  The final brief contains two sentences.
 - Whole-file checks retain five inherited hard errors in `contracts/program.md`,
   one in `runner/copilot/system_prompt.py` and 24 in
   `runner/launcher/prompts.py`. The last count includes a raw-source parser
@@ -182,11 +185,11 @@ Whole-file STE is not clean. The rendered result does not remove inherited
 findings or the Python-source parser artifact. Review those findings separately
 from the new rendered prose. This record does not claim full STE conformance.
 
-## Completion status and remaining commit
+## Completion status
 
 The lifecycle, independent-parent, TUI/report and skeleton CLI stages have local
 commits and focused validation. The final full required gate and completion
-checks passed. Only the local follow-up commit remains pending.
+checks passed. The follow-up changes are committed.
 
 Integration validation covered schema 6 normalization, fresh phase selection,
 both checkpoint transitions, operation permissions and interrupted or continued
@@ -199,15 +202,12 @@ Completion status:
 1. Complete: the confirmed final regression result is recorded above.
 2. Complete: touched-file formatting, lint and whitespace checks passed.
    Whole-file STE findings remain separate from rendered prose and are disclosed above.
-3. Complete: startup retains its original purpose and receives the full immutable
-   phase record and scientific model. Its first reference is the selected recipe.
-   Later inquiry checkpoints do not replace the phase record.
+3. Complete: startup retains its original purpose and receives the delivered
+   recipe and the scientific model.
 4. Complete: campaign text review checked for examples, numeric pilot anchors,
    fixed reward assumptions and maintainer guardrail leaks.
-5. Pending: record the validated follow-up changes in a local commit only.
-   Exclude the pre-existing settings, backlog and HTML report changes.
+5. Complete: the validated follow-up changes are committed.
    Preserve the skeleton's uncommitted `current_params.json`.
-   Never push this branch or the skeleton.
 
 Campaign execution remains NOT performed. No live training validated the new
 flow. Its scientific effect remains unmeasured. Automated validation does not

@@ -26,8 +26,9 @@ next successful reset removes it. Refusals before any change leave no record.
 The maintainer TUI provides the success-dependent batch form: `run 1-3` completes
 all selected resets before launching any selected campaign. Its default is
 `--mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force`.
-Fresh/Baseline, Clean and the relevant reference are configurable in the shared
-Settings dialog (F2), alongside the campaign report.
+Fresh/Baseline, Clean, Skip recipe development (Fresh only) and the relevant
+reference are configurable in the shared Settings dialog (F2), alongside the
+campaign report.
 An initialization/reset failure stops further preparation and starts none of
 the batch; earlier successful resets are not rolled back. `reset N` never
 launches, and `start N` never resets. Resetting a busy owned campaign is refused.
@@ -53,6 +54,13 @@ training logs, stale requests and generated summaries. Initializes empty
 schema-6 research history with a new campaign identity, a pending scientific
 model, and no working or best-known candidate. This is not a restore from main
 or from historical scientific code.
+
+By default the new campaign includes recipe development and starts in
+`recipe_development`. `--skip-recipe-development` (Fresh only) records
+`recipe_phase="skipped"` and starts the campaign in `startup` instead. The
+same flag is accepted by `tools.initialize_campaign` and `tools.run_parallel`.
+Baseline rejects the flag because it always skips recipe development: the
+campaign starts in `startup` from the imported model.
 
 To restore the baseline v3 scientific recipe as well:
 
@@ -82,8 +90,8 @@ Initialization and Fresh reset with this reference restore the exact analysis
 bytes from the selected commit. Both mark the scientific model ready and record
 its path and the selected commit in the existing model metadata. Both create a
 new campaign identity, fresh PI state, reset counters, empty history and no
-candidates. The campaign starts in `recipe_development` without another
-preliminary analyst invocation.
+candidates. The campaign starts in `recipe_development` (or `startup` with
+`--skip-recipe-development`) without another preliminary analyst invocation.
 
 A bare recipe reference has no analysis file. Its scientific model starts
 pending, and the preliminary analyst prepares it on the next authorized launch.
