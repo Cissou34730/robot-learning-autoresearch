@@ -29,8 +29,7 @@ In an inquiry session, `steps` is between the allocation and the longest run.
 You cannot change these values. The Runner rejects other values during
 validation, acceptance and the start of training.
 
-A standard run uses the allocation. A longer run takes proportionally more
-time. Each run adds time and AI usage to the campaign.
+A standard run uses the allocation.
 
 For `transfer` training, `parent` is required and must not be empty. For
 `fresh` training, do not give `parent`.
