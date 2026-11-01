@@ -74,6 +74,9 @@ A variant can change any PI-owned source file and any parameter:
   keys in `robot_learning/training/current_params.json`. The other values do
   not change. The trainer reads these parameters through
   `load_experiment_config()` in `robot_learning/training/research_config.py`.
+  Put the parameter changes of a variant only in its `parameters` object: the
+  Runner rejects a request when a variant folder contains
+  `training/current_params.json`.
 
 For transfer training, each variant can declare a non-empty `parent` string.
 A variant without this field uses the root `parent`.

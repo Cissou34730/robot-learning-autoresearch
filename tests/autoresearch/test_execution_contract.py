@@ -320,6 +320,20 @@ def test_nonrecipe_training_variants_refuse_check_and_accept_without_mutation(
     assert state == before
 
 
+def test_training_variant_overlay_parameters_file_is_refused(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path, session_kind="recipe_development")
+    request = _training()
+    request["training"]["variants"] = [{"label": "a"}, {"label": "b"}]
+    overlay = tmp_path / "robot_learning" / "variants" / "b" / "training"
+    overlay.mkdir(parents=True)
+    (overlay / "current_params.json").write_text("{}", encoding="utf-8")
+    repository.write_state(state)
+    before = repository.read_state()
+    with pytest.raises(ValueError, match="`parameters` field"):
+        run_experiment.accept_operation(request, state)
+    assert repository.read_state() == before
+
+
 @pytest.mark.parametrize("session_kind", ["startup", "inquiry"])
 @pytest.mark.parametrize(
     "progress", ["accepted", "recipe_published", "training_dispatched"]
@@ -944,6 +958,14 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
                         encoding="utf-8"
                     ),
                     (spec["source_root"] / "robot_learning" / "variants").exists(),
+                    json.loads(
+                        (
+                            spec["source_root"]
+                            / "robot_learning"
+                            / "training"
+                            / "current_params.json"
+                        ).read_text(encoding="utf-8")
+                    ),
                 )
                 for spec in specs
             }
@@ -1019,7 +1041,10 @@ def test_training_variants_train_together_and_record_candidates_per_variant(
 
     shorter = {**active, "ppo": {"gamma": 0.9, "n_steps": 64}}
     assert trained == [
-        {"base": (active, "base\n", False), "short": (shorter, "short\n", False)}
+        {
+            "base": (active, "base\n", False, active),
+            "short": (shorter, "short\n", False, shorter),
+        }
     ]
     completed = repository.read_state()
     result = completed["operation_events"][0]["result"]

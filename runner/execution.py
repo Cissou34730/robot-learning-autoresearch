@@ -550,7 +550,7 @@ def train_candidate(
     return time.monotonic() - started
 
 
-# The trainer of a variant reads its parameters from this file, not current_params.json.
+# Variants read merged current_params.json from their source copy; this file is a copy.
 PARAMETERS_FILE_VARIABLE = "ROBOT_LEARNING_PARAMETERS_FILE"
 
 

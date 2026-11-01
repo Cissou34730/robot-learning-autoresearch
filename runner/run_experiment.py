@@ -411,6 +411,18 @@ def _training_allocation(request: dict, state: dict) -> int:
     return request["steps"]
 
 
+def _reject_variant_parameter_overlays(request: dict) -> None:
+    for variant in request.get("variants") or []:
+        relative = (
+            f"robot_learning/variants/{variant['label']}/training/current_params.json"
+        )
+        if (paths.ROOT / relative).exists():
+            raise ValueError(
+                f"The variant file {relative} is not permitted. Put the "
+                "parameter changes of a variant in its `parameters` field."
+            )
+
+
 def _new_pending_operation(
     request: dict,
     state: dict,
@@ -421,6 +433,7 @@ def _new_pending_operation(
     _validate_new_operation_scientific_delta(state)
     if kind == "training":
         _training_allocation(request["training"], state)
+        _reject_variant_parameter_overlays(request["training"])
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
     pending = {
@@ -1849,10 +1862,15 @@ def _train_and_archive_variants(
             .get("variant_parents", {})
             .get(label, pending["data"]["parent"])
         )
+        parameters_text = json.dumps(parameters, indent=2) + "\n"
         parameters_path = candidate_dir / f"{label}.parameters.json"
-        parameters_path.write_text(
-            json.dumps(parameters, indent=2) + "\n", encoding="utf-8"
+        parameters_path.write_text(parameters_text, encoding="utf-8")
+        source_root = _variant_source(candidate_dir, label)
+        source_params = (
+            source_root / "robot_learning" / "training" / "current_params.json"
         )
+        source_params.parent.mkdir(parents=True, exist_ok=True)
+        source_params.write_text(parameters_text, encoding="utf-8")
         log_id = f"{operation_id}-{label}"
         specs.append(
             {
@@ -1862,7 +1880,7 @@ def _train_and_archive_variants(
                     if parent is not None
                     else None
                 ),
-                "source_root": _variant_source(candidate_dir, label),
+                "source_root": source_root,
                 "output_dir": candidate_dir / label,
                 "parameters_path": parameters_path,
                 "training_log": paths.training_log_path(
