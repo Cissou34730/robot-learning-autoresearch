@@ -403,6 +403,22 @@ def _run_git(arguments: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def model_choices(listing: str) -> list[tuple[str, str]]:
+    """``(label, provider/model)`` for each usable model of a model listing.
+
+    A listed model with a note other than ``free`` cannot run in the harness.
+    """
+    choices: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for line in listing.splitlines():
+        model, _, note = line.strip().partition("\t")
+        if "/" not in model or model in seen or note not in {"", "free"}:
+            continue
+        seen.add(model)
+        choices.append((f"{model}  (free)" if note else model, model))
+    return choices
+
+
 def _unfinished_reset(folder: Path) -> str:
     marker = reset_marker_path(folder)
     return (
@@ -554,6 +570,14 @@ class CampaignController:
         if settings.provider:
             arguments += ["--provider", settings.provider]
         return self._runner(arguments)
+
+    def model_choices(self) -> list[tuple[str, str]]:
+        """Every usable model of every provider, for the settings picker."""
+        result = self.list_models(LaunchSettings())
+        if result.returncode:
+            detail = (result.stderr or result.stdout).strip().splitlines()
+            raise ControllerError(detail[-1] if detail else "Model listing failed.")
+        return model_choices(result.stdout)
 
     # -- Command surface ---------------------------------------------------
     def execute(

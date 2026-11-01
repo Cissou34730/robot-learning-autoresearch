@@ -292,7 +292,9 @@ runtime when the next session uses another backend. A resumed session keeps
 the model and reasoning that it recorded at its start; relaunch with the same
 phase options until its checkpoint. The coder follows the model of the session
 it serves. `tools.run_parallel` forwards the same options to each launcher, and
-the TUI F2 settings offer the same fields.
+the TUI F2 settings offer the same fields, with a model picker over every
+provider's listed models. `github-copilot/<model>` and `<model>` name the same
+Copilot model.
 
 One `OPENCODE_API_KEY` authorizes both Zen and Go.
 Configure it locally, never in repository files or chat.

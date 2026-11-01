@@ -56,6 +56,7 @@ from tui.controller import (
     LaunchSettings,
     ResetConfig,
     WorkspaceLayout,
+    model_choices,
     parse_command,
 )
 from tui.phase_presentation import (
@@ -112,6 +113,7 @@ def help_text() -> str:
         "clean way).\n\n"
         "F2 Settings: shared launch parameters and Fresh/Baseline reset options.\n"
         "Model and Reasoning apply to every phase; a per-phase field overrides them.\n"
+        "Model fields pick from every provider's listed models (provider/model).\n"
         "Empty launch fields use launcher defaults: gpt-6-luna, analyst max and other\n"
         "phases high reasoning, 120000 timesteps, 360000 max timesteps, 15 inquiries\n"
         "and 180s stop timeout.\n\n"
@@ -206,6 +208,7 @@ class CampaignConsole(App):
             layout, machinery if machinery is not None else LauncherMachinery(harness)
         )
         self._settings_reader = CommandInputs()
+        self._model_choices: list[tuple[str, str]] | None = None
         self._last_stop_timeout: int = DEFAULT_STOP_TIMEOUT
         self._command_thread: threading.Thread | None = None
         self._command_running = False
@@ -546,10 +549,11 @@ class CampaignConsole(App):
                 label = f"campaign-{slot}"
                 self._tab_overrides.pop(label, None)
                 self._tab_idle_since[label] = None
-        self._log(
-            f"> {text}\nTargets: "
-            + ", ".join(str(self._layout.folder(s)) for s in slots)
-        )
+        if verb != "models":
+            self._log(
+                f"> {text}\nTargets: "
+                + ", ".join(str(self._layout.folder(s)) for s in slots)
+            )
         self._log(
             "Launcher options: "
             + (
@@ -598,10 +602,22 @@ class CampaignConsole(App):
         try:
             if verb == "models":
                 result = self._controller.list_models(settings)
-                message = result.stdout + result.stderr
                 if result.returncode:
+                    message = "> " + text + "\nModel listing failed."
                     self.call_from_thread(
-                        self.push_screen, ConsoleDetail("Model listing failed", message)
+                        self.push_screen,
+                        ConsoleDetail(
+                            "Model listing failed", result.stdout + result.stderr
+                        ),
+                    )
+                else:
+                    choices = model_choices(result.stdout)
+                    if not settings.provider:
+                        self._model_choices = choices
+                    message = f"> {text}\n{len(choices)} usable models listed."
+                    self.call_from_thread(
+                        self.push_screen,
+                        ConsoleDetail("Available models", result.stdout.strip()),
                     )
             else:
                 outcome = self._controller.execute(
@@ -801,8 +817,18 @@ class CampaignConsole(App):
     def action_settings(self) -> None:
         if not isinstance(self.screen, SharedSettings):
             self.push_screen(
-                SharedSettings(self._settings_reader.values), self._settings_saved
+                SharedSettings(
+                    self._settings_reader.values,
+                    models=self._model_choices,
+                    load_models=self._load_model_choices,
+                ),
+                self._settings_saved,
             )
+
+    def _load_model_choices(self) -> list[tuple[str, str]]:
+        """Runs off the UI thread; the list is kept for this console session."""
+        self._model_choices = self._controller.model_choices()
+        return self._model_choices
 
     def _settings_saved(self, values: dict | None) -> None:
         if values is not None:

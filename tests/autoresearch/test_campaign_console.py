@@ -130,6 +130,11 @@ def _console(tmp_path: Path, machinery):
         machinery=machinery,
     )
     app._idle_tracker = TabIdleTracker(tmp_path / "tab-control")
+    # The settings picker never lists real models in a test.
+    app._load_model_choices = lambda: [
+        ("github-copilot/gpt-6-luna", "github-copilot/gpt-6-luna"),
+        ("opencode-go/a  (free)", "opencode-go/a"),
+    ]
     # A non-repository test harness must not fail the launcher preflight.
     app._controller._preflight = control.HarnessPreflight(
         layout.harness_root,
@@ -914,10 +919,44 @@ def test_a_new_external_slot_is_inserted_in_order_without_changing_selection(tmp
     asyncio.run(scenario())
 
 
+def test_model_listing_opens_the_list_and_feeds_the_settings_picker(tmp_path):
+    from textual.widgets import Select
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.console_screens import ConsoleDetail
+
+    app, _layout = _console(tmp_path, FakeMachinery())
+    listing = "github-copilot/gpt-6-sol\nopencode/old\tdeprecated\n"
+    app._controller.list_models = lambda _settings: subprocess.CompletedProcess(
+        [], 0, stdout=listing, stderr=""
+    )
+    app._load_model_choices = lambda: pytest.fail("the listing is already known")
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            await _run_from_panel(app, pilot, "models")
+            for _ in range(100):
+                if isinstance(app.screen, ConsoleDetail):
+                    break
+                await pilot.pause(0.05)
+            assert isinstance(app.screen, ConsoleDetail)
+            assert app._model_choices == [
+                ("github-copilot/gpt-6-sol", "github-copilot/gpt-6-sol")
+            ]
+            await pilot.press("escape")
+            await pilot.press("f2")
+            await pilot.pause()
+            picker = app.screen.query_one("#cmd-model", Select)
+            picker.value = "github-copilot/gpt-6-sol"
+
+    asyncio.run(scenario())
+
+
 def test_settings_cancel_is_read_only_and_a_command_uses_applied_settings(
     tmp_path,
 ):
-    from textual.widgets import Input, TabbedContent
+    from textual.widgets import Select, TabbedContent
 
     from tests.autoresearch.test_campaign_controller import FakeMachinery
 
@@ -929,22 +968,26 @@ def test_settings_cancel_is_read_only_and_a_command_uses_applied_settings(
             await pilot.pause()
             assert app.query_one(TabbedContent).active == "campaign-1"
             await _run_from_panel(app, pilot, "settings")
-            app.screen.query_one("#cmd-model", Input).value = "must-not-apply"
+            await app.workers.wait_for_complete()
+            await pilot.pause()
+            app.screen.query_one("#cmd-model", Select).value = "opencode-go/a"
             await pilot.press("escape")
             await pilot.pause()
             assert app._settings_reader.settings().model is None
             assert machinery.started == []
             await pilot.press("f2")
             await pilot.pause()
-            app.screen.query_one("#cmd-model", Input).value = "selected-model"
+            picker = app.screen.query_one("#cmd-analyst-model", Select)
+            picker.value = "github-copilot/gpt-6-luna"
             await pilot.click("#settings-apply")
             await pilot.pause()
             assert machinery.started == []
             await _run_from_panel(app, pilot, "start")
             assert len(machinery.started) == 1
             assert machinery.started[0][0] == layout.folder(1)
-            assert "must-not-apply" not in machinery.started[0][1]
-            assert "selected-model" in machinery.started[0][1]
+            assert "opencode-go/a" not in machinery.started[0][1]
+            assert "--analyst-model" in machinery.started[0][1]
+            assert "github-copilot/gpt-6-luna" in machinery.started[0][1]
             assert "-MaxInquiries" not in machinery.started[0][1]
 
     asyncio.run(scenario())

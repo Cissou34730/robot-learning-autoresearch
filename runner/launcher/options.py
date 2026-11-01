@@ -39,7 +39,8 @@ def resolve_model(model: str | None, provider: str | None) -> str:
                 raise ValueError("The model prefix and selected provider do not match.")
         elif provider != "github-copilot":
             return f"{provider}/{model}"
-    return model
+    # Copilot models are recorded without their provider, as the adapter uses them.
+    return model.removeprefix("github-copilot/")
 
 
 def phase_of(session_kind: str) -> str:

@@ -130,6 +130,11 @@ def test_each_phase_resolves_its_own_backend():
     assert set(backends("--model", "m", "--reasoning", "low").values()) == {
         ("m", "low")
     }
+    # The picker's Copilot form and the bare name are the same backend.
+    assert backends("--model", "github-copilot/gpt-6-sol")["startup"] == (
+        "gpt-6-sol",
+        "high",
+    )
     assert backends(
         "--model",
         "m",

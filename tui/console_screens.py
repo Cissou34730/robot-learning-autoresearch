@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import ClassVar
 
 from textual.app import ComposeResult
@@ -20,6 +21,13 @@ PHASE_LABELS = {
 }
 
 
+def _model_options(models: list[tuple[str, str]], value: str) -> list[tuple[str, str]]:
+    """The listed models, keeping a saved value that the list does not contain."""
+    if value and value not in {model for _label, model in models}:
+        return [(value, value), *models]
+    return list(models)
+
+
 class CommandInputs:
     """Session-only shared settings; empty values preserve launcher omission."""
 
@@ -33,6 +41,8 @@ class CommandInputs:
         "cmd-stop-timeout",
         *(f"cmd-{phase}-{part}" for phase in PHASES for part in ("model", "reasoning")),
     )
+    # Model fields are pickers over the listed models; the others are text.
+    MODEL_FIELD_IDS = ("cmd-model", *(f"cmd-{phase}-model" for phase in PHASES))
 
     def __init__(self, values: dict | None = None) -> None:
         self.values = {field: "" for field in self.FIELD_IDS}
@@ -112,6 +122,9 @@ class SharedSettings(ModalScreen[dict | None]):
     .setting-field Static { height: 1; }
     .setting-field Input { height: 1; border: none; padding: 0 1; background: $boost; }
     .setting-field Input:focus { text-style: bold; background: $primary 25%; }
+    .setting-field Select { height: 1; }
+    .setting-field SelectCurrent { border: none; background: $boost; }
+    #model-status { height: auto; color: $text-muted; }
     #reset-heading { height: 1; margin-top: 1; text-style: bold; }
     #reset-controls { height: 3; }
     #reset-mode { width: 20; }
@@ -124,9 +137,33 @@ class SharedSettings(ModalScreen[dict | None]):
     #settings-actions Button { margin-left: 1; border: none; padding: 1 1; }
     """
 
-    def __init__(self, values: dict) -> None:
+    def __init__(
+        self,
+        values: dict,
+        *,
+        models: list[tuple[str, str]] | None = None,
+        load_models: Callable[[], list[tuple[str, str]]] | None = None,
+    ) -> None:
         super().__init__()
         self.values = dict(values)
+        self._models = models
+        self._load_models = load_models
+
+    def _field(self, field: str, label: str, placeholder: str) -> ComposeResult:
+        with Vertical(classes="setting-field"):
+            yield Static(label)
+            value = self.values[field]
+            if field in CommandInputs.MODEL_FIELD_IDS:
+                yield Select(
+                    _model_options(self._models or [], value),
+                    prompt=placeholder,
+                    allow_blank=True,
+                    compact=True,
+                    id=field,
+                    **({"value": value} if value else {}),
+                )
+            else:
+                yield Input(value=value, placeholder=placeholder, id=field)
 
     def compose(self) -> ComposeResult:
         fields = (
@@ -156,16 +193,11 @@ class SharedSettings(ModalScreen[dict | None]):
                 "Applies to future commands, not active runs. Empty fields keep launcher defaults.",
                 id="settings-note",
             )
+            yield Static("", id="model-status", markup=False)
             with VerticalScroll(id="settings-scroll"):
                 with Grid(id="launch-fields"):
                     for field, label, placeholder in fields:
-                        with Vertical(classes="setting-field"):
-                            yield Static(label)
-                            yield Input(
-                                value=self.values[field],
-                                placeholder=placeholder,
-                                id=field,
-                            )
+                        yield from self._field(field, label, placeholder)
                 yield Static(
                     "Per-phase backend — overrides Model / Reasoning",
                     id="phase-heading",
@@ -177,14 +209,9 @@ class SharedSettings(ModalScreen[dict | None]):
                             ("model", "Model (all phases)"),
                             ("reasoning", f"Reasoning (all phases), else {reasoning}"),
                         ):
-                            field = f"cmd-{phase}-{part}"
-                            with Vertical(classes="setting-field"):
-                                yield Static(f"{label} {part}")
-                                yield Input(
-                                    value=self.values[field],
-                                    placeholder=placeholder,
-                                    id=field,
-                                )
+                            yield from self._field(
+                                f"cmd-{phase}-{part}", f"{label} {part}", placeholder
+                            )
                 yield Static(
                     "Reset options — used only by run / reset", id="reset-heading"
                 )
@@ -227,6 +254,35 @@ class SharedSettings(ModalScreen[dict | None]):
     def on_mount(self) -> None:
         self.on_resize()
         self._reset_fields()
+        if self._models is None and self._load_models is not None:
+            self.query_one("#model-status", Static).update("Loading the model list…")
+            self.run_worker(self._fetch_models, thread=True, exclusive=True)
+
+    def _fetch_models(self) -> None:
+        try:
+            models = self._load_models()
+        except Exception as error:  # noqa: BLE001 - the operator sees the reason
+            self.app.call_from_thread(
+                self._model_status, f"Model list unavailable: {error}"
+            )
+            return
+        self.app.call_from_thread(self._show_models, models)
+
+    def _model_status(self, text: str) -> None:
+        if self.is_attached:
+            self.query_one("#model-status", Static).update(text)
+
+    def _show_models(self, models: list[tuple[str, str]]) -> None:
+        if not self.is_attached:
+            return
+        self._models = models
+        for field in CommandInputs.MODEL_FIELD_IDS:
+            picker = self.query_one(f"#{field}", Select)
+            value = "" if picker.is_blank() else str(picker.value)
+            picker.set_options(_model_options(models, value))
+            if value:
+                picker.value = value
+        self._model_status("")
 
     def on_resize(self) -> None:
         self.set_class(self.size.width < 70, "narrow")
@@ -249,7 +305,11 @@ class SharedSettings(ModalScreen[dict | None]):
             values = {
                 field: self.query_one(f"#{field}", Input).value
                 for field in CommandInputs.FIELD_IDS
+                if field not in CommandInputs.MODEL_FIELD_IDS
             }
+            for field in CommandInputs.MODEL_FIELD_IDS:
+                picker = self.query_one(f"#{field}", Select)
+                values[field] = "" if picker.is_blank() else str(picker.value)
             values.update(
                 {
                     "reset-mode": str(self.query_one("#reset-mode", Select).value),

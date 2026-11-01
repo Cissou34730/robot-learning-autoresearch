@@ -212,8 +212,12 @@ the interface from opening.
   parser, the list, the help and the unknown-command message. `start` resumes
   the active campaign without resetting; `run` resets and starts it.
 - **F2** (or `/settings`) opens one labelled, scrollable dialog for Model, Provider,
-  Reasoning, Timesteps, MaxTimesteps, MaxInquiries and StopTimeoutSeconds, plus
-  reset options. Apply affects future commands only; Cancel/Esc discards edits.
+  Reasoning, Timesteps, MaxTimesteps, MaxInquiries and StopTimeoutSeconds, a
+  model and reasoning per phase, plus reset options. The model fields are
+  pickers over one merged `provider/model` list of GitHub Copilot, OpenCode Zen
+  and OpenCode Go. The dialog loads it in the background on first use, or reuses
+  the list from `/models`; models that the harness cannot run are left out.
+  Apply affects future commands only; Cancel/Esc discards edits.
   Empty launch fields preserve launcher defaults and argument omission.
   Every campaign in one batch receives the same settings snapshot.
 - **Ctrl+F** (or `/search`) searches the log of the active campaign.
@@ -223,7 +227,7 @@ the interface from opening.
   descending and out-of-bounds selections are refused before any action.
   Without any installed campaign, an empty state requires
   explicit targets and shows no fake campaign tab. `models` lists available models
-  through the existing launcher. `diagnostics campaign-1` shows the last 64 KiB
+  through the existing launcher in a detail window. `diagnostics campaign-1` shows the last 64 KiB
   of each run-private console log, separately from scientific observations.
   **F1** opens command help; **F3** opens recent commands and persistent step
   details from this TUI session. The main report does not repeat help as activity.

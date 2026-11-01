@@ -276,6 +276,15 @@ def test_settings_preserve_omitted_arguments():
     ]
     with pytest.raises(control.CommandError):
         control.LaunchSettings(phase_reasoning={"startup": "huge"}).launcher_arguments()
+    assert control.model_choices(
+        "github-copilot/gpt-6-luna\n"
+        "opencode/beam-free\tfree\n"
+        "opencode/old\t'opencode/old' is deprecated in the OpenCode catalog.\n"
+        "github-copilot/gpt-6-luna\n"
+    ) == [
+        ("github-copilot/gpt-6-luna", "github-copilot/gpt-6-luna"),
+        ("opencode/beam-free  (free)", "opencode/beam-free"),
+    ]
     assert settings.launcher_arguments() == [
         "--model",
         "gpt-6-luna",
