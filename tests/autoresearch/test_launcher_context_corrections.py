@@ -120,7 +120,7 @@ def test_first_session_context_delivers_current_recipe_not_variant_sources(
     availability = protocol.session_operation_availability(state)
     result = prompts.scientific_session_prompt(state, availability, context)
     assert all(
-        content in result.text
+        result.text.count(content) == 1
         for relative, content in files.items()
         if "/variants/" not in relative and "/lab/" not in relative
     )

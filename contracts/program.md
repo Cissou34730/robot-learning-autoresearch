@@ -39,17 +39,16 @@ installed APIs. A successful execution establishes compatibility only for the
 calls that it exercises. It does not establish scientific validity or progress
 toward the goal.
 
-Before a costly experiment, identify the assumptions whose failure prevents
+Before an experiment, identify the assumptions whose failure prevents
 its result from answering the intended question. These assumptions include the
 choice of the method, not only the correctness of its implementation. Use the
 existing evidence to judge them.
 
-Choose an additional check when its possible results can change your plan and
-justify the effort to implement and execute it. The existing evidence can be
-sufficient. If you continue with an unresolved assumption, record it and limit
-the resulting claim to match. When you request a diagnostic, state the
-conditions that it needs to answer your question. When these conditions do not
-hold, limit your conclusions.
+Choose an additional check when its possible results can change your plan.
+The existing evidence can be sufficient. If you continue with an unresolved
+assumption, record it and limit the resulting claim to match. When you request
+a diagnostic, state the conditions that it needs to answer your question.
+When these conditions do not hold, limit your conclusions.
 
 The Runner is not a scientific decision-maker. It enforces the operational
 limits, executes the requests that it accepts and records the factual results.
@@ -155,7 +154,7 @@ defines how to submit variants and continue training.
 
 Fresh training of the same recipe can vary. If this variation can affect
 candidate selection or your next decision, repeat training to resolve that
-uncertainty. Match the effort to the uncertainty that affects the decision.
+uncertainty.
 State the remaining uncertainty before you attribute differences to a design
 choice.
 
@@ -330,10 +329,7 @@ comparisons when they are available. A new description does not establish a
 new method. An inconclusive result alone does not justify another attempt or
 the abandonment of the method.
 
-When you repeat work, state the additional evidence or development that it can
-give. When you choose between useful actions, consider the effort to implement
-and execute them. Record the reason in the `rationale` field and in the session
-record.
+When you repeat work, state the additional evidence or development that it can give.
 
 An inquiry can close with unresolved causes. State which explanations remain
 open and which evidence can separate them. Carry their consequences for

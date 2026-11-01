@@ -1064,15 +1064,23 @@ def plan_model_role(request: dict, state: dict) -> dict:
 
 
 def plan_recipe_paths(commit: str, selected_paths: list[str] | None = None) -> dict:
+    from runner import recipe_development
+
     repository.require_resolvable_commit(commit)
     changed = (
         selected_paths
         if selected_paths is not None
         else [
             path
-            for path in repository.scientific_delta(commit)
-            if is_researcher_owned(path)
-            or path.replace("\\", "/") in PARAMETER_ONLY_PATHS
+            for path in dict.fromkeys(
+                [
+                    *repository.git(
+                        "ls-tree", "-r", "--name-only", commit, "--", "robot_learning"
+                    ).splitlines(),
+                    *repository.scientific_delta(commit),
+                ]
+            )
+            if recipe_development.is_recipe_source(path)
         ]
     )
     restore: list[str] = []
@@ -1091,61 +1099,33 @@ def plan_recipe_paths(commit: str, selected_paths: list[str] | None = None) -> d
 
 def plan_recipe_restore(request: dict, state: dict) -> dict:
     session = require_active_session(state)
-    if set(request) != {"candidate", "reason", "paths"}:
+    if set(request) != {"candidate", "reason"}:
         raise ValueError(
-            "restore_recipe requires candidate, reason and explicit paths; "
-            "unselected measurement sources are preserved"
+            "restore_recipe requires candidate and reason. "
+            "The complete scientific recipe is restored."
         )
     candidate = resolve_candidate(
         state, _nonempty(request, "candidate", "restore candidate")
     )
     _nonempty(request, "reason", "restore reason")
-    requested_paths = request["paths"]
-    if not isinstance(requested_paths, list) or not requested_paths:
-        raise ValueError("restore_recipe paths must be a nonempty exact-file list")
-    selected = []
-    for path in requested_paths:
-        if not isinstance(path, str):
-            raise TypeError("restore_recipe paths must be strings")
-        relative = repository.canonical_repo_path(path)
-        if (
-            not is_researcher_owned(relative)
-            or is_campaign_lab(relative)
-            or relative == "pi_workspace/operation_request.json"
-        ):
-            raise ValueError(
-                f"restore_recipe path is not a learning-recipe source: {relative}"
-            )
-        current = repository.resolve_repo_path(relative)
-        historical = repository.tracked_at_commit(
-            candidate["scientific_commit"], relative
-        )
-        if not historical:
-            from runner import recipe_development
+    plan = plan_recipe_paths(candidate["scientific_commit"])
+    from runner import recipe_development
 
-            recorded_variant = recipe_development._variant_paths(
-                state,
-                {
-                    "candidate_id": candidate["id"],
-                    "parent": candidate["scientific_commit"],
-                    "restore": [relative],
-                    "remove_created": [],
-                },
-            )
-            historical = recorded_variant is not None and relative in recorded_variant
-        if current.is_dir() or (not historical and not current.is_file()):
-            raise ValueError(
-                f"restore_recipe requires an existing or recorded file: {relative}"
-            )
-        if relative in selected:
-            raise ValueError(f"restore_recipe paths contains duplicate: {relative}")
-        selected.append(relative)
-    if "robot_learning/training/current_params.json" not in selected:
-        raise ValueError(
-            "restore_recipe paths must include robot_learning/training/current_params.json "
-            "to restore the candidate's recorded parameters"
+    mapping = recipe_development._variant_paths(
+        state, {**plan, "candidate_id": candidate["id"]}, full_recipe=True
+    )
+    if mapping is not None:
+        selected = dict.fromkeys(
+            [*plan["restore"], *plan["remove_created"], *mapping, *PARAMETER_ONLY_PATHS]
         )
-    plan = plan_recipe_paths(candidate["scientific_commit"], selected)
+        plan["restore"] = [
+            relative
+            for relative in selected
+            if relative in mapping or relative in PARAMETER_ONLY_PATHS
+        ]
+        plan["remove_created"] = [
+            relative for relative in selected if relative not in plan["restore"]
+        ]
     return {
         **plan,
         "candidate_id": candidate["id"],
@@ -1505,7 +1485,6 @@ def operation_body_schema(kind: str) -> dict:
             {
                 "candidate": text,
                 "reason": text,
-                "paths": {**strings, "minItems": 1},
             }
         )
     if kind == "campaign_conclusion":

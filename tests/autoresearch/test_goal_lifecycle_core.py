@@ -1747,21 +1747,37 @@ def test_official_assessment_rejects_role_backed_only_by_failed_evidence(
 def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
     monkeypatch, tmp_path
 ):
-    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Return to the recorded scientific recipe.")
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    candidate["scientific_commit"] = "source"
+    state["candidates"][candidate["id"]] = candidate
     source = tmp_path / "robot_learning" / "scenario"
     source.mkdir(parents=True)
     edited = source / "edited.py"
     deleted = source / "deleted.py"
     edited.write_text("value = 1\n", encoding="utf-8")
     deleted.write_text("present = True\n", encoding="utf-8")
+    parameters = tmp_path / "robot_learning" / "training" / "current_params.json"
+    parameters.parent.mkdir(parents=True)
     snapshot = {
         "robot_learning/scenario/edited.py": "value = 1\n",
         "robot_learning/scenario/deleted.py": "present = True\n",
+        "robot_learning/training/current_params.json": json.dumps(
+            candidate["parameters"]
+        ),
     }
+    parameters.write_text('{"training": {"n_envs": 2}}', encoding="utf-8")
     edited.write_text("value = 2\n", encoding="utf-8")
     deleted.unlink()
     added = source / "added.py"
     added.write_text("extra = True\n", encoding="utf-8")
+    laboratory = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
+    laboratory.parent.mkdir(parents=True)
+    laboratory.write_text("diagnostic = True\n", encoding="utf-8")
+    history = '{"id": "failed-attempt"}\n'
+    paths.RESULTS_PATH.write_text(history, encoding="utf-8")
 
     def restore_paths(commit: str, restorable: list[str]) -> None:
         assert commit == "source"
@@ -1772,17 +1788,226 @@ def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
 
     monkeypatch.setattr(repository, "restore_paths", restore_paths)
     monkeypatch.setattr(repository, "git", lambda *_args, **_kwargs: "")
-    plan = {
-        "parent": "source",
-        "restore": list(snapshot),
-        "remove_created": ["robot_learning/scenario/added.py"],
+    monkeypatch.setattr(
+        repository,
+        "scientific_delta",
+        lambda _commit: [*snapshot, "robot_learning/scenario/added.py"],
+    )
+    monkeypatch.setattr(
+        repository, "tracked_at_commit", lambda _commit, path: path in snapshot
+    )
+    request = {
+        "candidate": candidate["id"],
+        "reason": "Return to the selected checkpoint.",
     }
-    repository.apply_recipe_restore(plan)
+    protocol.validate_operation_shape("restore_recipe", request)
+    plan = protocol.plan_recipe_restore(request, state)
+    result = {}
+
+    def complete_operation(current, restored_result, apply):
+        repository._validate_completed_event_result("restore_recipe", restored_result)
+        result.update(restored_result)
+        apply(current, restored_result)
+
+    monkeypatch.setattr(run_experiment, "_complete_operation", complete_operation)
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: json.loads(parameters.read_text(encoding="utf-8")),
+    )
+    retained = tmp_path / "retained" / "candidate"
+    monkeypatch.setattr(
+        repository, "durable_artifact_destination", lambda **_kwargs: retained
+    )
+    pending = {"progress": "restoring", "data": {"plan": plan}}
+    assert run_experiment._execute_recipe_restore(state, pending) == 0
 
     assert repository.recipe_paths_match_commit(plan)
     assert edited.read_text(encoding="utf-8") == "value = 1\n"
     assert deleted.read_text(encoding="utf-8") == "present = True\n"
+    assert json.loads(parameters.read_text(encoding="utf-8")) == candidate["parameters"]
     assert not added.exists()
+    assert laboratory.read_text(encoding="utf-8") == "diagnostic = True\n"
+    assert paths.RESULTS_PATH.read_text(encoding="utf-8") == history
+    assert repository.artifact_fingerprint(artifact) == candidate["fingerprint"]
+    assert repository.artifact_fingerprint(retained) == candidate["fingerprint"]
+    assert candidate["artifact"] == repository.repo_relative_path(retained)
+    assert state["model_roles"]["working"] == candidate["id"]
+    assert state["model_roles"]["best_known"] is None
+    assert state["model_roles"]["retained"] == {}
+    assert state["scientific_session"]["scientific_parent_commit"] == "source"
+    assert result == {
+        "status": "restored",
+        "candidate": candidate["id"],
+        "scientific_commit": "source",
+        "parameters": candidate["parameters"],
+        "restored_paths": list(snapshot),
+        "removed_paths": ["robot_learning/scenario/added.py"],
+    }
+
+
+@pytest.mark.parametrize("changed", ["parameters", "source"])
+def test_recipe_restore_rejects_changed_frozen_inputs_before_mutation(
+    monkeypatch, tmp_path, changed
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Restore frozen recipe inputs.")
+    candidate = _candidate("T1:checkpoint-10", _artifact(tmp_path / "candidate"))
+    state["candidates"][candidate["id"]] = candidate
+    relative = "robot_learning/training/current_params.json"
+    parameters = tmp_path / relative
+    parameters.parent.mkdir(parents=True)
+    parameters.write_text(json.dumps(candidate["parameters"]), encoding="utf-8")
+    monkeypatch.setattr(repository, "git", lambda *_args: "")
+    monkeypatch.setattr(repository, "scientific_delta", lambda _commit: [relative])
+    monkeypatch.setattr(repository, "tracked_at_commit", lambda *_args: True)
+    request = {"candidate": candidate["id"], "reason": "Restore the frozen recipe."}
+    plan = copy.deepcopy(protocol.plan_recipe_restore(request, state))
+    pending = {
+        "progress": "accepted",
+        "request": {"restore_recipe": request},
+        "data": {
+            "plan": plan,
+            "pre_restore_manifest": run_experiment._scientific_manifest([relative]),
+        },
+    }
+    if changed == "parameters":
+        candidate["parameters"] = {"training": {"n_envs": 2}}
+    else:
+        parameters.write_text('{"training": {"n_envs": 2}}', encoding="utf-8")
+    before_pending = copy.deepcopy(pending)
+    before_parameters = parameters.read_bytes()
+    monkeypatch.setattr(
+        repository, "write_state", lambda *_args: pytest.fail("no state mutation")
+    )
+    monkeypatch.setattr(
+        repository,
+        "publish_artifact",
+        lambda *_args: pytest.fail("no artifact mutation"),
+    )
+    with pytest.raises(run_experiment.FrozenOperationMismatch):
+        run_experiment._execute_recipe_restore(state, pending)
+    assert pending == before_pending
+    assert parameters.read_bytes() == before_parameters
+
+
+@pytest.mark.parametrize("version", [6, 7, 8])
+@pytest.mark.parametrize("status", ["completed", "failed"])
+def test_historical_recipe_restore_records_remain_readable_without_rewriting(
+    monkeypatch, tmp_path, version, status
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Read historical recipe restorations.")
+    request = {
+        "candidate": "T1:checkpoint-10",
+        "reason": "Restore recorded files.",
+        "paths": ["robot_learning/training/current_params.json"],
+    }
+    event = {
+        "id": "E1",
+        "kind": "restore_recipe",
+        "session_id": state["scientific_session"]["id"],
+        "inquiry_id": None,
+        "request": request,
+        "result": {
+            "status": "restored",
+            "candidate": request["candidate"],
+            "scientific_commit": "b" * 40,
+            "restored_paths": request["paths"],
+        },
+        "status": "completed",
+        "error": None,
+        "supersedes": None,
+        "superseded_by": None,
+        "completed_at": "now",
+    }
+    state["operation_events"] = [event]
+    if status == "failed":
+        successor = copy.deepcopy(event)
+        successor.update(id="E2", supersedes="E1")
+        event.update(
+            status="failed",
+            result={"status": "failed", "error": "historical failure"},
+            error="historical failure",
+            superseded_by="E2",
+        )
+        state["operation_events"].append(successor)
+    state["schema_version"] = version
+    if version < 8:
+        state.pop("recipe_delivery_mode")
+    if version == 6:
+        state.pop("campaign_phase")
+        state.pop("recipe_development")
+    paths.STATE_PATH.write_text(json.dumps(state), encoding="utf-8")
+    before = paths.STATE_PATH.read_bytes()
+    loaded = repository.load_state(allow_missing_artifact=True)
+    assert loaded["operation_events"] == state["operation_events"]
+    assert paths.STATE_PATH.read_bytes() == before
+    with pytest.raises(ValueError, match="extra=.*paths"):
+        protocol.validate_operation_shape("restore_recipe", request)
+
+
+@pytest.mark.parametrize("version", [6, 7, 8])
+@pytest.mark.parametrize("progress", ["accepted", "restoring"])
+def test_legacy_pending_recipe_restore_refuses_before_state_or_handoff_mutation(
+    monkeypatch, tmp_path, version, progress
+):
+    state = _configure(monkeypatch, tmp_path)
+    session = _start_session(state, "startup", "Preserve a historical pending restore.")
+    request = {
+        "restore_recipe": {
+            "candidate": "T1:checkpoint-10",
+            "reason": "Restore only recorded parameters.",
+            "paths": ["robot_learning/training/current_params.json"],
+        }
+    }
+    state["pending_operation"] = {
+        "id": "E1",
+        "kind": "restore_recipe",
+        "session_id": session["id"],
+        "inquiry_id": None,
+        "request": request,
+        "request_fingerprint": run_experiment._canonical_fingerprint(request),
+        "progress": progress,
+        "failure": None,
+        "supersedes": None,
+        "data": {
+            "plan": {
+                "parent": "b" * 40,
+                "restore": request["restore_recipe"]["paths"],
+                "remove_created": [],
+                "candidate_id": "T1:checkpoint-10",
+                "parameters": {"training": {"n_envs": 1}},
+                "session_id": session["id"],
+            },
+            "pre_restore_manifest": [],
+            "result": None,
+        },
+    }
+    state["schema_version"] = version
+    if version < 8:
+        state.pop("recipe_delivery_mode")
+    if version == 6:
+        state.pop("campaign_phase")
+        state.pop("recipe_development")
+    paths.STATE_PATH.write_text(json.dumps(state), encoding="utf-8")
+    paths.OPERATION_REQUEST_PATH.write_bytes(b"unchanged request handoff")
+    before = paths.STATE_PATH.read_bytes()
+    repository.load_state(allow_missing_artifact=True)
+    monkeypatch.setattr(
+        repository, "write_state", lambda *_args: pytest.fail("state must not change")
+    )
+    monkeypatch.setattr(
+        repository,
+        "apply_recipe_restore",
+        lambda *_args: pytest.fail("recipe must not change"),
+    )
+    with pytest.raises(
+        ValueError, match="Legacy partial recipe restoration cannot resume"
+    ):
+        run_experiment.execute_pending_operation()
+    assert paths.STATE_PATH.read_bytes() == before
+    assert paths.OPERATION_REQUEST_PATH.read_bytes() == b"unchanged request handoff"
 
 
 def test_task_reference_uses_frozen_protected_contract(monkeypatch, tmp_path):

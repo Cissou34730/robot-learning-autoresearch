@@ -1017,9 +1017,21 @@ def _require_exact_fields(value: object, fields: set[str], description: str) -> 
     return value
 
 
-def _validate_operation_request_shape(kind: str, request: object) -> None:
+def _validate_historical_operation_request_shape(kind: str, request: object) -> None:
     from runner.protocol import validate_operation_shape
 
+    if (
+        kind == "restore_recipe"
+        and isinstance(request, dict)
+        and set(request) == {"candidate", "reason", "paths"}
+    ):
+        validate_operation_shape(
+            kind, {field: request[field] for field in ("candidate", "reason")}
+        )
+        _validate_string_list(
+            request["paths"], "historical restore_recipe paths", allow_empty=False
+        )
+        return
     validate_operation_shape(kind, request)
 
 
@@ -1963,6 +1975,7 @@ def _validate_completed_event_result(kind: str, result: dict) -> None:
         fields = {"status", "action", "candidate", "evidence"}
     elif kind == "restore_recipe":
         fields = {"status", "candidate", "scientific_commit", "restored_paths"}
+        fields |= {"parameters", "removed_paths"} & result.keys()
     else:
         fields = {"status", "model"}
     _require_exact_fields(result, fields, f"completed {kind} result")
@@ -1996,7 +2009,7 @@ def _validate_pending_operation(pending: object) -> None:
     request = _require_exact_fields(
         pending["request"], {kind}, "pending_operation request"
     )
-    _validate_operation_request_shape(kind, request[kind])
+    _validate_historical_operation_request_shape(kind, request[kind])
     progress = pending["progress"]
     if kind == "measurement" and (
         match := re.fullmatch(r"measured_(\d+)_of_(\d+)", progress)
@@ -2050,7 +2063,7 @@ def _validate_operation_event(event: object) -> str:
     if event["inquiry_id"] is not None:
         _nonempty({"value": event["inquiry_id"]}, "value", "operation event inquiry_id")
     request = event["request"]
-    _validate_operation_request_shape(kind, request)
+    _validate_historical_operation_request_shape(kind, request)
     if event["status"] not in {"completed", "failed"}:
         raise ValueError("operation event status must be completed or failed")
     result = event["result"]

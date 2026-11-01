@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Copilot SDK default system prompt and tools, per model family</title>
+    <script>
+        (() => {
+            const param = new URLSearchParams(window.location.search).get("scoutTheme");
+            const theme =
+                param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <style>
+        :root {
+            color-scheme: light;
+            --cp-bg: #f7f4ef;
+            --cp-bg-elevated: #fcfbf8;
+            --cp-surface: #ffffff;
+            --cp-surface-soft: #f5f5f5;
+            --cp-border: #dedede;
+            --cp-border-strong: #919191;
+            --cp-text: #242424;
+            --cp-text-muted: #5c5c5c;
+            --cp-text-soft: #6f6f6f;
+            --cp-accent: #b11f4b;
+            --cp-accent-hover: #9a1a41;
+            --cp-accent-soft: rgba(177, 31, 75, 0.08);
+            --cp-accent-fg: #ffffff;
+            --cp-success: #16a34a;
+            --cp-danger: #dc2626;
+            --cp-warning: #f59e0b;
+            --cp-link: #0078d4;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+            --cp-overlay: rgba(255, 255, 255, 0.8);
+            --cp-panel: rgba(255, 255, 255, 0.86);
+            --cp-panel-strong: rgba(255, 255, 255, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.55);
+            --cp-highlight: rgba(177, 31, 75, 0.12);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --cp-bg: #3d3b3a;
+            --cp-bg-elevated: #343231;
+            --cp-surface: #292929;
+            --cp-surface-soft: #2e2e2e;
+            --cp-border: #474747;
+            --cp-border-strong: #5f5f5f;
+            --cp-text: #dedede;
+            --cp-text-muted: #919191;
+            --cp-text-soft: #b0b0b0;
+            --cp-accent: #fd8ea1;
+            --cp-accent-hover: #fb7b91;
+            --cp-accent-soft: rgba(253, 142, 161, 0.14);
+            --cp-accent-fg: #1a1a1a;
+            --cp-success: #4ade80;
+            --cp-danger: #f87171;
+            --cp-warning: #fbbf24;
+            --cp-link: #4da6ff;
+            --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+            --cp-overlay: rgba(41, 41, 41, 0.88);
+            --cp-panel: rgba(41, 41, 41, 0.72);
+            --cp-panel-strong: rgba(41, 41, 41, 0.96);
+            --cp-sheen: rgba(255, 255, 255, 0.04);
+            --cp-highlight: rgba(253, 142, 161, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--cp-bg);
+            color: var(--cp-text);
+            font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+        }
+
+        main {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 32px 20px 64px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 8px;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin: 0 0 12px;
+            color: var(--cp-accent);
+        }
+
+        p {
+            margin: 0 0 10px;
+        }
+
+        .lead {
+            color: var(--cp-text-muted);
+        }
+
+        code {
+            font-family: Consolas, "Courier New", Courier, monospace;
+            font-size: 0.9em;
+            background: var(--cp-surface-soft);
+            border: 1px solid var(--cp-border);
+            border-radius: 6px;
+            padding: 0 4px;
+        }
+
+        .card {
+            background: var(--cp-surface);
+            border: 1px solid var(--cp-border);
+            border-radius: 16px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.14);
+            padding: 20px 24px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--cp-border);
+            vertical-align: top;
+        }
+
+        thead th {
+            color: var(--cp-text-muted);
+            font-weight: 600;
+            background: var(--cp-surface-soft);
+            position: sticky;
+            top: 0;
+        }
+
+        td.y,
+        td.n {
+            text-align: center;
+            font-weight: 700;
+            width: 64px;
+        }
+
+        td.y {
+            color: var(--cp-success);
+        }
+
+        td.n {
+            color: var(--cp-border-strong);
+        }
+
+        td.v {
+            text-align: center;
+            font-weight: 700;
+            color: var(--cp-warning);
+            width: 64px;
+        }
+
+        tr.group td {
+            background: var(--cp-accent-soft);
+            color: var(--cp-accent);
+            font-weight: 600;
+        }
+
+        .rep {
+            color: var(--cp-text-muted);
+            font-size: 0.85rem;
+        }
+
+        .legend span {
+            display: inline-block;
+            margin-right: 18px;
+        }
+
+        .note {
+            color: var(--cp-text-muted);
+            font-size: 0.88rem;
+        }
+
+        ul {
+            margin: 0 0 10px;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+
+        <h1>What enters the model context in a default Copilot SDK session</h1>
+        <p class="lead">This page lists the standard Copilot SDK behavior, not this harness's settings. Probe: Copilot
+            SDK 1.0.26, Copilot CLI 1.0.103, Windows, 30 October 2026.
+            Each session used the default options and one short turn. The probe folder was a Git repository that
+            contained <code>AGENTS.md</code> and
+            <code>.github/copilot-instructions.md</code>. The SDK reports each prompt section to a transform callback,
+            and the probe recorded the full system message from the <code>system.message</code> event.
+        </p>
+
+        <section class="card">
+            <h2>How you can change the system prompt</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SDK mode</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>append</code> (default)</td>
+                        <td>The full CLI prompt below, with your text added at the end.</td>
+                    </tr>
+                    <tr>
+                        <td><code>customize</code></td>
+                        <td>The CLI prompt, with per-section actions: <code>replace</code>, <code>remove</code>,
+                            <code>append</code>, <code>prepend</code>, <code>preserve</code> or a <code>transform</code>
+                            callback that receives the section text and returns new text. There are 12 section IDs. A
+                            part inside a section has no ID of its own: you change it only with a <code>transform</code>
+                            of its section, or with an action on the whole section.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>replace</code></td>
+                        <td>Your text only. Every row of the first table disappears. The tools of the second table do
+                            <strong>not</strong> disappear, because the model receives them as function definitions, not
+                            as prompt text.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>1. System prompt parts, in prompt order</h2>
+            <p class="legend note"><span><strong style="color:var(--cp-success)">✓</strong> included, same text in each
+                    ticked family</span>
+                <span><strong style="color:var(--cp-warning)">≈</strong> included, with a different text (see
+                    "Differences")</span>
+                <span><strong style="color:var(--cp-border-strong)">–</strong> not included</span>
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Part</th>
+                        <th>What it tells the model</th>
+                        <th>How to change or remove it</th>
+                        <th>GPT-6</th>
+                        <th>GPT-5.6</th>
+                        <th>GPT Codex</th>
+                        <th>Claude</th>
+                        <th>Other</th>
+                        <th>Differences</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="group">
+                        <td colspan="9">Section group <code>identity</code> (includes <code>preamble</code>,
+                            <code>tone</code> and <code>tool_efficiency</code>)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Preamble</td>
+                        <td>"You are GitHub Copilot, an AI coding agent built by GitHub."</td>
+                        <td class="rep">Section <code>preamble</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Role line</td>
+                        <td>"You are an interactive tool that helps users with software engineering tasks."</td>
+                        <td class="rep">Only with the <code>identity</code> group</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td># Tone and style</td>
+                        <td>Answer length, format and voice</td>
+                        <td class="rep">Section <code>tone</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>GPT: 7 rules (outcome first, Markdown, few lists, teammate voice). Claude: limit to 100
+                            words, brevity. Other: "try to" limit to 100 words, 2 rules.</td>
+                    </tr>
+                    <tr>
+                        <td># Search and delegation</td>
+                        <td>Give subagents full context. Search only in the working folder. Search tool order.</td>
+                        <td class="rep">Only with the <code>identity</code> group</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>Names <code>rg</code> for GPT, <code>grep</code> for the others.</td>
+                    </tr>
+                    <tr>
+                        <td># Tool usage efficiency</td>
+                        <td>Parallel tool calls, few calls for simple work, chained shell commands, quiet output, sync
+                            subagents by default</td>
+                        <td class="rep">Section <code>tool_efficiency</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>Names <code>rg</code>/<code>apply_patch</code> for GPT, <code>grep</code>/<code>edit</code>
+                            for the others.</td>
+                    </tr>
+                    <tr>
+                        <td>Output channel</td>
+                        <td>"Your output appears in a command-line interface."</td>
+                        <td class="rep">Section <code>tool_efficiency</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>CLI version</td>
+                        <td>"Version number: 1.0.103"</td>
+                        <td class="rep">Only with the <code>identity</code> group</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Model identity</td>
+                        <td>The model name and ID, and how to answer "which model are you"</td>
+                        <td class="rep">Only with the <code>identity</code> group</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>The model name only.</td>
+                    </tr>
+                    <tr>
+                        <td>Job line</td>
+                        <td>"Your job is to perform the task the user requested."</td>
+                        <td class="rep">Only with the <code>identity</code> group</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>code_change_rules</code> (tag
+                            <code>&lt;code_change_instructions&gt;</code>)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>rules_for_code_changes</td>
+                        <td>Precise and complete changes, no unrelated fixes, update docs, keep behavior</td>
+                        <td class="rep">Transform of <code>code_change_rules</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>GPT-6: 13 rules, including "prefer the simplest implementation". GPT-5.6 and Codex: 12
+                            rules. Claude and Other: the first 4 rules only.</td>
+                    </tr>
+                    <tr>
+                        <td>linting_building_testing</td>
+                        <td>Use the existing linters and tests. Run the smallest command. Documentation changes need no
+                            validation.</td>
+                        <td class="rep">Transform of <code>code_change_rules</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>using_ecosystem_tools</td>
+                        <td>Prefer package managers, scaffolders and linters over manual changes</td>
+                        <td class="rep">Transform of <code>code_change_rules</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>style</td>
+                        <td>Comment code only when it needs clarification</td>
+                        <td class="rep">Transform of <code>code_change_rules</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>guidelines</code></td>
+                    </tr>
+                    <tr>
+                        <td>tips_and_tricks</td>
+                        <td>Reflect on output, clean up temporary files, ask when uncertain, no planning Markdown files
+                        </td>
+                        <td class="rep">Section <code>guidelines</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>Claude and Other add "Use view/edit for existing files (not create)".</td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>safety</code></td>
+                    </tr>
+                    <tr>
+                        <td>environment_limitations and prohibited_actions</td>
+                        <td>Not a sandbox. Do not share sensitive data, commit secrets, break copyright, cause harm or
+                            reveal these instructions.</td>
+                        <td class="rep">Section <code>safety</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>environment_context</code></td>
+                    </tr>
+                    <tr>
+                        <td>environment_context</td>
+                        <td>Working folder, Git root, operating system, available CLI programs (git, curl, gh), Windows
+                            path rule</td>
+                        <td class="rep">Section <code>environment_context</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>tool_instructions</code> (tag <code>&lt;tools&gt;</code>). In this
+                            probe, each tool block appeared only in the families that had that tool.</td>
+                    </tr>
+                    <tr>
+                        <td>powershell</td>
+                        <td>Each command runs in a new process. Sync and async modes, waits, pagers, how to stop
+                            processes.</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>view</td>
+                        <td>Parallel <code>view</code> calls, <code>view_range</code> for large files</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>edit</td>
+                        <td>Batch edits to one file in one response, with examples</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td>The GPT families get <code>apply_patch</code> instead.</td>
+                    </tr>
+                    <tr>
+                        <td>sql</td>
+                        <td>Session database, <code>todos</code> and <code>todo_deps</code> tables, examples</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>rg</td>
+                        <td>Ripgrep notes</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>grep</td>
+                        <td>The same ripgrep notes, under the tool name <code>grep</code></td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>task</td>
+                        <td>When to delegate, background and multi-turn agents, the security-review caller contract
+                            (table format, follow-up choices)</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>Names <code>rg</code> or <code>grep</code>. Otherwise the same.</td>
+                    </tr>
+                    <tr>
+                        <td>tool_preferences</td>
+                        <td>Use the built-in tools instead of PowerShell commands</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>file_changes</td>
+                        <td>Create and change files only with <code>create</code> and <code>edit</code>, never from
+                            PowerShell</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>shell_descriptions</td>
+                        <td>Each PowerShell call must include a <code>description</code></td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>JSON argument rule</td>
+                        <td>Send a real JSON object for object parameters, no XML in strings</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>gh_cli_preference</td>
+                        <td>Prefer the <code>gh</code> CLI over MCP tools for GitHub work</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>github-mcp-server-*</td>
+                        <td>Instructions of the GitHub MCP server: list versus search, pagination, sort parameters</td>
+                        <td class="rep">Transform of <code>tool_instructions</code>, or remove the MCP tools</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td>Present because the GitHub MCP server is loaded.</td>
+                    </tr>
+                    <tr>
+                        <td>code_search_tools</td>
+                        <td>Search order: code intelligence, LSP, glob, then rg or grep</td>
+                        <td class="rep">Transform of <code>tool_instructions</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td>Names <code>rg</code> or <code>grep</code>.</td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>custom_instructions</code></td>
+                    </tr>
+                    <tr>
+                        <td>custom_instruction blocks</td>
+                        <td>The content of <code>.github/copilot-instructions.md</code>, then <code>AGENTS.md</code>,
+                            one block each</td>
+                        <td class="rep">Section <code>custom_instructions</code>, or the option
+                            <code>skip_custom_instructions</code>
+                        </td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td>Present only when the files exist.</td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>runtime_instructions</code></td>
+                    </tr>
+                    <tr>
+                        <td>system_notifications</td>
+                        <td>How to treat <code>&lt;system_notification&gt;</code> status updates</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>preamble_messages</td>
+                        <td>Short <code>commentary</code> updates, only with a tool call</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td>GPT-6 and GPT-5.6: one text with a "background hard gate". Codex: another text ("seldom
+                            send", at most one update before the first tool call).</td>
+                    </tr>
+                    <tr>
+                        <td>tool_use_guidelines</td>
+                        <td>Prefer <code>rg</code>, <code>glob</code>, <code>view</code>, <code>apply_patch</code>. Use
+                            <code>multi_tool_use.parallel</code>. <code>Lxxx:</code> prefixes are line numbers.
+                        </td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>editing_constraints</td>
+                        <td>ASCII by default, few comments, <code>apply_patch</code> for edits, dirty worktree, no
+                            amend, no destructive Git commands</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>exploration_and_reading_files</td>
+                        <td>How to read files before acting</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="v">≈</td>
+                        <td class="n">–</td>
+                        <td>GPT: "reason like a senior engineer", plan and batch reads. Claude: "files are truncated at
+                            20KB", use <code>view_range</code>, parallel views.</td>
+                    </tr>
+                    <tr>
+                        <td>autonomy_and_persistence</td>
+                        <td>Bias to action, finish the work end to end, avoid loops</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>user_progress_updates</td>
+                        <td>Give short progress updates at each phase</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>destructive_actions</td>
+                        <td>Never delete broad folders recursively. Delete only resolved paths.</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>subagent_usage</td>
+                        <td>Do the work yourself. Use subagents only when asked, and use few.</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>session_context</td>
+                        <td>The session folder and its <code>files/</code> folder</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td>The folder path changes per session.</td>
+                    </tr>
+                    <tr>
+                        <td>git_commit_trailer</td>
+                        <td>Add "Co-authored-by: Copilot" to commits</td>
+                        <td class="rep">Transform of <code>runtime_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Section <code>last_instructions</code></td>
+                    </tr>
+                    <tr>
+                        <td>tool_calling</td>
+                        <td>Keep working while a background agent runs. Do not poll.</td>
+                        <td class="rep">Transform of <code>last_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Goal line</td>
+                        <td>"Your goal is to deliver complete, working solutions…" Iterate. Verify.</td>
+                        <td class="rep">Transform of <code>last_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>task_completion</td>
+                        <td>A task is complete only when verified. Rules for dependencies and background processes.</td>
+                        <td class="rep">Transform of <code>last_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Closing line</td>
+                        <td>"Respond concisely to the user, but be thorough in your work."</td>
+                        <td class="rep">Transform of <code>last_instructions</code></td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td></td>
+                    </tr>
+
+                    <tr class="group">
+                        <td colspan="9">Total size of the system message (characters)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">Measured in this probe</td>
+                        <td>27,333</td>
+                        <td>27,179</td>
+                        <td>25,970</td>
+                        <td>24,671</td>
+                        <td>21,746</td>
+                        <td>MAI-Code: 21,694. Claude Haiku: 24,667.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>2. Tools offered to the model</h2>
+            <p>The model receives the tools as function definitions (name, description and JSON schema) with each
+                request, not as prompt text.
+                You change them with the session options <code>available_tools</code> (an allow list),
+                <code>excluded_tools</code>, <code>tools</code> (your own tools) and <code>mcp_servers</code>.
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Source</th>
+                        <th>GPT-6</th>
+                        <th>GPT-5.6</th>
+                        <th>GPT Codex</th>
+                        <th>Claude</th>
+                        <th>Other</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>powershell</code>, <code>read_powershell</code>, <code>stop_powershell</code>,
+                            <code>list_powershell</code>
+                        </td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>view</code>, <code>glob</code></td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>rg</code></td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                    </tr>
+                    <tr>
+                        <td><code>grep</code></td>
+                        <td>Built in</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>apply_patch</code></td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                    </tr>
+                    <tr>
+                        <td><code>create</code>, <code>edit</code></td>
+                        <td>Built in</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>sql</code></td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>task</code>, <code>read_agent</code>, <code>write_agent</code>,
+                            <code>list_agents</code>
+                        </td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>web_fetch</code>, <code>web_search</code></td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>semantic_code_search</code></td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>dynamic_workflows_manage</code>, <code>run_dynamic_workflow</code></td>
+                        <td>Built in</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>tool_search_tool</code></td>
+                        <td>Built in</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="n">–</td>
+                        <td class="y">✓</td>
+                        <td class="n">–</td>
+                    </tr>
+                    <tr>
+                        <td><code>github-mcp-server-*</code> (5 tools: get_copilot_space, get_file_contents,
+                            list_copilot_spaces, search_code, search_users)</td>
+                        <td>GitHub MCP server, built into the CLI</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td><code>playwright-browser_*</code> (24 browser tools)</td>
+                        <td>MCP server of the installed plugin <code>power-platform-skills/model-apps</code> on this
+                            machine</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                        <td class="y">✓</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>Total tools</strong></td>
+                        <td>48</td>
+                        <td>48</td>
+                        <td>48</td>
+                        <td>50</td>
+                        <td>49</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>3. Parts that can enter but did not appear in this probe</h2>
+            <p>The SDK describes these parts, but the probe had nothing to load for them:</p>
+            <ul>
+                <li><strong>Memories, workspace context and content-exclusion policy</strong>, all in
+                    <code>runtime_instructions</code>. Options: section <code>runtime_instructions</code> and
+                    <code>memory</code>.
+                </li>
+                <li><strong>Subagent model preferences</strong> (<code>&lt;subagent_model_preferences&gt;</code>), in
+                    <code>last_instructions</code> when the <code>task</code> tool is offered and preferences exist.
+                </li>
+                <li><strong>Skills</strong>: there was no skill tool in this probe. Options: <code>enable_skills</code>,
+                    <code>skill_directories</code>, <code>disabled_skills</code>.
+                </li>
+                <li><strong>Custom agents</strong>, from <code>custom_agents</code> or from discovered agent files.
+                    Option: <code>enable_config_discovery</code>.</li>
+                <li><strong>Other instruction files</strong> found through <code>instruction_directories</code>.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>4. Client option <code>mode="empty"</code></h2>
+            <p>The SDK has a second client mode: <code>CopilotClient(mode="empty")</code>. The default is
+                <code>mode="copilot-cli"</code>, which this page describes. The option exists in SDK 1.0.11, 1.0.19 and
+                1.0.26. Empty mode does not remove the system prompt. It changes the defaults of other session options.
+                A value that you give explicitly always wins.
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Effect of <code>mode="empty"</code></th>
+                        <th>Default in <code>copilot-cli</code> mode</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>available_tools</code> is mandatory. Only the listed tools are offered.</td>
+                        <td>All tools of table 2</td>
+                    </tr>
+                    <tr>
+                        <td>Section <code>environment_context</code> is removed, in <code>append</code> and
+                            <code>customize</code> modes. No effect in <code>replace</code> mode.</td>
+                        <td>Included</td>
+                    </tr>
+                    <tr>
+                        <td>Custom instructions are skipped</td>
+                        <td>Loaded</td>
+                    </tr>
+                    <tr>
+                        <td>No installed plugins, and no bundled skills</td>
+                        <td>Loaded</td>
+                    </tr>
+                    <tr>
+                        <td>Skills, memory, session store, file hooks, host Git operations and on-demand instruction
+                            discovery are off</td>
+                        <td>Runtime defaults</td>
+                    </tr>
+                    <tr>
+                        <td>Embedding retrieval is off, and the embedding cache is in memory</td>
+                        <td>Runtime defaults</td>
+                    </tr>
+                    <tr>
+                        <td>Custom agents come only from local definitions</td>
+                        <td>Discovered agents also load</td>
+                    </tr>
+                    <tr>
+                        <td>Co-author trailer and schedule management are off</td>
+                        <td>On</td>
+                    </tr>
+                    <tr>
+                        <td>Session telemetry and experimental mode are off</td>
+                        <td>Runtime defaults</td>
+                    </tr>
+                    <tr>
+                        <td>MCP OAuth tokens stay in memory, and the system keychain is not used
+                            (<code>COPILOT_DISABLE_KEYTAR=1</code>)</td>
+                        <td>Persistent storage and keychain</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="note">The harness does not use empty mode. It sets most of these options one by one, and it uses
+                <code>replace</code> mode for the PI and analyst prompt. Empty mode would not change that prompt or the
+                tools offered. Before any switch, check the keychain effect on sign-in with the logged-in GitHub user.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>Families and limits of this probe</h2>
+            <ul>
+                <li><strong>GPT-6</strong>: <code>gpt-6-luna</code>. <strong>GPT-5.6</strong>:
+                    <code>gpt-5.6-luna</code>, the same as GPT-6 except one code rule. <strong>GPT Codex</strong>:
+                    <code>gpt-5.3-codex</code>.
+                </li>
+                <li><strong>Claude</strong>: <code>claude-sonnet-5.5</code> and <code>claude-haiku-5.5</code> gave the
+                    same text apart from the model name.</li>
+                <li><strong>Other</strong>: <code>mai-code-1.1-flash</code> (Copilot) and
+                    <code>opencode-go/deepseek-v4.1-flash</code> (your own provider) gave the same text apart from the
+                    model name.
+                </li>
+                <li>The probe did not test GPT-6.1, Claude Opus, Claude Fable or Gemini. On Linux or macOS the shell
+                    block is for a different shell. The tool list depends on the plugins and MCP servers installed on
+                    the machine.</li>
+                <li>The probe scripts and captured texts are outside the repository, in
+                    <code>%TEMP%\robot-learning\default_prompt_probe.py</code> and
+                    <code>%TEMP%\robot-learning\default-prompt-probe\</code>.
+                </li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+
+</html>

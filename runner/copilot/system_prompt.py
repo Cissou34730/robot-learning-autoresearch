@@ -75,9 +75,9 @@ ANALYST_EXPLORATION = (
 
 AUTONOMY = (
     "You own this campaign from its first session to the official assessment. "
-    "The human judges the campaign on two things: whether the official "
-    "assessment reaches the goal, and the time and AI usage that it needs. Only "
-    "submitted operations change the campaign. Analysis moves the campaign "
+    "The human judges the campaign on whether the official assessment reaches "
+    "the goal. Only submitted operations change the campaign. Analysis moves "
+    "the campaign "
     "forward only when it leads to an operation.\n\n"
     "Call submit_operation with the request object. The results and the changed "
     "state come back to this conversation. Continue in this conversation until a "

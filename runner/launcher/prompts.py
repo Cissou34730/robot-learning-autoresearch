@@ -317,8 +317,7 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             (
                 "Fresh training of the same recipe can vary. If this variation "
                 "can affect candidate selection or your next decision, repeat "
-                "training to resolve that uncertainty. Match the effort to the "
-                "uncertainty that affects the decision. State the remaining "
+                "training to resolve that uncertainty. State the remaining "
                 "uncertainty before you attribute differences to a design choice."
             ),
             (
@@ -584,10 +583,13 @@ def scientific_session_prompt(
     )
     context_note = None
     if included:
+        recipe_count = max(0, len(included) - 1)
         characters = len("".join(model_file + included))
         context_note = (
             "CONTEXT | first message includes pi_workspace/scientific_model.md, "
-            f"{', '.join(context_files)} ({(characters + 500) // 1000}k chars)"
+            "campaigns/brief.md"
+            + (f", {recipe_count} recipe files" if recipe_count else "")
+            + f" ({(characters + 500) // 1000}k chars)"
         )
         source_guidance = (
             "This message includes the scientific model and the current campaign "

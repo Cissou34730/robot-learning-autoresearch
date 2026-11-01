@@ -661,6 +661,124 @@ def test_selected_variant_materializes_effective_files_without_changing_restore_
     }
 
 
+def test_full_variant_recipe_restore_materializes_all_effective_sources_and_parameters(
+    git_repository, monkeypatch
+):
+    state, _old_commit, files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    helper = "robot_learning/training/variant_helper.py"
+    base = "robot_learning/training/base_helper.py"
+    overlay_files = {
+        f"robot_learning/variants/other/{helper.removeprefix('robot_learning/')}": b"VALUE = 'selected helper'\n",
+        f"robot_learning/variants/ignored/{helper.removeprefix('robot_learning/')}": b"VALUE = 'unselected helper'\n",
+        "robot_learning/variants/other/__init__.py": b"UNTRUSTED = True\n",
+        base: b"VALUE = 'unchanged base'\n",
+    }
+    for relative, content in overlay_files.items():
+        target = git_repository / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+    repository.git("add", "--", "robot_learning")
+    repository.git("commit", "--quiet", "-m", "record full variant recipe")
+    parent = repository.git("rev-parse", "HEAD").strip()
+    state.update(
+        campaign_phase="recipe_development",
+        recipe_development=None,
+        pi_checkpoint=None,
+        scientific_session={"id": "S2", "kind": "recipe_development"},
+    )
+    candidate = state["candidates"]["T1:checkpoint-10"]
+    candidate.update(
+        name="other-checkpoint-10",
+        scientific_commit=parent,
+        parameters={"training": {"n_envs": 4}},
+    )
+    artifact = git_repository / candidate["artifact"]
+    for filename in {*repository.ARTIFACT_FILES, *repository.INFERENCE_ARTIFACT_FILES}:
+        (artifact / filename).write_bytes(b"frozen candidate")
+    candidate["fingerprint"] = repository.artifact_fingerprint(artifact)
+    fingerprint = candidate["fingerprint"]
+    state["operation_events"] = [
+        {
+            "id": "T1",
+            "kind": "training",
+            "request": {"variants": [{"label": "other"}, {"label": "ignored"}]},
+        }
+    ]
+    added = "robot_learning/training/added.py"
+    (git_repository / added).write_bytes(b"EXTRA = True\n")
+    laboratory = git_repository / "robot_learning/lab/trial.py"
+    laboratory.write_bytes(b"VALUE = 'current laboratory'\n")
+    request = {"candidate": candidate["id"], "reason": "Restore the effective recipe."}
+    protocol.validate_operation_shape("restore_recipe", request)
+    plan = protocol.plan_recipe_restore(request, state)
+    assert {helper, base, "robot_learning/training/reward.py"} <= set(plan["restore"])
+    assert plan["remove_created"] == [added]
+    assert all(recipe_development.is_recipe_source(path) for path in plan["restore"])
+    result = {}
+
+    def complete(current, restored_result, apply):
+        repository._validate_completed_event_result("restore_recipe", restored_result)
+        result.update(restored_result)
+        apply(current, restored_result)
+
+    monkeypatch.setattr(run_experiment, "_complete_operation", complete)
+    monkeypatch.setattr(
+        repository,
+        "durable_artifact_destination",
+        lambda **_kwargs: git_repository / "campaigns/checkpoints/retained/selected",
+    )
+    parameters = git_repository / "robot_learning/training/current_params.json"
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: json.loads(parameters.read_text(encoding="utf-8")),
+    )
+    monkeypatch.setattr(
+        execution,
+        "train_candidate",
+        lambda *_args, **_kwargs: pytest.fail("no training"),
+    )
+    state["model_roles"]["best_known"] = candidate["id"]
+    state["model_roles"]["retained"] = {"selected": candidate["id"]}
+    assert (
+        run_experiment._execute_recipe_restore(
+            state, {"progress": "restoring", "data": {"plan": plan}}
+        )
+        == 0
+    )
+    assert recipe_development.variant_matches(state, plan)
+    assert (git_repository / helper).read_bytes() == b"VALUE = 'selected helper'\n"
+    assert (git_repository / base).read_bytes() == overlay_files[base]
+    assert (git_repository / "robot_learning/training/reward.py").read_bytes() == files[
+        "robot_learning/variants/other/training/reward.py"
+    ]
+    assert json.loads(parameters.read_text()) == candidate["parameters"]
+    assert not (git_repository / added).exists()
+    assert laboratory.read_bytes() == b"VALUE = 'current laboratory'\n"
+    for relative in (
+        "robot_learning/__init__.py",
+        "robot_learning/training/training_metrics.json",
+        "robot_learning/training/train.log",
+        "robot_learning/training/checkpoints/step-10/model.zip",
+        "campaigns/evaluations/campaign/panel.json",
+    ):
+        assert (git_repository / relative).read_bytes() == files[relative]
+    assert repository.artifact_fingerprint(artifact) == fingerprint
+    assert (
+        repository.artifact_fingerprint(git_repository / candidate["artifact"])
+        == fingerprint
+    )
+    assert state["model_roles"] == {
+        "working": candidate["id"],
+        "best_known": candidate["id"],
+        "retained": {"selected": candidate["id"]},
+    }
+    assert result["parameters"] == candidate["parameters"]
+    assert result["removed_paths"] == [added]
+
+
 @pytest.mark.parametrize("mode", ["isolated", "legacy", "inquiry"])
 def test_selected_overlay_only_file_requires_isolated_recipe_development(
     git_repository, monkeypatch, mode
@@ -700,19 +818,21 @@ def test_selected_overlay_only_file_requires_isolated_recipe_development(
     request = {
         "candidate": candidate["id"],
         "reason": "Restore the selected recorded variant.",
-        "paths": [helper, parameters_path],
     }
     assert not (git_repository / helper).exists()
     assert not repository.tracked_at_commit(parent, helper)
     if mode != "isolated":
-        with pytest.raises(ValueError, match="existing or recorded file"):
-            protocol.plan_recipe_restore(request, state)
+        plan = protocol.plan_recipe_restore(request, state)
+        assert recipe_development._variant_paths(state, plan) is None
+        assert helper not in plan["restore"]
         assert not (git_repository / helper).exists()
         assert (git_repository / parameters_path).read_bytes() == files[parameters_path]
         return
     plan = protocol.plan_recipe_restore(request, state)
-    assert plan["remove_created"] == [helper]
-    assert plan["restore"] == [parameters_path]
+    assert helper in plan["restore"]
+    assert parameters_path in plan["restore"]
+    assert "robot_learning/training/reward.py" in plan["restore"]
+    assert not plan["remove_created"]
     assert set(plan) == {
         "parent",
         "restore",
@@ -760,7 +880,7 @@ def test_overlay_restore_rejects_protected_initializer_aliases(
     for filename in {*repository.ARTIFACT_FILES, *repository.INFERENCE_ARTIFACT_FILES}:
         (artifact / filename).write_bytes(b"recorded candidate artifact")
     candidate["fingerprint"] = repository.artifact_fingerprint(artifact)
-    with pytest.raises(ValueError, match="not a learning-recipe source"):
+    with pytest.raises(ValueError, match="requires candidate and reason"):
         protocol.plan_recipe_restore(
             {
                 "candidate": "T1:checkpoint-10",

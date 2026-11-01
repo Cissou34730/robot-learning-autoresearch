@@ -879,6 +879,19 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
         )
         pending["progress"] = "restoring"
         repository.write_state(state)
+    candidate = protocol.resolve_candidate(state, plan["candidate_id"])
+    destination = repository.durable_artifact_destination(
+        campaign_id=repository.current_campaign_id(state),
+        origin_operation=candidate["origin_operation"],
+        candidate=candidate["name"],
+        fingerprint=candidate["fingerprint"],
+    )
+    publication = {
+        "source": candidate["artifact"],
+        "destination": repository.repo_relative_path(destination),
+        "fingerprint": candidate["fingerprint"],
+    }
+    repository.publish_artifact(publication)
     if not recipe_development.restore_variant(state, plan):
         repository.apply_recipe_restore(plan)
     restored = research_config.load_experiment_config()
@@ -894,6 +907,10 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
     def apply(current: dict, _result: dict) -> None:
         session = current["scientific_session"]
         session["scientific_parent_commit"] = plan["parent"]
+        current["candidates"][plan["candidate_id"]]["artifact"] = publication[
+            "destination"
+        ]
+        current["model_roles"]["working"] = plan["candidate_id"]
 
     _complete_operation(
         state,
@@ -901,7 +918,9 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
             "status": "restored",
             "candidate": plan["candidate_id"],
             "scientific_commit": plan["parent"],
-            "restored_paths": [*plan["restore"], *plan["remove_created"]],
+            "parameters": copy.deepcopy(plan["parameters"]),
+            "restored_paths": list(plan["restore"]),
+            "removed_paths": list(plan["remove_created"]),
         },
         apply,
     )
@@ -2384,10 +2403,19 @@ def _campaign_resource_summary(state: dict) -> str:
 
 def execute_pending_operation() -> int:
     state = repository.load_state(allow_missing_artifact=True)
-    typed_events.set_campaign(repository.current_campaign_id(state))
     pending = state["pending_operation"]
     if not isinstance(pending, dict):
         raise TypeError("there is no pending Runner operation")
+    if (
+        pending["kind"] == "restore_recipe"
+        and "paths" in pending["request"]["restore_recipe"]
+    ):
+        raise ValueError(
+            "Legacy partial recipe restoration cannot resume. "
+            "The saved request and data stay unchanged. "
+            "The saved partial operation requires maintainer resolution."
+        )
+    typed_events.set_campaign(repository.current_campaign_id(state))
     if pending["failure"] is not None:
         raise ValueError(
             f"pending operation {pending['id']} failed and must be reaccepted "

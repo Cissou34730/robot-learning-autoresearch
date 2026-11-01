@@ -690,14 +690,23 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">37 closed issues; eight open investigations</h3>
+          <h3 style="margin-top: 12px">55 closed issues; one open investigation</h3>
           <ul>
-            <li>All 63 issue IDs remain visible. Eight are open (OI-024, OI-025, OI-039, OI-040, OI-057, OI-061,
-              OI-062, OI-063).</li>
-            <li>Five changes need more evidence: OI-008 (context size), OI-051 (25-minute wait slices), OI-053
-              (invariances in the scientific model), OI-055 (first-experiment reference) and OI-056 (contrast in
-              mechanism tests). OI-054 (time and AI usage shown to the PI) and OI-058 (task and policy framing) were
-              withdrawn on 27 October.</li>
+            <li>All 63 issue IDs remain visible. OI-063 is the only open issue.</li>
+            <li>The maintainer merged OI-024 into OI-044 and closed OI-024 as superseded on 30 October.
+              OI-044 covers finding and reusing recorded training and measurement evidence before repeating work.</li>
+            <li>The maintainer closed OI-025, OI-062, OI-042 and OI-047 on 30 October.
+              OI-062 errors are now very rare according to the maintainer. OI-042 has limited expected gain.
+              OI-047 concerned the first OpenCode implementation.</li>
+            <li>On 30 October the maintainer closed OI-039, OI-040, OI-057 and OI-061. The closure records state
+              the evidence and the limits of each decision.</li>
+            <li>The maintainer also closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007 on 30 October.
+              No changes need more evidence. Seven inactive entries remain: OI-044 and six withdrawn concerns.</li>
+            <li>OI-043 closed because prompt replays are done manually. OI-050 is no longer a current concern
+              according to the maintainer. OI-012 closed without adding publication independent of training.
+              OI-044 remains the combined evidence-reuse proposal.</li>
+            <li>OI-006 and OI-010 changed from Retired to Withdrawn on 30 October. OI-054 (time and AI usage shown to
+              the PI) and OI-058 (task and policy framing) were withdrawn on 27 October.</li>
             <li>On 29 October OI-061 (CLI notification text in the fixed system prompt) and OI-062 (guessed paths and
               field names) were added on branch <code>system-prompt-replace</code>.</li>
             <li>On 28 October OI-059 (controlled wording with the scientific terms restored; rounds 7 and 10) and
@@ -1114,14 +1123,14 @@
           <tbody>
             <tr>
               <td>System message (OI-041)</td>
-              <td>On <code>harness</code>: a customize-mode SDK system message that edits the Copilot CLI prompt. The
-                CLI prompt differs by model family, and on DeepSeek the analyst exploration and autonomy texts were
-                missing. On branch <code>system-prompt-replace</code> (29 October): a replace-mode system message, one
-                fixed text on every model family. In order: the PI or analyst identity; our tone; the campaign folder
+              <td>On <code>harness</code>: a replace-mode SDK system message, one fixed text on every model family.
+                The previous customize mode edited the model-dependent CLI prompt and omitted analyst instructions
+                on DeepSeek. The repair was implemented on 29 October. In order: the PI or analyst identity; our tone; the campaign folder
                 with the rule to use absolute Windows paths; the CLI <code>&lt;view&gt;</code> tool guidance, word for
                 word; the campaign reference (PI: the contracts and the policy runtime, 11 files; analyst: the
                 glossary, scenario, task spec, robot files, authority, policy runtime and scientific-model instrument, 8
-                files); the CLI <code>&lt;system_notifications&gt;</code> text, word for word (OI-061); our
+                files); the CLI <code>&lt;system_notifications&gt;</code> text, word for word (OI-061 closed by
+                maintainer decision on 30 October); our
                 <code>&lt;messages&gt;</code> text (a progress note goes with a tool call, a message without a tool
                 call ends the session); the analyst exploration text (analyst only); our autonomy text. No other CLI
                 text remains. PI about 99k characters, analyst about 32k.
@@ -1664,7 +1673,7 @@
               <td>25 Oct</td>
               <td>Minimal-recipe experiment in a separate folder: best 2.8% after about 6 h 45 and 150 AIU; stopped at
                 the 30-minute tool limit (OI-051). The PI could not rebuild a working learner from a skeleton.</td>
-              <td><a href="../harness-experiment-log.md#inactive-entries--11">OI-050</a></td>
+              <td><a href="#closed-issues">OI-050 (closed)</a></td>
             </tr>
             <tr>
               <td><code>6b13d5f4</code></td>
@@ -2057,28 +2066,40 @@
         OI-063.
         OI-040 to
         OI-047 replace the former follow-up items. The maintainer
-        approved closure of OI-005, OI-014 and OI-036. OI-006 is retired because 120k remains fixed.
-        Retirement does not establish an optimal allocation.</p>
-      <p>The maintainer also closed OI-033 and OI-037 without a verified recovery claim.</p>
+        approved closure of OI-005, OI-014 and OI-036. OI-006 is withdrawn because 120k remains fixed.
+        Withdrawal does not establish an optimal allocation.</p>
+      <p>The maintainer also closed OI-033 and OI-037 without a verified recovery claim.
+        On 30 October the maintainer closed OI-039, OI-040, OI-057 and OI-061.
+        Their closure records state the evidence and the limits of each decision.</p>
+      <p>On the same date the maintainer closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007.
+        OI-006 and OI-010 changed from Retired to Withdrawn. No entries remain paused or awaiting more evidence.</p>
+      <p>The maintainer then closed OI-025, OI-062, OI-042 and OI-047.
+        OI-062 is now rare according to the maintainer. The expected gain from OI-042 is limited.
+        OI-047 concerned the first OpenCode implementation.</p>
+      <p>The maintainer then closed OI-043 because prompt replays are done manually.
+        OI-050 closed because the maintainer no longer considers the process-overhead concern current.
+        OI-012 closed without implementing publication independent of training.
+        The maintainer then merged OI-024 into OI-044 and closed OI-024 as superseded.
+        OI-044 remains a proposal for finding and reusing recorded training and measurement evidence.</p>
       <p>Each description states the problem without internal campaign labels. The next column states the required
         action or the completed repair. Historical evidence remains separate.</p>
       <p>This register owns current status decisions. Older review tables and campaign reports preserve their
         dated conclusions. They do not create replay requirements for closed issues.</p>
       <div class="grid four" style="margin-bottom: 16px">
         <article class="card metric-card">
-          <p class="metric">8</p>
+          <p class="metric">1</p>
           <p class="metric-label">Open issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">5</p>
+          <p class="metric">0</p>
           <p class="metric-label">Changes that need more evidence</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">37</p>
+          <p class="metric">55</p>
           <p class="metric-label">Closed issues</p>
         </article>
         <article class="card metric-card">
-          <p class="metric">13</p>
+          <p class="metric">7</p>
           <p class="metric-label">Inactive entries</p>
         </article>
       </div>
@@ -2161,19 +2182,17 @@
             same type remains unconfirmed.</p>
           <p><strong>Closed:</strong> Work ended through a supported repair or an explicit maintainer decision.
             The entry states the closure basis.</p>
-          <p><strong>Retired:</strong> The concern no longer requires a separate repair. This status does not claim a
-            repair.</p>
           <p><strong>Paused:</strong> The maintainer suspended the proposed change.</p>
           <p><strong>Proposal:</strong> The maintainer did not approve the proposed change.</p>
-          <p><strong>Withdrawn:</strong> The maintainer rejected or withdrew the proposal.</p>
+          <p><strong>Withdrawn:</strong> The maintainer does not pursue the proposed change or the separate concern.</p>
           <p class="small muted">Observed replaces Implemented / observed. Needs recovery check replaces Implemented /
             native recovery unexercised. The required evidence is unchanged.</p>
           <p class="small muted">The descriptions use short sentences and consistent technical terms. This review does
             not certify compliance with the official ASD-STE100 dictionary.</p>
         </div>
       </details>
-      <h3 id="open-issues">Open issues — 8</h3>
-      <p>These issues need investigation or design before a repair. This register does not authorize runtime changes or
+      <h3 id="open-issues">Open issues — 1</h3>
+      <p>This issue needs investigation or design before a repair. This register does not authorize runtime changes or
         campaign operations.</p>
       <div class="card table-wrap wide">
         <table>
@@ -2186,86 +2205,6 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>OI-024</td>
-              <td>The PI repeats measurements because the first request omits required diagnostic fields. The prompt
-                guidance did not prevent this pattern.</td>
-              <td><span class="tag">Open</span></td>
-              <td>Separate avoidable reruns from fresh panels, matched controls and corrected diagnostics. Permit reuse
-                of prior results. Preserve PI judgment. No automatic duplicate gate is approved.</td>
-            </tr>
-            <tr>
-              <td>OI-025</td>
-              <td>The PI can confuse measurement fields or state conclusions that the data do not support. Later
-                accurate summaries do not explain the earlier errors.</td>
-              <td><span class="tag">Open</span></td>
-              <td>T4 trace complete (2026-10-21): the query reply was complete and correct (79 records, not truncated,
-                12 values at 0.99 between 58,368 and 69,632). The PI wrote "stayed at 1.00 through 120,832" 18 seconds
-                after reading it; M16 and E26 repeated the claim. Classification: PI interpretation error, no tool
-                defect found. Optional tool <code>training_series_statistics</code> (window summary with PI-chosen
-                checks) was added on 2026-10-21. No campaign has used it, so its effect on this error is unmeasured.
-                Preserve the historical evidence.</td>
-            </tr>
-            <tr>
-              <td>OI-039</td>
-              <td>The paired success difference between candidate and reference has an exact sign-test p-value but no
-                confidence interval.</td>
-              <td><span class="tag">Open</span></td>
-              <td>Optional tool <code>episode_outcome_breakdown</code> (2026-10-22) reads recorded measurements and
-                gives the exact sign test and a Wilson interval for the first measurement's share of discordant
-                episodes, per stratum when asked. The maintainer reversed "no harness tool": in <code>e7dbbece</code>
-                the PI rebuilt this comparison itself (607 lines). The tool is optional, reads protected paired counts
-                unchanged, and the PI-owned <code>comparison.py</code> stays available. Track use. Use: 8 calls in
-                <code>cfa88359</code>, 45 in <code>5d94bf8a</code>.
-              </td>
-            </tr>
-            <tr>
-              <td>OI-040</td>
-              <td>The console shows no progress while a PI model request runs. The PI also lacks clear guidance about
-                when to checkpoint a session.</td>
-              <td><span class="tag">Open</span></td>
-              <td>Show the elapsed time of the current PI model request. Change checkpoint guidance only if a campaign
-                shows a defect. Faster responses do not show recovery from a stalled request.</td>
-            </tr>
-            <tr>
-              <td>OI-057</td>
-              <td>The scientific model can state the reflection symmetry with a condition that the definitions do not
-                require. In <code>0c12d136</code> it limited the symmetry to "trajectories away from active joint
-                stops", although the joint limits are symmetric; the PI then explained the negative-angle failures by
-                the shoulder limit and did not use the reflection.</td>
-              <td><span class="tag">Open</span></td>
-              <td>One campaign only. Check the symmetry statements and their conditions in the next round's models, and
-                whether a conditioned statement precedes a limit-based explanation. No change is authorized. Round 6: no
-                model added the condition; <code>229c3e55</code> stated no reflection at all.</td>
-            </tr>
-            <tr>
-              <td>OI-061</td>
-              <td>The fixed system prompt (branch <code>system-prompt-replace</code>) keeps the Copilot CLI
-                <code>&lt;system_notifications&gt;</code> text word for word. It is generic Copilot text and contains an
-                example. The PI receives these notifications when the scientific coder or reviewer becomes idle (258 of
-                601 recorded campaign sessions).
-              </td>
-              <td><span class="tag">Open</span></td>
-              <td>Decide whether the PI needs this text, and rewrite it in campaign terms or remove it. Consider whether
-                the console can use the notifications.</td>
-            </tr>
-            <tr>
-              <td>OI-062</td>
-              <td>The PI and the analyst guess paths and field names instead of using the ones that exist. In the 29
-                October batch (branch <code>system-prompt-replace</code>): about 4-5 <code>view</code> calls on paths
-                that do not exist per campaign; about 4-6 refused analyst reads of reference files that are already in
-                the system prompt; 1-2 <code>episode_outcome_breakdown</code> calls with guessed fields
-                (<code>target_radius_cm</code>, <code>target_angle_degrees</code>); 1-3
-                <code>artifact_evidence_query</code> traversal-budget refusals; the DeepSeek analyst read
-                <code>contracts/robots/robot.xml</code> relative to the campaign folder (the file is in the harness)
-                and then sent 5 shell commands that were refused. All are pre-existing.
-              </td>
-              <td><span class="tag">Open</span></td>
-              <td>The analyst shell was removed on 29 October. Options, none approved: refusal text that lists what
-                exists (paths, fields); a sentence in the reference header that the files exist only in the system
-                prompt; a file map at session start. Measure the failure counts in the next batch, including the full
-                DeepSeek campaign, before a choice.</td>
-            </tr>
             <tr>
               <td>OI-063</td>
               <td>A coder on a Copilot GPT model has no file editor when the PI session runs on an external provider.
@@ -2288,105 +2227,22 @@
           </tbody>
         </table>
       </div>
-      <h3 id="observed-issues">Changes that need more evidence — 5</h3>
-      <p>Each change exists. Campaign evidence is missing or does not yet isolate its effect.</p>
-      <div class="card table-wrap wide">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Issue</th>
-              <th scope="col">Status</th>
-              <th scope="col">Remaining check</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>OI-008</td>
-              <td>Repeated context can increase cost and obscure current evidence.</td>
-              <td><span class="tag">Observed</span></td>
-              <td>Size reductions since 21 October: per-operation instrument files instead of one contract;
-                first-message context files for PI sessions (effective from <code>e7dbbece</code>) and for the opening
-                scientific-model session (2026-10-22); <code>campaigns/results.jsonl</code> read through
-                <code>artifact_evidence_query</code>; context bands in the console. PI AIU per session:
-                <code>49e58c12</code> 5.10, <code>e7dbbece</code> 2.88, <code>6882b9ec</code> 2.80,
-                <code>cfa88359</code> 3.29. After startup the PI re-reads almost no contract files. The opening
-                session's <code>contracts/scenario.md</code> re-reads fell from 21 to 0 in <code>cfa88359</code>; it
-                still re-read <code>authority.md</code> (11) and <code>policy_runtime.py</code> (6), which are now
-                included. Remaining check: context growth and cost across a campaign longer than about 15 sessions. Keep
-                the complete history accessible. Do not infer a context repair from faster model responses.
-              </td>
-            </tr>
-            <tr>
-              <td>OI-051</td>
-              <td>An operation that runs longer than 30 minutes ends the PI session. The SDK allows an external tool
-                call at most 1,800 seconds, and <code>submit_operation</code> waited for the whole operation.</td>
-              <td><span class="tag">Implemented</span></td>
-              <td><code>3135b37b</code> (26 October): <code>submit_operation</code> waits at most 25 minutes, then
-                returns <code>running</code>; the operation continues, and <code>request=null</code> waits for its
-                result. All other tools stay blocked meanwhile. The PI session activity limit is now 6 h; coder and
-                reviewer time counts toward it, Runner waits do not. Observed 25 October in the minimal-recipe campaign
-                <code>05229297</code> (M42, 3 × 2,400 episodes, about 35 minutes). No campaign has yet run an operation
-                longer than 25 minutes, so the slice has not been exercised.
-              </td>
-            </tr>
-            <tr>
-              <td>OI-053</td>
-              <td>Campaign outcomes depend on whether the scientific model states the arm's reflection symmetry. The
-                analyst wrote it in 1 of 28 models before 26 October.</td>
-              <td><span class="tag">Observed</span></td>
-              <td><code>2f22d98d</code> (26 October) adds to the analyst's model scope: the invariances of the
-                definitions, such as symmetries and conserved quantities, and what each makes equal or different. Round
-                3 (26 October): all 3 models state the symmetry; 2 of 3 campaigns passed (<code>17e9764f</code> in 50
-                min, <code>de7af8af</code> in 3 h 21). Before: the only campaign whose model stated it
-                (<code>6b13d5f4</code>) passed in 52 min; <code>fecc7566</code> found it by a mirror-pair experiment;
-                the other campaigns stalled at about 97.5%. Three campaigns cannot confirm a rate. See <a
-                  href="../harness-experiment-log.md#parallel-rounds-25-26-october">parallel rounds</a>. Round 4: all 3
-                models stated it, no PI used it. Round 5 (invalid): all 4 models stated it; 2 PIs used it and reached
-                400/400 by about 77 min, 1 set it aside under a stated condition (OI-057), 1 never compared mirrored
-                failures. Round 6 (invalid): 3 of 4 models stated it, no PI used it within about 1 h 15; see OI-058.
-                Rounds 7-10: every assessed candidate with reflection-canonicalized I/O passed (12 of 12, 199-200/200)
-                and every one without it failed 195/200 (3 of 3); the amount of symmetry text in the scientific model
-                does not separate them (see OI-060).</td>
-            </tr>
-            <tr>
-              <td>OI-055</td>
-              <td>The PI's first experiment can change several parts of the recipe at once and anchor the campaign on an
-                untested base. In <code>38ad68c6</code>, T1 widened the radius range and switched to fixed-gain joint
-                targets together (60%); the campaign never tested direct torque (about 94% elsewhere) and ended at about
-                85%.</td>
-              <td><span class="tag">Implemented</span></td>
-              <td><code>4ce2fdb1</code> (26 October), <code>contracts/program.md</code>: the inherited recipe is the
-                first reference, and a first experiment that changes several parts at once cannot attribute its result;
-                the assumptions checked before a costly experiment include the choice of method, not only the
-                correctness of its implementation. Round 5: all 4 PIs trained the recipe unchanged first and then
-                changed one factor (training radius). Round 4 also ran with it (0 of 3). Round 6: all first changes
-                altered one part or none.</td>
-            </tr>
-            <tr>
-              <td>OI-056</td>
-              <td>At a plateau the PI explains failures without the contrast with comparable successes, repeats the same
-                mechanism question, and abandons or repeats methods after one inconclusive result.</td>
-              <td><span class="tag">Implemented</span></td>
-              <td><code>a93baf4b</code> and <code>2f22d98d</code> (25-26 October), <code>contracts/program.md</code>: a
-                mechanism test accounts for where behavior fails and where comparable conditions succeed, and the
-                scientific model states what the definitions make equal; an intervention can supply the evidence for an
-                explanation; check the assumptions of a costly experiment; name the limitation the next implementation
-                addresses; an inconclusive result alone does not justify another attempt or abandonment. Changes 1-3
-                come from <a href="../proposals/program-revision-proposal-preserve-lifecycle-20261026.md">the
-                  preserve-lifecycle proposal</a>. Round 3 ran with all of them; their effect cannot be separated from
-                OI-053.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <h3 id="closed-issues">Closed issues — 37</h3>
+      <h3 id="observed-issues">Changes that need more evidence — 0</h3>
+      <p>No entries remain in this category. The maintainer closed OI-008, OI-051, OI-053, OI-055 and OI-056 on
+        30 October. Their closure records preserve the implementation evidence and its limits.</p>
+      <h3 id="closed-issues">Closed issues — 55</h3>
       <p>Most closures reflect recorded repairs. OI-021, OI-026, OI-033, OI-037, OI-038 and OI-046 were closed by
-        maintainer decision; OI-033 and OI-037 without verified recovery. Closure does not establish scientific success
+        maintainer decision; OI-033 and OI-037 without verified recovery.
+        The maintainer also closed OI-039, OI-040, OI-057 and OI-061 on 30 October.
+        On the same date the maintainer closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007.
+        The maintainer then closed OI-025, OI-062, OI-042 and OI-047.
+        OI-043, OI-050 and OI-012 also closed on 30 October.
+        OI-024 closed as superseded by OI-044 on the same date.
+        Closure does not establish scientific success
         or cover every future case.
         An unrelated official assessment is not a condition for closure.</p>
       <details>
-        <summary>Show the 37 closed issues and their closure basis</summary>
+        <summary>Show the 55 closed issues and their closure basis</summary>
         <div class="details-body">
           <div class="table-wrap wide">
             <table>
@@ -2724,15 +2580,209 @@
                       href="../harness-experiment-log.md#parallel-round-10-28-october-cause-of-the-passes">Round
                       10</a>.</td>
                 </tr>
+                <tr>
+                  <td>OI-039</td>
+                  <td>The paired success difference between candidate and reference has an exact sign-test p-value but no
+                    confidence interval.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The optional
+                    <code>episode_outcome_breakdown</code> tool supplies the exact sign test and a Wilson interval for
+                    the first measurement's share of discordant episodes. It recorded 8 calls in
+                    <code>cfa88359</code> and 45 in <code>5d94bf8a</code>. Protected paired counts and the PI-owned
+                    <code>comparison.py</code> remain unchanged. This interval is not an interval for the paired
+                    success-rate difference. No additional interval implementation remains scheduled under this issue.</td>
+                </tr>
+                <tr>
+                  <td>OI-040</td>
+                  <td>The console shows no progress while a PI model request runs. The PI also lacks clear guidance about
+                    when to checkpoint a session.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. This ends the combined follow-up on console progress
+                    and session checkpoint guidance. Closure adds no per-request timer requirement and authorizes no
+                    guidance change. It does not claim recovery from a stalled model request.</td>
+                </tr>
+                <tr>
+                  <td>OI-057</td>
+                  <td>The scientific model can state the reflection symmetry with a condition that the definitions do
+                    not require. In <code>0c12d136</code> it limited the symmetry to "trajectories away from active joint
+                    stops", although the joint limits are symmetric; the PI then explained the negative-angle failures
+                    by the shoulder limit and did not use the reflection.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October after the requested observation. In round 6, the three
+                    models that stated reflection symmetry omitted the disputed condition. <code>229c3e55</code> stated
+                    no reflection symmetry. Later work on explanations and assessment decisions is recorded under
+                    OI-060, closed on 28 October. This does not guarantee that future models contain no interpretation
+                    errors.</td>
+                </tr>
+                <tr>
+                  <td>OI-061</td>
+                  <td>The fixed system prompt keeps the Copilot CLI notification instructions word for word.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. <code>471574a0</code> replaced model-dependent prompt
+                    customization with one fixed system prompt for every model family. The targeted replacement-mode
+                    test passes. The generic notification instructions remain in that prompt. No further notification
+                    wording change remains scheduled under this issue.</td>
+                </tr>
+                <tr>
+                  <td>OI-007</td>
+                  <td>The prompt order determines when the PI sees its role and the human goal.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. Scientific context already precedes operation choices.
+                    A goal-first prompt for ordinary sessions was not adopted. Closure does not implement or approve that ordering.</td>
+                </tr>
+                <tr>
+                  <td>OI-008</td>
+                  <td>Repeated context can increase cost and obscure current evidence.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. Context reductions include per-operation instruments,
+                    first-message context files, selective result queries and console context bands.
+                    PI AIU per session fell from 5.10 in <code>49e58c12</code> to 2.88 in <code>e7dbbece</code>,
+                    2.80 in <code>6882b9ec</code> and 3.29 in <code>cfa88359</code>.
+                    Scenario re-reads in the opening session fell from 21 to 0 in <code>cfa88359</code>.
+                    The reference now also includes authority and policy-runtime content. Complete history remains accessible.
+                    Closure ends the additional monitoring requirement. It does not establish context costs across campaigns
+                    longer than about 15 sessions or attribute faster responses to this change.</td>
+                </tr>
+                <tr>
+                  <td>OI-051</td>
+                  <td>An operation that runs longer than 30 minutes ends the PI session because one external tool call
+                    cannot exceed 1,800 seconds.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. <code>3135b37b</code> limits each
+                    <code>submit_operation</code> wait to 25 minutes. It returns <code>running</code> while the
+                    operation continues. <code>request=null</code> waits again, and other tools remain blocked.
+                    The session activity limit is 6 h. Coder and reviewer time counts toward it, but Runner waits do not.
+                    The targeted sliced-wait regression passes. Closure does not claim verification of the full
+                    25-minute boundary in a live campaign.</td>
+                </tr>
+                <tr>
+                  <td>OI-053</td>
+                  <td>The initial scientific model can omit the arm's reflection symmetry. The analyst stated it in only
+                    1 of 28 models before 26 October.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. <code>2f22d98d</code> adds invariances and their
+                    predicted equalities or differences to the analyst's scope.
+                    All three round-3 models stated the symmetry, and two campaigns passed.
+                    In rounds 7-10, all 12 assessed candidates with reflection-canonicalized I/O passed.
+                    All three without it failed at 195/200. The amount of symmetry text did not separate those outcomes.
+                    Closure records the implemented scope and the observations, not an isolated causal effect of the analyst text.
+                    See OI-060 and the <a href="../harness-experiment-log.md#parallel-rounds-25-26-october">parallel rounds</a>.</td>
+                </tr>
+                <tr>
+                  <td>OI-055</td>
+                  <td>The first experiment can change several recipe components together and anchor the campaign on an
+                    untested base.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. <code>4ce2fdb1</code> makes the inherited recipe
+                    the first reference in <code>contracts/program.md</code>.
+                    A first comparison that changes several parts cannot attribute the result to one part.
+                    Assumptions checked before a costly experiment include the method choice.
+                    All four round-5 PIs trained the recipe unchanged first, then changed one factor.
+                    In round 6, every first change altered one part or none.
+                    These observations do not isolate an effect on campaign performance.</td>
+                </tr>
+                <tr>
+                  <td>OI-056</td>
+                  <td>At a plateau the PI can omit comparable successes, repeat mechanism questions and abandon or repeat
+                    methods after an inconclusive result.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. <code>a93baf4b</code> and <code>2f22d98d</code>
+                    add contrast with successes, assumptions of costly experiments and the limitation addressed by the
+                    next implementation. An intervention can supply evidence for an explanation.
+                    An inconclusive result alone does not justify another attempt or abandonment.
+                    The changes preserve the lifecycle from the
+                    <a href="../proposals/program-revision-proposal-preserve-lifecycle-20261026.md">approved proposal</a>.
+                    Round 3 exercised them together with OI-053. Their separate effects remain unisolated, but no
+                    additional evidence requirement remains under this issue.</td>
+                </tr>
+                <tr>
+                  <td>OI-025</td>
+                  <td>The PI can misinterpret measurement fields or state conclusions that the data do not support.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The T4 trace found a PI interpretation error, not a query defect.
+                    The reply contained 79 complete records, including 12 values at 0.99 between steps 58,368 and 69,632.
+                    The PI nevertheless reported a plateau at 1.00 through step 120,832.
+                    The optional <code>training_series_statistics</code> tool supplies window summaries and PI-chosen checks.
+                    Its effect on this error remains unmeasured.
+                    Closure ends the investigation without claiming that all future interpretation errors are prevented.</td>
+                </tr>
+                <tr>
+                  <td>OI-062</td>
+                  <td>The PI and analyst can guess nonexistent paths or query fields and repeat refused reads.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The maintainer reports that these errors are now very rare.
+                    Earlier evidence includes nonexistent paths, refused reference reads, guessed fields and traversal-budget
+                    refusals in the 29 October batch. The analyst shell was removed on 29 October.
+                    No further file map, refusal-text change or failure-count study remains scheduled under this issue.
+                    Closure does not claim that every such error is eliminated.</td>
+                </tr>
+                <tr>
+                  <td>OI-042</td>
+                  <td>A tool could supply named context sections instead of whole files.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October because the expected additional gain is limited.
+                    The named-sections tool was not approved or implemented.
+                    Existing context reductions remain in place under closed OI-008.
+                    This closure ends the proposal rather than claiming delivery of the tool.</td>
+                </tr>
+                <tr>
+                  <td>OI-047</td>
+                  <td>External-provider-specific code was proposed for removal when the PI uses GitHub Copilot.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The concern applied to the first OpenCode implementation.
+                    No removal of current external-provider support is requested or claimed.
+                    This closure schedules no change to <code>read</code>, <code>read_alias</code> or <code>json_editors</code>.</td>
+                </tr>
+                <tr>
+                  <td>OI-043</td>
+                  <td>Prompt changes could be compared at a recorded decision point without running a full campaign.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The maintainer performs these comparisons manually.
+                    The method holds the recorded evidence fixed and compares decisions under old and new prompts without operations.
+                    It was used for 37 blinded replays on 28 October for <code>270b37b0</code>.
+                    Those replays are not campaign evidence.
+                    No automated framework or additional test infrastructure is required under this issue.</td>
+                </tr>
+                <tr>
+                  <td>OI-050</td>
+                  <td>The formal research lifecycle could cost too much time and AI usage compared with useful experiments.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October. The maintainer no longer considers this a current issue.
+                    The earlier concern arose from <code>efd58acc</code>, which used 32 sessions, 14 inquiries and about
+                    126 AIU over about 6 h. A related minimal-recipe experiment, <code>05229297</code>, ran about
+                    6 h 45 min and used about 150 AIU. It reached at best 2.8% after 14 training runs and 110 measurement records.
+                    The experiment was removed on 26 October. It did not isolate the cost of the lifecycle itself.
+                    Closure schedules no lifecycle redesign or further overhead study and does not claim that every process cost is optimal.</td>
+                </tr>
+                <tr>
+                  <td>OI-012</td>
+                  <td>A frozen policy could be published as a candidate independently of training.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed on 30 October under the maintainer's instruction to end this proposal unless it remains useful.
+                    No present need justifies a second publication route.
+                    The current coding contract deliberately creates candidates through training, with fresh or transfer initialization.
+                    Runtime changes tested on frozen weights remain diagnostics until a training run carries them into a candidate.
+                    The separate publication route was not approved or implemented.
+                    Closure changes neither that contract nor campaign recovery permissions.</td>
+                </tr>
+                <tr>
+                  <td>OI-024</td>
+                  <td>The PI can repeat measurements because earlier evidence is hard to find or required diagnostic fields were omitted.</td>
+                  <td><span class="tag">Closed</span></td>
+                  <td>Closed by maintainer decision on 30 October as superseded by OI-044.
+                    Its scope now belongs to the proposal for finding and reusing recorded training and measurement evidence.
+                    Distinguish avoidable repeats from fresh panels, matched controls, missing diagnostics and deliberate replications.
+                    Preserve PI judgment. This merge does not implement a lookup or approve an automatic duplicate gate.</td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
       </details>
-      <h3 id="inactive-issues">Inactive entries — 13</h3>
+      <h3 id="inactive-issues">Inactive entries — 7</h3>
       <p>These entries do not authorize implementation. The historical evidence remains valid.</p>
       <details>
-        <summary>Show the retired, paused, proposed, and withdrawn entries</summary>
+        <summary>Show the proposed and withdrawn entries</summary>
         <div class="details-body">
           <div class="table-wrap wide">
             <table>
@@ -2749,33 +2799,21 @@
                   <td>OI-006</td>
                   <td>The effect of the 120,000-step training allocation on cost and scientific progress remains
                     unknown. This allocation is not the PI session deadline.</td>
-                  <td><span class="tag">Retired</span></td>
-                  <td>The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending.
-                    Continue maintainer cost monitoring without asking the PI to optimize economic cost. Retirement does
+                  <td><span class="tag">Withdrawn</span></td>
+                  <td>Reclassified from Retired to Withdrawn by maintainer decision on 30 October.
+                    The maintainer retained 120k per allocation as a hard constraint. No allocation change is pending.
+                    Continue maintainer cost monitoring without asking the PI to optimize economic cost. Withdrawal does
                     not establish an optimal allocation. Superseded in part on 24 October: the standard allocation stays
                     120k, but an inquiry run may extend to the maintainer maximum (<code>-MaxTimesteps</code>, default
                     360k); see the ledger entry "Harness change after <code>efd58acc</code>".</td>
                 </tr>
                 <tr>
-                  <td>OI-007</td>
-                  <td>The prompt order determines when the PI sees its role and the human goal.</td>
-                  <td><span class="tag">Paused</span></td>
-                  <td>Scientific context already precedes operation choices. The maintainer did not approve a goal-first
-                    prompt for ordinary sessions.</td>
-                </tr>
-                <tr>
                   <td>OI-010</td>
                   <td>The old protocol log raised a separate access concern.</td>
-                  <td><span class="tag">Retired</span></td>
-                  <td>No current defect supports a separate repair. General file-access concerns belong to OI-011 and
+                  <td><span class="tag">Withdrawn</span></td>
+                  <td>Reclassified from Retired to Withdrawn by maintainer decision on 30 October.
+                    No current defect supports a separate repair. General file-access concerns belong to OI-011 and
                     OI-023. This status does not claim a new repair.</td>
-                </tr>
-                <tr>
-                  <td>OI-012</td>
-                  <td>The proposal permits separate publication of a frozen policy.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>The maintainer did not approve or implement the proposal. This proposal does not authorize
-                    campaign recovery.</td>
                 </tr>
                 <tr>
                   <td>OI-013</td>
@@ -2792,83 +2830,22 @@
                     observations remain in their campaign analysis. This entry does not authorize a generic repair.</td>
                 </tr>
                 <tr>
-                  <td>OI-042</td>
-                  <td>Each new session receives whole context files. Only named sections could reduce cost further.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Distant future. One PI-selected named-sections context tool, as in the <a
-                      href="../archive/copilot-sdk-consolidation-plan.md">SDK consolidation plan</a>. Reconsider after
-                    OI-008 shows the remaining context cost.</td>
-                </tr>
-                <tr>
-                  <td>OI-043</td>
-                  <td>Instruction changes are tested only in full campaigns.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Replay one recorded PI decision point with the same fixed evidence under the old and the new
-                    instructions, with no operations, and compare the chosen action. Precedent: two fixed-evidence
-                    replays of the pre-I13 goal-review boundary of <code>79395c88</code> under OI-016; both chose
-                    differently from the campaign. A replay is not campaign evidence. No framework or test
-                    infrastructure is approved. Used on 28 October for <code>270b37b0</code>: exact prompts rendered
-                    from recorded states with the Runner's prompt code for both revisions, blinded packets, 37 replays
-                    (see <a href="../harness-experiment-log.md#parallel-round-10-28-october-cause-of-the-passes">Round
-                      10</a>).</td>
-                </tr>
-                <tr>
                   <td>OI-044</td>
-                  <td>The PI can attribute a recorded measurement to the wrong candidate.</td>
+                  <td>The PI can lose track of prior training and measurement evidence, attribute results to the wrong
+                    candidate or repeat work unnecessarily.</td>
                   <td><span class="tag">Proposal</span></td>
-                  <td>Implement an on-demand <code>artifact_evidence_query</code> action that returns one candidate's
-                    recorded measurements if a campaign shows this error again. Precedent: E11 in <code>49e58c12</code>
-                    attributed T1's 192/200 to T2. Recorded references in <code>success_rate_pass_probability</code>
-                    already cover the counts behind pass estimates.</td>
-                </tr>
-                <tr>
-                  <td>OI-047</td>
-                  <td>Code paths used only for external inference providers remain when the PI runs on GitHub
-                    Copilot.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Low priority. Remove the <code>read</code> tool, <code>read_alias</code> and
-                    <code>json_editors</code> if external providers are no longer used.
-                  </td>
-                </tr>
-                <tr>
-                  <td>OI-050</td>
-                  <td>The harness lifecycle is much heavier than the workflow of a human robot-learning lab, and it
-                    slows the PI on easy tasks.</td>
-                  <td><span class="tag">Proposal</span></td>
-                  <td>Discuss later; no change is authorized. A human lab runs many cheap experiments in parallel
-                    (sweeps, several seeds, early stopping), keeps an informal notebook, compares candidates on a fixed
-                    validation set and tests once at the end, watches plots and videos of the robot, keeps continuity in
-                    the same people, edits code directly and gets feedback from colleagues. The harness runs one formal
-                    operation at a time, wraps each question in an inquiry with a closure condition, checkpoint record
-                    and goal review, applies paired statistics from the start, gives numeric evidence only, rebuilds
-                    each session from records, routes code through coder and reviewer agents, and gives no feedback
-                    during a campaign. Many rules were added to fix past failures, and many decisions follow technical
-                    constraints: one machine's compute capacity (sequential training and evaluation), LLM context
-                    exhaustion (bounded sessions, records, brief), no physical robot and no vision model (numeric
-                    evidence only), and coding efficiency and safety (coder/reviewer split, protected boundaries).
-                    Evidence: <code>efd58acc</code> used 32 sessions, 14 inquiries and about 126 AIU over about 6 h on
-                    an easy task, and most sessions served the process rather than the robot. Next step: a written
-                    comparison of each lifecycle element with the constraint it serves, whether that constraint still
-                    holds, and its cost in recent campaigns. Candidate experiment (24 October): replace the starting
-                    recipe with a minimal skeleton that keeps only the interfaces the Runner and the protected benchmark
-                    call (training and evaluation entry points, checkpoint, log and artifact formats, policy-runtime
-                    factory, observation contract) and none of the scientific choices (reward, observations, action
-                    mapping, algorithm settings, training distribution). Every campaign so far began by repairing the
-                    recipe (T1 always widened the training range); one campaign on the skeleton shows whether the PI
-                    does better when it owns every design choice. Built on branch <code>experiment/minimal-recipe</code>
-                    in a dedicated worktree. <strong>Outcome (25 October): the experiment did not work; the PI needs
-                      more support, not less.</strong> Campaign <code>05229297</code> (folder
-                    <code>robot-learning-campaigns-minimal</code>, recipe tag <code>minimal-recipe-v1</code>: zero
-                    reward, raw-state observations, task target distribution, library-default PPO, no observation
-                    normalization) ran about 6 h 45 min, 15 inquiries, 14 training runs, 110 measurement records and
-                    about 150 AIU, and reached at best 2.8% on one unfinished panel. Two PPO runs with its own reward
-                    scored 0%; the PI then abandoned RL for imitation of an IK teacher it wrote (11 runs, 0–2.8%) and
-                    never revisited normalization, reward scale or PPO settings, never used longer runs or repeated
-                    seeds, and spent most effort on large confirmation panels. The main recipe reaches 64–94% in one
-                    120k run. On 26 October the experiment was removed: its worktree, branch
-                    <code>experiment/minimal-recipe</code>, the minimal recipe repository and the campaign folder
-                    <code>robot-learning-campaigns-minimal</code> no longer exist; this entry is its record.
-                  </td>
+                  <td>OI-024 merged here by maintainer decision on 30 October.
+                    The proposed lookup finds prior training configurations, seeds, candidate and checkpoint identities,
+                    and recorded measurements with their instruments, panels, diagnostics and results.
+                    Its purpose is evidence reuse before another training or measurement run.
+                    E11 in <code>49e58c12</code> attributed T1's 192/200 to T2.
+                    Recorded pass-probability references and existing <code>artifact_evidence_query</code> operation and
+                    metadata queries remain available. Check their coverage before adding an action.
+                    Identical parameters alone do not make a run redundant.
+                    Fresh panels, matched controls and deliberate replications remain valid.
+                    Missing diagnostics can require a new measurement.
+                    The PI decides whether prior evidence answers the question.
+                    This merge authorizes no runtime implementation or automatic duplicate gate.</td>
                 </tr>
                 <tr>
                   <td>OI-054</td>
@@ -2957,8 +2934,8 @@
           OI-060 closed) without the startup sentence, which added PI time in startup and no benefit (round 11). The
           no-recipe experiment runs two campaigns; analyse it when they end.
         </li>
-        <li>Classify OI-024 reruns by their actual information gain or corrected defect.
-          Do not equate all repetition with waste.</li>
+        <li>OI-024 is closed as superseded by OI-044. Retain the combined evidence-reuse proposal without implementing it.
+          Check existing query coverage before a new action. Do not equate all repetition with waste.</li>
         <li>Earlier check, still unanswered: whether frozen-weight runtime tests lead to a training run that carries
           the change, instead of repeated controller variants or attempts to preserve a runtime in a measurement
           artifact. In round 3, <code>de7af8af</code> tested the reflection on frozen T4 weights first, then trained
@@ -3284,6 +3261,52 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: OI-024 merged into OI-044 and closed</h3>
+        <p>The maintainer merged avoidable repeated work into the proposal for finding and reusing recorded training
+          and measurement evidence. OI-044 includes configuration, seed, candidate, checkpoint, panel and diagnostic identities.
+          The PI retains the decision to reuse evidence or run a justified replication or new measurement.
+          OI-024 is closed as superseded, not as an implemented repair.
+          OI-063 is the only open issue. OI-044 is the only proposal.
+          There are 55 closed issues and six withdrawn concerns.
+          No runtime code, campaign state or evidence changed.</p>
+      </div>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: OI-043, OI-050 and OI-012 closed; OI-044 clarified</h3>
+        <p>Prompt replays remain a manual maintainer practice under closed OI-043.
+          OI-050 is no longer a current concern according to the maintainer.
+          OI-012 ends without changing the training-only candidate route.
+          OI-044 remains a candidate-history proposal related to, but distinct from, repeated-measurement issue OI-024.
+          Two issues remain open, none await more evidence, 54 are closed and seven are inactive.
+          The inactive entries comprise OI-044 and six withdrawn concerns.
+          No runtime code, campaign state or evidence changed.</p>
+      </div>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: OI-025, OI-062, OI-042 and OI-047 closed</h3>
+        <p>OI-025 ends the interpretation-error investigation. The maintainer reports that OI-062 errors are now very rare.
+          OI-042 ends because its expected additional gain is limited.
+          OI-047 concerned the first OpenCode implementation, not removal of current provider support.
+          Two issues remain open, none await more evidence, 51 are closed and 10 are inactive.
+          The inactive entries comprise four proposals and six withdrawn concerns.
+          OI-043 and OI-050 remain proposals, pending clarification.
+          No runtime code, campaign state or evidence changed.</p>
+      </div>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: six more closures and two status changes</h3>
+        <p>The maintainer closed OI-008, OI-051, OI-053, OI-055, OI-056 and OI-007.
+          The closure records preserve the implementation evidence and its limits without requiring further campaign verification.
+          OI-006 and OI-010 changed from Retired to Withdrawn. Four issues remain open, none await more evidence,
+          47 are closed and 12 are inactive. The inactive entries comprise six proposals and six withdrawn concerns.
+          No runtime code, campaign state or evidence changed.</p>
+      </div>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">30 October: maintainer closes OI-039, OI-040, OI-057 and OI-061</h3>
+        <p>OI-039 retains the delivered optional comparison tool without scheduling another interval implementation.
+          OI-040 ends the combined console and checkpoint follow-up. OI-057 records the completed observation.
+          OI-061 retains the fixed system prompt and its notification instructions. Four issues remain open, five
+          changes need more evidence, 41 issues are closed and 13 entries are inactive.
+          No runtime code, campaign state or evidence changed.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">30 October: first full campaign with an OpenCode PI passed 200/200</h3>
         <p>After the two coding fixes below, DeepSeek campaign <code>2f20339a</code> ran from start to the official

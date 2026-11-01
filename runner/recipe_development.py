@@ -30,7 +30,27 @@ _DEVELOPMENT_DIRECTORY_NAMES = {
 }
 
 
-def _variant_paths(state: dict, plan: dict) -> dict[str, str] | None:
+def is_recipe_source(relative: str) -> bool:
+    source = Path(relative)
+    return (
+        relative.startswith("robot_learning/")
+        and protocol.is_researcher_owned(relative)
+        and not protocol.is_campaign_lab(relative)
+        and not repository.is_runner_owned(relative)
+        and not any(
+            part.casefold() in _DEVELOPMENT_DIRECTORY_NAMES for part in source.parts
+        )
+        and source.suffix.lower()
+        not in (*protocol.GENERATED_FILE_SUFFIXES, ".log", *_TRAINED_ARTIFACT_SUFFIXES)
+        and source.name not in _TRAINED_ARTIFACT_NAMES
+        and source.name not in {"training_metrics.json", "candidate_manifest.json"}
+        and not source.name.startswith("events.out.tfevents.")
+    )
+
+
+def _variant_paths(
+    state: dict, plan: dict, *, full_recipe: bool = False
+) -> dict[str, str] | None:
     if (
         state["recipe_delivery_mode"] != "isolated_v1"
         or state["campaign_phase"] != "recipe_development"
@@ -63,10 +83,25 @@ def _variant_paths(state: dict, plan: dict) -> dict[str, str] | None:
             "ls-tree", "-r", "--name-only", plan["parent"], "--", "robot_learning"
         ).splitlines()
     )
+    prefix = f"robot_learning/variants/{label}/"
+    if full_recipe:
+        selected = sorted(
+            {relative for relative in recorded if is_recipe_source(relative)}
+            | {
+                "robot_learning/" + relative.removeprefix(prefix)
+                for relative in recorded
+                if relative.startswith(prefix)
+                and is_recipe_source("robot_learning/" + relative.removeprefix(prefix))
+            }
+        )
     mapping = {}
     for relative in selected:
         if relative in protocol.PARAMETER_ONLY_PATHS:
             continue
+        if not is_recipe_source(relative):
+            raise ValueError(
+                f"restore path is not a learning-recipe source: {relative}"
+            )
         overlay = (
             "robot_learning/variants/"
             + label
@@ -91,7 +126,7 @@ def _recorded_source(commit: str, relative: str) -> bytes:
 
 
 def restore_variant(state: dict, plan: dict) -> bool:
-    """Materialize only explicitly requested files of a recorded variant recipe."""
+    """Materialize the canonical files in the accepted variant restore plan."""
     mapping = _variant_paths(state, plan)
     if mapping is None:
         return False
