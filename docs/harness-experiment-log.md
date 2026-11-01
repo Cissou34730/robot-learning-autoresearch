@@ -68,6 +68,35 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**1 November 2026.** Merged `test/scenario-more-information` into `harness`
+at `b59d6603d`. The richer scenario now correctly states that the starting
+recipe includes a training reward. Campaign-facing text no longer makes
+time, AI usage or implementation effort a PI objective or decision criterion
+(`c1ee9bf0e`); maintainer accounting and operational limits are unchanged.
+The explicit `restore_recipe` operation now takes a candidate and reason,
+restores its complete scientific recipe and parameters, retains the checkpoint,
+and selects it as working. Its result reports restored and removed files.
+Campaign history, evidence, other candidates and laboratory tools remain
+available. Ordinary transfer requests do not restore source code automatically.
+
+**Observed restoration replay.** Original campaign 2
+(`61e4f7e2-104a-434a-8c54-eefb5bcecbb1`) failed at 195/200. An independent
+repository at `robot-learning-campaigns-replay/campaign-2` replayed the same
+campaign identity from `46de33d7`, after T5/M9/E18, without later source results
+or the original PI conversation. E21 and E30 restored T4's complete recipe.
+Three new training operations, seven measurements and three inquiries completed
+without execution failures. T8 combined reflection-canonicalized observations
+and mirrored motor commands with transfer training. It scored 400/400 on fresh
+paired research M14 versus T4's 390/400, 200/200 on task-reference M16, and
+**200/200 in the official assessment**. The final modeled pass probability was
+96.99%, compared with the original candidate's 64.08%. This verifies the live
+restoration path and supports keeping the package; it does not isolate each
+wording change or reflection from additional learning. The replay reused the
+initial scientific model, so a fresh campaign still needs to exercise the
+corrected scenario from startup. The maintainer plans a fresh five-campaign
+validation run; no campaign was launched as part of this merge. Focused
+restoration and scientific-ownership checks passed on the merged branch.
+
 **28 October 2026.** Branch `harness` at `511c9cfe`: the round-10 wording
 (`270b37b0`) without the startup invariance sentence, which the startup test
 showed to add PI time without benefit. Latest full round: round 10,
