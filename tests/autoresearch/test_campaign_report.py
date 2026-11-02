@@ -388,6 +388,7 @@ def test_report_reads_supported_state_without_rewriting_or_rewinding(
         del state["recipe_phase"]
         del state["campaign_phase"]
         del state["recipe_development"]
+        del state["recipe_handover"]
     state_path = tmp_path / "runner" / "state" / "research_state.json"
     state_path.write_text(json.dumps(state), encoding="utf-8")
     before = state_path.read_bytes()

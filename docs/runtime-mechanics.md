@@ -18,7 +18,22 @@ and the current state to the same conversation.
 
 The preliminary analyst has `view`, `rg`, `glob` and `apply_patch` (with
 `create` and `edit` on external-provider routes) and no shell. Coding delegation
-is not exposed in that phase.
+is not exposed in that phase. Its scientific model covers the physics, the
+learning problem of the starting recipe, `### Proposed first reward`,
+`### Proposed design variants` and a recipe-development question (a startup
+question when recipe development is skipped); the PI decides what to use.
+
+Each PI session runs on the backend of its launch phase: `analyst`, `recipe`
+(recipe development), `startup` or `research` (goal review and inquiries).
+`LaunchOptions.backends` in `runner/launcher/options.py` resolves them from
+`--model`/`--reasoning` and the `--<phase>-model`/`--<phase>-reasoning`
+overrides (defaults: `gpt-6-luna`, analyst `max`, others `high`;
+`github-copilot/<model>` is recorded as `<model>`). The Copilot runtime serves
+one backend at a time: `CopilotRuntime.start(backend)` restarts it when the
+next session needs another backend. A resumed session keeps the backend it
+recorded at its start; the relaunch check compares it with the backend of the
+session's phase. The coder uses the session's model; the reviewer stays on
+Copilot.
 
 ## Launcher and observations
 
@@ -124,7 +139,9 @@ No session has a shell.
 
 ## Contexts and recovery
 
-The Copilot runtime stays alive across operations and bounded contexts.
+The Copilot runtime stays alive across operations and bounded contexts while the
+session backend stays the same; it restarts between sessions when the next
+phase uses another backend, and it closes before a recipe delivery.
 Ordinary results continue in the same context. Checkpoints end it, and the
 launcher starts a fresh context from durable state. An interrupted or lost
 response is recovered from pending or completed Runner state, not by blind
@@ -142,13 +159,17 @@ New state uses schema 8 and `recipe_phase`, either `"included"` (the default)
 or `"skipped"`. Fresh reset accepts `--skip-recipe-development`; Baseline reset
 always writes `"skipped"`. A skipped campaign starts in `startup`; its startup
 prompt carries the inherited-recipe comparison rule instead of the delivery
-handoff, and the analyst objective omits recipe development. The rest of this
-section applies to `"included"` campaigns only.
+handoff, and the analyst proposes a startup question instead of a
+recipe-development question. The rest of this section applies to `"included"`
+campaigns only.
 `runner.recipe_development.queue()` records delivery inputs only after the
 recipe-development checkpoint is finalized. The launcher closes the development
-backend before `deliver()` publishes those inputs. The PI consolidates the
-canonical recipe and judges adequacy. Publication checks files, not scores,
-and does not choose a candidate or require another training round.
+backend before `deliver()` publishes those inputs. The PI ends recipe
+development when it selects the method, and consolidates it in the canonical
+recipe. Startup receives the PI's handover with the delivered recipe.
+There is no requirement to learn within a single startup run.
+Publication checks files, not scores, and does not
+choose a candidate or require another training round.
 
 `runner.paths.recipe_handoff_directory(root)` resolves outside the public
 campaign repository, below its parent's `.recipe-development-private/` folder.
@@ -164,8 +185,14 @@ same campaign ID. Delivery copies canonical source files and parameters,
 not variants, lab files or serialized policies.
 Any training stages must therefore be encoded in the recipe source. The ready
 scientific model retains its exact bytes and binds to the new recipe commit.
-Candidates, roles, scientific logs, operation history, session records and the
-next question start empty. Scientific counters restart at S1/T1. Operator-only
+
+The public state keeps only `current_synthesis`, `next_direction_or_closure`
+and `next_question` as `recipe_handover`. Startup receives these texts word for
+word as revisable scientific judgment. They may refer to development operation
+identities, but those records remain unavailable. Candidates, roles, scientific
+logs, operation history and full session records start empty.
+
+Scientific counters restart at S1/T1. Operator-only
 observation journals and session-usage reports remain available for cumulative
 AI usage accounting. Development event IDs use the `recipe_development:`
 namespace, distinct from the fresh scientific IDs. They are not startup evidence.
@@ -192,6 +219,8 @@ with the campaign. A reset refuses to start while the marker is `preparing` or
 a successful reset, an `awaiting_session_end` marker of the discarded campaign
 is renamed `handoff.abandoned-<campaign-id>.json`; a `published` marker stays.
 
+Schema-8 records without `recipe_handover` normalize in memory with a null handover.
+No missing handover is reconstructed from private history.
 Schema-6 records normalize in memory to `recipe_phase="skipped"`. Schema 7
 (the first, coupled recipe-development design) and schema-8 states written
 before `recipe_phase` are not supported. There is no automatic conversion or
@@ -200,12 +229,13 @@ live-campaign migration.
 ## Operation submission
 
 `submit_operation` is bound by the trusted launcher to the active campaign and
-bounded session and validated with Runner's schema-6 acceptance checks. No
+bounded session and validated with Runner's schema-8 acceptance checks. No
 model-supplied Runner arguments or exchange paths are accepted; the main PI
 never authors `pi_workspace/operation_request.json`. Validation capture is
-silent. Execution stdout and stderr stream live to the console; only bounded
-tails are kept for error feedback. Two rejected submissions stop the bounded
-session (one retry).
+silent. Execution standard output and error go to the launcher log, and
+progress reaches the TUI through the typed event feed; only bounded tails are
+kept for error feedback. Two rejected submissions stop the bounded session
+(one retry).
 
 Stop requests are cooperative. When the launcher deadline expires, it stops
 only its own process tree and preserves the pending transaction for recovery.

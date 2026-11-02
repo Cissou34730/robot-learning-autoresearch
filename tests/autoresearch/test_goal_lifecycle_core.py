@@ -47,9 +47,7 @@ def _short_worktree(prefix: str) -> Path:
     return path
 
 
-def _configure(
-    monkeypatch, tmp_path: Path, *, recipe_phase: str = "included"
-) -> dict:
+def _configure(monkeypatch, tmp_path: Path, *, recipe_phase: str = "included") -> dict:
     research = tmp_path / "campaigns"
     research.mkdir()
     replacements = {
@@ -252,6 +250,7 @@ def test_schema6_read_normalizes_without_writing(
     state.pop("campaign_phase")
     state.pop("recipe_development")
     state.pop("recipe_phase")
+    state.pop("recipe_handover")
     state["schema_version"] = 6
     state["counters"]["session"] = sessions
     serialized = json.dumps(state)
@@ -474,6 +473,7 @@ def test_brief_normalizes_legacy_state_without_rewriting_it(monkeypatch, tmp_pat
     state.pop("campaign_phase")
     state.pop("recipe_development")
     state.pop("recipe_phase")
+    state.pop("recipe_handover")
     serialized = json.dumps(state)
     paths.STATE_PATH.write_text(serialized, encoding="utf-8")
     assert "`startup`" in build_brief.render_research_brief()

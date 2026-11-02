@@ -91,8 +91,9 @@ RECIPE_DEVELOPMENT_AUTONOMY = (
     "You own recipe development in this session. The recipe-development section "
     "of the campaign reference defines its deliverable and completion conditions. "
     "The checkpoint operation records the evidence of learning and "
-    "delivers the canonical recipe. Startup receives the recipe and the same "
-    "scientific model, without development policies or evidence. Later sessions "
+    "delivers the canonical recipe. Startup receives the recipe, the same "
+    "scientific model and your three-field handover, without development "
+    "candidates or operation records. Later sessions "
     "pursue the campaign goal from the delivered recipe.\n\n"
     "Only submitted operations change the campaign. Analysis moves the campaign "
     "forward only when it leads to an operation.\n\n"
@@ -176,6 +177,7 @@ def reference_paths(preliminary: bool) -> tuple[str, ...]:
         "contracts/authority.md",
         "contracts/policy_runtime.py",
         "contracts/instruments/scientific-model.md",
+        "contracts/instruments/training.md",
     )
 
 

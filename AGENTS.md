@@ -79,6 +79,15 @@ into the campaign. Each harness clone runs `git config core.hooksPath .githooks`
 the pre-commit hook refuses commits of runtime code while a campaign runs. See
 `README.md` for initialization, launch limits and commands.
 
+Run at most five campaigns at once on this machine, counting every worktree:
+on 2 November 2026, ten concurrent campaigns slowed training about four times.
+
+The branch `experiment/no-recipe` (worktree `robot-learning-harness-norecipe`,
+campaigns in `robot-learning-campaigns-norecipe`) starts from a skeleton
+recipe without a reward. Merge harness changes into it, but keep its own
+`contracts/scenario.md` and its recipe defaults (`run_parallel`, the TUI and
+`initialize_campaign`). Check `contracts/scenario.md` after every merge.
+
 ## Environment
 
 The locked stack is native `mujoco==3.12.0`, `gymnasium==1.3.0`,

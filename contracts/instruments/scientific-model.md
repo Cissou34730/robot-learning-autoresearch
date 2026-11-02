@@ -26,6 +26,10 @@ The synthesis includes `### Proposed first reward` and
 `### Proposed design variants`. The reward proposal gives each term's formula
 and weight, its available inputs and its relation to complete task behavior.
 It accounts for the discount factor and episode-end conditions.
+For each term, the analyst states the behavior that it encourages, the behavior
+that it makes cheapest and the reason for its weight. The analyst states the
+observations in the first training runs that can show that the reward is wrong.
+
 Each variant proposal states its question, source and parameter changes,
 physical or learning reason, expected behavior and discriminating observations.
 A variant can change any PI-owned source file and any parameter.
@@ -51,7 +55,8 @@ The PI measures the resulting recipe to demonstrate learning progress.
 
 The startup session receives the unchanged scientific model and the recipe in
 `robot_learning/`. When the campaign includes recipe development, this recipe
-is the delivered recipe, and startup receives no recipe-development evidence.
+is the delivered recipe. Startup also receives `current_synthesis`,
+`next_direction_or_closure` and `next_question` from recipe development, word for word.
 The PI also reads the full scientific model in the startup session and selects
 the initial direction.
 

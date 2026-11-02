@@ -421,6 +421,7 @@ def test_schema8_state_and_model_are_the_only_fresh_start_contract():
     assert state["recipe_phase"] == "included"
     assert state["campaign_phase"] == "recipe_development"
     assert state["recipe_development"] is None
+    assert state["recipe_handover"] is None
     assert set(state) == repository.STATE_FIELDS
     assert state["scientific_model"]["status"] == "pending"
     assert state["active_inquiry"] is None
@@ -446,7 +447,12 @@ def test_schema6_state_normalizes_to_skipped_recipe_phase_without_rewriting(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
     )
-    for field in ("recipe_phase", "campaign_phase", "recipe_development"):
+    for field in (
+        "recipe_phase",
+        "campaign_phase",
+        "recipe_development",
+        "recipe_handover",
+    ):
         state.pop(field)
     state["schema_version"] = 6
     state_path = tmp_path / "research_state.json"
@@ -458,6 +464,38 @@ def test_schema6_state_normalizes_to_skipped_recipe_phase_without_rewriting(
     assert loaded["schema_version"] == 8
     assert loaded["campaign_phase"] == "startup"
     assert state_path.read_bytes() == before
+
+
+def test_existing_schema8_state_without_recipe_handover_remains_readable():
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+    del state["recipe_handover"]
+    normalized = repository.normalize_research_state(state)
+    assert normalized["recipe_handover"] is None
+    assert "recipe_handover" not in state
+    repository.validate_research_state(normalized, allow_missing_artifact=True)
+
+
+@pytest.mark.parametrize("extra", [False, True])
+def test_recipe_handover_contains_only_the_three_text_fields(extra):
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+    state["campaign_phase"] = "startup"
+    state["recipe_handover"] = {
+        "current_synthesis": "Recipe summary.\nUnchanged text.",
+        "next_direction_or_closure": "Continue from the recipe.",
+        "next_question": "What remains unresolved?",
+    }
+    if extra:
+        state["recipe_handover"]["operation_records"] = []
+        with pytest.raises(ValueError, match="recipe_handover requires exactly"):
+            repository.validate_research_state(state, allow_missing_artifact=True)
+    else:
+        repository.validate_research_state(state, allow_missing_artifact=True)
 
 
 def test_scientific_model_and_request_paths_remain_protected():

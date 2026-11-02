@@ -175,6 +175,29 @@ def test_transitional_isolated_handoff_cannot_generate_startup_context(
         )
 
 
+def test_startup_receives_only_the_approved_handover_texts_word_for_word(
+    tmp_path, monkeypatch
+):
+    from runner.launcher import prompts
+
+    state = _ready_state(monkeypatch)
+    handover = {
+        "current_synthesis": "  Selected recipe.\nEvidence: development M1.  ",
+        "next_direction_or_closure": "Continue from the recipe.\n\nKeep this text.",
+        "next_question": "What remains to learn?",
+    }
+    state["recipe_handover"] = handover
+    rendered = prompts.scientific_session_prompt(
+        state,
+        protocol.session_operation_availability(state),
+        prompts.PromptContext(tmp_path, tmp_path, 120_000, 360_000, False),
+    ).text
+    for value in handover.values():
+        assert rendered.count(value) == 1
+    assert state["pi_checkpoint"] is None
+    assert state["operation_events"] == []
+
+
 @pytest.mark.parametrize(
     ("session_kind", "kind", "action", "allowed"),
     [

@@ -211,30 +211,38 @@ the interface from opening.
   `filter`, `help` and `quit`; `tui/commands.py` defines them once for the
   parser, the list, the help and the unknown-command message. `start` resumes
   the active campaign without resetting; `run` resets and starts it.
-- **F2** (or `/settings`) opens one labelled, scrollable dialog for Model,
-  Reasoning, Timesteps, MaxTimesteps, MaxInquiries and StopTimeoutSeconds, a
-  model and reasoning per phase, plus reset options. The model fields are
-  pickers over one merged `provider/model` list of GitHub Copilot, OpenCode Zen
-  and OpenCode Go. The dialog loads it in the background on first use, or reuses
-  the list from `/models`; models that the harness cannot run are left out.
+- **F2** (or `/settings`) opens one labelled, scrollable dialog. Launch fields:
+  Model (all phases), Reasoning (all phases), Training timesteps, Maximum
+  timesteps, Maximum inquiries and Stop timeout, then a "Per-phase backend"
+  section with a model and a reasoning field for Analyst, Recipe development,
+  Startup and Research (goal review, inquiries); a phase field overrides the
+  shared one. There is no Provider field: the model fields are pickers over one
+  merged `provider/model` list of GitHub Copilot, OpenCode Zen and OpenCode Go.
+  The dialog loads it in the background on first use, or reuses the list from
+  `/models`; models with a catalogue problem are left out, and a saved model
+  that is not listed stays selectable. Empty model and reasoning fields keep the
+  launcher defaults: `gpt-6-luna`, analyst `max`, other phases `high`.
   Apply affects future commands only; Cancel/Esc discards edits.
   Empty launch fields preserve launcher defaults and argument omission.
   Every campaign in one batch receives the same settings snapshot.
+  Console-started campaigns have no time or AIU cap (`tools.run_parallel` has
+  6 h / 120 AIU).
 - **Ctrl+F** (or `/search`) searches the log of the active campaign.
   Untargeted campaign actions select that folder only. A number selects that
   identity (`start 2` means only campaign-2); inclusive ranges (`start 1-2`,
   `start 2-3`, `run 1-3`) or folder lists select batches. Overlapping/duplicate,
   descending and out-of-bounds selections are refused before any action.
   Without any installed campaign, an empty state requires
-  explicit targets and shows no fake campaign tab. `models` lists available models
-  through the existing launcher in a detail window. `diagnostics campaign-1` shows the last 64 KiB
+  explicit targets and shows no fake campaign tab. `models` lists the models of
+  every provider through the existing launcher, opens an "Available models"
+  window and logs the usable-model count. `diagnostics campaign-1` shows the last 64 KiB
   of each run-private console log, separately from scientific observations.
   **F1** opens command help; **F3** opens recent commands and persistent step
   details from this TUI session. The main report does not repeat help as activity.
 - Reset controls select Fresh/Baseline, Clean and RecipeRef/BaselineRef. The
-  default remains Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force.
-  Targets and options are logged before execution. Measurements/logs may be
-  deleted; ignored measurements have no reset backup.
+  default remains Fresh + Clean + `baseline-distinct-episodes-v4-robot` + Force.
+  Targets and options are logged before execution (`models` has no target).
+  Measurements/logs may be deleted; ignored measurements have no reset backup.
   Only the reference field for the selected reset mode is visible. `--clean`
   is labelled as cleaning eligible changes, not merely cleaning logs. The
   Fresh-only "Skip recipe development" checkbox (default off) passes
@@ -242,7 +250,7 @@ the interface from opening.
   recipe development.
 - `run` initializes a missing standard folder from the recipe (same as
   `tools.run_parallel`), resets it (`--mode fresh --clean --recipe-ref
-  baseline-distinct-episodes-v3-robot --force`) and launches it. `start`
+  baseline-distinct-episodes-v4-robot --force`) and launches it. `start`
   launches without resetting; `reset` resets without launching; `stop`
   sends the cooperative stop request. All selected resets complete before
   any batch launcher starts. An initialization/reset failure stops further

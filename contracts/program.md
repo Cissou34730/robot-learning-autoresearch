@@ -177,36 +177,25 @@ Encode each training stage and its transitions in the recipe source.
 The delivered recipe must train from fresh initialization without recipe-development artifacts.
 You judge whether the evidence supports this selection.
 
-Startup first trains the delivered recipe from fresh initialization.
-Each startup training run has at most the startup allocation of requested steps.
-The session prompt gives this allocation.
-The delivered recipe, with all its training stages, must learn within one such run.
-This limit applies to the delivered recipe, not to your recipe-development tests.
-
-Delivery does not require repeated training of the selected recipe across seeds.
-Startup and the inquiries continue the work on seed variation and further improvement.
-
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
 
-Startup receives only the delivered recipe and the same accepted scientific model.
-It does not receive development trial scores, alternatives or session records.
-It does not receive training checkpoints, optimizer state or normalization state.
+Startup receives the delivered recipe, the same accepted scientific model and
+your handover: `current_synthesis`, `next_direction_or_closure` and
+`next_question`, word for word. It does not receive trial scores, alternatives,
+operation records, training checkpoints, optimizer state or normalization state.
 Development candidates remain usable for tests and explicit recipe restoration during recipe development.
 They are unavailable after delivery.
 
-In `current_synthesis`, record the resulting recipe and the evidence of learning.
+In `current_synthesis`, explain the delivered recipe and the evidence of learning.
 State which contributions from the tested variants the evidence supports and
 which remain unresolved.
 State the questions that the tests answered. Cite supporting operations in
 `evidence_references`.
 
 Use `decision_frontier` for open questions and discriminating evidence.
-Set `next_question` to a remaining recipe-development question.
-This question belongs to the development record, not the startup plan.
-In `next_direction_or_closure`, explain how the delivered recipe supports startup.
-These fields preserve your validation and recipe-development history.
-Startup does not receive this record.
+Set `next_question` to the question that you propose for startup.
+In `next_direction_or_closure`, explain how startup can continue from the delivered recipe.
 
 ## Startup session
 
@@ -220,8 +209,17 @@ direction.
 
 Start from the recipe in `robot_learning/` and the same accepted scientific
 model. The session prompt states how this recipe reached the startup session.
-When recipe development is included, your first training run uses the delivered
-recipe from fresh initialization. The session's allocation applies to each run.
+When recipe development is included, startup begins from the delivered recipe
+and the same accepted scientific model. Its scientific state is fresh.
+Development candidates and operation records are not available in this session.
+Operation identities in the handover refer to recipe development.
+
+Handover from recipe development, word for word:
+Delivered recipe: `current_synthesis`
+How startup can continue: `next_direction_or_closure`
+Proposed question for startup: `next_question`
+
+This handover is a revisable scientific judgment.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you

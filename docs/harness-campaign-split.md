@@ -173,3 +173,11 @@ Each stage is validated with targeted tests, committed and pushed on `harness`.
   form has a matching Fresh-only "Skip recipe development" checkbox (default
   off). A skipped campaign records `recipe_phase="skipped"` and starts in
   `startup`; Baseline always skips recipe development.
+- 2 November 2026: the delivered repository keeps the recipe tags that predate
+  the campaign or point to its starting commit, so Fresh resets still resolve
+  `--recipe-ref`; tags on later campaign commits are left out. A reset ends the
+  folder's delivery record outside the campaign repository: it refuses during
+  an unfinished swap and abandons a queued delivery. The default recipe tag is
+  `baseline-distinct-episodes-v4-robot`, present in every slot with v3-robot.
+  The `experiment/no-recipe` branch shares this harness code but keeps its own
+  `contracts/scenario.md` and recipe defaults.

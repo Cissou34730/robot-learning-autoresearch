@@ -10,6 +10,14 @@ not the recipe-development record. Recipe development is optional
 (`recipe_phase`), and schema 7 is no longer supported. See
 [Recipe-only delivery](../runtime-mechanics.md#recipe-only-delivery).
 
+Status, 2 November 2026: the analyst proposals described below (first reward,
+design variants, a question) are restored, with the question now targeting
+recipe development. Recipe development ends when the PI selects the method;
+startup trains the delivered recipe from fresh initialization within the
+startup allocation per run. The "local only, never push" statements below are
+historical: the work is merged and published on `harness`. See the
+[2026-11-02 decision](../protocol-decisions.md).
+
 ## Scope and safeguards
 
 Before this documentation edit, a read-only check confirmed all ten campaign

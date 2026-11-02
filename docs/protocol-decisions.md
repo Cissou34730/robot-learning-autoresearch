@@ -7,6 +7,45 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-02 - Recipe development, per-phase models and inherited recipe v4
+
+- **Lifecycle:** analyst -> recipe development -> startup -> goal review <->
+  inquiries -> official assessment. Recipe development is optional and included
+  by default (campaign field `recipe_phase`, `--skip-recipe-development`); a
+  Baseline reset always skips it. State schema 8; schema 6 normalizes to
+  `"skipped"`, schema 7 is unsupported. This supersedes "schema 6" in the
+  2026-10-20 entry.
+- **Recipe development:** the PI compares 2 to 4 training variants per
+  operation (own source files and `parameters`, written into each variant's
+  copy of `current_params.json`), 10,000 to 500,000 steps per run. It ends when
+  the PI selects the method. The checkpoint triggers an isolated delivery: a
+  rebuilt campaign repository with only canonical source, parameters and the
+  scientific model, fresh state, and the development repository archived
+  privately. Startup first trains the delivered recipe from fresh
+  initialization within the startup allocation per run; the
+  recipe-development prompt states that number.
+- **Analyst:** the scientific model again includes the learning-problem
+  analysis of the starting recipe, a proposed first reward, proposed design
+  variants and a recipe-development question (a startup question when the
+  phase is skipped). The PI decides what to implement. This reverses the
+  physical-only analyst scope of `778f11294`, which the 1-2 November batch
+  showed to be the main cause of its regression.
+- **Models:** each launch phase (`analyst`, `recipe`, `startup`, `research`)
+  has its own model and reasoning; `--model`/`--reasoning` set all of them.
+  Defaults: `gpt-6-luna`, analyst `max`, others `high`. The hard-coded analyst
+  model is removed.
+- **Inherited recipe:** `baseline-distinct-episodes-v4-robot` (v3-robot with a
+  required `--timesteps`) is the default recipe reference; the harness
+  `contracts/scenario.md` states that this recipe does not reach the goal by
+  itself and is the base to develop. This supersedes the v3 reset reference in
+  the 2026-10-19 entry. The `experiment/no-recipe` branch keeps its own
+  scenario and recipe defaults.
+- **Delivery and reset:** delivery keeps only the recipe tags that predate the
+  campaign or point to its starting commit. A reset refuses during an
+  unfinished delivery swap and abandons a queued delivery of the discarded
+  campaign.
+- **Status:** implemented and tested; not yet validated by a campaign.
+
 ## 2026-10-27 - Python launcher without console output
 
 - **Launcher:** the campaign launcher, its PI session handling, the Copilot
