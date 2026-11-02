@@ -420,23 +420,37 @@ def test_recipe_delivery_is_fresh_and_development_git_is_private(
         )
 
 
+@pytest.mark.parametrize("recipe_at_base", [False, True])
 def test_recipe_delivery_keeps_recipe_references_but_not_development_history(
-    git_repository, monkeypatch
+    git_repository, monkeypatch, recipe_at_base
 ):
     (git_repository / "recipe.txt").write_text("starting recipe\n", encoding="utf-8")
     repository.git("add", "--", "recipe.txt")
     repository.git("commit", "--quiet", "-m", "starting recipe")
     recipe = repository.git("rev-parse", "HEAD").strip()
     repository.git("tag", "starting-recipe-v1", recipe)
+    repository.git("tag", "-a", "starting-recipe-annotated", "-m", "recipe", recipe)
+    base = recipe
+    if not recipe_at_base:
+        repository.git("commit", "--quiet", "--allow-empty", "-m", "campaign base")
+        base = repository.git("rev-parse", "HEAD").strip()
     state, old_commit, _files, _archive = _development_delivery(
         git_repository, monkeypatch
     )
+    state["campaign"]["base_commit"] = base
+    repository.write_state(state)
+    repository.git("add", "--", "runner/state/research_state.json")
+    repository.git("commit", "--quiet", "-m", "record campaign base")
     # A tag on the campaign's own history must not carry it into the delivery.
     repository.git("tag", "development-snapshot", old_commit)
     try:
         assert recipe_development.publish(state, {"training": {"n_envs": 1}})
         assert (
             repository.git("rev-parse", "starting-recipe-v1^{commit}").strip() == recipe
+        )
+        assert (
+            repository.git("rev-parse", "starting-recipe-annotated^{commit}").strip()
+            == recipe
         )
         assert "development-snapshot" not in repository.git("tag", "--list")
         with pytest.raises(RuntimeError, match="does not resolve"):
