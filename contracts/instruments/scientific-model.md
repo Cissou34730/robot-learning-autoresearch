@@ -11,15 +11,29 @@ four substantive registers: `Established facts`, `Physical consequences`,
 heading (`##`) with its content under it. Topics in a register use level-three
 headings (`###`).
 
-The analyst writes the scientific model. The scientific model states physical
-consequences and the discriminating evidence between them. It selects no
-intervention.
+The analyst writes the scientific model. It states physical consequences,
+learning hypotheses and the evidence that can distinguish them.
+The analyst analyzes the starting recipe that `contracts/scenario.md` describes.
+Recipe design choices are not properties of the robot.
 
 The synthesis is the last register. It selects the consequences and the
 unknowns that are most likely to change the first decisions of the campaign.
 These decisions include the design and the interpretation of the first
 measurements. For each selected item, it keeps the decision relevance, the
 assumptions, the source references and the discriminating evidence.
+
+The synthesis includes `### Proposed first reward` and
+`### Proposed design variants`. The reward proposal gives each term's formula
+and weight, its available inputs and its relation to complete task behavior.
+It accounts for the discount factor and episode-end conditions.
+Each variant proposal states its question, source and parameter changes,
+physical or learning reason, expected behavior and discriminating observations.
+A variant can change any PI-owned source file and any parameter.
+
+The proposals are hypotheses, not established facts.
+The PI decides which proposals to implement and can revise them.
+The synthesis proposes a recipe-development question when that phase is
+included, or an initial scientific question for startup when it is skipped.
 
 The synthesis also includes the invariances of the definitions. For each
 invariance, it states which outcomes the invariance predicts to be equal when
@@ -28,7 +42,7 @@ outcomes, beyond sampling variation, is evidence about the policy, not about
 the task.
 
 When the campaign includes a recipe-development session, that session receives
-the synthesis and the full scientific model. The PI selects the interventions
+the synthesis, the proposals and the full scientific model. The PI selects the interventions
 and creates further variants from the test results.
 The PI develops a recipe that learns and supports startup.
 The recipe uses knowledge across all tested variants.

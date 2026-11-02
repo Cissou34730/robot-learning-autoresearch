@@ -139,6 +139,11 @@ def test_recipe_phase_selects_startup_handoff_and_analyst_objective(
 ):
     from runner.launcher import prompts
 
+    handoffs = {
+        "included": "INCLUDED_ANALYST_HANDOFF",
+        "skipped": "SKIPPED_ANALYST_HANDOFF",
+    }
+    monkeypatch.setattr(prompts, "_SCIENTIFIC_MODEL_HANDOFF", handoffs)
     context = prompts.PromptContext(tmp_path, tmp_path, 10_000, 500_000, False)
     rendered = {}
     for recipe_phase in ("included", "skipped"):
@@ -151,8 +156,10 @@ def test_recipe_phase_selects_startup_handoff_and_analyst_objective(
         )
     assert rendered["included"][0] != rendered["skipped"][0]
     assert rendered["included"][1] != rendered["skipped"][1]
-    assert "recipe-development" not in rendered["skipped"][1]
-    assert "recipe-development" in rendered["included"][1]
+    for recipe_phase, handoff in handoffs.items():
+        assert rendered[recipe_phase][1].count(handoff) == 1
+        other = "skipped" if recipe_phase == "included" else "included"
+        assert handoffs[other] not in rendered[recipe_phase][1]
 
 
 def test_transitional_isolated_handoff_cannot_generate_startup_context(

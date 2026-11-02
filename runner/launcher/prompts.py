@@ -33,7 +33,7 @@ GOAL_REVIEW_OBJECTIVE = (
     "this campaign, or open one bounded inquiry about the gap to the goal."
 )
 # The PowerShell here-string carried the checkout's CRLF line endings; keep them.
-SCIENTIFIC_MODEL_OBJECTIVE = """Construct the physical and scientific model of the robot and of the task. The scientific model exists before any training or campaign evidence.
+SCIENTIFIC_MODEL_OBJECTIVE = """Construct the scientific model of the robot, the task and the learning problem. The scientific model exists before training or campaign evidence.
 
 Work from first principles and from the human-owned definitions of the robot, the simulator and the task. Explain the robot as an embodied dynamical system. Show how its morphology, actuation, sensing, control loop, simulator and task geometry together determine the behaviors that are possible, constrained or scientifically uncertain.
 
@@ -54,6 +54,12 @@ Analyze these items from first principles and from the human-owned definitions:
 * the physical, kinematic, dynamic, control and observability constraints that create qualitatively different classes of behavior or failure.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
+Analyze the learning problem that the task and the starting recipe create. Explain what the policy must infer from its observations. Relate network outputs to motor commands, robot motion and task behavior. Distinguish what the policy must learn from what the method supplies.
+
+Explain how exploration and the initial state affect the experience available to the policy. Relate the training distribution to the task. Explain how the training dynamics can inform the training length. State what a short training result can establish and what remains uncertain.
+
+Relate the reward to the discount factor, episode-end conditions and complete task behavior. Identify incentives that can increase return without task success. State the assumptions that make each proposed learning mechanism credible.
+
 For each consequential physical implication and each unknown, state:
 
 1. The research decisions that it could change.
@@ -61,20 +67,26 @@ For each consequential physical implication and each unknown, state:
 3. The source references in the implementation or in the contracts.
 4. The observation or the evidence that would support it, weaken it or revise it.
 
-The scientific model states physical consequences and the evidence that discriminates between them. The PI selects the interventions.
+The scientific model separates physical consequences, learning hypotheses and design proposals. The PI selects the interventions.
 
-End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.""".replace(
+End with a substantive section with the heading `## Decision-relevant synthesis`. Select the physical consequences and learning questions most likely to change the first decisions of the campaign. Include the design and interpretation of the first measurements.
+
+Include the invariances of the definitions. State which outcomes the definitions predict to be equal under a common transformation. Apply that transformation to the episode start and target. A difference beyond sampling variation is evidence about the policy, not the task. For each selected item, state its decision relevance, assumptions, source references and discriminating evidence.
+
+Under `### Proposed first reward`, propose a reward for the starting recipe that contracts/scenario.md describes. Give the formula and weight of each term. Use quantities available to robot_learning/training/reward.py. Explain how the terms favor complete task behavior with the actual discount factor and episode-end conditions. The proposal can retain the existing reward when the analysis supports it.
+
+Under `### Proposed design variants`, propose designs that test the learning hypotheses. For each design, state the recipe question, source and parameter changes, physical or learning reason, and expected robot behavior. State the observations that can distinguish the designs. A variant can change any PI-owned source file and any parameter. These proposals are hypotheses, not evidence. The PI decides which proposals to implement and can revise them.""".replace(
     "\n", "\r\n"
 )
 _SCIENTIFIC_MODEL_HANDOFF = {
-    "included": """The PI receives this section and the full scientific model in the recipe-development session. The section states consequences and discriminating evidence. The PI selects the interventions.
+    "included": """Propose a recipe-development question that the first variants can test. Explain how its answer can support the recipe decision. The PI receives the scientific model and proposals in the recipe-development session. The PI selects the interventions.
 
 The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress.
 
 The startup session then receives the same scientific model and the delivered recipe. It starts with fresh scientific state and no recipe-development evidence. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.""",
-    "skipped": """The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.""",
+    "skipped": """Propose an initial scientific question for startup from the starting recipe and the analysis. The PI receives the scientific model and proposals in the startup session. The PI decides which proposals to use and selects the initial direction.""",
 }
-_SCIENTIFIC_MODEL_RESULT = "The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically."
+_SCIENTIFIC_MODEL_RESULT = "The result is a scientific model with physical and learning analysis, initial recipe proposals and a scientific question. It separates established facts from hypotheses."
 
 
 def scientific_model_objective(recipe_phase: str) -> str:
@@ -241,7 +253,9 @@ def _handoff_context(
                 "Startup begins from the delivered recipe and the same accepted "
                 "scientific model. Its scientific state is fresh. "
                 "Recipe-development records and artifacts are not available in "
-                "this session."
+                "this session. For the first training run, use the delivered recipe "
+                "from fresh initialization. The session's allocation applies to "
+                "each training run."
             )
         ]
     if pstext.same(kind, "startup"):
@@ -334,7 +348,9 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "parameters. Encode each training stage and its transitions in "
                 "the recipe source. The delivered recipe must train from fresh "
                 "initialization without recipe-development artifacts. "
-                "You judge whether the recipe is adequate for delivery. "
+                "Recipe development ends when you select the method for startup "
+                "from the completed evidence. You judge whether the evidence "
+                "supports this selection. "
                 "The Runner checks the files, not scientific adequacy."
             ),
             (
@@ -605,8 +621,8 @@ def scientific_session_prompt(
         *_handoff_context(state, kind, checkpoint, synthesis),
         (
             "Build the first recipe through quick iterations on variants. "
-            "Start from the scientific model. You decide the first recipe "
-            "question and the variants that test it. "
+            "Start from the scientific model and the analyst's proposals. "
+            "You decide the first recipe question and the variants that test it. "
             "A variant can change any PI-owned source file and any parameter. "
             "\n\nStart from the robot and the physical behavior that the task requires. "
             "Use the scientific model to explain how observations and motor commands "
@@ -719,8 +735,8 @@ def scientific_model_prompt(goal: str, recipe_phase: str) -> str:
                 "references so that the PI can verify them later."
             ),
             (
-                "Include only what the definitions justify before campaign evidence "
-                "exists. Write the result to pi_workspace/scientific_model.md."
+                "Separate source facts, physical implications and untested design "
+                "proposals. Write the result to pi_workspace/scientific_model.md."
             ),
         ]
     )
