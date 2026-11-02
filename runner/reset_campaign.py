@@ -831,6 +831,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    from runner import recipe_development
+
     try:
         if args.mode == "fresh":
             if args.baseline_ref:
@@ -840,6 +842,7 @@ def main() -> int:
                 "baseline requires --baseline-ref and rejects --recipe-ref "
                 "and --skip-recipe-development"
             )
+        recipe_development.require_no_unfinished_swap(paths.ROOT)
         baseline_source = None
         if args.mode == "baseline":
             baseline_source = resolve_commit(args.baseline_ref, "BaselineRef")
@@ -876,6 +879,7 @@ def main() -> int:
             raise RuntimeError(
                 "reset completed with an unexpectedly dirty working tree"
             )
+        recipe_development.abandon_queued_delivery(paths.ROOT)
         paths.reset_marker_path(paths.ROOT).unlink(missing_ok=True)
         print("No training was launched.")
         return 0

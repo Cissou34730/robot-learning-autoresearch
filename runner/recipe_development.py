@@ -279,16 +279,26 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
         "campaigns/EXPERIMENTS.md",
     )
     git("commit", "--quiet", "-m", repository.campaign_commit_message("fresh startup"))
-    # Fresh resets resolve their recipe reference among this repository's tags.
-    git(
-        "-c",
-        f"safe.directory={root}",
-        "fetch",
-        "--quiet",
-        "--no-tags",
-        str(root),
-        "refs/tags/*:refs/tags/*",
-    )
+
+    # Delivery keeps the references that predate this campaign, never its history.
+    def tags(*selection: str) -> set[str]:
+        return set(
+            repository.git(
+                "for-each-ref", "--format=%(refname)", *selection, "refs/tags"
+            ).split()
+        )
+
+    references = sorted(tags() - tags("--contains", state["campaign"]["base_commit"]))
+    if references:
+        git(
+            "-c",
+            f"safe.directory={root}",
+            "fetch",
+            "--quiet",
+            "--no-tags",
+            str(root),
+            *(f"{reference}:{reference}" for reference in references),
+        )
     return git("rev-parse", "HEAD").strip()
 
 
@@ -308,6 +318,36 @@ def _finish_swap(root: Path, marker: dict) -> None:
         raise RuntimeError("Recipe delivery has an unexpected public repository.")
     marker["stage"] = "published"
     repository.atomic_write_json(_marker_path(root), marker)
+
+
+def _previous_delivery(root: Path) -> dict | None:
+    marker_path = _marker_path(root)
+    if not marker_path.is_file():
+        return None
+    return json.loads(marker_path.read_text(encoding="utf-8"))
+
+
+def require_no_unfinished_swap(root: Path) -> None:
+    """A reset must not start while this folder's delivery swap is unfinished."""
+    marker = _previous_delivery(root.resolve())
+    if marker is not None and marker.get("stage") in {"preparing", "ready"}:
+        raise RuntimeError(
+            f"Recipe delivery of campaign {marker.get('campaign_id')} is unfinished "
+            f"({marker.get('stage')}). Finish it before resetting: with "
+            "ROBOT_LEARNING_CAMPAIGN_ROOT set to this folder, run "
+            "`uv run python -m runner.recipe_development` from the harness."
+        )
+
+
+def abandon_queued_delivery(root: Path) -> None:
+    """A reset discards the campaign whose delivery was only queued."""
+    root = root.resolve()
+    marker = _previous_delivery(root)
+    if marker is None or marker.get("stage") != "awaiting_session_end":
+        return
+    marker_path = _marker_path(root)
+    campaign_id = marker.get("campaign_id") or "unknown"
+    marker_path.replace(marker_path.with_name(f"handoff.abandoned-{campaign_id}.json"))
 
 
 def recovery_pending(campaign_root: Path) -> bool:

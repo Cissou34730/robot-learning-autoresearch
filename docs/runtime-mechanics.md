@@ -170,6 +170,12 @@ observation journals and session-usage reports remain available for cumulative
 AI usage accounting. Development event IDs use the `recipe_development:`
 namespace, distinct from the fresh scientific IDs. They are not startup evidence.
 
+The campaign repository also stores recipe references as tags, and Fresh
+resets resolve `--recipe-ref` there. Delivery carries forward only the
+references that predate the campaign: tags whose commit is not on the history
+that starts at `campaign.base_commit`. A tag on the campaign's own history is
+left out, so it cannot bring development commits into the public repository.
+
 The private `handoff.json` marker records `awaiting_session_end`, `preparing`,
 `ready` and `published` stages. Recovery uses the same campaign mutex before
 campaign binding, trust checks or public-state reads. A missing public root is
@@ -179,6 +185,12 @@ the harness and closes the campaign log handle before the directory swap.
 The delivery log uses the private namespace. The public launcher log reopens
 only when public Git exists. After delivery, the launcher forgets the old
 session identity, clears the event namespace and rebuilds the fresh brief.
+
+The marker is keyed to the campaign folder, outside it, so a reset ends it
+with the campaign. A reset refuses to start while the marker is `preparing` or
+`ready` (finish the swap with `python -m runner.recipe_development` first). After
+a successful reset, an `awaiting_session_end` marker of the discarded campaign
+is renamed `handoff.abandoned-<campaign-id>.json`; a `published` marker stays.
 
 Schema-6 records normalize in memory to `recipe_phase="skipped"`. Schema 7
 (the first, coupled recipe-development design) and schema-8 states written
