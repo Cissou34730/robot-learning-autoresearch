@@ -68,9 +68,10 @@ end-effector position as observations. Network output is the motor command.
 Training uses Stable-Baselines3 PPO with observation normalization.
 The recipe supplies training parameters, periodic checkpoints and reward logging.
 
-The recipe includes a training reward. Every part of the starting method
-is a design choice that you can change, not a property of the robot or
-an official task requirement.
+The recipe includes a training reward. This recipe does not reach the goal by
+itself. It is the base that you develop into a method that reaches the goal.
+Every part of the starting method is a design choice that you can change, not a
+property of the robot or an official task requirement.
 
 The research environment starts at zero joint positions and velocities,
 with targets in the arm's plane. These are starting-recipe choices.
