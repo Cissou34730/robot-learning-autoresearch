@@ -177,6 +177,15 @@ Encode each training stage and its transitions in the recipe source.
 The delivered recipe must train from fresh initialization without recipe-development artifacts.
 You judge whether the evidence supports this selection.
 
+Startup first trains the delivered recipe from fresh initialization.
+Each startup training run has at most the startup allocation of requested steps.
+The session prompt gives this allocation.
+The delivered recipe, with all its training stages, must learn within one such run.
+This limit applies to the delivered recipe, not to your recipe-development tests.
+
+Delivery does not require repeated training of the selected recipe across seeds.
+Startup and the inquiries continue the work on seed variation and further improvement.
+
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
 

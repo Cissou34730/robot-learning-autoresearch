@@ -354,6 +354,19 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "The Runner checks the files, not scientific adequacy."
             ),
             (
+                "Startup first trains the delivered recipe from fresh "
+                "initialization. Each startup training run has at most the "
+                "startup allocation of requested steps. The delivered recipe, "
+                "with all its training stages, must learn within one such run. "
+                "This limit applies to the delivered recipe, not to your "
+                "recipe-development tests."
+            ),
+            (
+                "Delivery does not require repeated training of the selected "
+                "recipe across seeds. Startup and the inquiries continue the work "
+                "on seed variation and further improvement."
+            ),
+            (
                 "Startup receives only the delivered recipe and the same accepted "
                 "scientific model. It does not receive trial scores, alternatives "
                 "or session records. It does not receive training checkpoints, "
@@ -518,7 +531,8 @@ def _training_allocation(
         f"Training length: for each run, you choose `steps` between "
         f"{minimum:,} and {maximum:,}. One "
         "training operation can train 2 to 4 design variants at the same time, "
-        "with the same seed and steps."
+        "with the same seed and steps. The startup allocation is "
+        f"{context.timesteps:,} requested steps per run."
     )
 
 
