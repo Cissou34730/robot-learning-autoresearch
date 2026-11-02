@@ -420,6 +420,30 @@ def test_recipe_delivery_is_fresh_and_development_git_is_private(
         )
 
 
+def test_recipe_delivery_keeps_recipe_references_but_not_development_history(
+    git_repository, monkeypatch
+):
+    (git_repository / "recipe.txt").write_text("starting recipe\n", encoding="utf-8")
+    repository.git("add", "--", "recipe.txt")
+    repository.git("commit", "--quiet", "-m", "starting recipe")
+    recipe = repository.git("rev-parse", "HEAD").strip()
+    repository.git("tag", "starting-recipe-v1", recipe)
+    state, old_commit, _files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    try:
+        assert recipe_development.publish(state, {"training": {"n_envs": 1}})
+        assert (
+            repository.git("rev-parse", "starting-recipe-v1^{commit}").strip() == recipe
+        )
+        with pytest.raises(RuntimeError, match="does not resolve"):
+            repository.require_resolvable_commit(old_commit)
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
 @pytest.mark.parametrize("boundary", ["staged", "archived", "replaced"])
 def test_recipe_delivery_recovers_without_rebuilding_or_losing_archive(
     git_repository, monkeypatch, boundary
@@ -1018,6 +1042,7 @@ def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
         final_session.write_bytes(b"final backend session record")
         if queue_gap == "interrupted_launcher":
             from runner.launcher import campaign
+            from runner.launcher.options import PhaseBackend
 
             commands = []
 
@@ -1031,8 +1056,7 @@ def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
                 SimpleNamespace(
                     options=SimpleNamespace(
                         campaign_root=git_repository,
-                        model="new-model",
-                        reasoning="low",
+                        session=lambda _kind: PhaseBackend("new-model", "low"),
                         max_inquiries_explicit=True,
                         max_inquiries=7,
                     ),
