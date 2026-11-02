@@ -279,6 +279,16 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
         "campaigns/EXPERIMENTS.md",
     )
     git("commit", "--quiet", "-m", repository.campaign_commit_message("fresh startup"))
+    # Fresh resets resolve their recipe reference among this repository's tags.
+    git(
+        "-c",
+        f"safe.directory={root}",
+        "fetch",
+        "--quiet",
+        "--no-tags",
+        str(root),
+        "refs/tags/*:refs/tags/*",
+    )
     return git("rev-parse", "HEAD").strip()
 
 
