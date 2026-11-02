@@ -431,17 +431,43 @@ def test_recipe_delivery_keeps_recipe_references_but_not_development_history(
     state, old_commit, _files, _archive = _development_delivery(
         git_repository, monkeypatch
     )
+    # A tag on the campaign's own history must not carry it into the delivery.
+    repository.git("tag", "development-snapshot", old_commit)
     try:
         assert recipe_development.publish(state, {"training": {"n_envs": 1}})
         assert (
             repository.git("rev-parse", "starting-recipe-v1^{commit}").strip() == recipe
         )
+        assert "development-snapshot" not in repository.git("tag", "--list")
         with pytest.raises(RuntimeError, match="does not resolve"):
             repository.require_resolvable_commit(old_commit)
     finally:
         shutil.rmtree(
             paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
         )
+
+
+@pytest.mark.parametrize(
+    "stage", ["published", "awaiting_session_end", "preparing", "ready"]
+)
+def test_reset_ends_the_previous_delivery_record(tmp_path, stage):
+    root = tmp_path / "campaign"
+    root.mkdir()
+    marker = paths.recipe_handoff_directory(root) / "handoff.json"
+    marker.parent.mkdir(parents=True)
+    marker.write_text(
+        json.dumps({"stage": stage, "campaign_id": "old"}), encoding="utf-8"
+    )
+    if stage in {"preparing", "ready"}:
+        with pytest.raises(RuntimeError, match="unfinished"):
+            recipe_development.require_no_unfinished_swap(root)
+        assert marker.is_file()
+        return
+    recipe_development.require_no_unfinished_swap(root)
+    recipe_development.abandon_queued_delivery(root)
+    abandoned = marker.with_name("handoff.abandoned-old.json")
+    assert marker.is_file() is (stage == "published")
+    assert abandoned.is_file() is (stage == "awaiting_session_end")
 
 
 @pytest.mark.parametrize("boundary", ["staged", "archived", "replaced"])
