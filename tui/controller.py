@@ -45,7 +45,7 @@ __all__ = [
     "parse_command",
 ]
 
-DEFAULT_RECIPE_REF = "baseline-distinct-episodes-v3-robot"
+DEFAULT_RECIPE_REF = "baseline-distinct-episodes-v4-robot"
 DEFAULT_STOP_TIMEOUT = 180
 
 SUCCESS = "success"

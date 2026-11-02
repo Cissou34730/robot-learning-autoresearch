@@ -178,7 +178,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--campaign-root", type=Path, required=True)
     parser.add_argument("--source-repository", type=Path, default=paths.HARNESS_ROOT)
-    parser.add_argument("--recipe-ref", default="baseline-distinct-episodes-v3")
+    parser.add_argument("--recipe-ref", default="baseline-distinct-episodes-v4-robot")
     parser.add_argument("--skip-recipe-development", action="store_true")
     args = parser.parse_args()
     try:

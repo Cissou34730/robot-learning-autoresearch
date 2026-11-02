@@ -34,7 +34,7 @@ from runner.launcher import campaign_lock
 from runner.launcher.options import PHASES, PROVIDERS, REASONING_LEVELS
 from runner.paths import stop_request_path
 
-DEFAULT_RECIPE = "baseline-distinct-episodes-v3-robot"
+DEFAULT_RECIPE = "baseline-distinct-episodes-v4-robot"
 _HIDDEN = 0x08000000 | 0x00000200  # CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP
 _KEEP_AWAKE = 0x80000001  # ES_CONTINUOUS | ES_SYSTEM_REQUIRED
 _STARTUP_GRACE_SECONDS = 120

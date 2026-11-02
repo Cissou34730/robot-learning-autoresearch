@@ -12,7 +12,7 @@ copy the harness. The reset runs in its own process, so the calling terminal's
 folder never changes and a relative launcher command can follow:
 
 ```powershell
-uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force ; .\run_research.ps1
+uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v4-robot --force ; .\run_research.ps1
 ```
 
 `--clean` discards eligible uncommitted campaign changes before reset; it does
@@ -25,7 +25,7 @@ next successful reset removes it. Refusals before any change leave no record.
 
 The maintainer TUI provides the success-dependent batch form: `run 1-3` completes
 all selected resets before launching any selected campaign. Its default is
-`--mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force`.
+`--mode fresh --clean --recipe-ref baseline-distinct-episodes-v4-robot --force`.
 Fresh/Baseline, Clean, Skip recipe development (Fresh only) and the relevant
 reference are configurable in the shared Settings dialog (F2), alongside the
 campaign report.
@@ -62,10 +62,10 @@ same flag is accepted by `tools.initialize_campaign` and `tools.run_parallel`.
 Baseline rejects the flag because it always skips recipe development: the
 campaign starts in `startup` from the imported model.
 
-To restore the baseline v3 scientific recipe as well:
+To restore the inherited scientific recipe as well:
 
 ```powershell
-uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distinct-episodes-v3-robot --force
+uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distinct-episodes-v4-robot --force
 ```
 
 This tag is a recipe, not a prepared trained model, so use Fresh rather than

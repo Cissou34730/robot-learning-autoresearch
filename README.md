@@ -68,7 +68,7 @@ uv run python -m tools.run_parallel --count 3
 The tool uses `robot-learning-campaigns\campaign-1` to `campaign-<count>`,
 initializes missing slots from an existing one (adding a global Git
 `safe.directory` entry for the new folder), resets each to the recipe
-(`--recipe-ref`, default `baseline-distinct-episodes-v3-robot`; `--no-reset`
+(`--recipe-ref`, default `baseline-distinct-episodes-v4-robot`; `--no-reset`
 skips this; `--skip-recipe-development` starts the new campaigns without recipe
 development), launches each campaign as a hidden background process without a
 console window and starts a hidden monitor. The monitor stops a campaign
@@ -134,7 +134,7 @@ Git-administration record; TUI `start` is blocked until a reset succeeds.
 
 Reset controls retain Fresh/Baseline, Clean, Skip recipe development (Fresh
 only) and recipe/baseline references.
-The default is Fresh + Clean + `baseline-distinct-episodes-v3-robot` + Force;
+The default is Fresh + Clean + `baseline-distinct-episodes-v4-robot` + Force;
 measurements and logs may be deleted without a reset backup. `start` resumes
 without resetting and leaves completed scientific outcomes unchanged. `stop`
 is cooperative; the invocation's 180-second default timeout plus five seconds
@@ -151,7 +151,7 @@ choose a destination that does not exist:
 uv run python -m tools.initialize_campaign `
   --campaign-root C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-4 `
   --source-repository C:\Users\cyril.beurier\code\robot-learning-campaigns\campaign-1 `
-  --recipe-ref baseline-distinct-episodes-v3-robot
+  --recipe-ref baseline-distinct-episodes-v4-robot
 ```
 
 The source repository must contain the selected recipe reference. Initialization
@@ -161,17 +161,21 @@ Fresh recipe reset. Add `--skip-recipe-development` to start that campaign
 without recipe development. It does not start training or an agent session.
 The new repository has no remotes. Keep its local baseline tag for future resets.
 
-### Reset to v3 or launch one campaign
+### Reset to the inherited recipe or launch one campaign
 
-The campaign repository's `baseline-distinct-episodes-v3-robot` tag is the v3
-recipe importing the renamed robot contract (`contracts/robots/robot.py`); the
-older `baseline-distinct-episodes-v3` tag no longer matches the task contract.
+The campaign repository's `baseline-distinct-episodes-v4-robot` tag is the
+inherited recipe. It is `baseline-distinct-episodes-v3-robot` with a required
+`--timesteps` argument in `robot_learning/train.py`: the former 100,000-step
+default anchored the PI's step choices, and the Runner always passes the value.
+The v3-robot tag stays for history and Prepared Baseline; the older
+`baseline-distinct-episodes-v3` tag no longer matches the task contract.
+Recipe delivery copies these tags into the delivered repository.
 
 Stop any active campaign before resetting. These commands act on `campaign-1`
 unless `--campaign-root` selects another slot:
 
 ```powershell
-uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distinct-episodes-v3-robot --force
+uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distinct-episodes-v4-robot --force
 uv run --group researcher python -m runner.launcher --provider github-copilot
 ```
 
@@ -182,7 +186,7 @@ always skips it). See [reset details](docs/reset-research.md#fresh).
 arguments through. A reset followed by a launch:
 
 ```powershell
-uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v3-robot --force ; .\run_research.ps1
+uv run python -m runner.launcher.reset --mode fresh --clean --recipe-ref baseline-distinct-episodes-v4-robot --force ; .\run_research.ps1
 ```
 
 Use `--clean` only when you intend to discard eligible uncommitted campaign
