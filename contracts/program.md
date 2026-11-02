@@ -209,17 +209,6 @@ direction.
 
 Start from the recipe in `robot_learning/` and the same accepted scientific
 model. The session prompt states how this recipe reached the startup session.
-When recipe development is included, startup begins from the delivered recipe
-and the same accepted scientific model. Its scientific state is fresh.
-Development candidates and operation records are not available in this session.
-Operation identities in the handover refer to recipe development.
-
-Handover from recipe development, word for word:
-Delivered recipe: `current_synthesis`
-How startup can continue: `next_direction_or_closure`
-Proposed question for startup: `next_question`
-
-This handover is a revisable scientific judgment.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you
