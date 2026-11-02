@@ -68,6 +68,32 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**2 November 2026. Analyst support and recipe handoff (implemented).**
+The analyst again analyzes the learning problem and proposes a first reward,
+design variants and a scientific question. Its system prompt and session task
+use the starting recipe described by `contracts/scenario.md`. The question
+targets recipe development when included, or startup when skipped. The PI
+retains scientific authority.
+
+Recipe development starts from the scientific
+model and these provisional proposals, and ends with evidence-supported method
+selection and consolidation. Isolated delivery is unchanged. The first startup
+training run uses the delivered recipe from fresh initialization within the
+existing per-run allocation. No score threshold, fixed validation length,
+task-contract edit or recipe-default change is added.
+
+Run 15 reused analyses that still contained reward and design proposals from
+before `778f11294`. Fresh analysis in run 16 exercised that commit's physical-only
+scope. The old proposals supplied representation designs used by strong
+development candidates. Several fresh-analysis campaigns did not reconstruct
+that work. This supports restoring the missing analyst contribution, but does
+not isolate it from the recipe autonomy change or training-seed variation.
+
+Host contention and the six-hour stops are separate run conditions. Prompt and
+handoff checks do not establish improved scientific performance. The next
+authorized scientific test must regenerate analyses to exercise this change.
+No campaign was launched as part of this implementation.
+
 **1 November 2026.** Merged `test/scenario-more-information` into `harness`
 at `b59d6603d`. The richer scenario now correctly states that the starting
 recipe includes a training reward. Campaign-facing text no longer makes

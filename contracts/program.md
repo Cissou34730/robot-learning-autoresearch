@@ -12,8 +12,9 @@ tools belong to you alone. The design of measurements and training runs, the
 interpretation of evidence and the judgment of progress toward the goal also
 belong to you alone.
 
-The analyst writes the scientific model, the initial physical model, before
-your first session. The analyst supplies physical facts and their consequences.
+The analyst writes the scientific model before your first session.
+The analyst supplies physical and learning analysis, initial recipe proposals
+and a scientific question. The proposals are hypotheses, not established facts.
 You select the interventions and develop the recipe.
 
 The coder gives you implementation help. The coder is not a second scientific
@@ -90,7 +91,11 @@ selects the items that are most likely to change your first decisions. For each
 selected item, it keeps its decision relevance, the assumptions, the source
 references and the evidence that could revise it.
 
-The synthesis selects no intervention. You select the interventions.
+The synthesis includes a proposed first reward and proposed design variants.
+The analyst states the assumptions, expected behavior and discriminating
+evidence for the proposals. The scientific question targets recipe development
+when the campaign includes it, or startup when it does not.
+You decide which proposals to implement and can revise them.
 
 The scientific model then stays fixed as the initial physical model of the
 campaign. It is not passive background. In later sessions, test its
@@ -110,8 +115,8 @@ Build it from the knowledge gained across all tested variants.
 Combine the design choices supported by the results.
 Measure the resulting recipe to demonstrate learning progress.
 
-Start from the scientific model. You decide the first recipe question and the
-variants that test it.
+Start from the scientific model and the analyst's proposals.
+You decide the first recipe question and the variants that test it.
 A variant can change any PI-owned source file and any parameter.
 
 Start from the robot and the physical behavior that the task requires. Use the
@@ -165,15 +170,18 @@ Compare the task behavior of saved candidates from different training points as
 needed to show learning. State what improved. Use this evidence to judge the
 learning progress of the resulting recipe.
 
-Consolidate the recipe in the canonical source files and parameters.
+Recipe development ends when you select the method for startup from the
+completed evidence. Consolidate the selected method in the canonical source
+files and parameters.
 Encode each training stage and its transitions in the recipe source.
 The delivered recipe must train from fresh initialization without recipe-development artifacts.
-You judge whether the recipe is adequate for delivery.
+You judge whether the evidence supports this selection.
+
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
 
 Startup receives only the delivered recipe and the same accepted scientific model.
-It does not receive trial scores, alternatives or session records.
+It does not receive development trial scores, alternatives or session records.
 It does not receive training checkpoints, optimizer state or normalization state.
 Development candidates remain usable for tests and explicit recipe restoration during recipe development.
 They are unavailable after delivery.
@@ -203,6 +211,8 @@ direction.
 
 Start from the recipe in `robot_learning/` and the same accepted scientific
 model. The session prompt states how this recipe reached the startup session.
+When recipe development is included, your first training run uses the delivered
+recipe from fresh initialization. The session's allocation applies to each run.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you

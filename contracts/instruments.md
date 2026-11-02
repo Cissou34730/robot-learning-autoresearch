@@ -184,6 +184,7 @@ recipe supports startup. The completed session record preserves your validation
 and recipe-development history. Startup does not receive this record.
 
 The accepted recipe-development `checkpoint` ends the session and initiates recipe delivery.
+The PI submits it after selecting the method for startup from the completed evidence.
 Delivery contains only the canonical source files and parameters, with the same accepted scientific model.
 Startup starts with fresh scientific state, without development evidence or saved policies.
 The Runner validates the delivery files, not scientific adequacy.
