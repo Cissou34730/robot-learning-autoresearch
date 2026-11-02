@@ -172,9 +172,9 @@ namespace, distinct from the fresh scientific IDs. They are not startup evidence
 
 The campaign repository also stores recipe references as tags, and Fresh
 resets resolve `--recipe-ref` there. Delivery carries forward only the
-references that predate the campaign: tags whose commit is not on the history
-that starts at `campaign.base_commit`. A tag on the campaign's own history is
-left out, so it cannot bring development commits into the public repository.
+references that predate the campaign or point to its starting commit,
+`campaign.base_commit`. Tags on later campaign commits are left out, so they
+cannot bring development commits into the public repository.
 
 The private `handoff.json` marker records `awaiting_session_end`, `preparing`,
 `ready` and `published` stages. Recovery uses the same campaign mutex before

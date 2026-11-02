@@ -280,7 +280,7 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
     )
     git("commit", "--quiet", "-m", repository.campaign_commit_message("fresh startup"))
 
-    # Delivery keeps the references that predate this campaign, never its history.
+    # Keep starting references, but never later development history.
     def tags(*selection: str) -> set[str]:
         return set(
             repository.git(
@@ -288,7 +288,9 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
             ).split()
         )
 
-    references = sorted(tags() - tags("--contains", state["campaign"]["base_commit"]))
+    base = state["campaign"]["base_commit"]
+    development_tags = tags("--contains", base) - tags("--points-at", base)
+    references = sorted(tags() - development_tags)
     if references:
         git(
             "-c",
