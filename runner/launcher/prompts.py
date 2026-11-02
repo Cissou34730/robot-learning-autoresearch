@@ -33,7 +33,7 @@ GOAL_REVIEW_OBJECTIVE = (
     "this campaign, or open one bounded inquiry about the gap to the goal."
 )
 # The PowerShell here-string carried the checkout's CRLF line endings; keep them.
-SCIENTIFIC_MODEL_OBJECTIVE = """Construct the scientific model of the robot, the task and the learning problem. The scientific model exists before training or campaign evidence.
+SCIENTIFIC_MODEL_OBJECTIVE = """Construct the physical and scientific model of the robot, of the task and of the learning problem. The scientific model exists before any training or campaign evidence.
 
 Work from first principles and from the human-owned definitions of the robot, the simulator and the task. Explain the robot as an embodied dynamical system. Show how its morphology, actuation, sensing, control loop, simulator and task geometry together determine the behaviors that are possible, constrained or scientifically uncertain.
 
@@ -54,11 +54,22 @@ Analyze these items from first principles and from the human-owned definitions:
 * the physical, kinematic, dynamic, control and observability constraints that create qualitatively different classes of behavior or failure.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
-Analyze the learning problem that the task and the starting recipe create. Explain what the policy must infer from its observations. Relate network outputs to motor commands, robot motion and task behavior. Distinguish what the policy must learn from what the method supplies.
+The PI trains the policy with reinforcement learning, from the starting recipe that contracts/scenario.md describes. Analyze the learning problem that the starting recipe and the task create:
 
-Explain how exploration and the initial state affect the experience available to the policy. Relate the training distribution to the task. Explain how the training dynamics can inform the training length. State what a short training result can establish and what remains uncertain.
+* how the transformation of the network output into the motor command affects exploration, the motion that random network outputs produce and the speed of learning.
+* how the next variant decision and the observed learning dynamics inform the training length and the limits of a weak result.
+* the quantities in the training log that show progress before task success occurs.
+* for each reward term that you consider, the behavior that the term makes cheapest for the policy, including behavior that collects reward without task success.
+* the relation between the reward, the end of the episode, the hold requirement and the discount factor.
+* the design choices where the analysis cannot tell before training which option the robot learns better.
 
-Relate the reward to the discount factor, episode-end conditions and complete task behavior. Identify incentives that can increase return without task success. State the assumptions that make each proposed learning mechanism credible.
+Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI decides whether to implement or revise the proposal. Do not write code.
+
+Propose the first variants for quick learning tests under `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that tests a proposed method. Differences between variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
+
+Propose an initial scientific question for startup in this section. Explain how the first variants can help develop a recipe that supports this question.
+
+For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
 
 For each consequential physical implication and each unknown, state:
 
@@ -67,32 +78,32 @@ For each consequential physical implication and each unknown, state:
 3. The source references in the implementation or in the contracts.
 4. The observation or the evidence that would support it, weaken it or revise it.
 
-The scientific model separates physical consequences, learning hypotheses and design proposals. The PI selects the interventions.
+The scientific model states consequences, proposals and the evidence that discriminates between them. The PI selects all interventions and the method.
 
-End with a substantive section with the heading `## Decision-relevant synthesis`. Select the physical consequences and learning questions most likely to change the first decisions of the campaign. Include the design and interpretation of the first measurements.
-
-Include the invariances of the definitions. State which outcomes the definitions predict to be equal under a common transformation. Apply that transformation to the episode start and target. A difference beyond sampling variation is evidence about the policy, not the task. For each selected item, state its decision relevance, assumptions, source references and discriminating evidence.
-
-Under `### Proposed first reward`, propose a reward for the starting recipe that contracts/scenario.md describes. Give the formula and weight of each term. Use quantities available to robot_learning/training/reward.py. Explain how the terms favor complete task behavior with the actual discount factor and episode-end conditions. The proposal can retain the existing reward when the analysis supports it.
-
-Under `### Proposed design variants`, propose designs that test the learning hypotheses. For each design, state the recipe question, source and parameter changes, physical or learning reason, and expected robot behavior. State the observations that can distinguish the designs. A variant can change any PI-owned source file and any parameter. These proposals are hypotheses, not evidence. The PI decides which proposals to implement and can revise them.""".replace(
+End with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and the unknowns that are most likely to change the first decisions of the campaign, including the design and the interpretation of the first measurements. Include the invariances of the definitions, and the outcomes that they predict to be equal when the episode start and the target are transformed the same way. A measured difference between such outcomes, beyond sampling variation, is evidence about the policy, not about the task. For each selected item, give these four points in compact form: the decisions that it could change, its assumptions, its source references and its discriminating evidence.""".replace(
     "\n", "\r\n"
 )
 _SCIENTIFIC_MODEL_HANDOFF = {
-    "included": """Propose a recipe-development question that the first variants can test. Explain how its answer can support the recipe decision. The PI receives the scientific model and proposals in the recipe-development session. The PI selects the interventions.
+    "included": """The PI receives this section and the full scientific model in the recipe-development session. The PI uses quick tests to develop a recipe that learns and supports your initial scientific question. The PI creates further variants from the test results.
 
 The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress.
 
-The startup session then receives the same scientific model and the delivered recipe. It starts with fresh scientific state and no recipe-development evidence. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.""",
-    "skipped": """Propose an initial scientific question for startup from the starting recipe and the analysis. The PI receives the scientific model and proposals in the startup session. The PI decides which proposals to use and selects the initial direction.""",
+The startup session then receives the same scientific model, the delivered recipe and the three-field handover. It starts with fresh scientific state, without development candidates or operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.""",
+    "skipped": """The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.""",
 }
-_SCIENTIFIC_MODEL_RESULT = "The result is a scientific model with physical and learning analysis, initial recipe proposals and a scientific question. It separates established facts from hypotheses."
+_SCIENTIFIC_MODEL_RESULT = "The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically."
 
 
 def scientific_model_objective(recipe_phase: str) -> str:
+    objective = SCIENTIFIC_MODEL_OBJECTIVE
+    if recipe_phase == "included":
+        objective = objective.replace(
+            "Propose an initial scientific question for startup in this section.",
+            "Propose an initial scientific question for recipe development in this section.",
+        )
     return "\r\n\r\n".join(
         [
-            SCIENTIFIC_MODEL_OBJECTIVE,
+            objective,
             _SCIENTIFIC_MODEL_HANDOFF[recipe_phase].replace("\n", "\r\n"),
             _SCIENTIFIC_MODEL_RESULT,
         ]
@@ -248,16 +259,27 @@ def _handoff_context(
     state: dict, kind: object, checkpoint: object, synthesis: str
 ) -> list[str]:
     if pstext.same(kind, "startup") and state.get("recipe_phase") == "included":
-        return [
+        sections = [
             (
                 "Startup begins from the delivered recipe and the same accepted "
                 "scientific model. Its scientific state is fresh. "
-                "Recipe-development records and artifacts are not available in "
-                "this session. For the first training run, use the delivered recipe "
-                "from fresh initialization. The session's allocation applies to "
-                "each training run."
+                "Development candidates and operation records are not available "
+                "in this session. Operation identities in the handover refer to "
+                "recipe development."
             )
         ]
+        handover = state.get("recipe_handover")
+        if handover is not None:
+            sections += [
+                (
+                    "Handover from recipe development, word for word:\n"
+                    f"Delivered recipe: {handover['current_synthesis']}\n"
+                    f"How startup can continue: {handover['next_direction_or_closure']}\n"
+                    f"Proposed question for startup: {handover['next_question']}"
+                ),
+                "This handover is a revisable scientific judgment.",
+            ]
+        return sections
     if pstext.same(kind, "startup"):
         return [
             (
@@ -354,22 +376,11 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "The Runner checks the files, not scientific adequacy."
             ),
             (
-                "Startup first trains the delivered recipe from fresh "
-                "initialization. Each startup training run has at most the "
-                "startup allocation of requested steps. The delivered recipe, "
-                "with all its training stages, must learn within one such run. "
-                "This limit applies to the delivered recipe, not to your "
-                "recipe-development tests."
-            ),
-            (
-                "Delivery does not require repeated training of the selected "
-                "recipe across seeds. Startup and the inquiries continue the work "
-                "on seed variation and further improvement."
-            ),
-            (
-                "Startup receives only the delivered recipe and the same accepted "
-                "scientific model. It does not receive trial scores, alternatives "
-                "or session records. It does not receive training checkpoints, "
+                "Startup receives the delivered recipe, the same accepted "
+                "scientific model and your handover: `current_synthesis`, "
+                "`next_direction_or_closure` and `next_question`, word for word. "
+                "It does not receive trial scores, alternatives, operation "
+                "records, training checkpoints, "
                 "optimizer state or normalization state. Development candidates "
                 "remain usable for tests and explicit recipe restoration during "
                 "recipe development. They are unavailable after delivery."
@@ -381,7 +392,7 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "recipe."
             ),
             (
-                "In `current_synthesis`, record the resulting recipe and the "
+                "In `current_synthesis`, explain the delivered recipe and the "
                 "evidence of learning. State which contributions from "
                 "the tested variants the evidence supports and which remain "
                 "unresolved. State the questions that the tests "
@@ -389,15 +400,9 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             ),
             (
                 "Use `decision_frontier` for open questions and discriminating "
-                "evidence. Set `next_question` to a remaining recipe-development "
-                "question. This question belongs to the development record, not "
-                "the startup plan. In `next_direction_or_closure`, explain how "
-                "the delivered recipe supports startup."
-            ),
-            (
-                "These fields preserve "
-                "your validation and recipe-development history. "
-                "Startup does not receive this record."
+                "evidence. Set `next_question` to the question that you propose "
+                "for startup. In `next_direction_or_closure`, explain how startup "
+                "can continue from the delivered recipe."
             ),
         ]
     goal_review = pstext.same(kind, "goal_review")
@@ -531,8 +536,7 @@ def _training_allocation(
         f"Training length: for each run, you choose `steps` between "
         f"{minimum:,} and {maximum:,}. One "
         "training operation can train 2 to 4 design variants at the same time, "
-        "with the same seed and steps. The startup allocation is "
-        f"{context.timesteps:,} requested steps per run."
+        "with the same seed and steps."
     )
 
 

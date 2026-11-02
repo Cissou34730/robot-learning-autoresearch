@@ -168,7 +168,7 @@ so that each count comes from the record of the cited operation and candidate.
 
 `next_question` depends on the kind of session:
 
-- recipe-development session: a remaining recipe-development question, not the startup plan
+- recipe-development session: the proposed question for startup
 - startup session, or inquiry session that closed its inquiry: the proposed
   question for the next goal-review session
 - goal-review session: the exact question of the inquiry that you opened in
@@ -176,17 +176,21 @@ so that each count comes from the record of the cited operation and candidate.
 - inquiry session in which the inquiry stays active: the exact question of the
   active inquiry
 
-In a recipe-development session, `current_synthesis` identifies the delivered
+In a recipe-development session, `current_synthesis` explains the delivered
 recipe and the evidence of learning that supports its design choices.
 `decision_frontier` preserves the unresolved alternatives and the evidence that
 can distinguish them. `next_direction_or_closure` explains how the delivered
-recipe supports startup. The completed session record preserves your validation
-and recipe-development history. Startup does not receive this record.
+recipe supports startup. Startup receives `current_synthesis`,
+`next_direction_or_closure` and `next_question` word for word.
 
 The accepted recipe-development `checkpoint` ends the session and initiates recipe delivery.
 The PI submits it after selecting the method for startup from the completed evidence.
-Delivery contains only the canonical source files and parameters, with the same accepted scientific model.
-Startup starts with fresh scientific state, without development evidence or saved policies.
+Delivery contains the canonical source files and parameters, the same accepted
+scientific model and the three handover texts.
+
+Startup starts with fresh scientific state, without development operation
+records or saved policies. Operation identities in the handover refer to
+recipe development. This handover is a revisable scientific judgment.
 The Runner validates the delivery files, not scientific adequacy.
 
 `completed_operations` must be exactly the completed operation identities of

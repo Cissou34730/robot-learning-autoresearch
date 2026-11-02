@@ -68,6 +68,25 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**2 November 2026. Verbatim analyst restoration and three-text startup handover.**
+The analyst task restores the original learning, reward, variant and synthesis
+instructions from `778f11294^`, without a semantic rewrite. The approved generic
+physics examples and phase-specific question routing remain. The analyst
+receives the training contract again.
+
+Recipe delivery preserves only `current_synthesis`, `next_direction_or_closure`
+and `next_question` as `recipe_handover`. Startup receives the three texts word
+for word as revisable scientific judgment. Candidates, operation records,
+optimizer state and normalization state remain excluded. Existing schema-8
+state without this optional field remains readable with a null handover.
+The one-startup-run learning requirement and the seed-repetition completion
+paragraph are removed. Numeric training allocations and ranges do not change.
+
+The earlier compact analyst rewrite was not a faithful restoration. Structural
+English findings in the restored original text do not justify rewriting it.
+Scientific effectiveness still needs a newly authorized run with fresh
+analyses. No campaign was started, resumed, reset or stopped for these changes.
+
 **2 November 2026. Analyst support and recipe handoff (implemented).**
 The analyst again analyzes the learning problem and proposes a first reward,
 design variants and a scientific question. Its system prompt and session task

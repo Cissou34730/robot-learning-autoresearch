@@ -535,6 +535,7 @@ def test_baseline_import_builds_clean_startup_state(monkeypatch, schema):
         source_state.pop("campaign_phase")
         source_state.pop("recipe_development")
         source_state.pop("recipe_phase")
+        source_state.pop("recipe_handover")
     original = copy.deepcopy(source_state)
 
     state = reset_campaign.baseline_state(
@@ -586,6 +587,7 @@ def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch):
     source_state.pop("campaign_phase")
     source_state.pop("recipe_development")
     source_state.pop("recipe_phase")
+    source_state.pop("recipe_handover")
     original = copy.deepcopy(source_state)
     monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: source_state)
     monkeypatch.setattr(reset_campaign, "resolve_commit", lambda value, _label: value)

@@ -166,11 +166,10 @@ campaigns only.
 recipe-development checkpoint is finalized. The launcher closes the development
 backend before `deliver()` publishes those inputs. The PI ends recipe
 development when it selects the method, and consolidates it in the canonical
-recipe. The recipe-development prompt states that startup first trains the
-delivered recipe from fresh initialization, with at most the startup allocation
-per run (the number is in the prompt), so the recipe with all its stages must
-learn within one run. Publication checks files, not scores, and does not choose
-a candidate or require another training round.
+recipe. Startup receives the PI's handover with the delivered recipe.
+There is no requirement to learn within a single startup run.
+Publication checks files, not scores, and does not
+choose a candidate or require another training round.
 
 `runner.paths.recipe_handoff_directory(root)` resolves outside the public
 campaign repository, below its parent's `.recipe-development-private/` folder.
@@ -186,8 +185,14 @@ same campaign ID. Delivery copies canonical source files and parameters,
 not variants, lab files or serialized policies.
 Any training stages must therefore be encoded in the recipe source. The ready
 scientific model retains its exact bytes and binds to the new recipe commit.
-Candidates, roles, scientific logs, operation history, session records and the
-next question start empty. Scientific counters restart at S1/T1. Operator-only
+
+The public state keeps only `current_synthesis`, `next_direction_or_closure`
+and `next_question` as `recipe_handover`. Startup receives these texts word for
+word as revisable scientific judgment. They may refer to development operation
+identities, but those records remain unavailable. Candidates, roles, scientific
+logs, operation history and full session records start empty.
+
+Scientific counters restart at S1/T1. Operator-only
 observation journals and session-usage reports remain available for cumulative
 AI usage accounting. Development event IDs use the `recipe_development:`
 namespace, distinct from the fresh scientific IDs. They are not startup evidence.
@@ -214,6 +219,8 @@ with the campaign. A reset refuses to start while the marker is `preparing` or
 a successful reset, an `awaiting_session_end` marker of the discarded campaign
 is renamed `handoff.abandoned-<campaign-id>.json`; a `published` marker stays.
 
+Schema-8 records without `recipe_handover` normalize in memory with a null handover.
+No missing handover is reconstructed from private history.
 Schema-6 records normalize in memory to `recipe_phase="skipped"`. Schema 7
 (the first, coupled recipe-development design) and schema-8 states written
 before `recipe_phase` are not supported. There is no automatic conversion or

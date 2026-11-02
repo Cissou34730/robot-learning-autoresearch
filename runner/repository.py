@@ -73,6 +73,11 @@ SAVED_MODEL_MEMBERS = {
 }
 
 RECIPE_PHASES = {"included", "skipped"}
+RECIPE_HANDOVER_FIELDS = {
+    "current_synthesis",
+    "next_direction_or_closure",
+    "next_question",
+}
 STATE_FIELDS = {
     "schema_version",
     "campaign",
@@ -80,6 +85,7 @@ STATE_FIELDS = {
     "scientific_model",
     "campaign_phase",
     "recipe_development",
+    "recipe_handover",
     "recipe_phase",
     "active_inquiry",
     "pi_checkpoint",
@@ -836,6 +842,13 @@ def _validate_campaign_phase(state: dict) -> None:
     phase = state["campaign_phase"]
     session = state["scientific_session"]
     handoff = state["recipe_development"]
+    handover = state["recipe_handover"]
+    if handover is not None:
+        if state["recipe_phase"] != "included" or phase == "recipe_development":
+            raise ValueError("recipe_handover requires completed recipe development")
+        _require_exact_fields(handover, RECIPE_HANDOVER_FIELDS, "recipe_handover")
+        for name in RECIPE_HANDOVER_FIELDS:
+            _nonempty(handover, name, f"recipe handover {name}")
     if state["recipe_phase"] == "skipped" and (
         phase == "recipe_development" or handoff is not None
     ):
@@ -2403,11 +2416,16 @@ def read_state() -> dict:
 
 
 def normalize_research_state(state: dict) -> dict:
+    if state.get("schema_version") == STATE_SCHEMA_VERSION and set(
+        state
+    ) == STATE_FIELDS - {"recipe_handover"}:
+        return {**copy.deepcopy(state), "recipe_handover": None}
     if state.get("schema_version") != 6:
         return state
     if set(state) != STATE_FIELDS - {
         "campaign_phase",
         "recipe_development",
+        "recipe_handover",
         "recipe_phase",
     }:
         raise RuntimeError("research state fields are invalid for schema 6")
@@ -2422,6 +2440,7 @@ def normalize_research_state(state: dict) -> dict:
         if session.get("kind") == "startup" or initial_startup
         else "research",
         recipe_development=None,
+        recipe_handover=None,
         recipe_phase="skipped",
     )
     return normalized
@@ -2465,6 +2484,7 @@ def empty_campaign_state(
         if recipe_phase == "included"
         else "startup",
         "recipe_development": None,
+        "recipe_handover": None,
         "recipe_phase": recipe_phase,
         "human_goal": copy.deepcopy(human_goal or {"source": "contracts/scenario.md"}),
         "scientific_model": {

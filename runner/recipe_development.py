@@ -267,6 +267,10 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
     )
     fresh["campaign_phase"] = "startup"
     fresh["scientific_model"] = {**state["scientific_model"], "commit": recipe_commit}
+    fresh["recipe_handover"] = {
+        name: state["recipe_development"][name]
+        for name in repository.RECIPE_HANDOVER_FIELDS
+    }
     repository.validate_research_state(fresh, allow_missing_artifact=True)
     repository.atomic_write_json(staged / "runner/state/research_state.json", fresh)
     repository.atomic_write_text(staged / "campaigns/results.jsonl", "")

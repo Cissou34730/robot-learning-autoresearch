@@ -368,6 +368,10 @@ def test_recipe_delivery_is_fresh_and_development_git_is_private(
         assert fresh["recipe_phase"] == "included"
         assert fresh["campaign"]["id"] == state["campaign"]["id"]
         assert fresh["recipe_development"] is fresh["pi_checkpoint"] is None
+        assert fresh["recipe_handover"] == {
+            name: state["recipe_development"][name]
+            for name in repository.RECIPE_HANDOVER_FIELDS
+        }
         assert (
             fresh["scientific_session"]
             is fresh["pending_operation"]
