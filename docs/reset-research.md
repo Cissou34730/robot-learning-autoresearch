@@ -51,7 +51,7 @@ uv run python -m runner.launcher.reset --mode fresh --force
 Preserves the current code, parameters, tests, task and protocol decision log.
 Removes campaign checkpoints, disposable candidates, evaluation artifacts,
 training logs, stale requests and generated summaries. Initializes empty
-schema-6 research history with a new campaign identity, a pending scientific
+schema-8 research history with a new campaign identity, a pending scientific
 model, and no working or best-known candidate. This is not a restore from main
 or from historical scientific code.
 
@@ -71,6 +71,33 @@ uv run python -m runner.launcher.reset --mode fresh --recipe-ref baseline-distin
 This tag is a recipe, not a prepared trained model, so use Fresh rather than
 Baseline mode. It lives in the campaign repository after initialization. The
 scientific model starts pending and is prepared on the next authorized launch.
+
+`baseline-distinct-episodes-v4-robot` is the default inherited recipe: it is
+`baseline-distinct-episodes-v3-robot` with a required `--timesteps` argument,
+because the former 100,000-step default anchored the PI's step choices. The
+v3-robot tag stays for history and Prepared Baseline.
+
+### Reset after recipe development
+
+Recipe delivery rebuilds the campaign repository (see
+[recipe-only delivery](runtime-mechanics.md#recipe-only-delivery)). Delivery
+keeps the recipe tags that predate the campaign or point to its starting
+commit, so a later Fresh reset still resolves `--recipe-ref`. Tags on later
+campaign commits are not kept.
+
+The delivery record lives outside the campaign folder, in
+`.recipe-development-private\` beside the campaign slots, and a reset ends it
+with the campaign:
+
+- A delivery that was only queued (`awaiting_session_end`, for example after a
+  batch stopped right after the recipe-development checkpoint) is abandoned:
+  after a successful reset its marker is renamed
+  `handoff.abandoned-<campaign-id>.json`.
+- A folder swap that stopped halfway (`preparing` or `ready`) makes the reset
+  refuse before any change. Finish the swap first, from the harness with
+  `ROBOT_LEARNING_CAMPAIGN_ROOT` set to that campaign folder:
+  `uv run python -m runner.recipe_development`.
+- A completed delivery (`published`) needs nothing.
 
 ### Prepared Recipe References
 
@@ -110,10 +137,10 @@ trained candidate. The normal destructive Fresh reset behavior still applies.
 uv run python -m runner.launcher.reset --mode baseline --baseline-ref <commit-or-tag> --force
 ```
 
-The Git reference must contain one prepared schema-6 candidate designated as
-both working and best-known, with a ready scientific model. Completed
+The Git reference must contain one prepared candidate (schema 6 or 8) designated
+as both working and best-known, with a ready scientific model. Completed
 measurement records for its evaluation artifacts must exist in that reference
-or retained versioned schema-6 state references. The lookup matches the exact
+or in its schema-6, -7 or -8 history. The lookup matches the exact
 selected candidate and artifact paths and does not accept other schemas.
 This permits reuse of an imported
 baseline whose new campaign starts with empty operation history.

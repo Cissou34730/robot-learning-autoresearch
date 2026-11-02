@@ -4,7 +4,7 @@ Read the [Robot-learning research process](docs/research-overview/robot-learning
 
 ## Documentation map
 
-Current operating guidance, reviewed 27 October 2026:
+Current operating guidance, reviewed 2 November 2026:
 
 - [HTML overview](docs/research-overview/robot-learning-overview-20261002.html):
   architecture, lifecycle, status and links to historical evidence. Its filename
@@ -57,6 +57,34 @@ Errors that end a launch go to standard error and to the launcher log
 The harness has its own Git storage and no longer depends on the old reference
 repository or its worktrees. Existing historical branches remain on GitHub.
 
+### Campaign lifecycle
+
+A campaign runs: analyst session (scientific model) -> recipe-development
+session -> startup -> goal review <-> inquiries -> official assessment.
+
+- **Analyst.** Writes `pi_workspace/scientific_model.md`: physical and learning
+  analysis of the starting recipe, `### Proposed first reward`,
+  `### Proposed design variants` and a recipe-development question (a startup
+  question when recipe development is skipped). The PI decides what to use.
+- **Recipe development** (included by default; `--skip-recipe-development`
+  removes it, Baseline resets always skip it). The PI compares 2 to 4 training
+  variants per operation, with their own source files and parameters, choosing
+  10,000 to 500,000 steps per run. The phase ends when the PI selects the
+  method. Its checkpoint triggers an isolated delivery: the campaign repository
+  is rebuilt with only the canonical source, parameters and scientific model,
+  with fresh state (S1/T1); the development repository is archived privately.
+- **Startup** first trains the delivered recipe from fresh initialization within
+  the startup allocation per run (`--timesteps`, 120,000). The
+  recipe-development prompt states that number, and the delivered recipe with
+  all its stages must learn within one run.
+- **Goal review and inquiries** continue until the PI requests the official
+  assessment or `--max-inquiries` pauses the campaign.
+
+Run at most five campaigns at once on this machine: on 2 November, ten
+concurrent campaigns slowed every training about four times. Details:
+[runtime mechanics](docs/runtime-mechanics.md#recipe-only-delivery) and the
+[change tracker](docs/harness-experiment-log.md).
+
 ### Run campaigns (standard)
 
 Run 1 to 5 campaigns at once from the harness folder:
@@ -102,7 +130,8 @@ command is submitted (`run 1-3`, `reset campaign-1 campaign-2`,
 `start campaign-2`, `stop all`); each batch sends the exact same shared
 launcher options to every selected campaign, defaulting to the launcher's
 own defaults for any field left empty. `run` initializes a missing standard
-folder, resets it to the v3 recipe and launches it, skipping the rest of the
+folder, resets it to the default recipe (`baseline-distinct-episodes-v4-robot`)
+and launches it, skipping the rest of the
 batch if a step fails. `Ctrl+C` copies text selection only. `Alt+Q` (or `/quit`)
 leaves the console and keeps every campaign running; `Ctrl+Q` (or `/quit stop`)
 stops every console-owned campaign first and, for one that does not stop in 30 s,
@@ -112,7 +141,11 @@ launcher's dirty-worktree refusal applies. See
 [console details](docs/tui-report.md#operator-console-multi-campaign-control)
 and the [stop contract](docs/external-campaign-stop.md).
 
-Press **F2** (or `/settings`) for labelled shared launch/reset settings;
+Press **F2** (or `/settings`) for labelled shared launch/reset settings,
+including a model picker and a reasoning field for each phase (see
+[Select a model per phase](#select-a-model-per-phase)); `/models` opens the list
+of available models. Console-started campaigns have no time or AIU cap; use
+`tools.run_parallel` for capped runs.
 **F1** opens help and **F3** shows recent commands and their step outcomes.
 Type `/start` and press Enter to resume the active campaign
 without resetting it. Untargeted commands follow the active campaign tab;
@@ -197,9 +230,9 @@ before launching.
 The launcher refuses to start, including a resume, while the harness
 worktree has uncommitted or untracked changes. Commit or discard them first.
 
-Baseline v3 is a scientific recipe, not a trained model. Its reset initializes
-empty campaign history and leaves scientific-model preparation pending. The
-harness stays unchanged. See [reset details](docs/reset-research.md).
+The inherited recipe is a scientific recipe, not a trained model. Its reset
+initializes empty campaign history and leaves scientific-model preparation
+pending. The harness stays unchanged. See [reset details](docs/reset-research.md).
 
 Campaign Git tracks source and compact state. Large measurements, disposable
 models and other ignored artifacts stay in the campaign folder but are not
@@ -216,9 +249,12 @@ saved, the launcher pauses before the next goal review. It records no campaign
 conclusion and requests no official assessment. Launch again with a higher
 `--max-inquiries` to continue the same campaign; the value can only increase.
 
-`--timesteps` (default 120,000) sets the training allocation per run. During an
-inquiry a run may extend up to `--max-timesteps` (default 360,000). The PI sees
-both values in its session context and cannot change them.
+`--timesteps` (default 120,000) sets the training allocation per run in startup
+and the minimum per run in inquiries. During an inquiry a run may extend up to
+`--max-timesteps` (default 360,000). In recipe development the PI chooses each
+run's steps between 10,000 and 500,000; the prompt also states the startup
+allocation, within which the delivered recipe must learn. The PI sees these
+values in its session context and cannot change them.
 
 ### Known restart limitation
 

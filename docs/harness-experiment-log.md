@@ -94,6 +94,36 @@ handoff checks do not establish improved scientific performance. The next
 authorized scientific test must regenerate analyses to exercise this change.
 No campaign was launched as part of this implementation.
 
+**2 November 2026. Overnight batch, inherited-recipe scenario and delivery
+fixes.** The 1-2 November batch ran ten campaigns at once (five on `harness`,
+five on `experiment/no-recipe`). One of five passed on each side (`48030c57`,
+200/200 official at 6 h 01); recipe development took 2 h 44 to over 6 h, against
+38-64 min in no-recipe run 14. Causes found: the physical-only analyst scope of
+`778f11294` (masked in run 15 by reused analyses); the inherited `train.py`
+default of 100,000 steps, which anchored step choices; 20k-50k screening that
+made the inherited recipe look broken; no literal handoff, so campaign-2
+delivered a 150k schedule that a 120k startup run cannot complete; and ten
+concurrent campaigns, which slowed training about four times. Changes on
+`harness`, all merged into `experiment/no-recipe` except the two scenario-only
+ones (`792186932`, `bc613c406`):
+
+- `b3b3e3740`: analyst proposals and recipe-development question restored.
+- `792186932` (scenario only): the harness `contracts/scenario.md` states that
+  the inherited recipe does not reach the goal by itself and is the base to
+  develop.
+- `bc613c406` (scenario only): default recipe `baseline-distinct-episodes-v4-robot`
+  (v3-robot with a required `--timesteps`), tagged in every slot.
+- `e4602af55`: the recipe-development text states that startup first trains the
+  delivered recipe from fresh initialization within the startup allocation per
+  run, and the prompt gives the number.
+- `482e155a0`, `35c453490`: delivery keeps only the recipe tags that predate the
+  campaign or point to its starting commit (delivery had dropped all tags, so
+  slots 2-5 could not reset); a reset refuses during an unfinished delivery swap
+  and abandons a queued delivery of the discarded campaign.
+
+None of this is validated by a campaign yet. Run at most five campaigns at
+once, with fresh analyses (not prepared-analysis references).
+
 **1 November 2026.** Merged `test/scenario-more-information` into `harness`
 at `b59d6603d`. The richer scenario now correctly states that the starting
 recipe includes a training reward. Campaign-facing text no longer makes
@@ -144,9 +174,12 @@ See [Fixed system prompt](#fixed-system-prompt-for-every-model-family-29-october
 - **Repositories.** The harness is published on GitHub branch `harness`. Campaigns
   live in local repositories under one plain folder beside the harness,
   `robot-learning-campaigns\campaign-1` to `campaign-5` (created on demand).
-  Slots were initialized from the local tag `baseline-distinct-episodes-v3-robot`;
-  each new slot gets a global Git `safe.directory` entry. Campaign Git never
-  pushes.
+  The default recipe reference is `baseline-distinct-episodes-v4-robot`; every
+  slot also keeps `baseline-distinct-episodes-v3-robot`. Recipe delivery
+  rebuilds a slot's repository and keeps these tags. Each new slot gets a
+  global Git `safe.directory` entry. Campaign Git never pushes. The no-recipe
+  experiment (`experiment/no-recipe`, worktree `robot-learning-harness-norecipe`)
+  uses `robot-learning-campaigns-norecipe` and its own scenario and recipes.
 - **Launch.** Standard: `uv run python -m tools.run_parallel --count N` (1 to 5)
   uses `campaign-1` to `campaign-N`, initializes missing slots from an existing
   one, resets each folder, launches each launcher detached without a console
@@ -163,30 +196,42 @@ See [Fixed system prompt](#fixed-system-prompt-for-every-model-family-29-october
   and can stop any running campaign through its stop request in the campaign's
   Git directory. The PowerShell launcher, Copilot controller, reset and parallel
   scripts and the console renderers were removed on 27 October; PI prompts are
-  byte-identical (847 recorded states compared).
-- **Agents.** PI and analyst run gpt-6-luna on GitHub Copilot with a customized
-  system message (OI-041); PI reasoning high, analyst max. The analyst's model
-  scope includes the invariances of the definitions (OI-053). On
-  `system-prompt-replace` the system message is one fixed text (SDK replace
-  mode), the same on GPT, Claude and external-provider models, and the analyst
-  has no shell.
-- **Lifecycle.** Unchanged: startup, goal review, inquiries, bounded sessions,
-  hidden `--max-inquiries` 15. `contracts/program.md` carries the 25-26 October
-  reasoning changes (OI-055, OI-056).
-- **Training and measurement.** Allocation 120k steps; inquiry runs up to
-  `--max-timesteps` 360k. Development panel: seed 100000, 400 episodes. Paired
-  comparisons can reuse stored references. A request that repeats a panel is
-  refused (OI-052).
+  byte-identical (847 recorded states compared). The launcher, `run_parallel`
+  and the TUI F2 settings accept a model and reasoning per launch phase. Run at
+  most five campaigns at once on this machine.
+- **Agents.** Each launch phase (`analyst`, `recipe`, `startup`, `research`) has
+  its own model and reasoning; defaults `gpt-6-luna`, analyst `max`, others
+  `high`. Every model family receives one fixed system message (SDK replace
+  mode, OI-061); the analyst has no shell. The analyst writes the physical and
+  learning analysis of the starting recipe, a proposed first reward, proposed
+  design variants and a recipe-development question; its scope includes the
+  invariances of the definitions (OI-053). The coder uses the session's model;
+  the reviewer stays on Copilot.
+- **Lifecycle.** Analyst -> recipe development (optional, included by default)
+  -> startup -> goal review <-> inquiries -> official assessment, with bounded
+  sessions and hidden `--max-inquiries` 15. Recipe development ends with an
+  isolated delivery; startup first trains the delivered recipe from fresh
+  initialization. `contracts/program.md` keeps the 25-26 October reasoning
+  changes (OI-055, OI-056).
+- **Training and measurement.** Startup allocation 120k steps per run; inquiry
+  runs 120k to `--max-timesteps` 360k; recipe-development runs 10k to 500k, with
+  2 to 4 variants per operation. Development panel: seed 100000, 400 episodes.
+  Paired comparisons can reuse stored references. A request that repeats a
+  panel is refused (OI-052).
 - **Session limits.** `submit_operation` waits in 25-minute slices (OI-051).
   The PI session activity limit is 6 h.
 - **PI information.** The campaign resource line shows only counts (inquiries,
   sessions, measurements, training runs, candidates); elapsed time and AI usage
   were removed on 27 October (OI-054 withdrawn).
 - **Tests.** `tests/autoresearch` and `tests/benchmark` with
-  `ROBOT_LEARNING_CAMPAIGN_ROOT` set to a campaign: 833 pass (28 October);
-  857 pass on `system-prompt-replace` (29 October).
-  `tests/e2e` fails as before: it expects `robot_learning/` in a harness
-  clone.
+  `ROBOT_LEARNING_CAMPAIGN_ROOT` set to a campaign: 964 passed and 1 skipped on
+  the recipe-development branch (30 October). Changes since 1 November were
+  checked with targeted tests only; the full gate is still to run. Select a
+  campaign without a queued delivery (for example `campaign-2`); two
+  `test_initialize_campaign` cases and
+  `test_recipe_import_excludes_campaign_memory_and_laboratory` fail on this
+  machine with or without these changes. `tests/e2e` fails as before: it
+  expects `robot_learning/` in a harness clone.
 - **Open authority item.** `contracts/authority.md` still lists
   `researcher_session.ps1` and `researcher_mutex.ps1` as human-owned launcher
   files. They are now retired placeholders; removing them needs an approved
@@ -997,11 +1042,12 @@ The historical evidence remains valid.
 
 ### Next maintainer actions
 
-1. Harness `511c9cfe` is the reference: the round-10 wording (5 of 5 at
-   200/200, cause identified, OI-060 closed) without the startup sentence,
-   which added PI time in startup and no benefit (round 11). The no-recipe
-   experiment runs two campaigns; analyse it when they end (6 h or 120 AIU
-   cap).
+1. Next scientific test, after the full test gate: five fresh campaigns on
+   `harness` (recipe development included, fresh analyses, recipe
+   `baseline-distinct-episodes-v4-robot`), with no other campaign running.
+   Compare with round 10 (5 of 5 without recipe development) and no-recipe
+   run 14 (4 of 5). Optional: five no-recipe campaigns comparing reused and
+   fresh analyses, to measure the analyst's share of the 1-2 November drop.
 2. OI-024 is closed as superseded by OI-044. Retain the combined evidence-reuse
    proposal without implementing it. Check existing query coverage before a new action.
    Do not equate all repetition with waste.
@@ -1023,6 +1069,12 @@ Updated after run 9 ended. The
 preserves the earlier evidence. The run 9 report records the current batch,
 its comparison with run 8 and the remaining scientific questions.
 Run numbers follow the no-recipe archive folders, not the earlier parallel rounds.
+
+Status, 2 November 2026: parts of this table are superseded. Isolated delivery
+(`9bd00459f`) replaced the record handoff, the analyst proposals were removed
+(`778f11294`) and restored (`b3b3e3740`), and the work is merged and published
+on `harness` and `experiment/no-recipe`; the publication row is historical.
+Runs 12-16 are in the ledger below; see [Current state](#current-state).
 
 See [run 9: results and decisions](research-overview/no-recipe-run-9-2026-10-30.md).
 
@@ -1058,6 +1110,11 @@ Stopped attempts remain separate from completed measurements.
 | 7 | `robot-learning-campaigns-norecipe-run7`, repair `5dc489ffe`, `skeleton-v4` | DeepSeek/max completed all five analyses. Luna/high PI, coder and reviewer. Original recipe-development wording. | Pending requests total 4.1m steps across 18 variants. Maintainer stopped the batch before any completed operation record. Its completed analyses became the immutable replay sources. |
 | 8 | `robot-learning-campaigns-norecipe-run8`, harness `cb7ee1bbc`, per-slot `skeleton-v4-analyzed` | Reused run 7 analysis. Same original wording, without new analyst calls. | Pending requests total 2.6m steps across 20 variants. First budgets: 200k/100k/100k/150k/100k. Maintainer stopped the replay before any completed operation record. The 4.1m/18-variant figure belongs to run 7, not run 8. |
 | 9 | Live `robot-learning-campaigns-norecipe`, harness `715ae5be2`, same analyzed references | Same analysis and Luna roles. Brief comparison plan and quick-test wording. | All five completed recipe development and original startup, then paused before inquiries. Best task reference: campaign-1 mirror 138/200 (69%). No official assessment. Detailed run 9 results are recorded in the accompanying report. |
+| 12 | `robot-learning-campaigns-norecipe-run12`, schema 7 (coupled handoff) | Five campaigns, 20k-61k variant runs. | Stopped at 49 min; three campaigns had finished recipe development (33-46 min). Best task reference 28/200. |
+| 13 | `robot-learning-campaigns-norecipe-run13`, schema 7 | Five campaigns, 20k-100k variant runs. | Recipe development 29-72 min; paused after startup. Best task reference 78-182/200; no official assessment. |
+| 14 | `robot-learning-campaigns-norecipe-run14`, harness `b73d3f81b`, schema 7 | Analyst proposals present; startup continued from the selected candidate and the development record. | Recipe development 38-64 min, mostly 10k-50k runs. **4 of 5 passed the official assessment**; campaign-1 reached 187/200. |
+| 15 | `robot-learning-campaigns-norecipe-run15`, harness `17f94cfee`, schema 8 isolated delivery | Reused the run-14 analyses (with proposals), so the physical-only analyst scope of `778f11294` was not exercised. | Recipe development 83-124 min (campaign-2 unfinished at 160 min). Startup T1 of the delivered recipe: 200/200 task reference in campaigns 1 and 4, 200/200 after 2k transfer steps in campaign 3, 57/200 in campaign 5. |
+| 16 | Live `robot-learning-campaigns-norecipe`, 1-2 November, beside five `harness` campaigns | Fresh physical-only analyses; ten campaigns at once on the machine. | Recipe development 163-310 min; 1 of 5 passed (campaign-5); the others reached 87-149/200. See the 2 November entry under [Current state](#current-state). |
 
 The repository is the maintainer record for this work. Assistant memory may
 support continuity, but it does not replace this record. The
@@ -1072,6 +1129,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-11-02 | Maintainer documentation brought up to date | README (lifecycle section, concurrency limit, F2 per-phase pickers, v4 defaults, step ranges), `AGENTS.md` (five-campaign limit, no-recipe merge rule), `docs/reset-research.md` (schema 8, v4, reset after recipe development), `docs/runtime-mechanics.md` (per-phase backends, runtime restart, analyst proposals, handoff, schema 8, execution output), `docs/tui-report.md` (F2 fields, `/models`, v4), `docs/harness-campaign-split.md`, `docs/protocol-decisions.md` (new 2026-11-02 decision), the recipe-development proposal status, the HTML overview (status, lifecycle table, next actions, timeline, models, tests) and this tracker's Current state, next actions and no-recipe runs 12-16. Documentation only. |
 | 2026-11-02 | Delivery keeps only pre-campaign references; reset ends the delivery record | Review of `3c997e645`: copying every tag could bring development commits back into the public repository through a tag on the campaign's history (reproduced). Delivery now copies only tags whose commit is not on the history starting at `campaign.base_commit`; the test covers a development-snapshot tag. Separately, a reset left the folder's private delivery marker behind, so a campaign reset after a queued delivery (campaign-1 on 2 November) would fail at its own delivery with "Another recipe delivery remains unfinished". A reset now refuses while a folder swap is `preparing` or `ready`, and after success renames an `awaiting_session_end` marker to `handoff.abandoned-<campaign-id>.json`. No manual step is needed before resetting. No campaign was launched, resumed, reset or mutated. |
 | 2026-11-02 | Literal recipe-development handoff | Overnight campaign-2 delivered a 150k three-stage schedule that the 120k startup run could not complete, and campaign-1 replicated seeds for 3.5 h before delivering. Recipe-development text (`contracts/program.md` and the session prompt) now states that startup first trains the delivered recipe from fresh initialization, that each startup run has at most the startup allocation, that the delivered recipe with all its stages must learn within one such run (not a limit on development tests), and that delivery requires no repeated training across seeds. The recipe-development prompt states the startup allocation number. STE: no new errors. No campaign was launched, resumed, reset or mutated. |
 | 2026-11-02 | Inherited recipe v4 without the step anchor (scenario change B1) | The inherited `robot_learning/train.py` declared `--timesteps default=100_000`; overnight PIs anchored on it ("100,000-step allocation"), while `skeleton-v4` had already removed that anchor on the no-recipe side. New local tag `baseline-distinct-episodes-v4-robot` (`ffd33f4a`, parent `8bee2b41`) makes the argument required; the Runner always passes it, so runtime behavior is unchanged. Tagged in `campaign-1`, copied with v3-robot into `campaign-2` to `campaign-5`; `run_parallel`, the TUI, `initialize_campaign`, the README and the reset doc default to v4. v3-robot stays for history and Prepared Baseline. No campaign was launched, resumed, reset or mutated. |

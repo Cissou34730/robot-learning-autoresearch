@@ -619,6 +619,15 @@
       <p class="section-label">1 / STATUS</p>
       <h2 id="status-heading">Where the project stands</h2>
       <div class="note" style="margin-bottom: 16px">
+        <p><strong>Status, 2 November 2026:</strong> campaigns now include an optional <strong>recipe-development
+            session</strong> (included by default) between the analyst and startup. The overnight 1-2 November batch
+          ran ten campaigns at once (five on <code>harness</code>, five on <code>experiment/no-recipe</code>) and only
+          1 of 5 passed on each side. The causes were the physical-only analyst scope, a 100,000-step default in the
+          inherited recipe, short tests that misjudged that recipe, a missing literal handoff and machine contention.
+          Fixes are on <code>harness</code> at <code>35c453490</code> (analyst proposals restored, inherited recipe
+          <code>baseline-distinct-episodes-v4-robot</code>, literal handoff, delivery and reset fixes) and are not yet
+          validated by a campaign. See the <a href="../harness-experiment-log.md#current-state">change tracker</a>.
+        </p>
         <p><strong>Latest results:</strong> round 10 (28 October, <code>270b37b0</code>) passed <strong>5 of 5, each
             200/200</strong>, in 110-144 minutes and 27-44 AIU per campaign. It builds on round 7 (27 October,
           scientific
@@ -636,15 +645,19 @@
           request the assessment at 196-198/200 while residual failures are unexplained, and keep the explanation when a
           correction fails. A blinded replay of the exact old and new prompts shows that the round-10 goal-review
           sentence changes the first decision (OI-060).</p>
-        <p><strong>Harness:</strong> branch <code>harness</code> at <code>511c9cfe</code>, pushed. Since round 6: the
+        <p><strong>Harness:</strong> branch <code>harness</code> at <code>35c453490</code>, pushed. Since round 10:
+          optional recipe development with training variants and isolated recipe delivery; a model and reasoning per
+          launch phase (analyst, recipe development, startup, research), in the launcher, <code>run_parallel</code> and
+          the TUI model picker; the analyst again proposes a first reward, design variants and a question. Earlier, since
+          round 6: the
           scientific terms are restored in the campaign text (round 7); recorded references name the instrument and the
           candidates that shared a panel (round 8); the synthesis carries the invariances and PI messages carry no
           harness words (round 9); the key-moment wording for development steps, inquiry closure and goal review
           (round 10). The startup invariance sentence of round 10 was removed after the startup test (round 11). The
           launcher, reset and parallel tool run in Python since 27 October.
         </p>
-        <p><strong>System prompt (29 October):</strong> branch <code>system-prompt-replace</code>, not merged into
-          <code>harness</code>. The PI and the analyst receive one fixed system prompt on every model family (SDK
+        <p><strong>System prompt (29 October, merged):</strong> the PI and the analyst receive one fixed system prompt
+          on every model family (SDK
           replace mode); each PI message is labelled note or end; each campaign validates in its own pytest folder; the
           analyst has no shell. See <a href="#architecture">agents and data flow</a>.
         </p>
@@ -679,8 +692,9 @@
           <span class="tag">Validation and its limits</span>
           <h3 style="margin-top: 12px">Current test status</h3>
           <ul>
-            <li><code>tests/autoresearch</code> and <code>tests/benchmark</code>: 833 pass (28 October); 857 pass on
-              <code>system-prompt-replace</code> (29 October).
+            <li><code>tests/autoresearch</code> and <code>tests/benchmark</code>: 964 passed and 1 skipped on the
+              recipe-development branch (30 October). Changes since 1 November were checked with targeted tests; the
+              full gate is still to run.
             </li>
             <li>Passing tests check implementation behavior, not scientific effectiveness.</li>
             <li>The migration checks of the 19 October split are in <a href="#archive">Old decisions</a>.</li>
@@ -725,10 +739,11 @@
           <ul>
             <li>Copilot SDK 1.0.26 handles sessions, tools, native coding and independent review. OpenCode Zen/Go are
               inference routes within that runtime.</li>
-            <li>The default PI is Copilot GPT-6 Luna with high reasoning. Copilot scientific-model preparation uses max
-              reasoning.</li>
-            <li>Reviewers use high reasoning: the selected campaign model for Copilot campaigns, Copilot GPT-6 Luna for
-              OpenCode campaigns. Corrections reuse the same reviewer.</li>
+            <li>Each launch phase (analyst, recipe development, startup, research) has its own model and reasoning.
+              Defaults: Copilot GPT-6 Luna, with max reasoning for the analyst and high for the other phases. The coder
+              uses the session's model.</li>
+            <li>Reviewers use high reasoning: the session's model on Copilot, Copilot GPT-6 Luna for OpenCode
+              sessions. Corrections reuse the same reviewer.</li>
             <li>The reviewer can read selected files. It cannot edit code, execute checks or choose the scientific
               direction.</li>
             <li>The reviewer requests a complete batch of engineering repairs from the same coder. The PI receives the
@@ -1353,7 +1368,8 @@
         </div>
         <figcaption>The arrows show the implemented runtime. They are not a required order of instruments. The
           <code>checkpoint</code> operation saves the session record. The launcher checks the inquiry cap outside
-          scientific decisions.
+          scientific decisions. Since 1 November an optional recipe-development session (included by default) runs
+          between the scientific model and startup; the diagram does not draw it. See the table below.
         </figcaption>
       </figure>
       <div class="card table-wrap wide" style="margin-top: 16px">
@@ -1370,13 +1386,25 @@
               <td>Scientific model</td>
               <td>An analyst session, with its own persona and reference in the system message, reads the robot and task
                 definitions and the current recipe. It writes a model with four headings: Established facts,
-                Physical consequences, Unknowns, and Decision-relevant synthesis.</td>
+                Physical consequences, Unknowns, and Decision-relevant synthesis. The model also analyzes the learning
+                problem of the starting recipe and proposes a first reward, design variants and a recipe-development
+                question (a startup question when recipe development is skipped).</td>
               <td>The Runner accepts and publishes the model. It stays fixed for the campaign.</td>
             </tr>
             <tr>
+              <td>Recipe development (optional, included by default)</td>
+              <td>The PI develops a recipe that learns. It compares 2 to 4 training variants per operation, each with
+                its own source files and parameters, at 10,000 to 500,000 steps per run, and can measure and restore
+                recipes. It cannot open an inquiry or request the official assessment.</td>
+              <td>The PI selects the method and saves a session record. An isolated delivery rebuilds the campaign
+                repository with only the canonical recipe and the scientific model; development evidence is archived
+                privately.</td>
+            </tr>
+            <tr>
               <td>Startup</td>
-              <td>The PI picks the first scientific direction. It can build tools, change PI-owned code, measure, train,
-                assign roles, or restore a recipe.</td>
+              <td>The PI picks the first scientific direction. After recipe development, its first training run
+                trains the delivered recipe from fresh initialization within the startup allocation. It can build tools,
+                change PI-owned code, measure, train, assign roles, or restore a recipe.</td>
               <td>A session record saves the direction and the work. A fresh goal-review session follows.</td>
             </tr>
             <tr>
@@ -2930,9 +2958,9 @@
       </details>
       <h3>Next maintainer actions</h3>
       <ol>
-        <li>Harness <code>511c9cfe</code> is the reference: the round-10 wording (5 of 5 at 200/200, cause identified,
-          OI-060 closed) without the startup sentence, which added PI time in startup and no benefit (round 11). The
-          no-recipe experiment runs two campaigns; analyse it when they end.
+        <li>Next scientific test, after the full test gate: five fresh campaigns on <code>harness</code> (recipe
+          development included, fresh analyses, recipe <code>baseline-distinct-episodes-v4-robot</code>), with no other
+          campaign running. Compare with round 10 (5 of 5 without recipe development) and no-recipe run 14 (4 of 5).
         </li>
         <li>OI-024 is closed as superseded by OI-044. Retain the combined evidence-reuse proposal without implementing it.
           Check existing query coverage before a new action. Do not equate all repetition with waste.</li>
@@ -3261,6 +3289,26 @@
       <p class="section-label">7 / HISTORY: TIMELINE</p>
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">2 November: overnight regression, its causes and the fixes</h3>
+        <p>Ten campaigns ran at once overnight (five on <code>harness</code>, five no-recipe). One of five passed on
+          each side; recipe development took 2 h 44 to over 6 h. Causes: the physical-only analyst scope
+          (<code>778f11294</code>, hidden in run 15 by reused analyses), the inherited recipe's 100,000-step default,
+          short tests that misjudged that recipe, no literal handoff, and machine contention. Fixes:
+          analyst proposals restored (<code>b3b3e3740</code>); the harness scenario states that the inherited recipe is a
+          base to develop (<code>792186932</code>); recipe <code>baseline-distinct-episodes-v4-robot</code> without the
+          step default (<code>bc613c406</code>); a literal handoff with the startup allocation (<code>e4602af55</code>);
+          delivery keeps pre-campaign recipe tags and a reset ends the delivery record (<code>482e155a0</code>,
+          <code>35c453490</code>). Not yet validated by a campaign.</p>
+      </div>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">1 November: recipe development, per-phase models and TUI model picker</h3>
+        <p>Recipe development, validated on the no-recipe branch, merged into <code>harness</code> as an optional
+          phase (included by default) with isolated delivery; training variants receive their declared parameters.
+          Each launch phase has its own model and reasoning (launcher, <code>run_parallel</code>, TUI); the hard-coded
+          analyst model is removed. The TUI shows <code>/models</code> results and offers a model picker; its Provider
+          field is removed.</p>
+      </div>
       <div class="card timeline">
         <h3 style="margin-top: 0">30 October: OI-024 merged into OI-044 and closed</h3>
         <p>The maintainer merged avoidable repeated work into the proposal for finding and reusing recorded training
