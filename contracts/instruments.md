@@ -179,8 +179,8 @@ so that each count comes from the record of the cited operation and candidate.
 In a recipe-development session, `current_synthesis` explains the delivered
 recipe and the evidence of learning that supports its design choices.
 `decision_frontier` preserves the unresolved alternatives and the evidence that
-can distinguish them. `next_direction_or_closure` explains how the delivered
-recipe supports startup. Startup receives `current_synthesis`,
+can distinguish them. `next_direction_or_closure` explains how startup can
+continue from the delivered recipe. Startup receives `current_synthesis`,
 `next_direction_or_closure` and `next_question` word for word.
 
 The accepted recipe-development `checkpoint` ends the session and initiates recipe delivery.
