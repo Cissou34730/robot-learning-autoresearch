@@ -47,6 +47,7 @@ CAMPAIGN_PATHS = (
     "runner/state/research_state.json",
     "pi_workspace/scientific_model.md",
     "campaigns/checkpoints",
+    "campaigns/recipe_lineage.json",
     "campaigns/postmortems.md",
     "campaigns/archive.md",
     "runner/state/BASELINE_PENDING",

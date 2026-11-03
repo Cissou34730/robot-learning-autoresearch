@@ -306,6 +306,10 @@ def test_development_checkpoint_retries_without_republishing_or_training(
 ):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "recipe_development", "Compare the scientific recipes.")
+    # Delivery-candidate acceptance is covered in test_git_publication.
+    monkeypatch.setattr(
+        recipe_development, "require_deliverable_candidate", lambda _state: None
+    )
     run_experiment.accept_operation(_checkpoint(state), state)
     published = []
     monkeypatch.setattr(
@@ -404,6 +408,9 @@ def test_development_handoff_requires_consistent_phase_session_and_evidence(
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "recipe_development", "Compare scientific recipes.")
     monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    monkeypatch.setattr(
+        recipe_development, "require_deliverable_candidate", lambda _state: None
+    )
     run_experiment.accept_operation(_checkpoint(state), state)
     assert run_experiment.execute_pending_operation() == 0
     state = repository.read_state()

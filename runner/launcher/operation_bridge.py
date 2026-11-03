@@ -20,6 +20,28 @@ from runner.launcher.trust import TrustGuard
 _SETTLED_PROGRESS = ("result_ready", "completed")
 
 
+def _session_end_result(event: dict) -> str:
+    """The saved operation that ended the session; the session state is already closed."""
+    identifier = pstext.text(event.get("id"))
+    if pstext.same(event.get("kind"), "checkpoint"):
+        completed = [
+            pstext.text(item)
+            for item in pstext.items(
+                pstext.field(event.get("request"), "completed_operations")
+            )
+        ]
+        return (
+            f"The Runner saved checkpoint operation {identifier}. Session "
+            f"{pstext.text(event.get('session_id'))} ended with "
+            f"{len(completed)} completed operations"
+            + (f": {', '.join(completed)}." if completed else ".")
+        )
+    return (
+        f"The Runner saved operation {identifier} "
+        f"({pstext.text(event.get('kind'))}). The session ended."
+    )
+
+
 def operation_state(state: dict, campaign_root: Path) -> dict:
     """The factual state returned to the PI with each submission result."""
     session = state.get("scientific_session")
@@ -201,7 +223,11 @@ class OperationBridge:
                 "terminal_state"
             )
             response["status"] = "session_ended" if ended else "completed"
-            response["result"] = latest_session_result(current)
+            response["result"] = (
+                _session_end_result(new_completed[-1])
+                if ended and new_completed
+                else latest_session_result(current)
+            )
         return response
 
     def _record_failure(

@@ -183,12 +183,18 @@ can distinguish them. `next_direction_or_closure` explains why later inquiries
 will primarily develop the selected method.
 
 The accepted recipe-development `checkpoint` ends the session and initiates recipe delivery.
-Delivery contains only the canonical source files and parameters, with the same
-accepted scientific model and the three handover texts. Startup receives
-`current_synthesis`, `next_direction_or_closure` and `next_question` word for word.
+The Runner accepts it only when a best-known candidate is assigned and the
+canonical recipe is the recipe of that candidate.
+Delivery contains the best-known candidate with its saved files and the lineage
+of the training runs that produced it. It also contains the canonical source
+files and parameters, the same accepted scientific model and the three handover
+texts. Startup receives `current_synthesis`, `next_direction_or_closure` and
+`next_question` word for word.
 
-Startup starts with fresh scientific state, without development operation
-records or saved policies. Operation identities in the handover refer to
+Startup starts with fresh operation records. The delivered candidate is its
+working and best-known candidate, and its recipe-development results are
+historical evidence. Other development candidates are not available.
+Operation identities in the handover and the lineage refer to
 recipe development. This handover is a revisable scientific judgment.
 The Runner validates the delivery files, not scientific adequacy.
 

@@ -175,6 +175,78 @@ def test_transitional_isolated_handoff_cannot_generate_startup_context(
         )
 
 
+def test_startup_names_the_delivered_candidate_and_its_lineage(tmp_path, monkeypatch):
+    import json
+
+    from runner.launcher import prompts
+
+    state = _ready_state(monkeypatch)
+    state["candidates"]["T2:checkpoint-50"] = {
+        "id": "T2:checkpoint-50",
+        "artifact": "campaigns/checkpoints/retained/campaign/t2",
+        "fingerprint": "a" * 64,
+        "origin_operation": "T2",
+        "name": "checkpoint-50",
+        "parameters": {},
+        "scientific_commit": "a" * 40,
+        "training_steps": 50,
+        "evaluation_artifacts": [],
+    }
+    state["model_roles"].update(
+        working="T2:checkpoint-50", best_known="T2:checkpoint-50"
+    )
+    lineage = {
+        "candidate": "T2:checkpoint-50",
+        "chapters": [
+            {
+                "operation": "T1",
+                "variant": "wide",
+                "initialization": "fresh",
+                "parent": None,
+                "seed": 0,
+                "training_steps": 100,
+                "parameter_changes": {},
+                "changed_files": ["robot_learning/variants/wide/env.py"],
+                "candidate": "T1:wide-checkpoint-100",
+                "measurements": [],
+            },
+            {
+                "operation": "T2",
+                "variant": None,
+                "initialization": "transfer",
+                "parent": "T1:wide-checkpoint-100",
+                "seed": 1,
+                "training_steps": 50,
+                "parameter_changes": {},
+                "changed_files": [],
+                "candidate": "T2:checkpoint-50",
+                "measurements": [
+                    {
+                        "operation": "M3",
+                        "instrument": "research_evaluation",
+                        "successes": 390,
+                        "episodes": 400,
+                    }
+                ],
+            },
+        ],
+    }
+    target = tmp_path / "campaigns/recipe_lineage.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(json.dumps(lineage), encoding="utf-8")
+    rendered = prompts.scientific_session_prompt(
+        state,
+        protocol.session_operation_availability(state),
+        prompts.PromptContext(tmp_path, tmp_path, 120_000, 360_000, False),
+    ).text
+    assert "T2:checkpoint-50" in rendered
+    assert "T1:wide-checkpoint-100" in rendered
+    assert "390/400 (M3)" in rendered
+    assert rendered.index("robot_learning/variants/wide/env.py") < rendered.index(
+        "390/400 (M3)"
+    )
+
+
 def test_startup_receives_only_the_approved_handover_texts_word_for_word(
     tmp_path, monkeypatch
 ):

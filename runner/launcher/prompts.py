@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -22,8 +23,8 @@ RECIPE_DEVELOPMENT_OBJECTIVE = (
 STARTUP_OBJECTIVE = {
     "included": (
         "Establish the initial scientific direction, the tools and the first useful "
-        "investigation from the delivered recipe. The section 'Startup session' "
-        "of contracts/program.md defines this session."
+        "investigation from the delivered candidate and its recipe. The section "
+        "'Startup session' of contracts/program.md defines this session."
     ),
     "skipped": (
         "Establish the initial scientific direction, as the section 'Startup session' "
@@ -93,7 +94,7 @@ End with a substantive section with the heading `## Decision-relevant synthesis`
 _SCIENTIFIC_MODEL_HANDOFF = {
     "included": """The PI receives this section and the full scientific model in the recipe-development session. The PI uses quick tests to develop a recipe that learns and supports your initial scientific question. The PI creates further variants from the test results.
 
-The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the same scientific model, the delivered recipe and the three-field handover. It starts with fresh scientific state, without development candidates or operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.""",
+The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the same scientific model, the delivered candidate with its recipe and lineage, and the three-field handover. It starts with fresh operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered candidate and its recipe.""",
     "skipped": """The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.""",
 }
 _SCIENTIFIC_MODEL_RESULT = "The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically."
@@ -254,19 +255,66 @@ def _inquiry_line(state: dict, transition: Transition | None) -> str:
     )
 
 
+def _lineage_text(lineage: dict) -> str:
+    lines = []
+    for chapter in lineage["chapters"]:
+        start = (
+            f"transfer from {chapter['parent']}"
+            if chapter["parent"]
+            else str(chapter["initialization"])
+        )
+        changes = ", ".join(
+            [
+                *chapter["changed_files"],
+                *(
+                    f"{key}={json.dumps(value, ensure_ascii=False)}"
+                    for key, value in chapter["parameter_changes"].items()
+                ),
+            ]
+        )
+        scores = "; ".join(
+            f"{row['instrument']} {row['successes']}/{row['episodes']} ({row['operation']})"
+            for row in chapter["measurements"]
+        )
+        lines.append(
+            f"- {chapter['operation']}"
+            + (f" variant {chapter['variant']}" if chapter["variant"] else "")
+            + f": {start}, seed {chapter['seed']}, {chapter['training_steps']:,} steps"
+            + (f", changes: {changes}" if changes else "")
+            + f" -> {chapter['candidate']}"
+            + (f"; {scores}" if scores else "; not measured")
+        )
+    return (
+        f"Lineage of the delivered candidate {lineage['candidate']}, first "
+        "chapter first:\n" + "\n".join(lines)
+    )
+
+
 def _handoff_context(
-    state: dict, kind: object, checkpoint: object, synthesis: str
+    state: dict, kind: object, checkpoint: object, synthesis: str, lineage: str = ""
 ) -> list[str]:
     if pstext.same(kind, "startup") and state.get("recipe_phase") == "included":
+        delivered = state["model_roles"]["best_known"]
         sections = [
             (
-                "Startup begins from the delivered recipe and the same accepted "
+                f"Startup begins from the delivered candidate {delivered}, its "
+                "recipe and the same accepted scientific model. The candidate is "
+                "your working and best-known candidate, with its saved policy, "
+                "normalization and training state. Its recipe-development results "
+                "are historical evidence, not measurements of this session. Other "
+                "development candidates and operation records are not available in "
+                "this session. Operation identities in the handover and the lineage "
+                "refer to recipe development."
+                if delivered is not None
+                else "Startup begins from the delivered recipe and the same accepted "
                 "scientific model. Its scientific state is fresh. "
                 "Development candidates and operation records are not available "
                 "in this session. Operation identities in the handover refer to "
                 "recipe development."
             )
         ]
+        if lineage:
+            sections.append(lineage)
         handover = state.get("recipe_handover")
         if handover is not None:
             sections += [
@@ -365,18 +413,26 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "Measure the resulting recipe to demonstrate learning progress."
             ),
             (
-                "Consolidate the recipe in the canonical Python source files and "
-                "parameters. You judge whether the recipe is adequate for delivery. "
-                "The Runner checks the files, not scientific adequacy."
+                "The `checkpoint` operation delivers the best-known candidate with "
+                "its recipe. Before the `checkpoint` operation, assign the "
+                "best-known candidate. The canonical Python source files and "
+                "parameters must be its recipe. `restore_recipe` makes them its "
+                "recipe. You judge whether the candidate and its recipe are "
+                "adequate for delivery. The Runner checks the files, not "
+                "scientific adequacy."
             ),
             (
-                "Startup receives the delivered recipe, the same accepted "
-                "scientific model and your handover: `current_synthesis`, "
-                "`next_direction_or_closure` and `next_question`, word for word. "
-                "It does not receive development operation records, training "
-                "checkpoints, optimizer state or normalization state. Development "
-                "candidates remain usable for tests and explicit recipe restoration "
-                "during recipe development. They are unavailable after delivery."
+                "Startup receives the best-known candidate as its working and "
+                "best-known candidate. The candidate keeps its saved policy, "
+                "normalization and training state. Startup also receives the "
+                "lineage of the training runs that produced the candidate, the "
+                "delivered recipe, the same accepted scientific model and your "
+                "handover: `current_synthesis`, `next_direction_or_closure` and "
+                "`next_question`, word for word. It does not receive development "
+                "operation records or other candidates. Development candidates "
+                "remain usable for tests and explicit recipe restoration during "
+                "recipe development. The other candidates are unavailable after "
+                "delivery."
             ),
             (
                 "Compare the task behavior of saved candidates from different "
@@ -621,10 +677,19 @@ def scientific_session_prompt(
             "record is above. Read other evidence when the scientific question "
             "needs it."
         )
+    lineage = ""
+    lineage_path = context.campaign_root / "campaigns/recipe_lineage.json"
+    if (
+        pstext.same(kind, "startup")
+        and state.get("recipe_phase") == "included"
+        and state["model_roles"]["best_known"] is not None
+        and lineage_path.is_file()
+    ):
+        lineage = _lineage_text(json.loads(lineage_path.read_text(encoding="utf-8")))
     sections = [
         role_line,
         *model_file,
-        *_handoff_context(state, kind, checkpoint, synthesis),
+        *_handoff_context(state, kind, checkpoint, synthesis, lineage),
         (
             "Build the first recipe through quick iterations on variants. "
             "Start from the scientific model and the analyst's proposals. You "
@@ -654,7 +719,7 @@ def scientific_session_prompt(
         ),
         (
             (
-                "From the delivered recipe, the handover and the "
+                "From the delivered candidate and its recipe, the handover and the "
                 "scientific model, establish the initial scientific direction "
                 "toward the goal. Develop the tools that this direction needs. "
                 "Choose the first useful investigation and explain how its "

@@ -1,4 +1,4 @@
-"""Private, recoverable delivery of a recipe without development state or Git."""
+"""Private, recoverable delivery of a recipe and its best-known candidate, without development records or Git."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ _TRAINED_ARTIFACT_NAMES = {
     repository.SAVED_COMPONENTS_FILE,
 }
 _TRAINED_ARTIFACT_SUFFIXES = {".pkl", ".pickle", ".pt", ".pth", ".ckpt", ".safetensors"}
+LINEAGE_PATH = "campaigns/recipe_lineage.json"
 _DEVELOPMENT_DIRECTORY_NAMES = {
     "variants",
     "lab",
@@ -162,6 +163,110 @@ def variant_matches(state: dict, plan: dict) -> bool:
     return True
 
 
+def require_deliverable_candidate(state: dict) -> None:
+    """Refuse a development checkpoint whose canonical recipe is not the delivered one."""
+    selected = state["model_roles"]["best_known"]
+    if selected is None:
+        raise ValueError(
+            "The recipe-development checkpoint delivers the best-known candidate. "
+            "Assign it with model_role set_best_known before the checkpoint."
+        )
+    plan = protocol.plan_recipe_restore(
+        {"candidate": selected, "reason": "recipe delivery"}, state
+    )
+    if not variant_matches(state, plan):
+        raise ValueError(
+            "The canonical recipe differs from the recipe of the best-known "
+            f"candidate {selected}. Restore that recipe with restore_recipe, or "
+            "assign the best-known candidate whose recipe is canonical, before "
+            "the checkpoint."
+        )
+
+
+def _candidate_measurements(state: dict, candidate_id: str) -> list[dict]:
+    rows = []
+    for event in state["operation_events"]:
+        if event["kind"] != "measurement" or event["status"] != "completed":
+            continue
+        for measurement in (event["result"] or {}).get("measurements") or []:
+            metrics = measurement.get("metrics") or {}
+            if measurement.get("candidate") == candidate_id and "successes" in metrics:
+                rows.append(
+                    {
+                        "operation": event["id"],
+                        "instrument": measurement.get("instrument"),
+                        "successes": metrics["successes"],
+                        "episodes": metrics["episodes"],
+                    }
+                )
+    return rows
+
+
+def candidate_lineage(state: dict, candidate_id: str) -> dict:
+    """The training chapters that produced a candidate, first chapter first."""
+    chapters = []
+    current = candidate_id
+    while current is not None and all(
+        chapter["candidate"] != current for chapter in chapters
+    ):
+        candidate = state["candidates"].get(current)
+        event = next(
+            (
+                event
+                for event in state["operation_events"]
+                if candidate is not None
+                and event["id"] == candidate["origin_operation"]
+                and event["kind"] == "training"
+                and event["status"] == "completed"
+            ),
+            None,
+        )
+        if event is None:
+            break
+        result = event["result"]
+        variant = next(
+            (
+                entry
+                for entry in result.get("variants") or []
+                if candidate["name"].startswith(entry["label"] + "-")
+            ),
+            None,
+        )
+        parent = variant.get("parent") if variant else result.get("parent")
+        changed = [
+            entry["path"]
+            for entry in (result.get("mechanical_provenance") or {}).get(
+                "changed_files"
+            )
+            or []
+        ]
+        if variant is not None:
+            own = f"robot_learning/variants/{variant['label']}/"
+            changed = [
+                path
+                for path in changed
+                if path.startswith(own)
+                or not path.startswith("robot_learning/variants/")
+            ]
+        chapters.append(
+            {
+                "operation": event["id"],
+                "variant": variant["label"] if variant else None,
+                "initialization": result.get("initialization"),
+                "parent": parent,
+                "seed": result.get("seed"),
+                "training_steps": candidate["training_steps"],
+                "parameter_changes": (variant or {}).get("parameters") or {},
+                "changed_files": changed,
+                "candidate": current,
+                "measurements": _candidate_measurements(state, current),
+            }
+        )
+        current = parent
+    chapters.reverse()
+    return {"candidate": candidate_id, "chapters": chapters}
+
+
 def _marker_path(root: Path) -> Path:
     return paths.recipe_handoff_directory(root) / "handoff.json"
 
@@ -271,6 +376,31 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
         name: state["recipe_development"][name]
         for name in repository.RECIPE_HANDOVER_FIELDS
     }
+    delivered: list[str] = []
+    selected = state["model_roles"]["best_known"]
+    if selected is not None:
+        candidate = copy.deepcopy(state["candidates"][selected])
+        source_artifact = repository.resolve_repo_path(candidate["artifact"])
+        repository.require_complete_inference_artifact(
+            source_artifact, f"delivered candidate {selected}"
+        )
+        if repository.artifact_fingerprint(source_artifact) != candidate["fingerprint"]:
+            raise RuntimeError(f"Delivered candidate {selected} fingerprint changed.")
+        repository.copy_artifact(source_artifact, staged / candidate["artifact"])
+        # The delivered recipe commit is this candidate's recipe; the checkpoint
+        # refused any other canonical recipe.
+        candidate.update(scientific_commit=recipe_commit, evaluation_artifacts=[])
+        fresh["candidates"] = {selected: candidate}
+        fresh["model_roles"] = {
+            "working": selected,
+            "best_known": selected,
+            "retained": {},
+        }
+        fresh["counters"]["training"] = int(candidate["origin_operation"][1:])
+        repository.atomic_write_json(
+            staged / LINEAGE_PATH, candidate_lineage(state, selected)
+        )
+        delivered = [candidate["artifact"], LINEAGE_PATH]
     repository.validate_research_state(fresh, allow_missing_artifact=True)
     repository.atomic_write_json(staged / "runner/state/research_state.json", fresh)
     repository.atomic_write_text(staged / "campaigns/results.jsonl", "")
@@ -282,6 +412,8 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
         "campaigns/results.jsonl",
         "campaigns/EXPERIMENTS.md",
     )
+    if delivered:
+        git("add", "-f", "--", *delivered)
     git("commit", "--quiet", "-m", repository.campaign_commit_message("fresh startup"))
 
     # Keep starting references, but never later development history.
