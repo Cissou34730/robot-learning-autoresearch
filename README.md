@@ -64,19 +64,18 @@ session -> startup -> goal review <-> inquiries -> official assessment.
 
 - **Analyst.** Writes `pi_workspace/scientific_model.md`: physical and learning
   analysis of the starting recipe, `### Proposed first reward`,
-  `### Proposed design variants` and a recipe-development question (a startup
-  question when recipe development is skipped). The PI decides what to use.
+  `### Proposed design variants` and an initial scientific question for startup
+  (in both routes). The PI decides what to use.
 - **Recipe development** (included by default; `--skip-recipe-development`
   removes it, Baseline resets always skip it). The PI compares 2 to 4 training
   variants per operation, with their own source files and parameters, choosing
-  10,000 to 500,000 steps per run. The phase ends when the PI selects the
-  method. Its checkpoint triggers an isolated delivery: the campaign repository
+  10,000 to 500,000 steps per run. The PI judges when the recipe is adequate
+  for delivery. Its checkpoint triggers an isolated delivery: the campaign repository
   is rebuilt with only the canonical source, parameters and scientific model,
   with fresh state (S1/T1); the development repository is archived privately.
-- **Startup** first trains the delivered recipe from fresh initialization within
-  the startup allocation per run (`--timesteps`, 120,000). The
-  recipe-development prompt states that number, and the delivered recipe with
-  all its stages must learn within one run.
+- **Startup** starts from the delivered recipe with fresh state and the three
+  handover texts, choosing at most the startup allocation per run
+  (`--timesteps`, 120,000).
 - **Goal review and inquiries** continue until the PI requests the official
   assessment or `--max-inquiries` pauses the campaign.
 

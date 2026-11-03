@@ -23,8 +23,6 @@ from runner.copilot.reporting import SessionReporter as Console
 from runner.copilot.reporting import tool_detail
 from runner.copilot.system_prompt import (
     ANALYST_EXPLORATION,
-    AUTONOMY,
-    RECIPE_DEVELOPMENT_AUTONOMY,
     REFERENCE_READ_DENIAL,
     reference_paths,
     system_message,
@@ -226,20 +224,14 @@ def test_copilot_sessions_have_no_read_alias():
     assert "providers" not in options
 
 
-@pytest.mark.parametrize(
-    "session_kind", ["recipe_development", "startup", "goal_review", "inquiry"]
-)
-def test_copilot_sessions_select_the_active_phase_system_message(session_kind):
+@pytest.mark.parametrize("recipe_phase", ["included", "skipped"])
+def test_analyst_sessions_select_the_recipe_phase_system_message(recipe_phase):
     pytest.importorskip("copilot")
-    args = adapter.parse_args(["p", "--session-id", "s"])
-    operations = SimpleNamespace(
-        state={"session_kind": session_kind},
-        tool=lambda: SimpleNamespace(name="submit_operation"),
+    args = adapter.parse_args(
+        ["p", "--session-id", "s", "--preliminary", "--recipe-phase", recipe_phase]
     )
-    options = adapter.session_options(
-        args, Console(), asyncio.Event(), operations=operations
-    )
-    assert options["system_message"] == system_message(False, session_kind=session_kind)
+    options = adapter.session_options(args, Console(), asyncio.Event())
+    assert options["system_message"] == system_message(True, recipe_phase=recipe_phase)
 
 
 # --- tool permissions ----------------------------------------------------------
@@ -302,31 +294,9 @@ def test_the_system_message_replaces_the_cli_prompt_with_one_fixed_text():
         message = system_message(preliminary)
         assert message == {"mode": "replace", "content": system_prompt(preliminary)}
         assert str(paths.ROOT) in message["content"]
-    assert ANALYST_EXPLORATION in system_prompt(True)
-    assert ANALYST_EXPLORATION not in system_prompt(False)
-
-
-@pytest.mark.parametrize(
-    ("preliminary", "session_kind"),
-    [
-        (False, "recipe_development"),
-        (False, "startup"),
-        (False, "goal_review"),
-        (False, "inquiry"),
-        (False, None),
-        (True, "recipe_development"),
-    ],
-)
-def test_only_recipe_development_changes_the_autonomy_block(preliminary, session_kind):
-    expected = system_message(preliminary)
-    if not preliminary and session_kind == "recipe_development":
-        expected = {
-            **expected,
-            "content": expected["content"].replace(
-                AUTONOMY, RECIPE_DEVELOPMENT_AUTONOMY, 1
-            ),
-        }
-    assert system_message(preliminary, session_kind=session_kind) == expected
+    for phase, text in ANALYST_EXPLORATION.items():
+        assert text in system_prompt(True, recipe_phase=phase)
+        assert text not in system_prompt(False, recipe_phase=phase)
 
 
 def test_an_assistant_message_is_a_note_when_it_requests_a_tool():

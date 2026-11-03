@@ -283,7 +283,7 @@ def session_objective(kind: str, state: dict) -> str:
     if kind == "recipe_development":
         return prompts.RECIPE_DEVELOPMENT_OBJECTIVE
     if kind == "startup":
-        return prompts.STARTUP_OBJECTIVE
+        return prompts.STARTUP_OBJECTIVE[state["recipe_phase"]]
     if kind == "goal_review":
         return prompts.GOAL_REVIEW_OBJECTIVE
     return prompts.inquiry_objective(pstext.field(state.get("active_inquiry"), "id"))

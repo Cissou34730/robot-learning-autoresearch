@@ -185,10 +185,7 @@ def session_options(
         "tools": tools,
         "available_tools": available,
         "system_message": system_message(
-            args.preliminary,
-            session_kind=operations.state.get("session_kind")
-            if operations is not None
-            else None,
+            args.preliminary, recipe_phase=args.recipe_phase
         ),
         "working_directory": str(ROOT),
         "streaming": True,
@@ -571,6 +568,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--campaign-id")
     parser.add_argument("--phase")
     parser.add_argument("--preliminary", action="store_true")
+    parser.add_argument(
+        "--recipe-phase", default="included", choices=["included", "skipped"]
+    )
     parser.add_argument("--attempt", type=int, default=1)
     args = parser.parse_args(argv)
     try:
