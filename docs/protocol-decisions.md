@@ -7,6 +7,29 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-03 - Behavior observation in every phase
+
+- **Hypothesis:** much of the remaining campaign duration comes from shallow
+  robot reasoning. PIs judged designs on outcome counts (where the policy
+  fails) instead of observed behavior (why): H1 rejected the eventual recipe as
+  a "trade-off"; N1 searched for hours before measuring that the shoulder sat
+  at its limit; N2 deliberated about 2.5 h on pass probability after 197/200.
+- **Change:** the analyst ends the synthesis with
+  `### Proposed behavior observations` (quantities over time that distinguish
+  each consequential hypothesis, and a PI-owned tool to record them). Recipe
+  development must build or adapt such tools before the first design
+  comparison; startup must do so early; startup and inquiries base
+  interpretations on observed behavior and examine it before rejecting a design.
+  Goal review starts from what the robot and the policy do in the remaining
+  failures; statistics support but do not replace this.
+- **Boundaries:** no Runner-owned or scenario-specific tools, no examples, no
+  fixed failure catalogue, no duty to build every proposed tool or to explain
+  every failure before the official assessment. The system prompt is unchanged.
+- **Validation (separate from policy delivery):** time to the first
+  behavior-level observation, decisions changed by it, rejections based only on
+  outcome counts, delay between goal-level evidence and the official request,
+  official results, and the behavior/statistics word ratio.
+
 ## 2026-11-03 - Recipe development delivers its best-known candidate
 
 - **Product:** recipe development now delivers the best-known candidate (saved

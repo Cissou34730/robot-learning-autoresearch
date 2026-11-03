@@ -39,6 +39,12 @@ their physical or learning reasons and the behavior that the analyst expects.
 Short training tests give evidence for the next recipe decision. A variant can
 change any PI-owned source file and any parameter.
 
+The synthesis ends with `### Proposed behavior observations`. A behavior
+observation is a quantity recorded over time during an episode or a training
+run. For each consequential hypothesis, the analyst states the observations that
+distinguish it and a PI-owned tool that can record them. The PI decides which
+tools to build.
+
 When the campaign includes a recipe-development session, that session receives
 the synthesis and the full scientific model. The PI creates further variants from the test results.
 The PI develops a recipe that learns and supports the initial scientific
