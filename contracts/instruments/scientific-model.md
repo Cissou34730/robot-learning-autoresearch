@@ -48,7 +48,8 @@ The PI measures the resulting recipe to demonstrate learning progress.
 
 The startup session receives the unchanged scientific model and the recipe in
 `robot_learning/`. When the campaign includes recipe development, this recipe
-is the delivered recipe. Startup also receives `current_synthesis`,
+is the recipe of the delivered candidate. Startup also receives that candidate,
+the lineage of the training runs that produced it, and `current_synthesis`,
 `next_direction_or_closure` and `next_question` from recipe development, word for word.
 The PI uses them to establish the initial scientific direction and the first
 useful investigation.

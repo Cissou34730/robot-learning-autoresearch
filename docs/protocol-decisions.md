@@ -7,6 +7,28 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-03 - Recipe development delivers its best-known candidate
+
+- **Product:** recipe development now delivers the best-known candidate (saved
+  policy, optimizer, normalization and runtime) with its recipe, its lineage and
+  the three-text handover. Startup keeps fresh sessions and operation records;
+  the candidate is its working and best-known candidate, and its development
+  results are historical evidence.
+- **Consistency rule:** the Runner refuses a recipe-development checkpoint
+  without a best-known candidate, or when the canonical recipe is not that
+  candidate's recipe, so the delivered code is the code that trained the
+  delivered policy.
+- **Reason:** 3 November RCA (`docs/rca-recipe-development-20261103.md`). Best
+  development results were often transfer chains, which source-only delivery
+  could not carry; PIs spent up to 2.5 h rebuilding them from scratch, and
+  startup's retrain added another seed draw (campaign 3: 240/400 after
+  development had better). The maintainer's objective is a policy that reaches
+  the goal, not a procedure that relearns it across seeds.
+- **Not changed:** the goal, the 120k limit per startup training request,
+  multi-seed training (separate topic), other wording, the checkpoint-reply bug
+  (separate fix). Supersedes the "fresh startup state without saved policies"
+  part of the 2026-11-02 entry.
+
 ## 2026-11-03 - Prompt and instruction restoration (run-14 basis)
 
 - **Basis:** PI and analyst prompts and instructions are restored word for word

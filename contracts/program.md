@@ -170,17 +170,25 @@ Compare the task behavior of saved candidates from different training points as
 needed to show learning. State what improved. Use this evidence to judge the
 learning progress of the resulting recipe.
 
-Consolidate the recipe in the canonical source files and parameters.
-You judge whether the recipe is adequate for delivery.
+The `checkpoint` operation delivers the best-known candidate with its recipe.
+Before the `checkpoint` operation, assign the best-known candidate. The
+canonical source files and parameters must be its recipe. `restore_recipe`
+makes them its recipe.
+
+You judge whether the candidate and its recipe are adequate for delivery.
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
 
-Startup receives the delivered recipe, the same accepted scientific model and
-your handover: `current_synthesis`, `next_direction_or_closure` and
+Startup receives the best-known candidate as its working and best-known
+candidate. The candidate keeps its saved policy, normalization and training
+state. Startup also receives the lineage of the training runs that produced the
+candidate, the delivered recipe, the same accepted scientific model and your
+handover: `current_synthesis`, `next_direction_or_closure` and
 `next_question`, word for word. It does not receive development operation
-records, training checkpoints, optimizer state or normalization state.
+records or other candidates.
+
 Development candidates remain usable for tests and explicit recipe restoration during recipe development.
-They are unavailable after delivery.
+The other candidates are unavailable after delivery.
 
 In `current_synthesis`, record the resulting recipe and the evidence of learning.
 Separate the candidate choice from conclusions about design choices.

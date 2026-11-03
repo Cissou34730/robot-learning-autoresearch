@@ -156,7 +156,7 @@ It does not replay a tool call or fabricate checkpoint content. Main SDK
 resumes disable automatic unfinished-work continuation; the resume prompt
 includes current durable Runner metadata.
 
-## Recipe-only delivery
+## Recipe and candidate delivery
 
 New state uses schema 8 and `recipe_phase`, either `"included"` (the default)
 or `"skipped"`. Fresh reset accepts `--skip-recipe-development`; Baseline reset
@@ -168,10 +168,12 @@ campaigns only.
 `runner.recipe_development.queue()` records delivery inputs only after the
 recipe-development checkpoint is finalized. The launcher closes the development
 backend before `deliver()` publishes those inputs. The PI ends recipe
-development when it judges the recipe adequate for delivery, and consolidates
-it in the canonical recipe. Startup receives the PI's handover with the
-delivered recipe.
-There is no requirement to learn within a single startup run.
+development when it judges the best-known candidate and its recipe adequate for
+delivery. Checkpoint acceptance (`require_deliverable_candidate`) refuses a
+recipe-development checkpoint without a best-known candidate, or whose canonical
+recipe differs from that candidate's recipe (`restore_recipe` makes them
+match), so the delivered code is the code that trained the delivered policy.
+Startup receives the PI's handover with the delivered candidate and recipe.
 Publication checks files, not scores, and does not
 choose a candidate or require another training round.
 
@@ -186,17 +188,27 @@ campaign root. The archive and recovery marker are outside agent read access.
 
 The public repository has new Git history and fresh scientific state under the
 same campaign ID. Delivery copies canonical source files and parameters,
-not variants, lab files or serialized policies.
-Any training stages must therefore be encoded in the recipe source. The ready
+not variants or lab files. It also copies the best-known candidate's saved
+artifact (policy, optimizer, normalization, runtime) to the same logical path,
+so a policy obtained through several transfer runs reaches startup without
+being rebuilt. The ready
 scientific model retains its exact bytes and binds to the new recipe commit.
 
 The public state keeps only `current_synthesis`, `next_direction_or_closure`
 and `next_question` as `recipe_handover`. Startup receives these texts word for
 word as revisable scientific judgment. They may refer to development operation
-identities, but those records remain unavailable. Candidates, roles, scientific
-logs, operation history and full session records start empty.
+identities, but those records remain unavailable. The delivered candidate is the
+only candidate, with working and best-known roles; its `scientific_commit` is
+the new recipe commit and its `evaluation_artifacts` are empty, because
+development measurements are historical evidence. `campaigns/recipe_lineage.json`
+records its training chapters (operation, variant, start, parent, seed, steps,
+changed files, parameter changes, measured scores), and the startup prompt
+renders it. Scientific logs, operation history and full session records start
+empty.
 
-Scientific counters restart at S1/T1. Operator-only
+Session and measurement counters restart at S1/M1; the training counter
+continues after the delivered candidate's operation, as in a Prepared Baseline
+reset, so new candidate IDs cannot collide with it. Operator-only
 observation journals and session-usage reports remain available for cumulative
 AI usage accounting. Development event IDs use the `recipe_development:`
 namespace, distinct from the fresh scientific IDs. They are not startup evidence.

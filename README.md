@@ -69,11 +69,13 @@ session -> startup -> goal review <-> inquiries -> official assessment.
 - **Recipe development** (included by default; `--skip-recipe-development`
   removes it, Baseline resets always skip it). The PI compares 2 to 4 training
   variants per operation, with their own source files and parameters, choosing
-  10,000 to 500,000 steps per run. The PI judges when the recipe is adequate
-  for delivery. Its checkpoint triggers an isolated delivery: the campaign repository
-  is rebuilt with only the canonical source, parameters and scientific model,
-  with fresh state (S1/T1); the development repository is archived privately.
-- **Startup** starts from the delivered recipe with fresh state and the three
+  10,000 to 500,000 steps per run. The PI judges when the best-known candidate
+  and its recipe are adequate for delivery. Its checkpoint triggers an isolated
+  delivery: the campaign repository is rebuilt with the canonical source,
+  parameters, scientific model and the best-known candidate (its saved policy and
+  lineage), with fresh records (S1/M1); the development repository is archived
+  privately.
+- **Startup** starts from the delivered candidate, its recipe and the three
   handover texts, choosing at most the startup allocation per run
   (`--timesteps`, 120,000).
 - **Goal review and inquiries** continue until the PI requests the official

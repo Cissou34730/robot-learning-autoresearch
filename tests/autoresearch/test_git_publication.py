@@ -228,6 +228,134 @@ def _development_delivery(git_repository, monkeypatch):
     return state, old_commit, files, archive
 
 
+def _complete_candidate(root, state, candidate_id="T1:checkpoint-10"):
+    artifact = "campaigns/checkpoints/retained/campaign/t1-selected"
+    for name in (*repository.INFERENCE_ARTIFACT_FILES, "vecnormalize.pkl"):
+        target = root / artifact / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(f"saved {name}".encode())
+    candidate = state["candidates"][candidate_id]
+    candidate["artifact"] = artifact
+    candidate["fingerprint"] = repository.artifact_fingerprint(root / artifact)
+    state["model_roles"]["best_known"] = candidate_id
+    return artifact
+
+
+def test_recipe_delivery_carries_the_best_known_candidate_and_its_lineage(
+    git_repository, monkeypatch
+):
+    state, old_commit, _files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    artifact = _complete_candidate(git_repository, state)
+    original = dict(state["candidates"]["T1:checkpoint-10"])
+    try:
+        assert recipe_development.publish(state, {"training": {"n_envs": 1}})
+        fresh = repository.load_state(allow_missing_artifact=False)
+        delivered = fresh["candidates"]["T1:checkpoint-10"]
+        assert set(fresh["candidates"]) == {"T1:checkpoint-10"}
+        assert fresh["model_roles"] == {
+            "working": "T1:checkpoint-10",
+            "best_known": "T1:checkpoint-10",
+            "retained": {},
+        }
+        assert delivered["fingerprint"] == original["fingerprint"]
+        assert delivered["evaluation_artifacts"] == []
+        assert delivered["scientific_commit"] != old_commit
+        repository.require_resolvable_commit(delivered["scientific_commit"])
+        assert fresh["counters"]["training"] == 1
+        assert fresh["operation_events"] == []
+        for name in repository.INFERENCE_ARTIFACT_FILES:
+            repository.require_path_at_commit("HEAD", f"{artifact}/{name}")
+        lineage = json.loads(
+            (git_repository / recipe_development.LINEAGE_PATH).read_text()
+        )
+        assert lineage["candidate"] == "T1:checkpoint-10"
+        repository.require_path_at_commit("HEAD", recipe_development.LINEAGE_PATH)
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+def test_candidate_lineage_follows_parents_and_variants_first_run_first():
+    def training(identifier, result):
+        return {
+            "id": identifier,
+            "kind": "training",
+            "status": "completed",
+            "result": result,
+        }
+
+    def candidate(identifier, steps):
+        operation, name = identifier.split(":")
+        return {"origin_operation": operation, "name": name, "training_steps": steps}
+
+    state = {
+        "candidates": {
+            "T1:wide-checkpoint-100": candidate("T1:wide-checkpoint-100", 100),
+            "T2:checkpoint-50": candidate("T2:checkpoint-50", 50),
+        },
+        "operation_events": [
+            training(
+                "T1",
+                {
+                    "initialization": "fresh",
+                    "seed": 0,
+                    "parent": None,
+                    "variants": [
+                        {"label": "wide", "parent": None, "parameters": {"a": 1}},
+                        {"label": "narrow", "parent": None, "parameters": {}},
+                    ],
+                    "mechanical_provenance": {
+                        "changed_files": [
+                            {"path": "robot_learning/variants/wide/env.py"},
+                            {"path": "robot_learning/variants/narrow/env.py"},
+                        ]
+                    },
+                },
+            ),
+            training(
+                "T2",
+                {
+                    "initialization": "transfer",
+                    "seed": 1,
+                    "parent": "T1:wide-checkpoint-100",
+                    "mechanical_provenance": {"changed_files": []},
+                },
+            ),
+            {
+                "id": "M1",
+                "kind": "measurement",
+                "status": "completed",
+                "result": {
+                    "measurements": [
+                        {
+                            "candidate": "T2:checkpoint-50",
+                            "instrument": "research_evaluation",
+                            "metrics": {"successes": 9, "episodes": 10},
+                        }
+                    ]
+                },
+            },
+        ],
+    }
+    lineage = recipe_development.candidate_lineage(state, "T2:checkpoint-50")
+    first, second = lineage["chapters"]
+    assert first["operation"] == "T1" and first["variant"] == "wide"
+    assert first["changed_files"] == ["robot_learning/variants/wide/env.py"]
+    assert first["parameter_changes"] == {"a": 1}
+    assert second["parent"] == "T1:wide-checkpoint-100"
+    assert second["measurements"] == [
+        {
+            "operation": "M1",
+            "instrument": "research_evaluation",
+            "successes": 9,
+            "episodes": 10,
+        }
+    ]
+
+
 def test_recipe_delivery_preserves_tracked_canonical_assets_without_training_state(
     git_repository, monkeypatch
 ):
@@ -1000,6 +1128,7 @@ def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
         backend_model="model",
         backend_reasoning="high",
     )
+    _complete_candidate(git_repository, state)
     repository.write_state(state)
     monkeypatch.setattr(
         run_experiment, "_load_experiment_config", lambda: {"training": {"n_envs": 1}}
@@ -1128,7 +1257,7 @@ def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
             archive / ".copilot/session-state/development/final.json"
         ).read_bytes() == b"final backend session record"
         assert not (git_repository / ".copilot").exists()
-        assert fresh["candidates"] == {}
+        assert set(fresh["candidates"]) == {"T1:checkpoint-10"}
         assert json.loads(
             (git_repository / "robot_learning/training/current_params.json").read_text()
         ) == {"training": {"n_envs": 1}}
@@ -1143,6 +1272,54 @@ def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
         assert session["id"] == "S1"
         assert session["scientific_parent_commit"] != old_commit
         assert set(fresh["counters"].values()) == {0, 1}
+    finally:
+        shutil.rmtree(
+            paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly
+        )
+
+
+def test_development_checkpoint_requires_the_best_known_candidate_recipe(
+    git_repository, monkeypatch
+):
+    state, _old_commit, _files, _archive = _development_delivery(
+        git_repository, monkeypatch
+    )
+    request = {
+        key: value
+        for key, value in state["recipe_development"].items()
+        if key not in {"scientific_commit", "session_id", "inquiry_id"}
+    }
+    state.update(
+        campaign_phase="recipe_development",
+        recipe_development=None,
+        pi_checkpoint=None,
+        operation_events=[],
+    )
+    state["counters"].update(session=0, event=0)
+    repository.start_scientific_session(
+        state,
+        kind="recipe_development",
+        objective="Select the complete recipe.",
+        backend_adapter="copilot",
+        backend_model="model",
+        backend_reasoning="high",
+    )
+    repository.write_state(state)
+    monkeypatch.setattr(
+        run_experiment, "_load_experiment_config", lambda: {"training": {"n_envs": 1}}
+    )
+    reward = git_repository / "robot_learning/training/reward.py"
+    try:
+        with pytest.raises(ValueError, match="best-known candidate"):
+            run_experiment.accept_operation({"checkpoint": request}, state)
+        _complete_candidate(git_repository, state)
+        repository.write_state(state)
+        reward.write_bytes(b"VALUE = 'changed after training'\n")
+        with pytest.raises(ValueError, match="differs from the recipe"):
+            run_experiment.accept_operation({"checkpoint": request}, state)
+        reward.write_bytes(b"VALUE = 'chosen'\n")
+        accepted = run_experiment.accept_operation({"checkpoint": request}, state)
+        assert accepted["kind"] == "checkpoint"
     finally:
         shutil.rmtree(
             paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly

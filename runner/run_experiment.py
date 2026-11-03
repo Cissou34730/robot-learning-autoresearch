@@ -341,6 +341,10 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             if path.replace("\\", "/") not in protocol.PARAMETER_ONLY_PATHS
         ]
         plan = protocol.plan_checkpoint(request["checkpoint"], state)
+        if session["kind"] == "recipe_development":
+            from runner import recipe_development
+
+            recipe_development.require_deliverable_candidate(state)
         return {
             "plan": plan,
             "code_parent_commit": parent_commit,
