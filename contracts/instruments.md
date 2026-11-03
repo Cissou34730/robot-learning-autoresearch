@@ -168,7 +168,7 @@ so that each count comes from the record of the cited operation and candidate.
 
 `next_question` depends on the kind of session:
 
-- recipe-development session: the proposed question for startup
+- recipe-development session: the next investigation for the startup session
 - startup session, or inquiry session that closed its inquiry: the proposed
   question for the next goal-review session
 - goal-review session: the exact question of the inquiry that you opened in
@@ -176,17 +176,16 @@ so that each count comes from the record of the cited operation and candidate.
 - inquiry session in which the inquiry stays active: the exact question of the
   active inquiry
 
-In a recipe-development session, `current_synthesis` explains the delivered
-recipe and the evidence of learning that supports its design choices.
+In a recipe-development session, `current_synthesis` identifies the selected
+method, its recipe and the measured differences that support the selection.
 `decision_frontier` preserves the unresolved alternatives and the evidence that
-can distinguish them. `next_direction_or_closure` explains how startup can
-continue from the delivered recipe. Startup receives `current_synthesis`,
-`next_direction_or_closure` and `next_question` word for word.
+can distinguish them. `next_direction_or_closure` explains why later inquiries
+will primarily develop the selected method.
 
 The accepted recipe-development `checkpoint` ends the session and initiates recipe delivery.
-The PI submits it after selecting the method for startup from the completed evidence.
-Delivery contains the canonical source files and parameters, the same accepted
-scientific model and the three handover texts.
+Delivery contains only the canonical source files and parameters, with the same
+accepted scientific model and the three handover texts. Startup receives
+`current_synthesis`, `next_direction_or_closure` and `next_question` word for word.
 
 Startup starts with fresh scientific state, without development operation
 records or saved policies. Operation identities in the handover refer to

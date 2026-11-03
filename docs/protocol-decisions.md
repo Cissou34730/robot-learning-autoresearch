@@ -7,6 +7,27 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-03 - Prompt and instruction restoration (run-14 basis)
+
+- **Basis:** PI and analyst prompts and instructions are restored word for word
+  from run 14 (`b73d3f81b`): the analyst identity, task and autonomy, the
+  campaign-wide autonomy block for every PI session (the session-specific
+  recipe-development autonomy is removed), recipe-development guidance and
+  the startup guidance. Run-15 (`17f94cfee`) wording is used where the text
+  describes isolated delivery, plus its sentence "You judge whether the recipe
+  is adequate for delivery".
+- **Exceptions:** cost and effort sentences removed; "record" replaced by the
+  three-text handover; current training and tool contracts, the optional
+  phase and its skipped-route texts, the recipe files in the first message and
+  isolated delivery retained.
+- **Removed:** the duties to encode every training stage and to train from
+  fresh initialization (the fresh start stays a stated fact), the
+  method-selection completion sentence and the inquiry guidance added after
+  run 14. The analyst question targets startup in both routes.
+- This supersedes the analyst-question and recipe-development completion
+  points of the 2026-11-02 entry. It is an adapted configuration, not a
+  reproduction of run 14, and has no campaign validation yet.
+
 ## 2026-11-02 - Recipe development, per-phase models and inherited recipe v4
 
 - **Lifecycle:** analyst -> recipe development -> startup -> goal review <->

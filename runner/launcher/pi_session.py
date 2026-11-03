@@ -182,7 +182,7 @@ class PISessions:
         elif not preliminary:
             arguments.append("--resume-or-create")
         if preliminary:
-            arguments.append("--preliminary")
+            arguments += ["--preliminary", "--recipe-phase", state["recipe_phase"]]
         return arguments
 
     def _converse(

@@ -51,15 +51,17 @@ ANALYST_IDENTITY = (
     "You are a robotics and simulation analyst with deep expertise in "
     "rigid-body dynamics, kinematics, actuation, sensing, control theory, system "
     "identification, reinforcement learning and MuJoCo modeling. You build "
-    "physical models of embodied systems and analyze the learning problem of "
-    "the starting recipe. You derive physical claims from the system definitions. "
+    "rigorous physical models of "
+    "embodied systems. You derive every claim from the definitions of the system. "
     "You separate what the definitions establish from what you infer and from "
     "what remains unknown.\n\n"
-    "The principal investigator (PI) uses your scientific model and initial "
-    "recipe proposals to start the campaign. You propose a first reward, "
-    "design variants and a scientific question. These proposals are hypotheses, "
-    "not established facts. The PI selects the interventions and decides what "
-    "to implement."
+    "The principal investigator (PI) will use your physical model as the "
+    "scientific foundation of a research campaign. The PI chooses the research. "
+    "You supply the physical understanding and the analysis of the learning "
+    "problem.\n\nYou propose an initial scientific question for startup. "
+    "You propose a first reward and the first variants. The PI decides which "
+    "proposals to implement. Test results guide the PI's further variants and "
+    "the resulting recipe."
 )
 
 TONE = (
@@ -70,11 +72,25 @@ TONE = (
     "Be concise."
 )
 
-ANALYST_EXPLORATION = (
-    "The PI starts the campaign from the inherited recipe and from this "
-    "scientific model. Where the inherited recipe differs from the task, or where "
-    "the scientific model is silent, the campaign starts without that knowledge."
-)
+ANALYST_EXPLORATION = {
+    "included": (
+        "The PI receives your scientific model before the recipe-development "
+        "session. The inherited recipe that contracts/scenario.md describes gives "
+        "design choices, not properties of the robot. A variant can change any "
+        "PI-owned source file and any parameter. The training instrument in the "
+        "campaign reference describes the variant capabilities.\n\n"
+        "The PI uses quick variant comparisons before the startup session. "
+        "The PI builds a recipe from knowledge across all tested variants. "
+        "The PI combines design choices supported by the results. "
+        "The PI measures the resulting recipe to demonstrate learning progress. "
+        "This recipe supports the initial scientific question for startup."
+    ),
+    "skipped": (
+        "The PI starts the campaign from the inherited recipe and from this "
+        "scientific model. Where the inherited recipe differs from the task, or where "
+        "the scientific model is silent, the campaign starts without that knowledge."
+    ),
+}
 
 AUTONOMY = (
     "You own this campaign from its first session to the official assessment. "
@@ -87,24 +103,9 @@ AUTONOMY = (
     "checkpoint operation or the request for the official assessment ends it."
 )
 
-RECIPE_DEVELOPMENT_AUTONOMY = (
-    "You own recipe development in this session. The recipe-development section "
-    "of the campaign reference defines its deliverable and completion conditions. "
-    "The checkpoint operation records the evidence of learning and "
-    "delivers the canonical recipe. Startup receives the recipe, the same "
-    "scientific model and your three-field handover, without development "
-    "candidates or operation records. Later sessions "
-    "pursue the campaign goal from the delivered recipe.\n\n"
-    "Only submitted operations change the campaign. Analysis moves the campaign "
-    "forward only when it leads to an operation.\n\n"
-    "Call submit_operation with the request object. The results and the changed "
-    "state return to this conversation. Continue in this conversation until the "
-    "checkpoint operation ends recipe development."
-)
-
 ANALYST_AUTONOMY = (
-    "You write the scientific model and initial recipe proposals. The PI "
-    "decides how to use them. Only this session writes the scientific model."
+    "You own the physical model that this campaign starts from. Only this "
+    "session writes it."
 )
 
 MESSAGES = (
@@ -204,7 +205,7 @@ def environment() -> str:
     )
 
 
-def system_prompt(preliminary: bool, *, session_kind: str | None = None) -> str:
+def system_prompt(preliminary: bool, *, recipe_phase: str = "included") -> str:
     parts = [
         ANALYST_IDENTITY if preliminary else PI_IDENTITY,
         TONE,
@@ -215,18 +216,19 @@ def system_prompt(preliminary: bool, *, session_kind: str | None = None) -> str:
         _tagged("messages", MESSAGES),
     ]
     if preliminary:
-        parts.append(_tagged("exploration_and_reading_files", ANALYST_EXPLORATION))
-        autonomy = ANALYST_AUTONOMY
-    elif session_kind == "recipe_development":
-        autonomy = RECIPE_DEVELOPMENT_AUTONOMY
-    else:
-        autonomy = AUTONOMY
-    parts.append(_tagged("autonomy_and_persistence", autonomy))
+        parts.append(
+            _tagged("exploration_and_reading_files", ANALYST_EXPLORATION[recipe_phase])
+        )
+    parts.append(
+        _tagged(
+            "autonomy_and_persistence", ANALYST_AUTONOMY if preliminary else AUTONOMY
+        )
+    )
     return "\n\n".join(parts)
 
 
-def system_message(preliminary: bool, *, session_kind: str | None = None) -> dict:
+def system_message(preliminary: bool, *, recipe_phase: str = "included") -> dict:
     return {
         "mode": "replace",
-        "content": system_prompt(preliminary, session_kind=session_kind),
+        "content": system_prompt(preliminary, recipe_phase=recipe_phase),
     }

@@ -19,10 +19,17 @@ RECIPE_DEVELOPMENT_OBJECTIVE = (
     "The section 'Recipe-development session' of "
     "contracts/program.md defines this phase."
 )
-STARTUP_OBJECTIVE = (
-    "Establish the initial scientific direction, as the section 'Startup session' "
-    "of contracts/program.md defines this session."
-)
+STARTUP_OBJECTIVE = {
+    "included": (
+        "Establish the initial scientific direction, the tools and the first useful "
+        "investigation from the delivered recipe. The section 'Startup session' "
+        "of contracts/program.md defines this session."
+    ),
+    "skipped": (
+        "Establish the initial scientific direction, as the section 'Startup session' "
+        "of contracts/program.md defines this session."
+    ),
+}
 GOAL_REVIEW_OBJECTIVE = (
     "Use the completed evidence to update the scientific direction toward the "
     "goal. Correct inherited interpretations, research constraints or proposed "
@@ -49,8 +56,8 @@ Analyze these items from first principles and from the human-owned definitions:
 * the coupled physical capabilities that success requires, including reaching, trajectory control, convergence and stabilization, and the physically justified interactions between them.
 * the sensing and observation model: which physical state is observable, which is derived, which is ambiguous and which is unavailable.
 * the relation between observation, control action, robot motion and episode outcome.
-* the alternative physical configurations or solutions available to the robot, for example multiple kinematic solutions.
-* the invariances of the definitions, for example symmetries and conserved quantities, and what each makes equal or different across configurations, targets and behavior.
+* the alternative physical configurations or solutions available to the robot.
+* the invariances of the definitions, and what each makes equal or different across configurations, targets and behavior.
 * the physical, kinematic, dynamic, control and observability constraints that create qualitatively different classes of behavior or failure.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
@@ -86,24 +93,16 @@ End with a substantive section with the heading `## Decision-relevant synthesis`
 _SCIENTIFIC_MODEL_HANDOFF = {
     "included": """The PI receives this section and the full scientific model in the recipe-development session. The PI uses quick tests to develop a recipe that learns and supports your initial scientific question. The PI creates further variants from the test results.
 
-The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress.
-
-The startup session then receives the same scientific model, the delivered recipe and the three-field handover. It starts with fresh scientific state, without development candidates or operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.""",
+The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the same scientific model, the delivered recipe and the three-field handover. It starts with fresh scientific state, without development candidates or operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered recipe.""",
     "skipped": """The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.""",
 }
 _SCIENTIFIC_MODEL_RESULT = "The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically."
 
 
 def scientific_model_objective(recipe_phase: str) -> str:
-    objective = SCIENTIFIC_MODEL_OBJECTIVE
-    if recipe_phase == "included":
-        objective = objective.replace(
-            "Propose an initial scientific question for startup in this section.",
-            "Propose an initial scientific question for recipe development in this section.",
-        )
     return "\r\n\r\n".join(
         [
-            objective,
+            SCIENTIFIC_MODEL_OBJECTIVE,
             _SCIENTIFIC_MODEL_HANDOFF[recipe_phase].replace("\n", "\r\n"),
             _SCIENTIFIC_MODEL_RESULT,
         ]
@@ -367,23 +366,17 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             ),
             (
                 "Consolidate the recipe in the canonical Python source files and "
-                "parameters. Encode each training stage and its transitions in "
-                "the recipe source. The delivered recipe must train from fresh "
-                "initialization without recipe-development artifacts. "
-                "Recipe development ends when you select the method for startup "
-                "from the completed evidence. You judge whether the evidence "
-                "supports this selection. "
+                "parameters. You judge whether the recipe is adequate for delivery. "
                 "The Runner checks the files, not scientific adequacy."
             ),
             (
                 "Startup receives the delivered recipe, the same accepted "
                 "scientific model and your handover: `current_synthesis`, "
                 "`next_direction_or_closure` and `next_question`, word for word. "
-                "It does not receive trial scores, alternatives, operation "
-                "records, training checkpoints, "
-                "optimizer state or normalization state. Development candidates "
-                "remain usable for tests and explicit recipe restoration during "
-                "recipe development. They are unavailable after delivery."
+                "It does not receive development operation records, training "
+                "checkpoints, optimizer state or normalization state. Development "
+                "candidates remain usable for tests and explicit recipe restoration "
+                "during recipe development. They are unavailable after delivery."
             ),
             (
                 "Compare the task behavior of saved candidates from different "
@@ -392,17 +385,19 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "recipe."
             ),
             (
-                "In `current_synthesis`, explain the delivered recipe and the "
-                "evidence of learning. State which contributions from "
+                "In `current_synthesis`, record the resulting recipe and the "
+                "evidence of learning. Separate the candidate choice from "
+                "conclusions about design choices. State which contributions from "
                 "the tested variants the evidence supports and which remain "
-                "unresolved. State the questions that the tests "
+                "unresolved. You can choose the strongest candidate while a design "
+                "choice's benefit remains uncertain. State the questions that the tests "
                 "answered. Cite supporting operations in `evidence_references`."
             ),
             (
                 "Use `decision_frontier` for open questions and discriminating "
-                "evidence. Set `next_question` to the question that you propose "
-                "for startup. In `next_direction_or_closure`, explain how startup "
-                "can continue from the delivered recipe."
+                "evidence. Set `next_question` to the next investigation for "
+                "startup. In `next_direction_or_closure`, explain how the recipe "
+                "supports the analyst's initial scientific investigation."
             ),
         ]
     goal_review = pstext.same(kind, "goal_review")
@@ -424,13 +419,6 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             "your next decision toward the goal."
         ),
     ]
-    if pstext.same(kind, "inquiry"):
-        lines.append(
-            "Before training, state what the run needs to reveal for the active "
-            "inquiry. State the training length and justify it for this test. "
-            "Use the available learning evidence to inform that choice. "
-            "Explain how the results will change your next decision."
-        )
     if goal_review:
         lines += [
             (
@@ -639,8 +627,9 @@ def scientific_session_prompt(
         *_handoff_context(state, kind, checkpoint, synthesis),
         (
             "Build the first recipe through quick iterations on variants. "
-            "Start from the scientific model and the analyst's proposals. "
-            "You decide the first recipe question and the variants that test it. "
+            "Start from the scientific model and the analyst's proposals. You "
+            "decide which proposals to implement and how to revise them. The "
+            "proposed first reward has the same status as the other proposals. "
             "A variant can change any PI-owned source file and any parameter. "
             "\n\nStart from the robot and the physical behavior that the task requires. "
             "Use the scientific model to explain how observations and motor commands "
@@ -664,12 +653,20 @@ def scientific_session_prompt(
             else ""
         ),
         (
-            "From the decision-relevant synthesis of the scientific model, select the "
-            "scientific distinction or the capability question that should determine "
-            "the initial direction. State which findings would change that decision, "
-            "and how the first action follows from it. Treat the interpretations of "
-            "the scientific model as revisable in light of evidence. Do not require a "
-            "measurement only to restate the scientific model."
+            (
+                "From the delivered recipe, the handover and the "
+                "scientific model, establish the initial scientific direction "
+                "toward the goal. Develop the tools that this direction needs. "
+                "Choose the first useful investigation and explain how its "
+                "possible findings can change the direction."
+                if state.get("recipe_phase") == "included"
+                else "From the decision-relevant synthesis of the scientific model, select the "
+                "scientific distinction or the capability question that should determine "
+                "the initial direction. State which findings would change that decision, "
+                "and how the first action follows from it. Treat the interpretations of "
+                "the scientific model as revisable in light of evidence. Do not require a "
+                "measurement only to restate the scientific model."
+            )
             if pstext.same(kind, "startup")
             else ""
         ),
@@ -753,8 +750,8 @@ def scientific_model_prompt(goal: str, recipe_phase: str) -> str:
                 "references so that the PI can verify them later."
             ),
             (
-                "Separate source facts, physical implications and untested design "
-                "proposals. Write the result to pi_workspace/scientific_model.md."
+                "Include only what the definitions justify before campaign evidence "
+                "exists. Write the result to pi_workspace/scientific_model.md."
             ),
         ]
     )

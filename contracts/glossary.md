@@ -39,7 +39,7 @@ names in code format are technical names. They keep their exact spelling.
 | change | One modification of the method or of a tool. | — |
 | intervention | A change that you make to test its causal effect on the behavior of the policy. | — |
 | recipe | The source files and the parameters that implement a method. Each candidate records its recipe. | scientific recipe |
-| variant | A recipe that tests a proposed method. You choose the first variants and create further variants from tests. Knowledge across all tested variants guides the resulting recipe. Differences follow from the scientific question. A variant can change any PI-owned source file and any parameter. | — |
+| variant | A recipe that tests a proposed method. The analyst proposes the first variants. You create further variants from tests. Knowledge across all tested variants guides the resulting recipe. Differences follow from the scientific question. A variant can change any PI-owned source file and any parameter. | — |
 | inherited recipe | The recipe that the campaign contains when it starts. `contracts/scenario.md` describes it. | current recipe, baseline recipe |
 | source code | Any code. | — |
 | implementation | The source code that realizes a method, a tool or an instrument. | — |
@@ -81,7 +81,7 @@ names in code format are technical names. They keep their exact spelling.
 | session | One conversation of the PI or of the analyst, for one purpose. | scientific session, bounded session, bounded scientific session |
 | session objective | The purpose of the current session. | — |
 | analyst session | The first session. The analyst writes the scientific model. | preliminary session, preliminary analyst session, campaign-start session |
-| scientific model | The document `pi_workspace/scientific_model.md`: physical and learning analysis with initial recipe proposals from the analyst. It separates facts from hypotheses. It stays fixed during the campaign. Your session records carry forward what the campaign learns. | — |
+| scientific model | The document `pi_workspace/scientific_model.md`: the initial physical model of the robot and the task, which the analyst derives from the definitions. It does not change during the campaign; your session records carry forward what the campaign learns. | — |
 | decision-relevant synthesis | The last section of the scientific model. It gives the facts and the unknowns that are most likely to change your first decisions. | decision-relevant |
 | recipe-development session | A session that the campaign can include. When the campaign includes it, it is your first session after the analyst session. You deliver a recipe that learns and supports startup, as canonical source and parameters. You build it from knowledge gained across all tested variants. You combine design choices supported by the results. You measure the resulting recipe to demonstrate learning progress. Its kind is `recipe_development`. | — |
 | startup session | Your first session after the analyst session, or after recipe development when the campaign includes it. You start from the recipe in `robot_learning/` and the same accepted scientific model. You establish the initial scientific direction, the tools and the first useful investigation. | — |

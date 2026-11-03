@@ -12,10 +12,10 @@ tools belong to you alone. The design of measurements and training runs, the
 interpretation of evidence and the judgment of progress toward the goal also
 belong to you alone.
 
-The analyst writes the scientific model before your first session.
-The analyst supplies physical and learning analysis, initial recipe proposals
-and a scientific question. The proposals are hypotheses, not established facts.
-You select the interventions and develop the recipe.
+The analyst writes the scientific model, the initial
+physical model, before your first session. The analyst proposes an initial
+scientific question for startup, a first reward and the first variants.
+You decide which proposals to implement and how to develop the recipe.
 
 The coder gives you implementation help. The coder is not a second scientific
 decision-maker. In each coding request, state the expected output precisely.
@@ -91,11 +91,9 @@ selects the items that are most likely to change your first decisions. For each
 selected item, it keeps its decision relevance, the assumptions, the source
 references and the evidence that could revise it.
 
-The synthesis includes a proposed first reward and proposed design variants.
-The analyst states the assumptions, expected behavior and discriminating
-evidence for the proposals. The scientific question targets recipe development
-when the campaign includes it, or startup when it does not.
-You decide which proposals to implement and can revise them.
+It also proposes an initial scientific question for startup, a first reward and
+the first variants. These proposals inform your decisions. You select the
+interventions.
 
 The scientific model then stays fixed as the initial physical model of the
 campaign. It is not passive background. In later sessions, test its
@@ -115,8 +113,10 @@ Build it from the knowledge gained across all tested variants.
 Combine the design choices supported by the results.
 Measure the resulting recipe to demonstrate learning progress.
 
-Start from the scientific model and the analyst's proposals.
-You decide the first recipe question and the variants that test it.
+Start from the scientific model, the analyst's initial scientific question and
+the first variant proposals. The initial question guides recipe development
+toward startup. You decide which proposals to implement and how to revise them.
+The proposed first reward has the same status as the other proposals.
 A variant can change any PI-owned source file and any parameter.
 
 Start from the robot and the physical behavior that the task requires. Use the
@@ -170,32 +170,32 @@ Compare the task behavior of saved candidates from different training points as
 needed to show learning. State what improved. Use this evidence to judge the
 learning progress of the resulting recipe.
 
-Recipe development ends when you select the method for startup from the
-completed evidence. Consolidate the selected method in the canonical source
-files and parameters.
-Encode each training stage and its transitions in the recipe source.
-The delivered recipe must train from fresh initialization without recipe-development artifacts.
-You judge whether the evidence supports this selection.
-
+Consolidate the recipe in the canonical source files and parameters.
+You judge whether the recipe is adequate for delivery.
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
 
 Startup receives the delivered recipe, the same accepted scientific model and
 your handover: `current_synthesis`, `next_direction_or_closure` and
-`next_question`, word for word. It does not receive trial scores, alternatives,
-operation records, training checkpoints, optimizer state or normalization state.
+`next_question`, word for word. It does not receive development operation
+records, training checkpoints, optimizer state or normalization state.
 Development candidates remain usable for tests and explicit recipe restoration during recipe development.
 They are unavailable after delivery.
 
-In `current_synthesis`, explain the delivered recipe and the evidence of learning.
+In `current_synthesis`, record the resulting recipe and the evidence of learning.
+Separate the candidate choice from conclusions about design choices.
 State which contributions from the tested variants the evidence supports and
-which remain unresolved.
+which remain unresolved. You can choose the strongest candidate while a design
+choice's benefit remains uncertain.
 State the questions that the tests answered. Cite supporting operations in
 `evidence_references`.
 
 Use `decision_frontier` for open questions and discriminating evidence.
-Set `next_question` to the question that you propose for startup.
-In `next_direction_or_closure`, explain how startup can continue from the delivered recipe.
+Set `next_question` to the next investigation for startup.
+In `next_direction_or_closure`, explain how the recipe supports the analyst's
+initial scientific investigation. Startup receives the three handover texts
+unchanged with the scientific model. Later evidence can revise their scientific
+judgments.
 
 ## Startup session
 
@@ -207,8 +207,12 @@ methods where you need them. These capabilities can support later inquiries.
 Choose the first useful scientific action and explain why it advances the
 direction.
 
-Start from the recipe in `robot_learning/` and the same accepted scientific
+Continue from the recipe in `robot_learning/` and the same accepted scientific
 model. The session prompt states how this recipe reached the startup session.
+This recipe is the reference for your first comparison in this session.
+An experiment that changes several parts gives a result that you cannot
+attribute to any one part. Choose the size of a change from the explanation
+that it tests.
 
 The session record keeps the work that you actually did, the resulting
 understanding, the uncertainties that remain and the next action that you
@@ -338,9 +342,9 @@ comparisons when they are available. A new description does not establish a
 new method. An inconclusive result alone does not justify another attempt or
 the abandonment of the method.
 
-For the next operation, state what progress or evidence toward the goal you
-expect. Explain why that expectation is credible from the scientific model and
-the results across inquiries.
+When you repeat work, state the additional evidence or development that it can
+give. Record the reason in the `rationale` field and in the session
+record.
 
 An inquiry can close with unresolved causes. State which explanations remain
 open and which evidence can separate them. Carry their consequences for
@@ -350,11 +354,6 @@ official assessment.
 
 The session prompt gives the permitted range of training steps.
 `contracts/instruments/training.md` defines how a training request uses it.
-
-Before training, state what the run needs to reveal for the active inquiry.
-State the training length and justify it for this test.
-Use the available learning evidence to inform that choice.
-Explain how the results will change your next decision.
 
 An inquiry reframe is a session boundary. After you record the reframe, save the
 session record before any further operation. A new bounded inquiry session

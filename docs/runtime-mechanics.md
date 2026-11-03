@@ -20,8 +20,11 @@ The preliminary analyst has `view`, `rg`, `glob` and `apply_patch` (with
 `create` and `edit` on external-provider routes) and no shell. Coding delegation
 is not exposed in that phase. Its scientific model covers the physics, the
 learning problem of the starting recipe, `### Proposed first reward`,
-`### Proposed design variants` and a recipe-development question (a startup
-question when recipe development is skipped); the PI decides what to use.
+`### Proposed design variants` and an initial scientific question for startup
+(in both routes); the PI decides what to use. Its exploration block in the
+system prompt depends on `recipe_phase`, which the launcher passes to the
+adapter as `--recipe-phase`. Every PI session, recipe development included,
+uses the campaign-wide autonomy block.
 
 Each PI session runs on the backend of its launch phase: `analyst`, `recipe`
 (recipe development), `startup` or `research` (goal review and inquiries).
@@ -159,14 +162,15 @@ New state uses schema 8 and `recipe_phase`, either `"included"` (the default)
 or `"skipped"`. Fresh reset accepts `--skip-recipe-development`; Baseline reset
 always writes `"skipped"`. A skipped campaign starts in `startup`; its startup
 prompt carries the inherited-recipe comparison rule instead of the delivery
-handoff, and the analyst proposes a startup question instead of a
-recipe-development question. The rest of this section applies to `"included"`
+handoff, and the analyst's exploration text describes the inherited recipe
+instead of recipe development. The rest of this section applies to `"included"`
 campaigns only.
 `runner.recipe_development.queue()` records delivery inputs only after the
 recipe-development checkpoint is finalized. The launcher closes the development
 backend before `deliver()` publishes those inputs. The PI ends recipe
-development when it selects the method, and consolidates it in the canonical
-recipe. Startup receives the PI's handover with the delivered recipe.
+development when it judges the recipe adequate for delivery, and consolidates
+it in the canonical recipe. Startup receives the PI's handover with the
+delivered recipe.
 There is no requirement to learn within a single startup run.
 Publication checks files, not scores, and does not
 choose a candidate or require another training round.
