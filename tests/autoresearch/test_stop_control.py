@@ -370,6 +370,50 @@ def test_runner_interrupted_outside_an_operation_exits_cooperatively(
             run_experiment.run_with_stop_control()
 
 
+def test_session_end_reports_the_saved_checkpoint_not_an_empty_session(
+    monkeypatch, tmp_path
+):
+    import json
+
+    from runner.launcher import operation_bridge
+
+    checkpoint = {
+        "id": "E3",
+        "kind": "checkpoint",
+        "session_id": "S1",
+        "status": "completed",
+        "request": {"completed_operations": ["T1", "M1"]},
+    }
+    state_path = tmp_path / "runner" / "state" / "research_state.json"
+    state_path.parent.mkdir(parents=True)
+    state_path.write_text(
+        json.dumps(
+            {
+                "campaign": {"id": "c"},
+                "scientific_session": None,
+                "operation_events": [checkpoint],
+                "pending_operation": None,
+                "terminal_state": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(operation_bridge, "operation_state", lambda *_args: {})
+    bridge = operation_bridge.OperationBridge(
+        campaign_root=tmp_path,
+        runner=SimpleNamespace(runner=lambda *_args, **_options: None),
+        trust=SimpleNamespace(verify=lambda: None),
+        stop=_stop(tmp_path / "stop-request"),
+        update_brief=lambda: None,
+    )
+    response = bridge._settle(
+        {}, {"operation_events": []}, SimpleNamespace(exit_code=0)
+    )
+    assert response["status"] == "session_ended"
+    assert response["operation_id"] == "E3"
+    assert "E3" in response["result"] and "T1, M1" in response["result"]
+
+
 def test_stop_during_the_trust_scan_never_executes_the_request(monkeypatch, tmp_path):
     import json
 
