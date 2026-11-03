@@ -8,6 +8,17 @@ with the no-recipe campaigns of runs 14, 15, 18 and 19. Times in the tables
 are UTC unless marked local. This is an analysis of recorded evidence. It does
 not propose changes.
 
+## Correction after the campaigns continued
+
+The campaigns were not stopped. Campaign 1 ended recipe development at
+161 min and **passed the official assessment (200/200)**; campaign 3 ended at
+151 min and was still in inquiries at 17:18 local (best 376/400, 190/200 TR).
+All three campaigns delivered the same one-line recipe change: uniform
+training targets over the full 0.06-0.20 m range, which campaign 1 had
+already tested in its first operation (266/400 on seed 0). The analysis below
+was written while campaigns 1 and 3 were still in recipe development; the
+mechanism it describes explains why reaching that recipe took 89-161 min.
+
 ## Bottom line
 
 Recipe development (RD) stalls in a **chain trap**:
