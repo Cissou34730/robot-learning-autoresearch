@@ -79,6 +79,10 @@ Propose an initial scientific question for startup in this section. Explain how 
 
 For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
 
+End the synthesis with `### Proposed behavior observations`. A behavior observation is a quantity recorded over time during an episode or a training run. It shows what the robot and the policy do, not only whether the task succeeds.
+
+Outcome counts show where a policy fails, not why. For each consequential hypothesis, state the behavior observations that distinguish it. State what each observation shows if the hypothesis is true and if it is false. State a PI-owned tool that can record it. The PI decides which tools to build.
+
 For each consequential physical implication and each unknown, state:
 
 1. The research decisions that it could change.
@@ -371,9 +375,30 @@ def _handoff_context(
     return []
 
 
+_BEHAVIOR_EVIDENCE = (
+    "Outcome counts show where the policy fails, not why. Before your first "
+    "design comparison, you must build or adapt PI-owned tools that record the "
+    "behavior of the robot and the policy. Start from the behavior observations "
+    "that the scientific model proposes. Base each recipe decision on the observed "
+    "behavior. Before a variant test, predict how each variant changes that "
+    "behavior. Before you reject a design or attribute a difference to it, "
+    "examine the behavior behind the outcomes."
+)
+_RESEARCH_BEHAVIOR_EVIDENCE = (
+    "Outcome counts show where the policy fails, not why. Base each "
+    "interpretation on the observed behavior of the robot and the policy. Early "
+    "in the startup session, you must build or adapt PI-owned tools that record "
+    "this behavior. Before you reject a design or attribute a difference to it, "
+    "examine the behavior behind the outcomes. Before an intervention, predict "
+    "how it changes that behavior. Then compare the prediction with the observed "
+    "behavior."
+)
+
+
 def _decision_guidance(state: dict, kind: object) -> list[str]:
     if pstext.same(kind, "recipe_development"):
         return [
+            _BEHAVIOR_EVIDENCE,
             (
                 "Before training, state your comparison plan. Explain the recipe "
                 "question, why you chose each variant and the behavior you expect. "
@@ -457,15 +482,29 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             ),
         ]
     goal_review = pstext.same(kind, "goal_review")
-    lines = [
-        "Compare the risk of the official assessment, given the residual failures "
-        "that you have not explained, with what one more inquiry can learn about "
-        "them. Use the completed evidence and its limits for both actions. Explain "
-        "why the chosen action is preferable now."
+    lines = (
+        [
+            (
+                "Base the decision on what the robot and the policy do in the "
+                "remaining failures. Outcome statistics support this decision; they "
+                "do not replace it. State what further work can change in that "
+                "behavior. Then compare the risk of the official assessment with "
+                "what one more inquiry can learn. Explain why the chosen action is "
+                "preferable now."
+            )
+        ]
         if goal_review
-        else "State the explanation or the unresolved distinction that the operation "
-        "tests. A development step states the explanation that motivates it. State "
-        "how its result could produce or select a better candidate.",
+        else [
+            _RESEARCH_BEHAVIOR_EVIDENCE,
+            (
+                "State the explanation or the unresolved distinction that the "
+                "operation tests. A development step states the explanation that "
+                "motivates it. State how its result could produce or select a "
+                "better candidate."
+            ),
+        ]
+    )
+    lines += [
         (
             "Review the completed evidence, the relevant learning trajectory and the "
             "unmeasured candidates."
