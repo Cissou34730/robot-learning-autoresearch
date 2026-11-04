@@ -84,7 +84,7 @@ PALETTES: dict[str, Palette] = {
         pi_text="#7de3e8",
         tool="#b8c0cc",
         section="#d7d7d7",
-        result="#6ee7a8",
+        result="#f0f0f0",
     ),
     "light": Palette(
         name="light",
@@ -102,7 +102,7 @@ PALETTES: dict[str, Palette] = {
         pi_text="#00656b",
         tool="#3f4a5a",
         section="#2a2a2a",
-        result="#0f6b3d",
+        result="#111111",
     ),
 }
 
@@ -268,11 +268,13 @@ def progress_title(
 def progress_bar_line(
     palette: Palette, label: str, first: int, total: int | None, width: int
 ) -> Text:
-    line = Text(f"{label} {first:,}", style=f"bold {palette.accent}")
+    line = Text(f"{label} ", style=palette.muted)
+    line.append(f"{first:,}", style=f"bold {palette.text}")
     if not total:
         line.append(" / target unavailable", style=palette.muted)
         return line
-    line.append(f" / {total:,}", style=palette.muted)
+    line.append(" / ", style=palette.muted)
+    line.append(f"{total:,}", style=f"bold {palette.text}")
     line.append("  [", style=palette.muted)
     progress = max(0.0, min(1.0, first / max(total, 1)))
     bar_width = max(8, min(width - 22, 60))
@@ -484,8 +486,7 @@ def context_lines(
     else:
         goal_line.append(" | best not measured", style=palette.muted)
     if goal.gap_points is not None:
-        gap_style = palette.error if goal.gap_points < 0 else palette.success
-        goal_line.append(f" | {goal.gap_points:+.1f} pts", style=f"bold {gap_style}")
+        goal_line.append(f" | {goal.gap_points:+.1f} pts", style=f"bold {palette.text}")
     elif goal.gap_text:
         goal_line.append(f" | {goal.gap_text}", style=palette.muted)
     lines.append(fit_text(goal_line, width))

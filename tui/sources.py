@@ -185,9 +185,12 @@ class CampaignSources:
 
     def campaign_id(self) -> str | None:
         """The campaign this folder holds now; reads the state file only."""
-        state = read_json(self._locations()[0])
+        state = self.campaign_state()
         value = ((state or {}).get("campaign") or {}).get("id")
         return str(value) if value else None
+
+    def campaign_state(self) -> dict | None:
+        return read_json(self._locations()[0])
 
     def read(self) -> tuple[dict | None, list[dict], list[dict]]:
         state_path, results_path, usage_dir = self._locations()

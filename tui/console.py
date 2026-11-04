@@ -31,6 +31,7 @@ from typing import ClassVar
 
 from rich.cells import cell_len
 from rich.text import Text
+from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Vertical
@@ -59,6 +60,7 @@ from tui.controller import (
     model_choices,
     parse_command,
 )
+from tui.overview import CampaignOverview
 from tui.phase_presentation import (
     OUTCOME_TAGS,
     PULSING_TAGS,
@@ -72,6 +74,7 @@ from tui.process import LauncherMachinery
 from tui.report import REPORT_CSS, CampaignPanel, CampaignSources
 from tui.shutdown import ShutdownCoordinator
 from tui.tab_visibility import IDLE_TAB_SECONDS, TabIdleTracker
+from tui.training_tree_view import TrainingTree, TrainingTreePanel
 
 HELPER_SHUTDOWN_GRACE_SECONDS = 15.0
 # After Ctrl+Q, a campaign that has not stopped by then is put to the operator.
@@ -81,8 +84,8 @@ STOP_WAIT_MORE_SECONDS = 60.0
 # How long a command's result replaces the key hints on the info line.
 FEEDBACK_SECONDS = 8.0
 KEY_HINTS = (
-    "/ commands · Alt+Q leave running · Ctrl+Q stop & exit · F1 help · "
-    "F2 settings · Tab campaign"
+    "F4 tree · / commands · Tab campaign · F1 help · F2 settings · "
+    "Alt+Q leave running · Ctrl+Q stop & exit"
 )
 PANEL_HINTS = "Enter run · Tab complete · Up/Down choose · Esc close"
 
@@ -117,8 +120,10 @@ def help_text() -> str:
         "Empty launch fields use launcher defaults: gpt-6-luna, analyst max and other\n"
         "phases high reasoning, 120000 timesteps, 360000 max timesteps, 15 inquiries\n"
         "and 180s stop timeout.\n\n"
-        "F1 Help | F2 Settings | F3 Recent commands | Ctrl+L open the commands\n"
+        "F1 Help | F2 Settings | F3 Recent commands | F4 Training tree | Ctrl+L commands\n"
         "Ctrl+F search the log | f filter | r raw event | End follow live\n"
+        "Tab phase: A Analyse | R Recipe | S Startup | I Inquiry | B Benchmark\n"
+        "Overview compares all campaign slots; Enter opens the selected campaign.\n"
         "Tab / Shift+Tab: next/previous campaign; move focus inside dialogs\n"
         "Ctrl+Tab: next campaign if the terminal passes it through\n"
         "F6 / Shift+F6: move focus between report controls | Ctrl+C: copy only\n"
@@ -145,12 +150,13 @@ class CampaignConsole(App):
         Binding("f1", "help", "Help", priority=True),
         Binding("f2", "settings", "Settings", priority=True),
         Binding("f3", "command_history", "Recent commands", priority=True, show=False),
+        Binding("f4", "training_tree", "Training tree", priority=True),
         Binding("ctrl+tab", "next_tab", "Next tab", priority=True, show=False),
         Binding("tab", "next_tab", "Campaign", priority=True),
         Binding(
             "shift+tab", "previous_tab", "Previous campaign", priority=True, show=False
         ),
-        Binding("f6", "focus_next", "Focus next control", show=False),
+        Binding("f6", "focus_tree_or_next", "Focus next control", show=False),
         Binding("shift+f6", "focus_previous", "Focus previous control", show=False),
         Binding("ctrl+c", "copy_selection", "Copy", priority=True, show=False),
         Binding("slash", "open_commands", "Commands", show=False),
@@ -181,6 +187,8 @@ class CampaignConsole(App):
     TabbedContent { height: 1fr; min-height: 0; }
     TabbedContent > ContentSwitcher { height: 1fr; }
     TabPane { height: 100%; padding: 0; }
+    TabPane.tree-open { layout: horizontal; }
+    TabPane.tree-open > CampaignPanel { width: 1fr; }
     #campaign-folder {
         display: none; dock: right; height: 1;
         padding-left: 2; color: $text-muted; text-align: right;
@@ -244,7 +252,11 @@ class CampaignConsole(App):
             yield CommandPanel(id="command-panel")
             yield Static("", id="commands-summary", markup=False)
         installed = self._layout.installed()
-        with TabbedContent(initial=installed[0] if installed else ""):
+        with TabbedContent(initial=installed[0] if installed else "overview"):
+            with TabPane("Overview", id="overview"):
+                yield CampaignOverview(
+                    [self._layout.folder(slot) for slot in range(1, 6)]
+                )
             for slot in range(1, 6):
                 if not self._layout.is_installed(slot):
                     continue
@@ -470,7 +482,7 @@ class CampaignConsole(App):
                 self.action_detach()
             return
         active = self.query_one(TabbedContent).active
-        if not slots and active:
+        if not slots and active and active != "overview":
             slots = [self._layout.slot_for(active)]
         if not slots and verb not in {"models"}:
             self._log(
@@ -657,7 +669,7 @@ class CampaignConsole(App):
         hidden_running = sum(
             self._campaign_active(self._controller.state(pane.id))
             for pane in self.query(TabPane)
-            if pane.id not in self._visible_tabs
+            if pane.id != "overview" and pane.id not in self._visible_tabs
         )
         warning = (
             f"{hidden_running} running campaign{'s' if hidden_running != 1 else ''} hidden | "
@@ -689,7 +701,7 @@ class CampaignConsole(App):
         except CommandError:
             return ""  # do not flash validation errors while a command is incomplete
         active = self.query_one(TabbedContent).active
-        if not slots and active:
+        if not slots and active and active != "overview":
             slots = [self._layout.slot_for(active)]
         targets = ", ".join(f"campaign-{slot}" for slot in slots)
         command = commands.find(verb)
@@ -714,9 +726,22 @@ class CampaignConsole(App):
     def _refresh_tab_tags(self) -> None:
         """Tag every campaign tab, visible or not, from its stage and phase."""
         found = self.query(TabbedContent)
-        if not found:
+        if not found or not self.is_running:
             return
         tabs = found.first()
+        overview_tabs = tabs.query("#--content-tab-overview")
+        if not overview_tabs:
+            return
+        overview = overview_tabs.first()
+        overview_width = cell_len("Overview") + overview.styles.padding.width
+        full_width = overview_width
+        for label in self._visible_tabs:
+            found_tab = tabs.query(f"#--content-tab-{label}")
+            if found_tab:
+                full_width += (
+                    cell_len(f"● {label} (?)") + found_tab.first().styles.padding.width
+                )
+        compact = full_width > self.size.width
         for panel in self.query(CampaignPanel):
             label = panel.id.removeprefix("panel-")
             state = self._controller.state(label)
@@ -724,7 +749,7 @@ class CampaignConsole(App):
             tag = tab_tag(
                 stage, panel.progress_stalled(), panel.phase(), panel.official_outcome()
             )
-            self._tag_tab(tabs, label, tag)
+            self._tag_tab(tabs, label, tag, panel.campaign_phase_letter(), compact)
 
     def _pulse_tabs(self) -> None:
         if self._shutting_down:
@@ -732,13 +757,15 @@ class CampaignConsole(App):
         self._pulse_on = not self._pulse_on
         self._refresh_tab_tags()
 
-    def _tag_tab(self, tabs: TabbedContent, label: str, tag: str) -> None:
+    def _tag_tab(
+        self, tabs: TabbedContent, label: str, tag: str, phase: str, compact: bool
+    ) -> None:
         """Colour the dot in front of a tab label; relabel only on a change."""
         glyph = "◆" if tag in OUTCOME_TAGS else "●"
         if tag in PULSING_TAGS and not self._pulse_on:
             glyph = "◐"
         colour = self._tag_colour(tag)
-        shown = (tag, glyph, colour)
+        shown = (tag, glyph, colour, phase, compact)
         if self._tab_tags.get(label) == shown:
             return
         try:
@@ -746,7 +773,10 @@ class CampaignConsole(App):
         except Exception:  # noqa: BLE001 - the tab is not mounted yet
             return
         self._tab_tags[label] = shown
-        tab.label = Content.from_markup(f"[{colour}]{glyph}[/] $name", name=label)
+        name = label.removeprefix("campaign-") if compact else label
+        tab.label = Content.from_markup(
+            f"[{colour}]{glyph}[/] $name ($phase)", name=name, phase=phase
+        )
 
     def _official_note(self, label: str, stage: str) -> str:
         """The final benchmark's outcome, for a campaign that is not running."""
@@ -765,6 +795,8 @@ class CampaignConsole(App):
 
     def _status_line(self) -> str:
         active = self.query_one(TabbedContent).active
+        if active == "overview":
+            return "Overview: select a campaign and press Enter"
         if active:
             state = self._controller.state(active)
             if state.stage == "idle":
@@ -785,7 +817,7 @@ class CampaignConsole(App):
 
     async def _ensure_campaign_tabs(self, labels: list[str]) -> None:
         tabs = self.query_one(TabbedContent)
-        known = {pane.id for pane in tabs.query(TabPane)}
+        known = {pane.id for pane in tabs.query(TabPane) if pane.id != "overview"}
         for label in labels:
             if label not in known:
                 folder = self._layout.folder(self._layout.slot_for(label))
@@ -824,6 +856,40 @@ class CampaignConsole(App):
                 ),
                 self._settings_saved,
             )
+
+    async def action_training_tree(self) -> None:
+        if isinstance(self.screen, ModalScreen) or self._panel_open:
+            return
+        label = self.query_one(TabbedContent).active
+        if not label or label == "overview":
+            self.notify(
+                "Select a campaign to open its training tree.", severity="warning"
+            )
+            return
+        trees = self.query(f"#training-tree-{label}")
+        if trees:
+            tree = trees.first(TrainingTreePanel)
+            if tree.display:
+                tree.display = False
+                self.query_one(f"#{label}", TabPane).remove_class("tree-open")
+                self._focus_campaign()
+                return
+        if self.size.width < 144 or self.size.height < 33:
+            self.notify(
+                "Training tree needs at least 144 columns and 33 rows to keep the report visible.",
+                severity="warning",
+            )
+            return
+        if not trees:
+            pane = self.query_one(f"#{label}", TabPane)
+            tree = TrainingTreePanel(
+                self._controller.state(label).folder, id=f"training-tree-{label}"
+            )
+            await pane.mount(tree)
+        self.query_one(f"#{label}", TabPane).add_class("tree-open")
+        tree.display = True
+        tree.refresh_source()
+        tree.query_one(TrainingTree).focus()
 
     def _load_model_choices(self) -> list[tuple[str, str]]:
         """Runs off the UI thread; the list is kept for this console session."""
@@ -899,11 +965,29 @@ class CampaignConsole(App):
         if isinstance(self.screen, ModalScreen):
             return
         tabs = self.query_one(TabbedContent)
-        if tabs.display and tabs.active:
+        if tabs.display and tabs.active == "overview":
+            self.query_one(CampaignOverview).focus_table()
+        elif tabs.display and tabs.active:
             panel = self.query_one(f"#panel-{tabs.active}", CampaignPanel)
             panel.focus_report()
         else:
             self.screen.set_focus(None)
+
+    def action_focus_tree_or_next(self) -> None:
+        if isinstance(self.screen, ModalScreen):
+            self.action_focus_next()
+            return
+        label = self.query_one(TabbedContent).active
+        trees = self.query(f"#training-tree-{label}") if label else ()
+        if trees:
+            tree = trees.first(TrainingTreePanel)
+            if tree.display:
+                if self.focused and tree in self.focused.ancestors_with_self:
+                    self._focus_campaign()
+                else:
+                    tree.query_one(TrainingTree).focus()
+                return
+        self.action_focus_next()
 
     def action_search_log(self) -> None:
         self._panel_action("action_search_log")
@@ -925,12 +1009,22 @@ class CampaignConsole(App):
 
     def _panel_action(self, action: str) -> None:
         label = self.query_one(TabbedContent).active
-        if label:
+        if label and label != "overview":
             getattr(self.query_one(f"#panel-{label}", CampaignPanel), action)()
 
-    def on_resize(self) -> None:
+    def on_resize(self, event: events.Resize) -> None:
         if self.is_mounted:
+            if event.size.width < 144 or event.size.height < 33:
+                for tree in self.query(TrainingTreePanel):
+                    if tree.display:
+                        tree.display = False
+                        tree.parent.remove_class("tree-open")
+                        self.notify(
+                            "Training tree closed: enlarge the terminal to reopen it.",
+                            severity="warning",
+                        )
             self._update_campaign_visibility()
+            self.call_after_refresh(self._refresh_tab_tags)
             self.call_after_refresh(self._refresh_campaign_folder)
 
     def _refresh_campaign_folder(self) -> None:
@@ -941,10 +1035,12 @@ class CampaignConsole(App):
         if not found:
             return
         location = found.first(Static)
-        if not tabs.display or not tabs.active:
+        if not tabs.display or not tabs.active or tabs.active == "overview":
             location.display = False
             return
-        visible = [tabs.get_tab(label) for label in self._visible_tabs]
+        visible = [tabs.get_tab("overview")] + [
+            tabs.get_tab(label) for label in self._visible_tabs
+        ]
         # The full-width tab bar's measured size can lag a terminal resize.
         available = self.size.width - sum(tab.outer_size.width for tab in visible) - 2
         folder = self._controller.state(tabs.active).folder
@@ -960,12 +1056,13 @@ class CampaignConsole(App):
     def _update_campaign_visibility(self) -> None:
         small = self.size.width < 48 or self.size.height < 16
         tabs = self.query_one(TabbedContent)
-        tabs.display = bool(self._visible_tabs) and not small
+        installed = any(pane.id != "overview" for pane in tabs.query(TabPane))
+        tabs.display = installed and not small
         empty = self.query_one("#empty-campaigns", Static)
-        empty.display = not self._visible_tabs and not small
+        empty.display = not installed and not small
         if not self._activity_ready:
             message = "Checking campaign activity..."
-        elif self.query(TabPane):
+        elif installed:
             message = "No active campaigns are displayed.\nUse /show 1 to inspect a campaign, /start 1 to resume, or /run 1 for a fresh run.\nPress / for commands. Nothing runs automatically."
         else:
             message = "No campaign folders are installed.\nUse /run 1 to initialize, reset and start campaign-1 from an existing recipe source.\nPress / for commands, F2 for settings. Nothing runs automatically."
@@ -978,7 +1075,9 @@ class CampaignConsole(App):
         if not self._activity_ready:
             return
         tabs = self.query_one(TabbedContent)
-        labels = sorted(pane.id for pane in tabs.query(TabPane))
+        labels = sorted(
+            pane.id for pane in tabs.query(TabPane) if pane.id != "overview"
+        )
         now = time.time()
         visible = []
         for label in labels:
@@ -993,17 +1092,22 @@ class CampaignConsole(App):
         if visible != self._visible_tabs or not self._tab_visibility_applied:
             self._tab_visibility_applied = True
             previous = tabs.active
+            previously_visible = self._visible_tabs
             self._visible_tabs = visible
             for label in visible:
                 if not tabs.get_tab(label).display:
                     tabs.show_tab(label)
             selected = previous if previous in visible else ""
+            if previous == "overview" and (previously_visible or not visible):
+                selected = previous
             if not selected and visible:
                 index = labels.index(previous) if previous in labels else -1
                 selected = next(
                     (label for label in labels[index + 1 :] if label in visible),
                     visible[0],
                 )
+            if not selected and labels:
+                selected = "overview"
             tabs.active = selected
             for label in labels:
                 if label not in visible and tabs.get_tab(label).display:
@@ -1014,7 +1118,23 @@ class CampaignConsole(App):
 
     def on_tabbed_content_tab_activated(self) -> None:
         if self.is_mounted:
+            if self.query_one(TabbedContent).active == "overview":
+                self.call_after_refresh(self.query_one(CampaignOverview).refresh_source)
+                if not self._panel_open and not isinstance(self.screen, ModalScreen):
+                    self.call_after_refresh(self._focus_campaign)
             self._refresh_status_now()
+
+    def on_campaign_overview_open_campaign(
+        self, event: CampaignOverview.OpenCampaign
+    ) -> None:
+        label = f"campaign-{event.slot}"
+        if not self.query(f"#panel-{label}"):
+            self.notify(f"{label} is not available in the console.", severity="warning")
+            return
+        self._tab_overrides[label] = True
+        self._sync_tab_visibility()
+        self.query_one(TabbedContent).active = label
+        self.call_after_refresh(self._focus_campaign)
 
     def watch_theme(self) -> None:
         for panel in self.query(CampaignPanel):
@@ -1042,7 +1162,8 @@ class CampaignConsole(App):
         if isinstance(self.screen, ModalScreen):
             return
         tabs = self.query_one(TabbedContent)
-        panes = self._visible_tabs
+        installed = any(pane.id != "overview" for pane in tabs.query(TabPane))
+        panes = (["overview"] if installed else []) + self._visible_tabs
         if not panes:
             return
         if tabs.active not in panes or len(panes) == 1:

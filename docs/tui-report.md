@@ -152,12 +152,32 @@ that this console did not start.
 
 Issue #68 implementation. `uv run python -m tui` (or
 `.\campaign_tui.ps1` with no arguments) opens one Textual console with
-one report tab per active or recently idle campaign, initially showing the first
-visible campaign. Command entry is alongside the report,
+one overview and one report tab per active or recently idle campaign, initially
+showing the first visible campaign. The overview includes hidden campaign
+slots. Command entry is alongside the report,
 not on a separate Commands tab, following the maintainer's updated UX direction
 on 26 October. The standard folders are `robot-learning-campaigns\campaign-1`
 through `campaign-5`; Tab/Shift+Tab cycle only visible tabs. Launching the console starts
 nothing; campaigns run only when a command is submitted.
+
+The overview compares phase, launcher state, campaign elapsed time, evaluation
+progress, inquiry count, development success against the goal and official
+outcome. Phase duration is shown as unavailable because the durable state does
+not record every phase start. At narrow widths the matrix becomes a vertically
+scrollable list. Enter on a campaign cell opens its tab, including one hidden
+by the idle rule. Commands from Overview require an explicit campaign target.
+
+Each campaign tab displays its lifecycle phase as an uncoloured letter:
+`A` Analyse, `R` Recipe, `S` Startup, `I` Inquiry, `B` Benchmark, or `?` when
+the phase is unavailable. The coloured activity dot is unchanged.
+
+F4 opens a training and measurement tree beside the current campaign report,
+without replacing the report or event log. It requires at least 144 columns
+and 33 rows; resizing below that closes the tree and reports why. F6 moves
+focus between the report and the tree, arrows navigate it, and Enter opens
+details. The tree connects training, checkpoints and measurements by recorded
+candidate identity; unlinked measurements remain separate. Archived recipe
+development is displayed separately from the current campaign history.
 
 Tabs hide automatically after two hours with no launcher running. A long
 operation, a quiet PI or an unchanged log never makes a running campaign idle.
@@ -186,8 +206,9 @@ An externally started campaign appears without changing the current selection,
 unless `/hide` explicitly hides that slot for this session. Hiding the selected
 tab selects the next visible tab in slot order, wrapping when necessary.
 Showing tabs retains their original numbers and report state. If none are
-visible, an empty state offers `/show`, `/start` and `/run`; command entry stays
-available. Console restart discards show/hide overrides and applies the
+visible but campaign folders are installed, Overview remains available.
+If no folders are installed, the empty state offers `/show`, `/start` and
+`/run`; command entry stays available. Console restart discards show/hide overrides and applies the
 automatic rule to all installed slots again.
 
 Controlled execution starts `python -m runner.launcher`, the reset and the

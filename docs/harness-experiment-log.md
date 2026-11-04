@@ -68,6 +68,16 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**4 November 2026. TUI campaign overview and training tree — Implemented.**
+The console compares five campaign slots and shows lifecycle phase letters on
+their tabs without changing the existing activity dots. An optional side panel
+links training checkpoints and measurement results by recorded candidate
+identity. Phase duration is unavailable because phase starts are not recorded
+consistently. The display is read-only and makes no scientific decisions.
+Targeted implementation checks cover navigation, sizing and recorded links;
+campaign use and the operator experience remain unobserved. Retain pending
+maintainer use.
+
 **2 November 2026. Verbatim analyst restoration and three-text startup handover.**
 The analyst task restores the original learning, reward, variant and synthesis
 instructions from `778f11294^`, without a semantic rewrite. The approved generic
