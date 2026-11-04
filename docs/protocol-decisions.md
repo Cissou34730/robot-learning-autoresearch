@@ -7,6 +7,21 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-04 - Reverted: analyst physical computations and competing explanations
+
+- **Status:** reverted the same day; the analyst text is again the 4 November
+  morning version (`f74f4b5bf`). Kept below as history.
+- **Reason:** in the two harness campaigns that ran with it (`2032a521`,
+  `f8689a70`), both analysts read "physical computations" as the stabilising
+  control gain and proposed PD or servo output transformations, which had
+  failed in almost every earlier campaign. "Test each competing explanation in
+  the same comparison" filled the first comparison with exploration-noise,
+  hold-credit and PD variants and displaced the full-range variant that decided
+  every earlier harness recipe development; one analyst deferred geometry
+  explicitly. Best first-round results fell to 31/400 and 129/400, against
+  266-364/400 in the two earlier batches. Two campaigns only, one interrupted,
+  so the RCA of no-recipe N1 against N3 is reopened rather than closed.
+
 ## 2026-11-04 - Analyst: physical computations and competing explanations
 
 - **Evidence:** no-recipe N1 (`16ef60ce`) against N3 (`26404d1d`), same code,
