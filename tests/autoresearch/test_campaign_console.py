@@ -109,7 +109,7 @@ def test_training_tree_keeps_report_visible_and_handles_resize(tmp_path):
     )
 
     async def scenario():
-        async with app.run_test(size=(160, 45)) as pilot:
+        async with app.run_test(size=(220, 45)) as pilot:
             await pilot.pause()
             report = app.query_one("#panel-campaign-1", CampaignPanel)
             output = report.query_one("#output")
@@ -137,28 +137,39 @@ def test_training_tree_keeps_report_visible_and_handles_resize(tmp_path):
             await pilot.pause()
             await pilot.resize_terminal(80, 24)
             await pilot.pause()
-            assert not tree.display and report.display
-            await pilot.press("f4")
+            assert tree.display and report.display and not output.display
+            assert tree.region.y >= report.region.bottom
+            assert tree.region.width >= 78
+            await pilot.resize_terminal(60, 24)
             await pilot.pause()
-            assert not tree.display
+            assert tree.display and not output.display
+            assert tree.region.width >= 58
+            await pilot.press("f6")
+            await pilot.pause()
+            assert app.focused is report.query_one("#context")
+            assert app.focused.region.bottom <= report.region.bottom
+            await pilot.press("f6")
+            await pilot.pause()
+            assert app.focused is widget
+            await pilot.resize_terminal(48, 16)
+            await pilot.pause()
+            assert tree.display and report.display and not output.display
+            assert widget.region.height >= 1
+            await pilot.resize_terminal(47, 16)
+            await pilot.pause()
+            assert app.query_one("#commands-floor").display
             await pilot.resize_terminal(160, 45)
             await pilot.pause()
-            await pilot.press("f4")
-            await pilot.pause()
-            assert tree.display and output.display
+            assert tree.display
+            assert tree.region.width >= 75
             await pilot.press("f4")
             await pilot.pause()
             assert not tree.display and output.display
-            await pilot.resize_terminal(144, 32)
+            await pilot.resize_terminal(80, 24)
             await pilot.pause()
             await pilot.press("f4")
             await pilot.pause()
-            assert not tree.display
-            await pilot.resize_terminal(144, 33)
-            await pilot.pause()
-            await pilot.press("f4")
-            await pilot.pause()
-            assert tree.display and output.display
+            assert tree.display and not output.display
 
     asyncio.run(scenario())
 
@@ -188,6 +199,7 @@ def test_campaign_overview_opens_selected_hidden_campaign(tmp_path):
     async def scenario():
         async with app.run_test(size=(80, 24)) as pilot:
             await pilot.pause()
+            await _run_batch(app, pilot, "start 1-2")
             app.submit_command("hide 2")
             await pilot.pause()
             tabs = app.query_one(TabbedContent)
@@ -202,8 +214,10 @@ def test_campaign_overview_opens_selected_hidden_campaign(tmp_path):
                     break
                 await pilot.pause(0.1)
             assert overview.campaigns
-            assert table.get_cell("phase", "1") == "Inquiry"
-            assert table.get_cell("inquiries", "1") == "4"
+            assert table.get_cell("phase", "1").plain == "Inquiry"
+            assert table.get_cell("phase", "1").style is not None
+            assert table.get_cell("inquiries", "1").plain == "4"
+            assert {column.value for column in table.columns} == {"field", "1", "2"}
             table.focus()
             table.move_cursor(row=0, column=2)
             await pilot.press("enter")
@@ -214,7 +228,50 @@ def test_campaign_overview_opens_selected_hidden_campaign(tmp_path):
             await pilot.resize_terminal(60, 24)
             await pilot.pause()
             assert not overview._matrix
-            assert table.get_cell("1:phase", "value") == "Inquiry"
+            assert table.get_cell("1:phase", "value").plain == "Inquiry"
+
+    asyncio.run(scenario())
+
+
+def test_overview_tracks_active_and_external_campaigns_without_idle_slots(tmp_path):
+    from textual.widgets import DataTable, Static, TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.overview import CampaignOverview
+
+    app, _ = _console(tmp_path, FakeMachinery())
+
+    async def scenario():
+        async with app.run_test(size=(120, 35)) as pilot:
+            await pilot.pause()
+            await pilot.press("shift+tab")
+            await pilot.pause()
+            assert app.query_one(TabbedContent).active == "overview"
+            overview = app.query_one(CampaignOverview)
+            table = overview.query_one(DataTable)
+            status = overview.query_one("#overview-status", Static)
+            assert not table.display
+            assert str(status.content) == "No active campaigns."
+
+            app._controller.state("campaign-1").stage = "running"
+            app._controller.state("campaign-2").external = True
+            app._refresh_status_now()
+            await pilot.pause()
+            assert table.display
+            assert {key.value for key in table.columns} == {"field", "1", "2"}
+            assert (
+                table.columns[
+                    next(key for key in table.columns if key.value == "1")
+                ].width
+                > 12
+            )
+
+            app._controller.state("campaign-1").stage = "stopped"
+            app._controller.state("campaign-2").external = False
+            app._refresh_status_now()
+            await pilot.pause()
+            assert not table.display
+            assert str(status.content) == "No active campaigns."
 
     asyncio.run(scenario())
 

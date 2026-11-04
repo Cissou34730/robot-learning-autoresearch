@@ -127,6 +127,7 @@ Screen > .screen--selection {
     height: auto;
     margin-bottom: 1;
 }
+#context:focus { background: $boost; }
 #phase-views { height: 1; display: none; }
 #phase-views Underline { display: none; }
 #phase-views Tab { padding: 0 1; }
@@ -1137,6 +1138,23 @@ class CampaignPanel(Widget):
 
     def _apply_layout(self) -> None:
         size = self._view_size
+        context = self.query_one("#context", Static)
+        if self.parent is not None and self.parent.has_class("tree-stacked"):
+            context.can_focus = True
+            if (
+                self.app.focused is not None
+                and self.app.focused is not context
+                and self in self.app.focused.ancestors_with_self
+            ):
+                context.focus()
+            self.query_one("#too-small", Static).display = False
+            self._output_hidden = True
+            self.query_one("#output", EventLog).display = False
+            self.query_one("#output-heading", Static).display = False
+            self.query_one("#log-search", Input).display = False
+            self.query_one("#reading", Static).display = False
+            return
+        context.can_focus = False
         development = self.query_one("#phase-views", Tabs).active == "recipe-view"
         if development:
             for identity in (
@@ -1264,6 +1282,9 @@ class CampaignPanel(Widget):
         )
 
     def focus_report(self) -> None:
+        if self.parent is not None and self.parent.has_class("tree-stacked"):
+            self.query_one("#context", Static).focus()
+            return
         if self.query_one(DevelopmentView).display:
             view = self.query_one(DevelopmentView)
             table = view.query_one("#development-variants", DataTable)

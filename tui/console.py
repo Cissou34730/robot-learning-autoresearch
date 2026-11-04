@@ -189,6 +189,12 @@ class CampaignConsole(App):
     TabPane { height: 100%; padding: 0; }
     TabPane.tree-open { layout: horizontal; }
     TabPane.tree-open > CampaignPanel { width: 1fr; }
+    TabPane.tree-stacked { layout: vertical; }
+    TabPane.tree-stacked > CampaignPanel { width: 100%; height: 7; overflow: hidden; }
+    TabPane.tree-stacked CampaignPanel #context { max-height: 7; overflow: hidden; }
+    TabPane.tree-stacked > TrainingTreePanel {
+        width: 100%; height: 1fr; border-left: none; border-top: solid $panel;
+    }
     #campaign-folder {
         display: none; dock: right; height: 1;
         padding-left: 2; color: $text-muted; text-align: right;
@@ -370,7 +376,7 @@ class CampaignConsole(App):
     def on_command_panel_submitted(self, event: CommandPanel.Submitted) -> None:
         text = event.text
         self._close_commands(
-            restore_focus=not text or text.split()[0].lower() != "hide"
+            restore_focus=not text or text.split()[0].lower() not in {"hide", "show"}
         )
         self.submit_command(text)
 
@@ -665,6 +671,9 @@ class CampaignConsole(App):
                 panel.set_process_running(False)
         self._sync_tab_visibility()
         self._refresh_tab_tags()
+        overview = self.query(CampaignOverview)
+        if overview and overview.first().is_mounted:
+            overview.first(CampaignOverview).refresh_display()
         self.call_after_refresh(self._refresh_campaign_folder)
         hidden_running = sum(
             self._campaign_active(self._controller.state(pane.id))
@@ -871,15 +880,11 @@ class CampaignConsole(App):
             tree = trees.first(TrainingTreePanel)
             if tree.display:
                 tree.display = False
-                self.query_one(f"#{label}", TabPane).remove_class("tree-open")
+                pane = self.query_one(f"#{label}", TabPane)
+                pane.remove_class("tree-open", "tree-stacked")
+                pane.query_one(CampaignPanel)._layout_key = None
                 self._focus_campaign()
                 return
-        if self.size.width < 144 or self.size.height < 33:
-            self.notify(
-                "Training tree needs at least 144 columns and 33 rows to keep the report visible.",
-                severity="warning",
-            )
-            return
         if not trees:
             pane = self.query_one(f"#{label}", TabPane)
             tree = TrainingTreePanel(
@@ -887,6 +892,7 @@ class CampaignConsole(App):
             )
             await pane.mount(tree)
         self.query_one(f"#{label}", TabPane).add_class("tree-open")
+        self._layout_training_tree(self.query_one(f"#{label}", TabPane))
         tree.display = True
         tree.refresh_source()
         tree.query_one(TrainingTree).focus()
@@ -1014,18 +1020,20 @@ class CampaignConsole(App):
 
     def on_resize(self, event: events.Resize) -> None:
         if self.is_mounted:
-            if event.size.width < 144 or event.size.height < 33:
-                for tree in self.query(TrainingTreePanel):
-                    if tree.display:
-                        tree.display = False
-                        tree.parent.remove_class("tree-open")
-                        self.notify(
-                            "Training tree closed: enlarge the terminal to reopen it.",
-                            severity="warning",
-                        )
-            self._update_campaign_visibility()
+            for tree in self.query(TrainingTreePanel):
+                if tree.display and isinstance(tree.parent, TabPane):
+                    self._layout_training_tree(tree.parent, event.size.width)
+            self.call_after_refresh(self._update_campaign_visibility)
             self.call_after_refresh(self._refresh_tab_tags)
             self.call_after_refresh(self._refresh_campaign_folder)
+
+    def _layout_training_tree(self, pane: TabPane, width: int | None = None) -> None:
+        pane.set_class(
+            (width if width is not None else self.size.width) < 140, "tree-stacked"
+        )
+        panel = pane.query_one(CampaignPanel)
+        panel._layout_key = None
+        self.call_after_refresh(panel._apply_layout)
 
     def _refresh_campaign_folder(self) -> None:
         if not self.is_running:
@@ -1108,6 +1116,8 @@ class CampaignConsole(App):
                 )
             if not selected and labels:
                 selected = "overview"
+            if previous != selected and not self._panel_open:
+                self.screen.set_focus(None)
             tabs.active = selected
             for label in labels:
                 if label not in visible and tabs.get_tab(label).display:
@@ -1139,6 +1149,9 @@ class CampaignConsole(App):
     def watch_theme(self) -> None:
         for panel in self.query(CampaignPanel):
             panel.apply_theme()
+        for overview in self.query(CampaignOverview):
+            overview._shown.clear()
+            overview.refresh_display()
 
     # ------------------------------------------------------------------
     # Tabs
