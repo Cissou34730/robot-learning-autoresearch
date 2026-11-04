@@ -60,6 +60,8 @@ Analyze these items from first principles and from the human-owned definitions:
 * the alternative physical configurations or solutions available to the robot.
 * the invariances of the definitions, and what each makes equal or different across configurations, targets and behavior.
 * the physical, kinematic, dynamic, control and observability constraints that create qualitatively different classes of behavior or failure.
+* the physical computations that the task requires from a controller, from the kinematics, the dynamics and the control of the robot.
+* the physical computations that a learned policy can find hard to learn.
 * the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
 The PI trains the policy with reinforcement learning, from the starting recipe that contracts/scenario.md describes. Analyze the learning problem that the starting recipe and the task create:
@@ -75,9 +77,11 @@ Propose a first reward under the heading `### Proposed first reward` in the regi
 
 Propose the first variants for quick learning tests under `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that tests a proposed method. Differences between variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
 
-Propose an initial scientific question for startup in this section. Explain how the first variants can help develop a recipe that supports this question.
+Propose an initial scientific question for startup in this section. Explain how the first variants can help develop a recipe that supports this question. The analysis cannot establish which explanation limits learning before training. When the initial question names competing explanations, the first variants test each of them in the same comparison.
 
-For the hypotheses that determine your first recipe decisions, propose variants that distinguish them. Explain how each proposed change affects what the policy must infer from its observations or produce through its actions. For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
+For the physical computations that you expect to limit learning, propose variants that supply them in fixed code. The fixed code can be in the observation or in the fixed transformation of the network output. Explain how each variant changes what the policy must infer from its observations or produce through its actions.
+
+For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
 
 End the synthesis with `### Proposed behavior observations`. A behavior observation is a quantity recorded over time during an episode or a training run. It shows what the robot and the policy do, not only whether the task succeeds.
 

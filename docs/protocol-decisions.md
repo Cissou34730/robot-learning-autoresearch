@@ -7,6 +7,29 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-04 - Analyst: physical computations and competing explanations
+
+- **Evidence:** no-recipe N1 (`16ef60ce`) against N3 (`26404d1d`), same code,
+  scenario and models. N3's analyst decomposed the task into what a controller
+  must compute (stabilising loop, geometric map, exploration) and proposed
+  supplying the geometric map; its PI tested the computed IK error and
+  delivered 400/400 after 53 min. N1's analyst declared action resolution "the
+  first binding constraint" and left geometry to follow-ups; its PI followed
+  that framing over its own traces, tried raw target coordinates and delivered
+  8/480. Runs 14 and 15 confirm that the same analysis gives the same outcome.
+- **Change:** the analyst objective asks, in the physical analysis, for the
+  physical computations that the task requires from a controller (from
+  kinematics, dynamics and control) and those a learned policy can find hard
+  to learn; for those that can limit learning, it proposes variants that supply
+  them in fixed code (in the observation or the fixed output transformation).
+  This replaces the 4 November morning sentence on hypotheses. The analysis
+  cannot establish the limiting explanation before training, and the first
+  variants test each competing explanation in the initial question together.
+  The analyst identity adds one matching sentence. The computations are
+  anchored in robotics, not in learning, to avoid more RL framing.
+- **Not changed:** the PI guidance, the completion sentence (a stricter one was
+  rejected as it would block delivery without a better design), the Runner.
+
 ## 2026-11-04 - Learning evidence ends recipe development; hypotheses become variants
 
 - **Evidence:** run 20 (4 November, no-recipe). Y1 delivered a candidate at
