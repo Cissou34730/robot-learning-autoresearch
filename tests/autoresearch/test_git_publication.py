@@ -820,6 +820,8 @@ def test_recipe_delivery_rejects_mismatched_inputs_without_mutation(
 def test_selected_variant_materializes_effective_files_without_changing_restore_schema(
     git_repository, monkeypatch
 ):
+    # Content, not line-ending conversion, is under test here.
+    repository.git("config", "core.autocrlf", "false")
     state, old_commit, files, _archive = _development_delivery(
         git_repository, monkeypatch
     )
@@ -861,6 +863,8 @@ def test_selected_variant_materializes_effective_files_without_changing_restore_
 def test_full_variant_recipe_restore_materializes_all_effective_sources_and_parameters(
     git_repository, monkeypatch
 ):
+    # Content, not line-ending conversion, is under test here.
+    repository.git("config", "core.autocrlf", "false")
     state, _old_commit, files, _archive = _development_delivery(
         git_repository, monkeypatch
     )
@@ -974,6 +978,25 @@ def test_full_variant_recipe_restore_materializes_all_effective_sources_and_para
     }
     assert result["parameters"] == candidate["parameters"]
     assert result["removed_paths"] == [added]
+
+
+def test_variant_restore_writes_the_checkout_bytes_of_the_target(git_repository):
+    # Raw blob bytes would change the evaluation-semantics fingerprint of a
+    # restored file without any content change.
+    (git_repository / ".gitattributes").write_text("*.py text eol=crlf\n")
+    overlay = "robot_learning/variants/selected/scenario/environment.py"
+    source = git_repository / overlay
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b"A = 1\nB = 2\n")
+    repository.git("add", "--", ".gitattributes", overlay)
+    repository.git("commit", "--quiet", "-m", "variant source")
+    parent = repository.git("rev-parse", "HEAD").strip()
+    assert (
+        recipe_development._recorded_source(
+            parent, overlay, "robot_learning/scenario/environment.py"
+        )
+        == b"A = 1\r\nB = 2\r\n"
+    )
 
 
 @pytest.mark.parametrize("mode", ["isolated", "skipped", "inquiry"])

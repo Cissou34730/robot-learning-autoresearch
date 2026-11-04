@@ -116,9 +116,18 @@ def _variant_paths(
     return mapping
 
 
-def _recorded_source(commit: str, relative: str) -> bytes:
+def _recorded_source(commit: str, relative: str, target: str | None = None) -> bytes:
+    # Apply the checkout conversion for the destination path, so a restored file
+    # has the same bytes as a Git checkout; raw blob bytes would change the
+    # evaluation-semantics fingerprint without any content change.
     result = subprocess.run(
-        ["git", "show", f"{commit}:{relative}"],
+        [
+            "git",
+            "cat-file",
+            "--filters",
+            f"--path={target or relative}",
+            f"{commit}:{relative}",
+        ],
         cwd=paths.ROOT,
         capture_output=True,
         check=True,
@@ -137,7 +146,7 @@ def restore_variant(state: dict, plan: dict) -> bool:
         elif relative in mapping:
             repository.atomic_write_bytes(
                 paths.locate(relative),
-                _recorded_source(plan["parent"], mapping[relative]),
+                _recorded_source(plan["parent"], mapping[relative], relative),
             )
         else:
             repository.remove_created_path(paths.locate(relative))
@@ -155,7 +164,7 @@ def variant_matches(state: dict, plan: dict) -> bool:
                 return False
         elif relative in mapping:
             if not current.is_file() or current.read_bytes() != _recorded_source(
-                plan["parent"], mapping[relative]
+                plan["parent"], mapping[relative], relative
             ):
                 return False
         elif current.exists():
