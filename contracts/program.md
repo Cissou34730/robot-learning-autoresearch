@@ -176,6 +176,8 @@ canonical source files and parameters must be its recipe. `restore_recipe`
 makes them its recipe.
 
 You judge whether the candidate and its recipe are adequate for delivery.
+End recipe development on measured evidence that the recipe learns. The
+selection of the best-known candidate is not, by itself, evidence of learning.
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
 

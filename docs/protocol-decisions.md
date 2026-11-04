@@ -7,6 +7,25 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-04 - Learning evidence ends recipe development; hypotheses become variants
+
+- **Evidence:** run 20 (4 November, no-recipe). Y1 delivered a candidate at
+  1/64 as "the best measured starting point", after one training comparison;
+  across 14 no-recipe campaigns, strong recipe-development results followed
+  variants that changed how the policy receives the task geometry, and the run-20
+  analyses described that geometry without proposing such a variant.
+- **Change (one combined intervention, agreed with the reviewing agent):** the
+  recipe-development guidance and `program.md` add "End recipe development on
+  measured evidence that the recipe learns. The selection of the best-known
+  candidate is not, by itself, evidence of learning." The analyst objective
+  adds "For the hypotheses that determine your first recipe decisions, propose
+  variants that distinguish them. Explain how each proposed change affects what
+  the policy must infer from its observations or produce through its actions."
+- **Not changed:** no score threshold, no improvement-order or fresh-training
+  requirement, no Runner acceptance rule; the scientific-model contract,
+  policy delivery and behavior guidance are unchanged. A proposed rule on
+  diagnosis versus comparison panels was withdrawn after review.
+
 ## 2026-11-03 - Behavior observation in every phase
 
 - **Hypothesis:** much of the remaining campaign duration comes from shallow
