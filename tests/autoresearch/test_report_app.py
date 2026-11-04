@@ -984,6 +984,44 @@ def test_palette_tokens_meet_contrast_floor():
             assert ratio >= 4.5, f"{palette.name}.{token} contrast {ratio:.2f}"
 
 
+def test_result_and_progress_styles_distinguish_roles_without_judging_values():
+    from datetime import UTC, datetime
+
+    from tui.projector import CampaignSnapshot, GoalSummary
+    from tui.report import PALETTES, CampaignPanel
+    from tui.report_presentation import context_lines, progress_bar_line
+
+    panel = CampaignPanel(demo=True)
+    for palette in PALETTES.values():
+        panel._palette = palette
+        styles = panel._log_styles()
+        assert styles["result"] != styles["session"]
+        assert styles["result"] != styles["pi"]
+        assert styles["result"] != styles["tool"]
+        line = progress_bar_line(palette, "Steps", 100, 200, 80)
+        assert line.style == palette.muted
+        assert line.spans[0].style == f"bold {palette.text}"
+        now = datetime.now(tz=UTC)
+        for gap in (-20.0, 20.0):
+            snapshot = CampaignSnapshot(
+                goal=GoalSummary(target_percent=80, best_percent=60, gap_points=gap)
+            )
+            lines = context_lines(
+                snapshot,
+                100,
+                palette=palette,
+                now=now,
+                campaign_end=now,
+                stage_end=now,
+                paused=False,
+                owned=True,
+                budget=5,
+                last_error="",
+            )
+            goal = next(line for line in lines if line.plain.startswith("Goal"))
+            assert goal.spans[-1].style == f"bold {palette.text}"
+
+
 def test_report_has_no_background_bands_or_cursor():
     _run(_no_bands())
 

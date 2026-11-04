@@ -2,10 +2,37 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import PurePath
 
 from rich.cells import cell_len
+
+
+def campaign_phase_letter(state: Mapping | None) -> str:
+    """Return the campaign lifecycle phase, not its current activity."""
+    if not state:
+        return "?"
+    terminal = state.get("terminal_state")
+    terminal_status = (
+        terminal.get("status", "") if isinstance(terminal, Mapping) else ""
+    )
+    if (
+        isinstance(terminal_status, str)
+        and terminal_status.startswith("official_assessment_")
+    ) or state.get("official_assessment"):
+        return "B"
+    model = state.get("scientific_model")
+    if isinstance(model, Mapping) and model.get("status") == "pending":
+        return "A"
+    phase = state.get("campaign_phase")
+    if not isinstance(phase, str):
+        return "?"
+    return {
+        "recipe_development": "R",
+        "startup": "S",
+        "research": "I",
+    }.get(phase, "?")
 
 
 def tab_folder_text(folder: PurePath, width: int) -> str:

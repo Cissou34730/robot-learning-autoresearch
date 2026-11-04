@@ -41,6 +41,7 @@ from tui.development_view import DevelopmentView
 from tui.event_log import EventLog, FilterScreen, RawEventScreen
 from tui.journal import JournalFeed, journal_path_for
 from tui.observations import Observation
+from tui.phase_presentation import campaign_phase_letter
 from tui.report_presentation import (
     PALETTES,
     Palette,
@@ -273,6 +274,7 @@ class CampaignPanel(Widget):
         self._identity_stamp: tuple | None = None
         self._feed_campaign: str | None = None
         self._campaign_id: str | None = None
+        self._campaign_phase_letter = "?"
         self._timeline = TimelineReducer(self._campaign_root)
         self._timeline.activity.clock = lambda: _now()
         self._log_query = ""
@@ -404,14 +406,16 @@ class CampaignPanel(Widget):
         reads only the campaign identity, and only when a durable file changed.
         """
         stamp_of = getattr(self._sources, "stamp", None)
-        identity_of = getattr(self._sources, "campaign_id", None)
-        if stamp_of is None or identity_of is None:
+        state_of = getattr(self._sources, "campaign_state", None)
+        if stamp_of is None or state_of is None:
             return
         stamp = stamp_of()
         if stamp == self._identity_stamp:
             return
         self._identity_stamp = stamp
-        campaign = identity_of()
+        state = state_of()
+        self._campaign_phase_letter = campaign_phase_letter(state)
+        campaign = ((state or {}).get("campaign") or {}).get("id")
         self._switch_campaign(campaign)
         self._ensure_feed(campaign)
         if isinstance(self._feed, JournalFeed) and campaign:
@@ -455,7 +459,7 @@ class CampaignPanel(Widget):
             "session": palette.pi,
             "tool": palette.tool,
             "special_tool": palette.accent,
-            "result": palette.pi,
+            "result": f"bold {palette.result}",
             "section": palette.section,
             "column_bg": palette.column_bg,
         }
@@ -518,6 +522,7 @@ class CampaignPanel(Widget):
         self._durable_stamp = stamp_of() if stamp_of is not None else None
         self._durable_read_at = time.monotonic()
         state, records, usage_rows = self._sources.read()
+        self._campaign_phase_letter = campaign_phase_letter(state)
         if state is None and records:
             self._note("Campaign state file unavailable")
         campaign_id = (state or {}).get("campaign", {}).get("id")
@@ -579,6 +584,9 @@ class CampaignPanel(Widget):
 
     def phase(self) -> str:
         return self._timeline.phase()
+
+    def campaign_phase_letter(self) -> str:
+        return self._campaign_phase_letter
 
     def official_outcome(self) -> str:
         """``passed`` or ``failed`` once the final benchmark has a result, from the

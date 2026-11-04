@@ -41,6 +41,230 @@ def test_tab_folder_text_preserves_parent_and_uses_terminal_cell_width(folder):
     assert tab_folder_text(folder, width - 1) == ""
 
 
+@pytest.mark.parametrize(
+    ("state", "expected"),
+    [
+        (None, "?"),
+        ({"scientific_model": {"status": "pending"}, "campaign_phase": "startup"}, "A"),
+        ({"campaign_phase": "recipe_development"}, "R"),
+        ({"campaign_phase": "startup"}, "S"),
+        ({"campaign_phase": "research"}, "I"),
+        (
+            {
+                "campaign_phase": "research",
+                "terminal_state": {"status": "official_assessment_requested"},
+            },
+            "B",
+        ),
+        (
+            {
+                "campaign_phase": "research",
+                "terminal_state": {"status": "official_assessment_failed"},
+            },
+            "B",
+        ),
+        (
+            {
+                "campaign_phase": "research",
+                "terminal_state": {"status": "no_credible_route"},
+            },
+            "I",
+        ),
+        ({"campaign_phase": "unrecognized"}, "?"),
+    ],
+)
+def test_campaign_lifecycle_phase_is_independent_of_activity(state, expected):
+    from tui.phase_presentation import campaign_phase_letter
+
+    assert campaign_phase_letter(state) == expected
+
+
+def test_training_tree_keeps_report_visible_and_handles_resize(tmp_path):
+    import json
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.training_tree_view import TrainingTree, TrainingTreePanel
+
+    app, layout = _console(tmp_path, FakeMachinery())
+    folder = layout.folder(1)
+    state_path = folder / "runner" / "state" / "research_state.json"
+    state_path.parent.mkdir(parents=True)
+    state_path.write_text(
+        json.dumps({"campaign": {"id": "test"}, "campaign_phase": "startup"}),
+        encoding="utf-8",
+    )
+    results_path = folder / "campaigns" / "results.jsonl"
+    results_path.parent.mkdir(parents=True)
+    results_path.write_text(
+        json.dumps(
+            {
+                "id": "T1",
+                "kind": "training",
+                "status": "completed",
+                "result": {"candidates": ["T1:checkpoint-10"]},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    async def scenario():
+        async with app.run_test(size=(160, 45)) as pilot:
+            await pilot.pause()
+            report = app.query_one("#panel-campaign-1", CampaignPanel)
+            output = report.query_one("#output")
+            assert output.display
+            await pilot.press("f4")
+            await pilot.pause()
+            tree = app.query_one("#training-tree-campaign-1", TrainingTreePanel)
+            assert tree.display and output.display
+            assert tree.region.x >= report.region.right
+            widget = tree.query_one(TrainingTree)
+            for _ in range(20):
+                if widget.root.children:
+                    break
+                await pilot.pause(0.1)
+            assert widget.root.children
+            await pilot.press("f6")
+            assert app.focused in report.query("*")
+            await pilot.press("f6")
+            assert app.focused is widget
+            widget.move_cursor(widget.root.children[0])
+            await pilot.press("enter")
+            await pilot.pause()
+            assert isinstance(app.screen, ConsoleDetail)
+            await pilot.press("escape")
+            await pilot.pause()
+            await pilot.resize_terminal(80, 24)
+            await pilot.pause()
+            assert not tree.display and report.display
+            await pilot.press("f4")
+            await pilot.pause()
+            assert not tree.display
+            await pilot.resize_terminal(160, 45)
+            await pilot.pause()
+            await pilot.press("f4")
+            await pilot.pause()
+            assert tree.display and output.display
+            await pilot.press("f4")
+            await pilot.pause()
+            assert not tree.display and output.display
+            await pilot.resize_terminal(144, 32)
+            await pilot.pause()
+            await pilot.press("f4")
+            await pilot.pause()
+            assert not tree.display
+            await pilot.resize_terminal(144, 33)
+            await pilot.pause()
+            await pilot.press("f4")
+            await pilot.pause()
+            assert tree.display and output.display
+
+    asyncio.run(scenario())
+
+
+def test_campaign_overview_opens_selected_hidden_campaign(tmp_path):
+    import json
+
+    from textual.widgets import DataTable, TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui.overview import CampaignOverview
+
+    app, layout = _console(tmp_path, FakeMachinery())
+    state_path = layout.folder(1) / "runner" / "state" / "research_state.json"
+    state_path.parent.mkdir(parents=True)
+    state_path.write_text(
+        json.dumps(
+            {
+                "campaign": {"id": "test"},
+                "campaign_phase": "research",
+                "counters": {"inquiry": 4},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            app.submit_command("hide 2")
+            await pilot.pause()
+            tabs = app.query_one(TabbedContent)
+            tabs.active = "overview"
+            await pilot.pause()
+            overview = app.query_one(CampaignOverview)
+            table = overview.query_one(DataTable)
+            assert overview._matrix
+            assert table.virtual_size.width <= table.scrollable_content_region.width
+            for _ in range(20):
+                if overview.campaigns:
+                    break
+                await pilot.pause(0.1)
+            assert overview.campaigns
+            assert table.get_cell("phase", "1") == "Inquiry"
+            assert table.get_cell("inquiries", "1") == "4"
+            table.focus()
+            table.move_cursor(row=0, column=2)
+            await pilot.press("enter")
+            await pilot.pause()
+            assert tabs.active == "campaign-2"
+            assert "campaign-2" in app._visible_tabs
+            tabs.active = "overview"
+            await pilot.resize_terminal(60, 24)
+            await pilot.pause()
+            assert not overview._matrix
+            assert table.get_cell("1:phase", "value") == "Inquiry"
+
+    asyncio.run(scenario())
+
+
+def test_five_campaign_phase_indicators_fit_narrow_tab_bar(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    app, layout = _console(tmp_path, FakeMachinery())
+    for slot in (3, 4, 5):
+        (layout.folder(slot) / ".git").mkdir(parents=True)
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            tabs = app.query_one(TabbedContent)
+            for width in (80, 60):
+                await pilot.resize_terminal(width, 24)
+                await pilot.pause()
+                for slot in range(1, 6):
+                    tab = tabs.get_tab(f"campaign-{slot}")
+                    assert tab.label.plain.endswith(" (?)")
+                    assert tab.region.right <= width
+                assert tabs.get_tab("overview").region.x >= 0
+
+    asyncio.run(scenario())
+
+
+def test_untargeted_command_on_overview_does_not_start_a_campaign(tmp_path):
+    from textual.widgets import TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+
+    machinery = FakeMachinery()
+    app, _ = _console(tmp_path, machinery)
+
+    async def scenario():
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            app.query_one(TabbedContent).active = "overview"
+            await pilot.pause()
+            app.submit_command("start")
+            await pilot.pause()
+            assert "requires a campaign number" in app._command_history[-1]
+            assert not machinery.started
+
+    asyncio.run(scenario())
+
+
 def test_campaign_folder_is_flush_right_without_crowding_tabs_or_reducing_log(tmp_path):
     from textual.widgets import Static, TabbedContent, Tabs
 
@@ -97,6 +321,8 @@ def test_campaign_folder_is_flush_right_without_crowding_tabs_or_reducing_log(tm
             await pilot.pause()
             assert not location.display
             app.submit_command("show 1-5")
+            await pilot.pause()
+            tabs.active = "campaign-3"
             await pilot.pause()
             assert location.display
 
@@ -286,7 +512,7 @@ def test_console_opens_first_campaign_with_report_and_one_info_line(
 
             tabs = app.query_one(TabbedContent)
             pane_ids = [pane.id for pane in tabs.query("TabPane")]
-            assert pane_ids == ["campaign-1", "campaign-2"]
+            assert pane_ids == ["overview", "campaign-1", "campaign-2"]
             assert tabs.active == "campaign-1"
             first_panel = app.query_one("#panel-campaign-1", CampaignPanel)
             assert first_panel.content_region.height >= 30
@@ -345,7 +571,7 @@ def test_campaign_tabs_carry_a_state_colour(tmp_path):
 
     def dot(tab):
         label = tab.label
-        assert label.plain == f"● {tab.id.removeprefix('--content-tab-')}"
+        assert label.plain == f"● {tab.id.removeprefix('--content-tab-')} (?)"
         return str(label.spans[0].style)
 
     async def scenario():
@@ -416,13 +642,13 @@ def test_tab_phase_dot_follows_a_hidden_tab_and_pulses(tmp_path):
             tab = tabs.get_tab("campaign-2")
             app._pulse_on = True
             app._refresh_tab_tags()
-            assert label_of(tab) == ("● campaign-2", TAB_TAG_COLOURS["training"])
+            assert label_of(tab) == ("● campaign-2 (?)", TAB_TAG_COLOURS["training"])
             app._pulse_tabs()
-            assert label_of(tab)[0] == "◐ campaign-2"
+            assert label_of(tab)[0] == "◐ campaign-2 (?)"
             app._pulse_tabs()
-            assert label_of(tab)[0] == "● campaign-2"
+            assert label_of(tab)[0] == "● campaign-2 (?)"
             first = tabs.get_tab("campaign-1")
-            assert label_of(first)[0] == "● campaign-1"
+            assert label_of(first)[0] == "● campaign-1 (?)"
 
     asyncio.run(scenario())
     assert tab_tag("running", False, "training") == "training"
@@ -437,6 +663,8 @@ def test_tab_phase_dot_follows_a_hidden_tab_and_pulses(tmp_path):
 def test_a_hidden_tab_follows_a_new_campaign_in_its_folder(tmp_path):
     import json
 
+    from textual.widgets import TabbedContent
+
     from tests.autoresearch.test_campaign_controller import FakeMachinery
     from tui.journal import journal_path_for
 
@@ -444,10 +672,13 @@ def test_a_hidden_tab_follows_a_new_campaign_in_its_folder(tmp_path):
     app, layout = _console(tmp_path, machinery)
     folder = layout.folder(2)
 
-    def publish_state(campaign_id: str) -> None:
+    def publish_state(campaign_id: str, phase: str = "startup") -> None:
         path = folder / "runner" / "state" / "research_state.json"
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({"campaign": {"id": campaign_id}}), "utf-8")
+        path.write_text(
+            json.dumps({"campaign": {"id": campaign_id}, "campaign_phase": phase}),
+            "utf-8",
+        )
 
     def publish_event(campaign_id: str, event_kind: str, **fields) -> None:
         path = journal_path_for(campaign_id, folder)
@@ -478,11 +709,19 @@ def test_a_hidden_tab_follows_a_new_campaign_in_its_folder(tmp_path):
             hidden = app.query_one("#panel-campaign-2", CampaignPanel)
             hidden._master_tick()
             assert hidden._hidden and hidden.phase() == "none"
+            assert hidden.campaign_phase_letter() == "S"
             # A new run gives the folder a new campaign while this tab is hidden.
-            publish_state("new-campaign")
+            publish_state("new-campaign", "research")
             publish_event("new-campaign", "operation_started", kind="training")
             hidden._master_tick()
             assert hidden.phase() == "training"
+            assert hidden.campaign_phase_letter() == "I"
+            app._refresh_tab_tags()
+            assert (
+                app.query_one(TabbedContent)
+                .get_tab("campaign-2")
+                .label.plain.endswith(" (I)")
+            )
 
     asyncio.run(scenario())
 
@@ -534,9 +773,9 @@ def test_a_campaign_started_elsewhere_still_colours_and_pulses_its_tab(tmp_path)
             app._pulse_on = True
             app._refresh_tab_tags()
             tab = tabs.get_tab("campaign-2")
-            assert label_of(tab) == ("● campaign-2", TAB_TAG_COLOURS["training"])
+            assert label_of(tab) == ("● campaign-2 (?)", TAB_TAG_COLOURS["training"])
             app._pulse_tabs()
-            assert label_of(tab)[0] == "◐ campaign-2"
+            assert label_of(tab)[0] == "◐ campaign-2 (?)"
 
     asyncio.run(scenario())
 
@@ -579,22 +818,23 @@ def test_the_tab_shows_the_final_benchmark_outcome_once_the_campaign_stopped(tmp
             for label, status in (("campaign-1", "passed"), ("campaign-2", "failed")):
                 panel = app.query_one(f"#panel-{label}", CampaignPanel)
                 panel.snapshot = with_outcome(status)
+                panel._campaign_phase_letter = "B"
                 app._controller.state(label).stage = "completed"
             app._pulse_on = False
             app._refresh_tab_tags()
             assert label_of(tabs.get_tab("campaign-1")) == (
-                "◆ campaign-1",
+                "◆ campaign-1 (B)",
                 TAB_TAG_COLOURS["official_passed"],
             )
             assert label_of(tabs.get_tab("campaign-2")) == (
-                "◆ campaign-2",
+                "◆ campaign-2 (B)",
                 TAB_TAG_COLOURS["official_failed"],
             )
             assert "official assessment: goal not reached" in app._status_line() or (
                 "official assessment: goal reached" in app._status_line()
             )
             app._pulse_tabs()
-            assert label_of(tabs.get_tab("campaign-2"))[0] == "◆ campaign-2"
+            assert label_of(tabs.get_tab("campaign-2"))[0] == "◆ campaign-2 (B)"
 
     asyncio.run(scenario())
 
@@ -878,7 +1118,7 @@ def test_initialized_campaign_gets_one_real_tab(tmp_path):
         async with app.run_test(size=(120, 45)) as pilot:
             await _run_batch(app, pilot, "run 1-3")
             panes = [p.id for p in app.query_one(TabbedContent).query("TabPane")]
-            assert panes == ["campaign-1", "campaign-2", "campaign-3"]
+            assert panes == ["overview", "campaign-1", "campaign-2", "campaign-3"]
             assert len(machinery.started) == 3
             assert all(
                 panel._campaign_root == layout.folder(slot)
@@ -1005,7 +1245,8 @@ def test_empty_console_has_no_fake_campaign_or_commands_tab(tmp_path):
     async def scenario():
         async with app.run_test(size=(80, 24)) as pilot:
             await pilot.pause()
-            assert not list(app.query_one(TabbedContent).query("TabPane"))
+            assert not app.query_one(TabbedContent).display
+            assert not list(app.query(CampaignPanel))
             assert app.query_one("#empty-campaigns").display
             assert app.query_one("#empty-campaigns").content_region.height > 0
             assert app.query_one("#commands-summary").region.height == 1
@@ -1047,11 +1288,11 @@ def test_idle_tabs_hide_at_two_hours_and_show_hide_are_session_only(
             now[0] += 1
             await app._refresh_status()
             await pilot.pause()
-            assert app._visible_tabs == [] and tabs.active == ""
+            assert app._visible_tabs == [] and tabs.active == "overview"
             assert all(
                 tabs.get_tab(f"campaign-{n}").has_class("-hidden") for n in (1, 2)
             )
-            assert app.query_one("#empty-campaigns").display
+            assert tabs.display
             await _run_from_panel(app, pilot, "show 2")
             assert tabs.active == "campaign-2"
             assert app._visible_tabs == ["campaign-2"]
@@ -1062,7 +1303,7 @@ def test_idle_tabs_hide_at_two_hours_and_show_hide_are_session_only(
             assert (
                 tabs.active == "campaign-2"
             )  # showing another tab does not steal focus
-            await pilot.press("tab")
+            await pilot.press("tab", "tab")
             assert tabs.active == "campaign-1"
             await _run_from_panel(app, pilot, "hide")
             assert tabs.active == "campaign-2"
@@ -1119,7 +1360,7 @@ def test_hidden_running_tabs_remain_controlled_and_start_shows_them_again(
             await app._refresh_status()
             assert app._visible_tabs == ["campaign-2"]
             await pilot.press("tab")
-            assert app.query_one(TabbedContent).active == "campaign-2"
+            assert app.query_one(TabbedContent).active == "overview"
             await _run_batch(app, pilot, "stop all")
             assert all(
                 child.stop_requests == 1 for child in machinery.children.values()

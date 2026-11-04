@@ -117,7 +117,11 @@ work. Missing `uv` fails preflight before initialization/reset; opening the
 interface still starts nothing.
 
 `.\campaign_tui.ps1` (or `uv run python -m tui`) opens the first visible campaign report
-with one information line below it. Tabs hide automatically after two hours
+with one information line below it. The Overview tab compares all five campaign
+slots; select a campaign cell and press Enter to open its report. The phase
+letter on each campaign tab is A (Analyse), R (Recipe), S (Startup), I
+(Inquiry) or B (Benchmark); `?` means the state is unavailable. The existing
+coloured dot continues to show activity. Tabs hide automatically after two hours
 with no running launcher; log silence never hides a running campaign.
 `/show 3` and `/hide 3` override tab visibility for this console session without
 changing execution. `/start` and `/run` show their targets again. Hidden campaigns
@@ -148,9 +152,14 @@ including a model picker and a reasoning field for each phase (see
 of available models. Console-started campaigns have no time or AIU cap; use
 `tools.run_parallel` for capped runs.
 **F1** opens help and **F3** shows recent commands and their step outcomes.
+**F4** opens or closes the training and measurement tree beside the selected
+campaign report. It requires a terminal of at least 144 columns and 33 rows;
+F6 moves focus between the report and tree. The tree links operations only by
+recorded candidate identities and shows unlinked measurements separately.
 Type `/start` and press Enter to resume the active campaign
 without resetting it. Untargeted commands follow the active campaign tab;
-an explicit range or folder list selects a batch. Numbers are identities:
+from Overview they require an explicit target. An explicit range or folder list
+selects a batch. Numbers are identities:
 `start 2` starts only campaign-2, `start 1-2` selects campaigns 1 and 2, and
 `start 2-3` selects campaigns 2 and 3. This also applies to run/reset/stop;
 `stop all` still stops every owned campaign. A campaign the console did not
@@ -158,7 +167,7 @@ start (for example one launched by `tools.run_parallel`) can be stopped too:
 the console writes the campaign's stop request and the launcher ends
 cooperatively.
 **Ctrl+F** (or `/search`) searches the log.
-**Tab / Shift+Tab** switch campaign tabs; inside the command list, Tab completes,
+**Tab / Shift+Tab** switch between Overview and visible campaign tabs; inside the command list, Tab completes,
 and inside dialogs it navigates fields normally. F6/Shift+F6 move focus between
 report controls.
 Ctrl+Tab remains an optional alias when the terminal passes it through.
