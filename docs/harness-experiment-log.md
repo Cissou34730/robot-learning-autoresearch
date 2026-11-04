@@ -69,12 +69,14 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 ## Current state
 
 **4 November 2026. TUI campaign overview and training tree — Implemented.**
-The console compares five campaign slots and shows lifecycle phase letters on
+The console compares active campaigns and shows lifecycle phase letters on
 their tabs without changing the existing activity dots. An optional side panel
 links training checkpoints and measurement results by recorded candidate
 identity. Phase duration is unavailable because phase starts are not recorded
 consistently. The display is read-only and makes no scientific decisions.
-Targeted implementation checks cover navigation, sizing and recorded links;
+The overview uses wider columns and semantic colours. The tree takes priority
+over the log when the terminal is narrow. Targeted implementation checks cover
+navigation, sizing and recorded links;
 campaign use and the operator experience remain unobserved. Retain pending
 maintainer use.
 

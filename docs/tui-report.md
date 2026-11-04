@@ -153,8 +153,8 @@ that this console did not start.
 Issue #68 implementation. `uv run python -m tui` (or
 `.\campaign_tui.ps1` with no arguments) opens one Textual console with
 one overview and one report tab per active or recently idle campaign, initially
-showing the first visible campaign. The overview includes hidden campaign
-slots. Command entry is alongside the report,
+showing the first visible campaign. The overview includes active campaigns,
+including those with hidden tabs, but excludes idle slots. Command entry is alongside the report,
 not on a separate Commands tab, following the maintainer's updated UX direction
 on 26 October. The standard folders are `robot-learning-campaigns\campaign-1`
 through `campaign-5`; Tab/Shift+Tab cycle only visible tabs. Launching the console starts
@@ -171,9 +171,9 @@ Each campaign tab displays its lifecycle phase as an uncoloured letter:
 `A` Analyse, `R` Recipe, `S` Startup, `I` Inquiry, `B` Benchmark, or `?` when
 the phase is unavailable. The coloured activity dot is unchanged.
 
-F4 opens a training and measurement tree beside the current campaign report,
-without replacing the report or event log. It requires at least 144 columns
-and 33 rows; resizing below that closes the tree and reports why. F6 moves
+F4 opens a training and measurement tree alongside the current campaign report.
+On narrow terminals the tree moves below the campaign context and takes priority
+over the event log. The normal terminal minimum remains 48 by 16. F6 moves
 focus between the report and the tree, arrows navigate it, and Enter opens
 details. The tree connects training, checkpoints and measurements by recorded
 candidate identity; unlinked measurements remain separate. Archived recipe

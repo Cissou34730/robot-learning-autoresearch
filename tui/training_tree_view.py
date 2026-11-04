@@ -94,7 +94,7 @@ class TrainingTreePanel(Widget):
     DEFAULT_CSS = """
     TrainingTreePanel {
         display: none;
-        width: 44;
+        width: 50%;
         height: 100%;
         border-left: solid $panel;
         padding-left: 1;

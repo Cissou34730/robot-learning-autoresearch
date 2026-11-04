@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
+from rich.text import Text
 from textual import work
 from textual.app import ComposeResult
 from textual.message import Message
@@ -15,6 +16,7 @@ from textual.worker import Worker, get_current_worker
 
 from tui import projector
 from tui.phase_presentation import campaign_phase_letter
+from tui.report_presentation import PALETTES
 from tui.sources import CampaignSources
 
 
@@ -101,6 +103,8 @@ def overview_values(
 
 
 class CampaignOverview(Widget):
+    can_focus = True
+
     class OpenCampaign(Message):
         def __init__(self, slot: int) -> None:
             super().__init__()
@@ -108,8 +112,12 @@ class CampaignOverview(Widget):
 
     DEFAULT_CSS = """
     CampaignOverview { height: 100%; padding: 0 1; }
-    CampaignOverview > Static { height: 1; }
+    CampaignOverview > Static { height: 1; color: $text-muted; }
+    #overview-title { color: $text; text-style: bold; margin-bottom: 1; }
     CampaignOverview > DataTable { height: 1fr; }
+    CampaignOverview DataTable > .datatable--header {
+        background: $primary-background; color: $text; text-style: bold;
+    }
     """
 
     ROWS = (
@@ -131,11 +139,14 @@ class CampaignOverview(Widget):
         self._matrix: bool | None = None
         self._stamps: tuple | None = None
         self._shown: dict[tuple[int, str], str] = {}
+        self._layout: tuple | None = None
+        self._active_slots: tuple[int, ...] = ()
+        self._source_error = ""
 
     def compose(self) -> ComposeResult:
-        yield Static("Campaign overview · Enter opens campaign")
+        yield Static("Active campaigns · Enter opens campaign", id="overview-title")
         yield Static("Loading campaign data...", id="overview-status")
-        yield DataTable(id="overview-table", cursor_type="cell", cell_padding=0)
+        yield DataTable(id="overview-table", cursor_type="cell", cell_padding=1)
 
     def on_mount(self) -> None:
         self._configure()
@@ -150,27 +161,62 @@ class CampaignOverview(Widget):
             self._configure()
 
     def _configure(self) -> None:
-        matrix = self.size.width >= 78
-        if matrix == self._matrix:
+        from tui.console import CampaignConsole
+
+        app = self.app
+        if not isinstance(app, CampaignConsole):
             return
+        slots = tuple(
+            slot
+            for slot in range(1, 6)
+            if app.query(f"#panel-campaign-{slot}")
+            and app._campaign_active(app._controller.state(f"campaign-{slot}"))
+        )
+        matrix = self.size.width >= 78
+        layout = (matrix, self.size.width, slots)
+        if layout == self._layout:
+            return
+        self._layout = layout
+        self._active_slots = slots
         self._matrix = matrix
         self._shown.clear()
         table = self.query_one(DataTable)
         table.clear(columns=True)
+        table.display = bool(slots)
         if matrix:
             table.add_column("Campaign", key="field", width=16)
-            for slot in range(1, 6):
-                table.add_column(str(slot), key=str(slot), width=12)
+            width = max(9, min(48, (self.size.width - 18) // max(1, len(slots)) - 2))
+            for slot in slots:
+                table.add_column(f"Campaign {slot}", key=str(slot), width=width)
             for key, label in self.ROWS:
-                table.add_row(label, *("" for _ in range(5)), key=key)
+                table.add_row(label, *("" for _ in slots), key=key)
         else:
-            table.add_column("Campaign", key="slot", width=12)
+            table.add_column("Campaign", key="slot", width=8)
             table.add_column("Field", key="field", width=16)
-            table.add_column("Value", key="value", width=max(12, self.size.width - 30))
-            for slot in range(1, 6):
+            table.add_column("Value", key="value", width=max(10, self.size.width - 32))
+            for slot in slots:
                 for key, label in self.ROWS:
                     table.add_row(str(slot), label, "", key=f"{slot}:{key}")
+        self._update_status()
         self.refresh_display()
+
+    def _update_status(self) -> None:
+        from tui.console import CampaignConsole
+
+        app = self.app
+        if not isinstance(app, CampaignConsole):
+            return
+        status = self.query_one("#overview-status", Static)
+        if not app._activity_ready:
+            status.update("Checking campaign activity...")
+        elif not self._active_slots:
+            status.update("No active campaigns.")
+        elif self._source_error:
+            status.update(f"Overview unavailable: {self._source_error}")
+        elif not self.campaigns:
+            status.update("Loading campaign data...")
+        else:
+            status.update("Phase start is not recorded; duration unavailable.")
 
     def refresh_source(self) -> None:
         if all(widget.display for widget in self.ancestors_with_self) and (
@@ -210,17 +256,17 @@ class CampaignOverview(Widget):
     def _receive(self, campaigns: tuple[OverviewCampaign, ...], stamps: tuple) -> None:
         self.campaigns = campaigns
         self._stamps = stamps
-        self.query_one("#overview-status", Static).update(
-            "Phase start is not recorded; duration unavailable."
-        )
+        self._source_error = ""
+        self._update_status()
         self.refresh_display()
 
     def _error(self, error: str) -> None:
         self.campaigns = ()
         self._stamps = None
+        self._source_error = error
         self._shown.clear()
         table = self.query_one(DataTable)
-        for slot in range(1, 6):
+        for slot in self._active_slots:
             for key, _ in self.ROWS:
                 if self._matrix:
                     table.update_cell(key, str(slot), "unavailable")
@@ -231,7 +277,7 @@ class CampaignOverview(Widget):
         )
 
     def refresh_display(self) -> None:
-        if not self.is_mounted or not self.campaigns:
+        if not self.is_mounted:
             return
         from tui.console import CampaignConsole
         from tui.report import CampaignPanel
@@ -239,9 +285,16 @@ class CampaignOverview(Widget):
         app = self.app
         if not isinstance(app, CampaignConsole):
             return
+        self._configure()
+        self._update_status()
+        if not self.campaigns:
+            return
         table = self.query_one(DataTable)
+        palette = PALETTES["dark" if app.current_theme.dark else "light"]
         now = datetime.now(tz=UTC)
         for campaign in self.campaigns:
+            if campaign.slot not in self._active_slots:
+                continue
             label = f"campaign-{campaign.slot}"
             if campaign.installed:
                 panels = app.query(f"#panel-{label}")
@@ -259,10 +312,22 @@ class CampaignOverview(Widget):
                 if self._shown.get(cell) == value:
                     continue
                 self._shown[cell] = value
+                color = palette.text
+                if value in {"unavailable", "unknown", "—", "not assessed"}:
+                    color = palette.muted
+                elif key == "phase":
+                    color = palette.accent
+                elif key == "launcher":
+                    color = (
+                        palette.warning
+                        if launcher in {"stopping", "resetting"}
+                        else palette.success
+                    )
+                content = Text(value, style=color)
                 if self._matrix:
-                    table.update_cell(key, str(campaign.slot), value)
+                    table.update_cell(key, str(campaign.slot), content)
                 else:
-                    table.update_cell(f"{campaign.slot}:{key}", "value", value)
+                    table.update_cell(f"{campaign.slot}:{key}", "value", content)
 
     def on_data_table_cell_selected(self, event: DataTable.CellSelected) -> None:
         if self._matrix:
@@ -277,6 +342,9 @@ class CampaignOverview(Widget):
 
     def focus_table(self) -> None:
         table = self.query_one(DataTable)
+        if not table.display:
+            self.focus()
+            return
         if self._matrix and table.cursor_coordinate.column == 0:
             table.move_cursor(column=1)
         table.focus()
