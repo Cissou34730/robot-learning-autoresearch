@@ -77,7 +77,9 @@ Propose the first variants for quick learning tests under `### Proposed design v
 
 Propose an initial scientific question for startup in this section. Explain how the first variants can help develop a recipe that supports this question.
 
-For the hypotheses that determine your first recipe decisions, propose variants that distinguish them. Explain how each proposed change affects what the policy must infer from its observations or produce through its actions. For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
+For the hypotheses that determine your first recipe decisions, propose variants that distinguish them. Explain how each proposed change affects what the policy must infer from its observations or produce through its actions. For the quantities that the policy must otherwise infer from its observations, propose variants that give them to the policy in its observation.
+
+For each variant, state the recipe question, the proposed differences and their physical or learning reasons. Explain the behavior that you expect and the evidence that can change the next recipe decision. Explain how observed learning can inform the training length for that test. Keep what the definitions establish separate from what only a comparison can resolve.
 
 End the synthesis with `### Proposed behavior observations`. A behavior observation is a quantity recorded over time during an episode or a training run. It shows what the robot and the policy do, not only whether the task succeeds.
 
