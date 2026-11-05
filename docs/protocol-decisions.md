@@ -7,6 +7,24 @@ superseded. It does not instruct the Researcher and does not replace
 `contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
 `robot_learning/training/current_params.json`.
 
+## 2026-11-05 - Analyst: give inferred quantities to the policy in its observation
+
+- **Evidence:** the reopened RCA of no-recipe N1 against N3 and the reverted
+  4 November afternoon change. The decisive recipe changes across runs 14-20
+  were observation changes that gave the policy task geometry it otherwise had
+  to infer (N3 computed IK error, H2 feasible branch, N2 shoulder frame, R15
+  reflection and IK features); output-transformation (PD, servo) variants
+  almost always failed, and the reverted "physical computations" wording led
+  analysts to them.
+- **Change:** one sentence in the analyst objective, after the hypotheses
+  sentence: "For the quantities that the policy must otherwise infer from its
+  observations, propose variants that give them to the policy in its
+  observation." No output-transformation mention, no examples, no
+  competing-explanations rule.
+- **Open (PI side, not changed):** an observation change transferred onto an
+  already trained policy failed (C2 0/400, H1 for two hours), while the same
+  kind of change trained from fresh initialization succeeded.
+
 ## 2026-11-04 - Reverted: analyst physical computations and competing explanations
 
 - **Status:** reverted the same day; the analyst text is again the 4 November
