@@ -35,6 +35,11 @@ Each official episode samples one target with radius uniformly distributed
 from 0.06 to 0.20 m around the robot base, over the full angular range.
 The target remains fixed during the episode.
 
+Robot behavior and policy failures can depend on task conditions, such as the
+target position and episode start. The scientific model states the task
+conditions in which each predicted behavior or failure can occur. When those
+conditions are unknown, the scientific model records them as unknown.
+
 The end effector must enter a tolerance of 0.01 m around the target.
 It must then remain continuously inside that tolerance for 2 seconds.
 The duration is authoritative. At the official control timing, this requires
