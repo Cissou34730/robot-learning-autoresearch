@@ -68,6 +68,15 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**8 November 2026. Scenario and decision focus — Implemented.**
+The scenario asks the scientific model to state task conditions for predicted
+behavior and failures. The startup prompt makes behavior tooling conditional on
+the evidence needed for the next decision. General decision guidance no longer
+calls for a review of unmeasured candidates. Inquiry guidance notes that a
+diagnostic can test a runtime change with existing weights before training.
+The PI retains scientific authority. Scientific effectiveness and resource use
+remain unobserved in a campaign with this wording.
+
 **4 November 2026. TUI campaign overview and training tree — Implemented.**
 The console compares active campaigns and shows lifecycle phase letters on
 their tabs without changing the existing activity dots. An optional side panel

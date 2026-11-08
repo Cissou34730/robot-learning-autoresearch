@@ -388,9 +388,10 @@ _BEHAVIOR_EVIDENCE = (
 )
 _RESEARCH_BEHAVIOR_EVIDENCE = (
     "Outcome counts show where the policy fails, not why. Base each "
-    "interpretation on the observed behavior of the robot and the policy. Early "
-    "in the startup session, you must build or adapt PI-owned tools that record "
-    "this behavior. Before you reject a design or attribute a difference to it, "
+    "interpretation on the observed behavior of the robot and the policy. "
+    "If your next startup decision needs more behavior evidence, use, build or "
+    "adapt PI-owned tools to record it. "
+    "Before you reject a design or attribute a difference to it, "
     "examine the behavior behind the outcomes. Before an intervention, predict "
     "how it changes that behavior. Then compare the prediction with the observed "
     "behavior."
@@ -512,10 +513,7 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
         ]
     )
     lines += [
-        (
-            "Review the completed evidence, the relevant learning trajectory and the "
-            "unmeasured candidates."
-        ),
+        ("Review the completed evidence and the relevant learning trajectory."),
         (
             "Choose the candidate and the operation whose result would most improve "
             "your next decision toward the goal."

@@ -309,6 +309,10 @@ Choose a diagnostic when its possible results lead to different next actions.
 When completed evidence already locates a defect, a repair is a valid
 next action.
 
+You can sometimes test a runtime change with the saved weights of a candidate
+before training. This diagnostic does not create or change a candidate.
+`contracts/instruments/coding.md` describes it.
+
 When several factors change together, report the result as a property of the
 compared candidates, not of the intended factor alone. A difference between
 candidates that you cannot explain can guide your selection of a candidate. It
