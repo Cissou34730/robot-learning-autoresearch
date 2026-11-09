@@ -15,6 +15,7 @@ from runner.query_training_log import (
     _training_operation,
     selected_records,
     training_log_paths,
+    training_log_variant_names,
 )
 
 
@@ -40,7 +41,8 @@ class TrainingSeriesParams(BaseModel):
         pattern=r"^[a-z][a-z0-9_]{0,15}$",
         description=(
             "Label of one variant of a training operation with variants. "
-            "Each variant has its own log."
+            "Each variant has its own log. Use training_log_query with "
+            "action=discover to list available labels."
         ),
     )
     attempt: int | None = Field(
@@ -140,6 +142,21 @@ def query_training_series(args: dict[str, Any], campaign_id: str) -> str:
             operation_kind="training",
             **_training_operation(state, params.operation_id),
         )
+        if params.variant is None:
+            variants = training_log_variant_names(params.operation_id, state=state)
+            if variants:
+                provenance["available_variants"] = variants
+                return json.dumps(
+                    {
+                        "status": "variant_required",
+                        "provenance": provenance,
+                        "recovery": (
+                            "Use training_log_query with action=discover, then "
+                            "set variant to one of the available labels."
+                        ),
+                    },
+                    separators=(",", ":"),
+                )
         logs = training_log_paths(
             params.operation_id, state=state, variant=params.variant
         )

@@ -32,10 +32,10 @@ class TrainingLogQueryParams(BaseModel):
     action: Literal["discover", "records", "raw"] = Field(
         default="discover",
         description=(
-            "discover returns attempts, timesteps and metric names without values. "
-            "records returns selected metrics over a timestep window in row pages. "
-            "raw returns the original log in byte pages. Continue with next_offset "
-            "and the returned fingerprints."
+            "discover returns variant labels, attempts, timesteps and metric names "
+            "without values. records returns selected metrics over a timestep "
+            "window in row pages. raw returns the original log in byte pages. "
+            "Continue with next_offset and the returned fingerprints."
         ),
     )
     operation_id: str = Field(
@@ -51,7 +51,8 @@ class TrainingLogQueryParams(BaseModel):
         pattern=r"^[a-z][a-z0-9_]{0,15}$",
         description=(
             "Label of one variant of a training operation with variants. "
-            "Each variant has its own log."
+            "Each variant has its own log. Omit the label with action=discover "
+            "to list the available variant labels."
         ),
     )
     attempts: list[int] | None = Field(
@@ -192,18 +193,7 @@ def training_log_paths(
     state: dict[str, Any] | None = None,
     variant: str | None = None,
 ) -> list[tuple[int, Path]]:
-    if re.fullmatch(r"T[1-9]\d*", operation_id) is None:
-        raise ValueError("operation_id must be a training operation ID")
-    if state is None:
-        state = repository.load_state(allow_missing_artifact=True)
-    campaign_id = repository.current_campaign_id(state)
-    if (
-        not campaign_id
-        or campaign_id in {".", ".."}
-        or any(character in campaign_id for character in "/\\:")
-    ):
-        raise ValueError("active campaign ID is not a safe directory name")
-    directory = paths.TRAINING_LOG_DIR / campaign_id
+    directory, campaign_id = _training_log_directory(operation_id, state)
     stem = (
         operation_id.lower() if variant is None else f"{operation_id.lower()}-{variant}"
     )
@@ -222,6 +212,42 @@ def training_log_paths(
                 raise ValueError("multiple preserved logs claim the same attempt")
             logs.append((attempt, log_path))
     return sorted(logs)
+
+
+def _training_log_directory(
+    operation_id: str, state: dict[str, Any] | None
+) -> tuple[Path, str]:
+    if re.fullmatch(r"T[1-9]\d*", operation_id) is None:
+        raise ValueError("operation_id must be a training operation ID")
+    if state is None:
+        state = repository.load_state(allow_missing_artifact=True)
+    campaign_id = repository.current_campaign_id(state)
+    if (
+        not campaign_id
+        or campaign_id in {".", ".."}
+        or any(character in campaign_id for character in "/\\:")
+    ):
+        raise ValueError("active campaign ID is not a safe directory name")
+    return paths.TRAINING_LOG_DIR / campaign_id, campaign_id
+
+
+def training_log_variant_names(
+    operation_id: str, *, state: dict[str, Any] | None = None
+) -> list[str]:
+    directory, campaign_id = _training_log_directory(operation_id, state)
+    pattern = re.compile(
+        rf"^{re.escape(operation_id.lower())}-([a-z][a-z0-9_]{{0,15}})-attempt-(\d+)\.log$"
+    )
+    variants = set()
+    for log_path in directory.glob(f"{operation_id.lower()}-*-attempt-*.log"):
+        match = pattern.match(log_path.name)
+        if match is not None and int(match.group(2)) > 0:
+            relative = repository.repo_relative_path(log_path.resolve())
+            if relative != (f"campaigns/training_logs/{campaign_id}/{log_path.name}"):
+                raise ValueError("training log is outside its campaign log directory")
+            if log_path.is_file():
+                variants.add(match.group(1))
+    return sorted(variants)
 
 
 def selected_records(
@@ -336,6 +362,24 @@ def query_training_log(args: dict[str, Any], campaign_id: str) -> str:
             operation_kind="training",
             **_training_operation(state, params.operation_id),
         )
+        if params.variant is None:
+            variants = training_log_variant_names(params.operation_id, state=state)
+            if variants:
+                if params.action != "discover":
+                    provenance["available_variants"] = variants
+                    raise ValueError(
+                        "variant is required for this action. Choose one of "
+                        f"the available variants: {variants}"
+                    )
+                return json.dumps(
+                    {
+                        "status": "discovered",
+                        "action": "discover",
+                        "provenance": provenance,
+                        "available_variants": variants,
+                    },
+                    separators=(",", ":"),
+                )
         logs = training_log_paths(
             params.operation_id, state=state, variant=params.variant
         )
