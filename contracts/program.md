@@ -95,10 +95,6 @@ It also proposes an initial scientific question for startup, a first reward and
 the first variants. These proposals inform your decisions. You select the
 interventions.
 
-The decision-relevant synthesis is the reference for your design decisions.
-For each item in the synthesis, state whether your plan addresses it. When you
-set aside an item, state the reason.
-
 The scientific model then stays fixed as the initial physical model of the
 campaign. It is not passive background. In later sessions, test its
 interpretation against the behavior that you observe, and carry forward what
@@ -161,10 +157,6 @@ Use short training tests. After each test, state what you learned and why
 you keep or revise each variant. Create further variants from the test results.
 Update the plan before further training.
 
-Successive revisions of a variant can give no improvement and no new
-explanation of the failure. Then stop that variant, or state what the next
-revision can show that the earlier revisions did not.
-
 Each variant can continue from its own saved training checkpoint.
 `contracts/instruments/training.md`
 defines how to submit variants and continue training.
@@ -185,8 +177,12 @@ canonical source files and parameters must be its recipe. `restore_recipe`
 makes them its recipe.
 
 You judge whether the candidate and its recipe are adequate for delivery.
-End recipe development on measured evidence that the recipe learns. The
-selection of the best-known candidate is not, by itself, evidence of learning.
+Before delivery, continue training the selected recipe from its saved
+training checkpoint. Compare the continued candidate with its parent.
+Deliver when continued training gives no further measured gain, or state why
+further training cannot improve the recipe. The selection of the best-known
+candidate is not, by itself, evidence of learning.
+
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
 
@@ -368,17 +364,6 @@ comparisons when they are available. A new description does not establish a
 new method. An inconclusive result alone does not justify another attempt or
 the abandonment of the method.
 
-When successive attempts of a method give no improvement and no new
-explanation of the failure, this is evidence against further attempts. Before
-a further attempt, state what it can show that the earlier attempts did not.
-
-When observed failures agree with an item of the decision-relevant synthesis,
-test that item first. If you test another explanation first, state the reason.
-
-When a change keeps the meaning of observations and motor commands, continued training from the best candidate isolates its effect better than
-fresh training. Both candidates then share the earlier training. State that
-the additional training steps also affect the result.
-
 When you repeat work, state the additional evidence or development that it can
 give. Record the reason in the `rationale` field and in the session
 record.
@@ -519,10 +504,6 @@ Development measurements support your judgment. They do not declare that the
 campaign reached the official goal. You give the working role, the best-known
 role and retained labels with explicit operations, and each needs evidence.
 Training never changes a role implicitly.
-
-A clear failure of a candidate in a small test is sufficient reason to stop
-measuring that candidate. A larger measurement of that candidate needs a
-question that the small test cannot answer.
 
 The best-known candidate is the candidate with the strongest evidence that is
 available to you. It does not need to reach the goal. When you give the
