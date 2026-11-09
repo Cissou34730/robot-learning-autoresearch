@@ -780,6 +780,32 @@ def canonicalize_candidate(candidate: dict) -> None:
     ]
 
 
+def delivered_lineage_operation_ids(state: dict) -> set[str]:
+    """Recipe-development operations of the delivered lineage: evidence after delivery."""
+    if state.get("recipe_handover") is None:
+        return set()
+    path = paths.CAMPAIGNS_DIR / "recipe_lineage.json"
+    if not path.is_file():
+        return set()
+    lineage = json.loads(path.read_text(encoding="utf-8"))
+    identifiers: set[str] = set()
+    for chapter in lineage.get("chapters", []):
+        identifiers.add(chapter["operation"])
+        identifiers.update(
+            measurement["operation"] for measurement in chapter.get("measurements", [])
+        )
+    return identifiers
+
+
+def evidence_event_ids(state: dict) -> set[str]:
+    """Operation IDs that evidence can name: completed events and the delivered lineage."""
+    return {
+        event["id"]
+        for event in state["operation_events"]
+        if event.get("status") == "completed"
+    } | delivered_lineage_operation_ids(state)
+
+
 def _validate_completed_event_references(
     value: object,
     completed_event_ids: set[str],
@@ -796,13 +822,17 @@ def _validate_completed_event_references(
     invalid = [item for item in value if item not in completed_event_ids]
     if invalid:
         raise ValueError(
-            f"{description} must name operation events with status == completed"
+            f"{description} must name operation events with status == completed. "
+            f"Not accepted: {invalid}. Accepted: {sorted(completed_event_ids)}"
         )
     return value
 
 
 def _validate_checkpoint(
-    checkpoint: object, completed_event_ids: set[str], description: str
+    checkpoint: object,
+    completed_event_ids: set[str],
+    evidence_ids: set[str],
+    description: str,
 ) -> None:
     if checkpoint is None:
         return
@@ -828,7 +858,7 @@ def _validate_checkpoint(
     completed = checkpoint["completed_operations"]
     _validate_completed_event_references(
         evidence,
-        completed_event_ids,
+        evidence_ids,
         f"{description} evidence_references",
     )
     _validate_completed_event_references(
@@ -2231,12 +2261,13 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
     completed_event_ids = {
         event["id"] for event in events if event["status"] == "completed"
     }
+    evidence_ids = completed_event_ids | delivered_lineage_operation_ids(state)
     for event in events:
         request = event["request"]
         if event["kind"] == "checkpoint":
             _validate_completed_event_references(
                 request["evidence_references"],
-                completed_event_ids,
+                evidence_ids,
                 "checkpoint event evidence_references",
             )
             _validate_completed_event_references(
@@ -2247,23 +2278,28 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         elif event["kind"] == "model_role":
             _validate_completed_event_references(
                 request["evidence"],
-                completed_event_ids,
+                evidence_ids,
                 "model_role event evidence",
                 allow_empty=False,
             )
             if event["status"] == "completed":
                 _validate_completed_event_references(
                     event["result"]["evidence"],
-                    completed_event_ids,
+                    evidence_ids,
                     "completed model_role result evidence",
                     allow_empty=False,
                 )
 
     _validate_active_inquiry(state["active_inquiry"])
     _validate_session(state["scientific_session"], state["active_inquiry"])
-    _validate_checkpoint(state["pi_checkpoint"], completed_event_ids, "pi_checkpoint")
     _validate_checkpoint(
-        state["recipe_development"], completed_event_ids, "recipe_development"
+        state["pi_checkpoint"], completed_event_ids, evidence_ids, "pi_checkpoint"
+    )
+    _validate_checkpoint(
+        state["recipe_development"],
+        completed_event_ids,
+        evidence_ids,
+        "recipe_development",
     )
     _validate_campaign_phase(state)
 
@@ -2273,25 +2309,39 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         request = pending["request"][pending["kind"]]
         plan = pending["data"].get("plan")
         if pending["kind"] == "checkpoint":
-            for value, description in (
-                (request["evidence_references"], "pending checkpoint evidence"),
-                (request["completed_operations"], "pending checkpoint operations"),
-                (plan["evidence_references"], "pending checkpoint plan evidence"),
-                (plan["completed_operations"], "pending checkpoint plan operations"),
+            for value, description, accepted in (
+                (
+                    request["evidence_references"],
+                    "pending checkpoint evidence",
+                    evidence_ids,
+                ),
+                (
+                    request["completed_operations"],
+                    "pending checkpoint operations",
+                    completed_event_ids,
+                ),
+                (
+                    plan["evidence_references"],
+                    "pending checkpoint plan evidence",
+                    evidence_ids,
+                ),
+                (
+                    plan["completed_operations"],
+                    "pending checkpoint plan operations",
+                    completed_event_ids,
+                ),
             ):
-                _validate_completed_event_references(
-                    value, completed_event_ids, description
-                )
+                _validate_completed_event_references(value, accepted, description)
         elif pending["kind"] == "model_role":
             _validate_completed_event_references(
                 request["evidence"],
-                completed_event_ids,
+                evidence_ids,
                 "pending model_role evidence",
                 allow_empty=False,
             )
             _validate_completed_event_references(
                 plan["evidence"],
-                completed_event_ids,
+                evidence_ids,
                 "pending model_role plan evidence",
                 allow_empty=False,
             )

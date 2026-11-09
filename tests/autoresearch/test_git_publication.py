@@ -258,7 +258,13 @@ def test_recipe_delivery_carries_the_best_known_candidate_and_its_lineage(
         "candidate_lineage",
         lambda state, candidate: {
             **lineage_of(state, candidate),
-            "chapters": [{"operation": "T1", "variant": None}],
+            "chapters": [
+                {
+                    "operation": "T1",
+                    "variant": None,
+                    "measurements": [{"operation": "M3"}],
+                }
+            ],
         },
     )
     logs = paths.TRAINING_LOG_DIR / repository.current_campaign_id(state)
@@ -274,6 +280,34 @@ def test_recipe_delivery_carries_the_best_known_candidate_and_its_lineage(
         ]
         with pytest.raises(ValueError, match="recipe_lineage.json"):
             query_training_log._training_operation(fresh, "T2")
+        session = {"id": "S2", "kind": "startup", "inquiry_id": None}
+        checkpoint_request = {
+            key: "Startup conclusion."
+            for key in repository.CHECKPOINT_FIELDS
+            - {"session_id", "inquiry_id", "scientific_commit"}
+        }
+        checkpoint_request.update(
+            evidence_references=["T1", "M3"], completed_operations=[]
+        )
+        planned = protocol.plan_checkpoint(
+            checkpoint_request,
+            {**fresh, "scientific_session": {**session, "operation_ids": []}},
+        )
+        repository.validate_research_state(
+            {
+                **fresh,
+                "pi_checkpoint": {
+                    **planned,
+                    "scientific_commit": fresh["scientific_model"]["commit"],
+                },
+            },
+            allow_missing_artifact=False,
+        )
+        with pytest.raises(ValueError, match=r"T2\. Accepted: \['M3', 'T1'\]"):
+            protocol.plan_checkpoint(
+                {**checkpoint_request, "evidence_references": ["T2"]},
+                {**fresh, "scientific_session": {**session, "operation_ids": []}},
+            )
         delivered = fresh["candidates"]["T1:checkpoint-10"]
         assert set(fresh["candidates"]) == {"T1:checkpoint-10"}
         assert fresh["model_roles"] == {
