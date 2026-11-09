@@ -24,6 +24,7 @@ from runner.json_artifact_view import (
 
 MAX_BYTES = 32 * 1024 * 1024
 MAX_NODES = 50_000
+DISCOVERY_STABLE_ELEMENTS = 32
 MAX_PATHS = 200
 MAX_RESULTS = 200
 MAX_BATCH_QUERIES = 16
@@ -839,7 +840,13 @@ def _matches(
     return matches
 
 
-def _discover(value: Any, prefix: str, output: list[str], budget: list[int]) -> None:
+def _discover(
+    value: Any,
+    prefix: str,
+    output: list[str],
+    budget: list[int],
+    skipped: list[int] | None = None,
+) -> None:
     if len(output) >= MAX_PATHS:
         return
     budget[0] += 1
@@ -856,20 +863,28 @@ def _discover(value: Any, prefix: str, output: list[str], budget: list[int]) -> 
             return
         seen: set[str] = set()
         array_prefix = f"{'' if prefix == '/' else prefix}/*"
-        for child in value:
+        stable = 0
+        for position, child in enumerate(value):
             child_paths: list[str] = []
-            _discover(child, array_prefix, child_paths, budget)
+            _discover(child, array_prefix, child_paths, budget, skipped)
+            stable += 1
             for child_path in child_paths:
                 if child_path not in seen:
+                    stable = 0
                     seen.add(child_path)
                     output.append(child_path)
                     if len(output) >= MAX_PATHS:
                         return
+            # Elements with an unchanged structure stop the walk; query inspects all.
+            if stable >= DISCOVERY_STABLE_ELEMENTS:
+                if skipped is not None:
+                    skipped[0] += len(value) - position - 1
+                return
         return
     base = "" if prefix == "/" else prefix
     for key, child in value.items():
         escaped = key.replace("~", "~0").replace("/", "~1")
-        _discover(child, f"{base}/{escaped}", output, budget)
+        _discover(child, f"{base}/{escaped}", output, budget, skipped)
         if len(output) >= MAX_PATHS:
             return
 
@@ -1290,6 +1305,7 @@ def _query_artifact(
         if action == "discover":
             prefix = args.get("prefix") or "/"
             budget = [0]
+            skipped = [0]
             paths: list[str] = []
             seen: set[str] = set()
             root_paths: list[str] = []
@@ -1302,6 +1318,7 @@ def _query_artifact(
                         _pattern_path(path, prefix),
                         root_paths,
                         budget,
+                        skipped,
                     )
                     for discovered_path in root_paths:
                         if discovered_path in seen:
@@ -1340,6 +1357,18 @@ def _query_artifact(
                     }
                 )
             bounded_paths, byte_truncated = _bounded_strings(paths)
+            recovery = (
+                "Discovery is bounded; remaining path count is unknown. "
+                "Narrow prefix or use action=read for the entire artifact."
+            )
+            if skipped[0]:
+                recovery += (
+                    f" Discovery stopped in an array after {DISCOVERY_STABLE_ELEMENTS} "
+                    "consecutive elements gave no new path and did not inspect "
+                    f"{skipped[0]} array elements. Paths that occur only in those "
+                    "elements can be missing from this result. action=query on a "
+                    "known path inspects all elements."
+                )
             return json.dumps(
                 {
                     "status": ("discovered" if roots else "field_absent"),
@@ -1350,15 +1379,14 @@ def _query_artifact(
                     "paths": bounded_paths,
                     "truncated": (len(paths) >= MAX_PATHS or byte_truncated),
                     "remaining_paths": None,
+                    "array_elements_skipped": skipped[0],
                     "limits": {
                         "max_paths": MAX_PATHS,
                         "max_result_bytes": MAX_MATCH_OUTPUT_BYTES,
                         "max_traversed_nodes": MAX_NODES,
+                        "discovery_stable_elements": DISCOVERY_STABLE_ELEMENTS,
                     },
-                    "recovery": (
-                        "Discovery is bounded; remaining path count is unknown. "
-                        "Narrow prefix or use action=read for the entire artifact."
-                    ),
+                    "recovery": recovery,
                     "bounded": True,
                 }
             )
