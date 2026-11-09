@@ -990,16 +990,13 @@ def plan_checkpoint(request: dict, state: dict) -> dict:
         isinstance(item, str) and item.strip() for item in evidence
     ):
         raise ValueError("checkpoint evidence_references must be a list of strings")
-    completed_event_ids = {
-        event["id"]
-        for event in state["operation_events"]
-        if event.get("status") == "completed"
-    }
+    evidence_ids = repository.evidence_event_ids(state)
     for reference in evidence:
-        if reference not in completed_event_ids:
+        if reference not in evidence_ids:
             raise ValueError(
                 "checkpoint evidence_references must name operation events "
-                f"with status == completed: {reference}"
+                f"with status == completed: {reference}. "
+                f"Accepted: {sorted(evidence_ids)}"
             )
     completed = request["completed_operations"]
     if completed != session["operation_ids"]:
@@ -1034,20 +1031,18 @@ def plan_model_role(request: dict, state: dict) -> dict:
     candidate = resolve_candidate(state, _nonempty(request, "candidate", "candidate"))
     _nonempty(request, "reason", "model_role reason")
     evidence = request["evidence"]
-    completed_event_ids = {
-        event["id"]
-        for event in state["operation_events"]
-        if event.get("status") == "completed"
-    }
+    evidence_ids = repository.evidence_event_ids(state)
     if (
         not isinstance(evidence, list)
         or not evidence
         or not all(isinstance(item, str) and item.strip() for item in evidence)
     ):
         raise ValueError("model_role evidence must name completed operations")
-    if any(item not in completed_event_ids for item in evidence):
+    invalid = [item for item in evidence if item not in evidence_ids]
+    if invalid:
         raise ValueError(
-            "model_role evidence must name operation events with status == completed"
+            "model_role evidence must name operation events with status == "
+            f"completed: {invalid}. Accepted: {sorted(evidence_ids)}"
         )
     plan = {
         "action": action,

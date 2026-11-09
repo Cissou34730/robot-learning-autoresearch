@@ -216,8 +216,11 @@ A Baseline reset also restarts every counter. The imported candidate becomes
 
 Delivery also copies the training
 logs of the lineage operations into the public repository, and
-`training_log_query` accepts those operations after delivery. Other development
-logs stay in the private archive. Operator-only
+`training_log_query` accepts those operations after delivery. Checkpoint
+`evidence_references` and model-role evidence also accept the lineage training
+and measurement operations; `completed_operations` still names only the
+session's own operations. A refused reference lists the accepted IDs. Other
+development logs stay in the private archive. Operator-only
 observation journals and session-usage reports remain available for cumulative
 AI usage accounting. Development event IDs use the `recipe_development:`
 namespace. They are not startup evidence.
