@@ -206,12 +206,16 @@ changed files, parameter changes, measured scores), and the startup prompt
 renders it. Scientific logs, operation history and full session records start
 empty.
 
-Session and measurement counters restart at S1/M1; the training counter
-continues after the delivered candidate's operation, as in a Prepared Baseline
-reset, so new candidate IDs cannot collide with it. Operator-only
+All counters continue from recipe development, so startup IDs (sessions,
+events, measurements and training) never reuse a development ID within the
+campaign. The training counter is at least the delivered candidate's operation
+number. A Fresh reset restarts every counter. Delivery also copies the training
+logs of the lineage operations into the public repository, and
+`training_log_query` accepts those operations after delivery. Other development
+logs stay in the private archive. Operator-only
 observation journals and session-usage reports remain available for cumulative
 AI usage accounting. Development event IDs use the `recipe_development:`
-namespace, distinct from the fresh scientific IDs. They are not startup evidence.
+namespace. They are not startup evidence.
 
 The campaign repository also stores recipe references as tags, and Fresh
 resets resolve `--recipe-ref` there. Delivery carries forward only the

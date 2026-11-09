@@ -18,6 +18,7 @@ from runner import (
     execution,
     paths,
     protocol,
+    query_training_log,
     recipe_development,
     repository,
     run_experiment,
@@ -135,6 +136,8 @@ def _development_delivery(git_repository, monkeypatch):
         "RESULTS_PATH": "campaigns/results.jsonl",
         "LOG_PATH": "campaigns/EXPERIMENTS.md",
         "OPERATION_REQUEST_PATH": "pi_workspace/operation_request.json",
+        "CAMPAIGNS_DIR": "campaigns",
+        "TRAINING_LOG_DIR": "campaigns/training_logs",
     }.items():
         monkeypatch.setattr(paths, name, root / relative)
     files = {
@@ -249,9 +252,28 @@ def test_recipe_delivery_carries_the_best_known_candidate_and_its_lineage(
     )
     artifact = _complete_candidate(git_repository, state)
     original = dict(state["candidates"]["T1:checkpoint-10"])
+    lineage_of = recipe_development.candidate_lineage
+    monkeypatch.setattr(
+        recipe_development,
+        "candidate_lineage",
+        lambda state, candidate: {
+            **lineage_of(state, candidate),
+            "chapters": [{"operation": "T1", "variant": None}],
+        },
+    )
+    logs = paths.TRAINING_LOG_DIR / repository.current_campaign_id(state)
+    logs.mkdir(parents=True, exist_ok=True)
+    (logs / "t1-attempt-1.log").write_text("lineage log", encoding="utf-8")
+    (logs / "t2-attempt-1.log").write_text("other log", encoding="utf-8")
     try:
         assert recipe_development.publish(state, {"training": {"n_envs": 1}})
         fresh = repository.load_state(allow_missing_artifact=False)
+        assert [path.name for path in logs.iterdir()] == ["t1-attempt-1.log"]
+        assert query_training_log._training_operation(fresh, "T1")[
+            "recipe_development_lineage"
+        ]
+        with pytest.raises(ValueError, match="recipe_lineage.json"):
+            query_training_log._training_operation(fresh, "T2")
         delivered = fresh["candidates"]["T1:checkpoint-10"]
         assert set(fresh["candidates"]) == {"T1:checkpoint-10"}
         assert fresh["model_roles"] == {
@@ -520,7 +542,7 @@ def test_recipe_delivery_is_fresh_and_development_git_is_private(
         )
         assert archived_state["candidates"] == state["candidates"]
         assert archived_state["operation_events"] == state["operation_events"]
-        assert set(fresh["counters"].values()) == {0}
+        assert fresh["counters"] == state["counters"]
         assert (
             git_repository / "pi_workspace/scientific_model.md"
         ).read_bytes() == files["pi_workspace/scientific_model.md"]
@@ -1125,7 +1147,7 @@ def test_overlay_restore_rejects_protected_initializer_aliases(
         "different_pending",
     ],
 )
-def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
+def test_isolated_checkpoint_finalizes_before_delivery_and_startup_continues_ids(
     git_repository, monkeypatch, queue_gap
 ):
     state, old_commit, _files, archive = _development_delivery(
@@ -1292,9 +1314,9 @@ def test_isolated_checkpoint_finalizes_before_delivery_and_startup_is_s1(
             backend_model="model",
             backend_reasoning="high",
         )
-        assert session["id"] == "S1"
+        assert session["id"] == "S2"
         assert session["scientific_parent_commit"] != old_commit
-        assert set(fresh["counters"].values()) == {0, 1}
+        assert fresh["counters"]["event"] == archived_state["counters"]["event"]
     finally:
         shutil.rmtree(
             paths.recipe_handoff_directory(git_repository), onerror=_remove_readonly

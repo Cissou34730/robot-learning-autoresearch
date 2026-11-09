@@ -494,6 +494,30 @@ def test_large_json_validation_cache_respects_current_runtime_limits(
         document.root()
 
 
+def test_discover_stops_on_stable_array_elements_and_reports_the_skip(
+    monkeypatch, tmp_path
+):
+    from runner import artifact_evidence_query as reader
+
+    episode = {"seed": 1, "trace": [{"x": 0.0, "y": 1.0}] * 200}
+    value = {"episodes": [episode] * 400}
+    monkeypatch.setattr(repository, "load_state", lambda **_kwargs: {})
+    monkeypatch.setattr(
+        reader, "_recorded_artifact", lambda *_args: (tmp_path / "a.json", {})
+    )
+    monkeypatch.setattr(reader, "_artifact_value", lambda *_args: value)
+    response = json.loads(
+        reader.query_artifact({"action": "discover", "operation_id": "M1"}, "campaign")
+    )
+    assert response["status"] == "discovered"
+    assert response["paths"] == [
+        "/episodes/*/seed",
+        "/episodes/*/trace/*/x",
+        "/episodes/*/trace/*/y",
+    ]
+    assert response["array_elements_skipped"] > 0
+
+
 def test_artifact_contents_describe_actual_sections_without_measurement_values():
     evidence = {
         "trace/series~": {"rows": [{"first": None}, {"later": "raw-only-value"}]},

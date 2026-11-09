@@ -274,6 +274,25 @@ def _training_operation(state: dict, operation_id: str) -> dict[str, Any]:
             "operation_error": pending["failure"],
             "execution_history_only": True,
         }
+    if state.get("recipe_handover") is not None:
+        lineage_path = paths.CAMPAIGNS_DIR / "recipe_lineage.json"
+        lineage = (
+            json.loads(lineage_path.read_text(encoding="utf-8"))
+            if lineage_path.is_file()
+            else {"chapters": []}
+        )
+        if any(chapter["operation"] == operation_id for chapter in lineage["chapters"]):
+            return {
+                "operation_status": "completed",
+                "operation_error": None,
+                "execution_history_only": False,
+                "recipe_development_lineage": True,
+            }
+        raise ValueError(
+            "training operation not found in the active campaign. After recipe "
+            "delivery, only the recipe-development training operations in "
+            "campaigns/recipe_lineage.json remain available."
+        )
     raise ValueError("training operation not found in the active campaign")
 
 

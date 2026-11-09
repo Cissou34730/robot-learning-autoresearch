@@ -2522,6 +2522,23 @@ def current_campaign_id(state: dict) -> str:
     return str(state["campaign"]["id"])
 
 
+def _awaiting_first_session(state: dict) -> bool:
+    """Whether the current phase opens its first scientific session.
+
+    After recipe delivery, the counters continue from recipe development.
+    """
+    if state["pi_checkpoint"] is not None:
+        return False
+    if state["recipe_handover"] is None:
+        return int(state["counters"]["session"]) == 0
+    return (
+        state["campaign_phase"] == "startup"
+        and state["scientific_session"] is None
+        and not state["operation_events"]
+        and state["pending_operation"] is None
+    )
+
+
 def start_scientific_session(
     state: dict,
     *,
@@ -2550,9 +2567,7 @@ def start_scientific_session(
     active = state["active_inquiry"]
     if kind in {"recipe_development", "startup"}:
         handoff = state["recipe_development"]
-        initial = (
-            state["pi_checkpoint"] is None and int(state["counters"]["session"]) == 0
-        )
+        initial = _awaiting_first_session(state)
         after_development = (
             kind == "startup"
             and isinstance(handoff, dict)
@@ -2633,7 +2648,7 @@ def synchronize_max_inquiries(state: dict, requested: int) -> bool:
         state["scientific_session"] is None
         and state["active_inquiry"] is None
         and state["pi_checkpoint"] is None
-        and int(state["counters"]["session"]) == 0
+        and _awaiting_first_session(state)
         and not state["operation_events"]
         and state["pending_operation"] is None
         and state["terminal_state"] is None
