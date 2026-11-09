@@ -59,6 +59,7 @@ RESULT_ISSUE_STATUSES = {
     "parse_budget_exhausted",
     "query_failed",
     "traversal_budget_exhausted",
+    "variant_required",
 }
 
 

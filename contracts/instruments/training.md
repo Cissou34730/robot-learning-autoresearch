@@ -105,8 +105,10 @@ for each variant, its `label`, its `parameters`, its `parent` and its `candidate
 The variant `parent` is the resolved candidate identity or null for fresh training.
 The root `parent` records only the declared root parent.
 Earlier results without a variant `parent` use their recorded root parent.
-Each variant has a separate training log. To read it, give the label as `variant` to
-the training-log tools.
+Each variant has a separate training log. Omit `variant` in
+`training_log_query` with `action=discover` to list the available labels. Then
+give one label as `variant` to `training_log_query` or
+`training_series_statistics`.
 
 The Runner validates the changed PI-owned source files and the active
 parameters. It executes the accepted seed and step count. It archives all
