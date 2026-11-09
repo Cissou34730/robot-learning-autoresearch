@@ -374,15 +374,15 @@ def test_trusted_runtime_uses_each_repositories_own_head(split_roots, monkeypatc
     monkeypatch.setattr(repository, "require_resolvable_commit", lambda _commit: None)
     monkeypatch.setattr(
         repository,
-        "require_path_at_commit",
-        lambda commit, relative: selected.append((commit, relative)),
+        "require_paths_at_commit_batch",
+        lambda commit, relatives: selected.append((commit, relatives)),
     )
     repository.require_paths_at_head(
         ["contracts/task_spec.py", "robot_learning/__init__.py"]
     )
-    assert selected == [
-        ("harness-head", "contracts/task_spec.py"),
-        ("campaign-head", "robot_learning/__init__.py"),
+    assert sorted(selected) == [
+        ("campaign-head", ["robot_learning/__init__.py"]),
+        ("harness-head", ["contracts/task_spec.py"]),
     ]
 
 

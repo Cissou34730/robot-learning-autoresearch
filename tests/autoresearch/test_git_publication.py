@@ -1513,6 +1513,32 @@ def test_publication_accepts_a_literal_directory_scope(git_repository):
     )
 
 
+def test_batched_head_check_compares_each_worktree_file_with_head(git_repository):
+    root = git_repository
+    (root / "contracts").mkdir()
+    (root / "contracts" / "a.md").write_text("a", encoding="utf-8")
+    (root / "contracts" / "b[1].md").write_text("b", encoding="utf-8")
+    repository.git("add", "-A")
+    repository.git("commit", "--quiet", "-m", "base")
+    trusted = ["contracts/a.md", "contracts/b[1].md"]
+    repository.require_paths_at_head(trusted)
+
+    (root / "contracts" / "b[1].md").write_text("changed", encoding="utf-8")
+    with pytest.raises(
+        ValueError, match=r"does not contain the current contracts/b\[1\]\.md"
+    ):
+        repository.require_paths_at_head(trusted)
+    (root / "contracts" / "b[1].md").write_text("b", encoding="utf-8")
+
+    (root / "contracts" / "new.md").write_text("new", encoding="utf-8")
+    with pytest.raises(ValueError, match="does not contain contracts/new.md"):
+        repository.require_paths_at_head([*trusted, "contracts/new.md"])
+
+    (root / "contracts" / "a.md").unlink()
+    with pytest.raises(ValueError, match="missing from the worktree: contracts/a.md"):
+        repository.require_paths_at_head(trusted)
+
+
 def test_staged_scope_checks_respect_windows_command_limit(monkeypatch):
     scope = [f"artifact {index:04d} {'x' * 80}-\U0001f680.json" for index in range(400)]
     observed: list[str] = []
