@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -276,6 +277,22 @@ def candidate_lineage(state: dict, candidate_id: str) -> dict:
     return {"candidate": candidate_id, "chapters": chapters}
 
 
+def _copy_lineage_logs(root: Path, staged: Path, state: dict, lineage: dict) -> None:
+    """Startup keeps the training logs of the delivered lineage, not other logs."""
+    relative = Path("campaigns/training_logs") / repository.current_campaign_id(state)
+    for chapter in lineage["chapters"]:
+        stem = chapter["operation"].lower()
+        if chapter["variant"]:
+            stem += f"-{chapter['variant']}"
+        pattern = re.compile(rf"^{re.escape(stem)}-attempt-[1-9]\d*\.log$")
+        for source in sorted((root / relative).glob(f"{stem}-attempt-*.log")):
+            if not pattern.match(source.name) or not source.is_file():
+                continue
+            target = staged / relative / source.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
+
+
 def _marker_path(root: Path) -> Path:
     return paths.recipe_handoff_directory(root) / "handoff.json"
 
@@ -381,6 +398,8 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
     )
     fresh["campaign_phase"] = "startup"
     fresh["scientific_model"] = {**state["scientific_model"], "commit": recipe_commit}
+    # IDs continue within the campaign so that development citations stay unique.
+    fresh["counters"] = copy.deepcopy(state["counters"])
     fresh["recipe_handover"] = {
         name: state["recipe_development"][name]
         for name in repository.RECIPE_HANDOVER_FIELDS
@@ -405,10 +424,13 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
             "best_known": selected,
             "retained": {},
         }
-        fresh["counters"]["training"] = int(candidate["origin_operation"][1:])
-        repository.atomic_write_json(
-            staged / LINEAGE_PATH, candidate_lineage(state, selected)
+        lineage = candidate_lineage(state, selected)
+        fresh["counters"]["training"] = max(
+            int(fresh["counters"]["training"]),
+            int(candidate["origin_operation"][1:]),
         )
+        repository.atomic_write_json(staged / LINEAGE_PATH, lineage)
+        _copy_lineage_logs(root, staged, state, lineage)
         delivered = [candidate["artifact"], LINEAGE_PATH]
     repository.validate_research_state(fresh, allow_missing_artifact=True)
     repository.atomic_write_json(staged / "runner/state/research_state.json", fresh)
