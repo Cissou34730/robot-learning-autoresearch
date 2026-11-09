@@ -10,6 +10,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -1422,7 +1424,7 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
     ):
         del label
         calls["count"] += 1
-        if calls["count"] == 2:
+        if seed == 200:
             raise SimulatedCrash
         metrics = {
             "episodes": episodes,
@@ -1454,6 +1456,62 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
     with pytest.raises(run_experiment.FrozenOperationMismatch, match=expected):
         run_experiment.execute_pending_operation()
     assert calls["count"] == 2
+
+
+def test_measurement_panels_run_concurrently_and_keep_request_order(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Measure one candidate on four panels.")
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    seeds = [100, 200, 300, 400]
+    request = {
+        "measurement": {
+            "description": "Measure the candidate on four panels.",
+            "rationale": "The factual results inform the next decision.",
+            "measurements": [
+                {
+                    "instrument": "research_evaluation",
+                    "candidate": candidate["id"],
+                    "episodes": 2,
+                    "seed": seed,
+                }
+                for seed in seeds
+            ],
+        }
+    }
+    run_experiment.accept_operation(request, state)
+    lock = threading.Lock()
+    activity = {"active": 0, "peak": 0}
+
+    def evaluate(_artifact, seed, *, episodes, output_path, **_kwargs):
+        with lock:
+            activity["active"] += 1
+            activity["peak"] = max(activity["peak"], activity["active"])
+        # Later panels finish first.
+        time.sleep(0.1 * (5 - seeds.index(seed)))
+        with lock:
+            activity["active"] -= 1
+        metrics = {
+            "episodes": episodes,
+            "seed": seed,
+            "success_percent": 50.0,
+            "episode_results": [
+                {"episode": 0, "episode_seed": seed, "success": True},
+                {"episode": 1, "episode_seed": seed + 1, "success": False},
+            ],
+        }
+        output_path.write_text(json.dumps(metrics), encoding="utf-8")
+        return metrics
+
+    monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
+    assert run_experiment.execute_pending_operation() == 0
+    result = repository.read_state()["operation_events"][-1]["result"]
+    assert [item["metrics"]["seed"] for item in result["measurements"]] == seeds
+    assert activity["peak"] == run_experiment.MEASUREMENT_PANEL_WORKERS
 
 
 def test_failed_operation_can_be_reaccepted_with_repaired_provenance(

@@ -16,7 +16,7 @@ import time
 import uuid
 import zipfile
 from collections import deque
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path, PureWindowsPath
 
 from runner import paths, typed_events
@@ -615,13 +615,56 @@ def tracked_paths(scope: str) -> list[str]:
     ]
 
 
+def require_paths_at_commit_batch(commit: str, relatives: list[str]) -> None:
+    """Batch form of require_path_at_commit: a fixed number of Git calls."""
+    groups: dict[Callable[..., str], set[str]] = {}
+    for relative in relatives:
+        path = canonical_repo_path(relative)
+        read_git = (
+            harness_git if paths.SPLIT and not paths.is_campaign_owned(path) else git
+        )
+        groups.setdefault(read_git, set()).add(path)
+    for read_git, group in groups.items():
+        ordered = sorted(group)
+        for path in ordered:
+            if not resolve_repo_path(path).is_file():
+                raise ValueError(f"committed path is missing from the worktree: {path}")
+        tree_args = (
+            "--literal-pathspecs",
+            "ls-tree",
+            "-z",
+            "--full-tree",
+            commit,
+            "--",
+        )
+        committed: dict[str, str | None] = {}
+        worktree: dict[str, str] = {}
+        for batch in _git_pathspec_batches(tree_args, ordered):
+            for entry in read_git(*tree_args, *batch).split("\0"):
+                if not entry:
+                    continue
+                metadata, name = entry.split("\t", 1)
+                _mode, kind, blob = metadata.split()
+                committed[name] = blob if kind == "blob" else None
+            hashes = read_git("hash-object", "--", *batch).split()
+            worktree.update(zip(batch, hashes, strict=True))
+        for path in ordered:
+            if path not in committed:
+                raise ValueError(f"commit {commit} does not contain {path}")
+            if committed[path] != worktree[path]:
+                raise ValueError(f"commit {commit} does not contain the current {path}")
+
+
 def require_paths_at_head(relative_paths: list[str]) -> None:
     head = git("rev-parse", "HEAD").strip()
     require_resolvable_commit(head)
     harness_head = harness_git("rev-parse", "HEAD").strip() if paths.SPLIT else head
+    by_commit: dict[str, list[str]] = {}
     for relative in sorted(set(relative_paths)):
         commit = head if paths.is_campaign_owned(relative) else harness_head
-        require_path_at_commit(commit, relative)
+        by_commit.setdefault(commit, []).append(relative)
+    for commit, relatives in by_commit.items():
+        require_paths_at_commit_batch(commit, relatives)
 
 
 def publish_scientific_recipe(operation_id: str, scope: list[str]) -> str:

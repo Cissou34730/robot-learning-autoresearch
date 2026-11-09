@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import copy
 import hashlib
 import json
 import re
 import shutil
 import sys
+import threading
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -45,6 +47,9 @@ REPEATS_FIELD = "repeats_earlier_measurements"
 EXPOSURE_FIELD = "episodes_seen_in_earlier_measurements"
 DECLARED_SEEDS_FIELD = "declared_episode_seed_ranges"
 MAX_DECLARED_EPISODE_SEEDS = 100_000
+# Evaluation panels of one measurement run concurrently, each in its own process.
+MEASUREMENT_PANEL_WORKERS = 3
+PANEL_WAIT_SECONDS = 1.0
 
 
 class FrozenOperationMismatch(ValueError):
@@ -1296,6 +1301,80 @@ def _verify_completed_measurement_result(state: dict, pending: dict) -> None:
         )
 
 
+def _evaluate_panel(
+    spec: dict,
+    *,
+    operation_id: str,
+    campaign_id: str,
+    semantics: str | None,
+    task_reference_contract: dict | None,
+    stop_event: threading.Event,
+) -> dict:
+    artifact = repository.resolve_repo_path(spec["artifact"])
+    if repository.artifact_fingerprint(artifact) != spec["model_fingerprint"]:
+        raise FrozenOperationMismatch("measurement candidate fingerprint changed")
+    output_dir = paths.campaign_evaluation_dir(campaign_id)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if spec["instrument"] == "research_evaluation":
+        output_path = output_dir / protocol.evaluation_artifact_name(
+            operation_id,
+            spec["candidate"],
+            int(spec["episodes"]),
+            int(spec["seed"]),
+            str(semantics),
+            campaign_id=campaign_id,
+        )
+        metrics = execution.evaluate_artifact(
+            artifact,
+            int(spec["seed"]),
+            operation_id=operation_id,
+            label=spec["label"],
+            episodes=int(spec["episodes"]),
+            output_path=output_path,
+            stop_event=stop_event,
+        )
+        return _measurement_result(spec, metrics, output_path, semantics=str(semantics))
+    if not isinstance(task_reference_contract, dict):
+        raise FrozenOperationMismatch("accepted task-reference contract is missing")
+    output_path = output_dir / protocol.task_reference_artifact_name(
+        operation_id,
+        spec["candidate"],
+        task_reference_contract["panel"],
+        campaign_id=campaign_id,
+    )
+    metrics = execution.evaluate_artifact(
+        artifact,
+        int(task_reference_contract["seed"]),
+        operation_id=operation_id,
+        label=spec["label"],
+        episodes=int(task_reference_contract["episodes"]),
+        output_path=output_path,
+        task_reference=True,
+        stop_event=stop_event,
+    )
+    result = _measurement_result(spec, metrics, output_path, semantics=None)
+    result["metrics"]["panel"] = task_reference_contract["panel"]
+    result["metrics"]["panel_version"] = task_reference_contract["panel_version"]
+    return result
+
+
+def _panel_result(future: concurrent.futures.Future) -> dict:
+    # A bounded wait keeps the main thread responsive to stop interrupts.
+    while not concurrent.futures.wait([future], timeout=PANEL_WAIT_SECONDS).done:
+        pass
+    return future.result()
+
+
+def _stop_panels(
+    stop_event: threading.Event, panels: dict[int, concurrent.futures.Future]
+) -> None:
+    stop_event.set()
+    for future in panels.values():
+        future.cancel()
+    concurrent.futures.wait(list(panels.values()))
+    panels.clear()
+
+
 def execute_measurement(state: dict, pending: dict) -> int:
     data = pending["data"]
     planned = data["measurements"]
@@ -1360,6 +1439,11 @@ def execute_measurement(state: dict, pending: dict) -> int:
             semantics=semantics,
             task_reference_contract=task_reference_contract,
         )
+    panels: dict[int, concurrent.futures.Future] = {}
+    stop_event = threading.Event()
+    executor = concurrent.futures.ThreadPoolExecutor(
+        max_workers=MEASUREMENT_PANEL_WORKERS
+    )
     try:
         for index, spec in enumerate(planned):
             if index < len(partials):
@@ -1446,70 +1530,37 @@ def execute_measurement(state: dict, pending: dict) -> int:
                 pending["progress"] = f"measured_{len(partials)}_of_{len(planned)}"
                 repository.write_state(state)
                 continue
-            artifact = repository.resolve_repo_path(spec["artifact"])
-            if repository.artifact_fingerprint(artifact) != spec["model_fingerprint"]:
-                raise FrozenOperationMismatch(
-                    "measurement candidate fingerprint changed"
-                )
-            output_dir = paths.campaign_evaluation_dir(campaign_id)
-            output_dir.mkdir(parents=True, exist_ok=True)
-            if spec["instrument"] == "research_evaluation":
-                output_path = output_dir / protocol.evaluation_artifact_name(
-                    pending["id"],
-                    spec["candidate"],
-                    int(spec["episodes"]),
-                    int(spec["seed"]),
-                    str(semantics),
-                    campaign_id=campaign_id,
-                )
-                metrics = execution.evaluate_artifact(
-                    artifact,
-                    int(spec["seed"]),
-                    operation_id=str(pending["id"]),
-                    label=spec["label"],
-                    episodes=int(spec["episodes"]),
-                    output_path=output_path,
-                )
-                result = _measurement_result(
-                    spec, metrics, output_path, semantics=str(semantics)
-                )
-            else:
-                if not isinstance(task_reference_contract, dict):
-                    raise FrozenOperationMismatch(
-                        "accepted task-reference contract is missing"
+            if index not in panels:
+                for later in range(index, len(planned)):
+                    if planned[later]["instrument"] == "python_module":
+                        break
+                    panels[later] = executor.submit(
+                        _evaluate_panel,
+                        planned[later],
+                        operation_id=str(pending["id"]),
+                        campaign_id=campaign_id,
+                        semantics=semantics,
+                        task_reference_contract=task_reference_contract,
+                        stop_event=stop_event,
                     )
-                output_path = output_dir / protocol.task_reference_artifact_name(
-                    pending["id"],
-                    spec["candidate"],
-                    task_reference_contract["panel"],
-                    campaign_id=campaign_id,
-                )
-                metrics = execution.evaluate_artifact(
-                    artifact,
-                    int(task_reference_contract["seed"]),
-                    operation_id=str(pending["id"]),
-                    label=spec["label"],
-                    episodes=int(task_reference_contract["episodes"]),
-                    output_path=output_path,
-                    task_reference=True,
-                )
-                result = _measurement_result(spec, metrics, output_path, semantics=None)
-                result["metrics"]["panel"] = task_reference_contract["panel"]
-                result["metrics"]["panel_version"] = task_reference_contract[
-                    "panel_version"
-                ]
+            result = _panel_result(panels[index])
+            del panels[index]
             partials.append(result)
             pending["progress"] = f"measured_{len(partials)}_of_{len(planned)}"
             repository.write_state(state)
     except KeyboardInterrupt:
+        _stop_panels(stop_event, panels)
         console.announce(
             "[runner] Measurement paused; completed results remain in the transaction."
         )
         return 130
     except Exception as error:
+        _stop_panels(stop_event, panels)
         pending["failure"] = str(error)
         repository.write_state(state)
         raise
+    finally:
+        executor.shutdown(wait=True, cancel_futures=True)
 
     verified_evidence = []
     for index, (spec, partial) in enumerate(zip(planned, partials, strict=True)):

@@ -16,6 +16,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 from pathlib import Path
 
@@ -795,6 +796,7 @@ def evaluate_artifact(
     output_path: Path | None = None,
     official_benchmark: bool = False,
     task_reference: bool = False,
+    stop_event: threading.Event | None = None,
 ) -> dict:
     if task_reference and (seed is None or episodes is None):
         from runner import assessment
@@ -880,6 +882,10 @@ def evaluate_artifact(
                     process.wait(timeout=PROGRESS_POLL_SECONDS)
                     break
                 except subprocess.TimeoutExpired:
+                    # Only the main thread receives interrupts; a panel running on
+                    # a worker thread stops through this event.
+                    if stop_event is not None and stop_event.is_set():
+                        raise KeyboardInterrupt from None
                     try:
                         progress = json.loads(progress_path.read_text(encoding="utf-8"))
                         current_completed = int(progress["completed"])
