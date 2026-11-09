@@ -12,7 +12,6 @@ import copy
 import hashlib
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -699,19 +698,14 @@ def baseline_state(
             "imported candidate requires at least one preserved evaluation artifact"
         )
     state = empty_state(base_commit, recipe_source, recipe_phase="skipped")
-    candidate_id = str(candidate["id"])
-    origin = re.fullmatch(r"T([1-9]\d*)", str(candidate["origin_operation"]))
-    if origin is None:
-        raise ValueError(
-            "imported candidate origin_operation must be a strict training operation ID"
-        )
+    # IDs never continue from the source campaign: the import is the new T1.
+    imported = copy.deepcopy(candidate)
+    imported["origin_operation"] = "T1"
+    imported["id"] = f"T1:{candidate['name']}"
+    candidate_id = imported["id"]
     state["scientific_model"] = copy.deepcopy(source_state["scientific_model"])
-    state["counters"]["measurement"] = source_state["counters"]["measurement"]
-    state["counters"]["training"] = max(
-        source_state["counters"]["training"],
-        int(origin.group(1)),
-    )
-    state["candidates"] = {candidate_id: copy.deepcopy(candidate)}
+    state["counters"]["training"] = 1
+    state["candidates"] = {candidate_id: imported}
     state["model_roles"] = {
         "working": candidate_id,
         "best_known": candidate_id,
