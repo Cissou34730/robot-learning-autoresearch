@@ -149,6 +149,11 @@ also exist in the local archive and match their recorded fingerprints.
 Keep both the prepared Git reference and local archive to repeat comparisons.
 A Git-only checkout cannot supply raw measurement data.
 
+The new campaign renames the imported candidate `T1:<name>` and restarts all
+operation counters, so no session, measurement or training ID continues from
+the source campaign. The reset does not import the source campaign's training
+logs.
+
 Restores:
 
 - the candidate's scientific recipe, limited to the researcher-owned scientific

@@ -615,10 +615,13 @@ def test_baseline_preflight_normalizes_source_without_mutating_it(monkeypatch):
     assert source_state == original
 
 
-def test_baseline_import_seeds_operation_counters_before_first_training():
+def test_baseline_import_restarts_operation_ids_in_the_new_campaign():
     candidate = _candidate("f" * 64)
+    candidate["id"] = "T7:checkpoint-10"
+    candidate["origin_operation"] = "T7"
     source_state = _prepared_source_state(candidate)
     source_state["counters"]["measurement"] = 4
+    source_state["counters"]["training"] = 9
 
     state = reset_campaign.baseline_state(
         source_state,
@@ -627,10 +630,13 @@ def test_baseline_import_seeds_operation_counters_before_first_training():
         recipe_source=candidate["scientific_commit"],
     )
 
-    assert state["counters"]["measurement"] == 4
-    assert state["counters"]["training"] == 1
+    imported = {**candidate, "id": "T1:checkpoint-10", "origin_operation": "T1"}
+    assert state["candidates"] == {"T1:checkpoint-10": imported}
+    assert state["model_roles"]["working"] == "T1:checkpoint-10"
+    assert state["model_roles"]["best_known"] == "T1:checkpoint-10"
+    assert protocol.allocate_operation_id("measurement", state) == "M1"
     assert protocol.allocate_operation_id("training", state) == "T2"
-    assert state["candidates"] == {candidate["id"]: candidate}
+    repository.validate_research_state(state, allow_missing_artifact=True)
 
 
 @pytest.mark.parametrize("schema", [6, repository.STATE_SCHEMA_VERSION])

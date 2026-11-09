@@ -209,7 +209,12 @@ empty.
 All counters continue from recipe development, so startup IDs (sessions,
 events, measurements and training) never reuse a development ID within the
 campaign. The training counter is at least the delivered candidate's operation
-number. A Fresh reset restarts every counter. Delivery also copies the training
+number. A Fresh reset restarts every counter.
+
+A Baseline reset also restarts every counter. The imported candidate becomes
+`T1:<name>` in the new campaign, so no ID continues from the source campaign.
+
+Delivery also copies the training
 logs of the lineage operations into the public repository, and
 `training_log_query` accepts those operations after delivery. Other development
 logs stay in the private archive. Operator-only
