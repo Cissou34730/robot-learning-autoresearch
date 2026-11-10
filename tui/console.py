@@ -72,6 +72,7 @@ from tui.phase_presentation import (
 )
 from tui.process import LauncherMachinery
 from tui.report import REPORT_CSS, CampaignPanel, CampaignSources
+from tui.scientific_model import ScientificModelReader
 from tui.shutdown import ShutdownCoordinator
 from tui.tab_visibility import IDLE_TAB_SECONDS, TabIdleTracker
 from tui.training_tree_view import TrainingTree, TrainingTreePanel
@@ -121,9 +122,11 @@ def help_text() -> str:
         "phases high reasoning, 120000 timesteps, 360000 max timesteps, 15 inquiries\n"
         "and 180s stop timeout.\n\n"
         "F1 Help | F2 Settings | F3 Recent commands | F4 Training tree | Ctrl+L commands\n"
+        "F5 Scientific model of the active campaign (read only)\n"
         "Ctrl+F search the log | f filter | r raw event | End follow live\n"
         "Tab phase: A Analyse | R Recipe | S Startup | I Inquiry | B Benchmark\n"
-        "Overview compares all campaign slots; Enter opens the selected campaign.\n"
+        "Overview compares all campaign slots; Enter opens the selected campaign,\n"
+        "or its scientific model from the Scientific model row.\n"
         "Tab / Shift+Tab: next/previous campaign; move focus inside dialogs\n"
         "Ctrl+Tab: next campaign if the terminal passes it through\n"
         "F6 / Shift+F6: move focus between report controls | Ctrl+C: copy only\n"
@@ -151,6 +154,7 @@ class CampaignConsole(App):
         Binding("f2", "settings", "Settings", priority=True),
         Binding("f3", "command_history", "Recent commands", priority=True, show=False),
         Binding("f4", "training_tree", "Training tree", priority=True),
+        Binding("f5", "scientific_model", "Scientific model", priority=True),
         Binding("ctrl+tab", "next_tab", "Next tab", priority=True, show=False),
         Binding("tab", "next_tab", "Campaign", priority=True),
         Binding(
@@ -1145,6 +1149,31 @@ class CampaignConsole(App):
         self._sync_tab_visibility()
         self.query_one(TabbedContent).active = label
         self.call_after_refresh(self._focus_campaign)
+
+    def on_campaign_overview_open_scientific_model(
+        self, event: CampaignOverview.OpenScientificModel
+    ) -> None:
+        self._open_scientific_model(f"campaign-{event.slot}")
+
+    def action_scientific_model(self) -> None:
+        if isinstance(self.screen, ModalScreen) or self._panel_open:
+            return
+        label = self.query_one(TabbedContent).active
+        if not label or label == "overview":
+            self.notify(
+                "Select a campaign, or its Scientific model cell in Overview.",
+                severity="warning",
+            )
+            return
+        self._open_scientific_model(label)
+
+    def _open_scientific_model(self, label: str) -> None:
+        if not self.query(f"#panel-{label}"):
+            self.notify(f"{label} is not available in the console.", severity="warning")
+            return
+        self.push_screen(
+            ScientificModelReader(label, self._controller.state(label).folder)
+        )
 
     def watch_theme(self) -> None:
         for panel in self.query(CampaignPanel):

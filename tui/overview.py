@@ -17,7 +17,10 @@ from textual.worker import Worker, get_current_worker
 from tui import projector
 from tui.phase_presentation import campaign_phase_letter
 from tui.report_presentation import PALETTES
+from tui.scientific_model import model_status
 from tui.sources import CampaignSources
+
+MODEL_READY = "ready · Enter"
 
 
 @dataclass(frozen=True)
@@ -27,6 +30,7 @@ class OverviewCampaign:
     phase: str
     snapshot: projector.CampaignSnapshot | None
     inquiries: int | None
+    model: str | None = None
 
 
 def overview_campaign(
@@ -45,6 +49,7 @@ def overview_campaign(
         campaign_phase_letter(state),
         projector.build_snapshot(state, records, []),
         inquiries,
+        model_status(state),
     )
 
 
@@ -56,10 +61,10 @@ def overview_values(
     now: datetime,
 ) -> tuple[str, ...]:
     if not campaign.installed:
-        return ("not set up",) + ("—",) * 7
+        return ("not set up",) + ("—",) * 8
     snapshot = campaign.snapshot
     if snapshot is None:
-        return ("unavailable", launcher) + ("unavailable",) * 6
+        return ("unavailable", launcher) + ("unavailable",) * 7
     names = {
         "A": "Analyse",
         "R": "Recipe",
@@ -99,6 +104,9 @@ def overview_values(
         str(campaign.inquiries) if campaign.inquiries is not None else "unavailable",
         goal,
         official,
+        {"ready": MODEL_READY, "pending": "not published"}.get(
+            campaign.model or "", "unavailable"
+        ),
     )
 
 
@@ -106,6 +114,11 @@ class CampaignOverview(Widget):
     can_focus = True
 
     class OpenCampaign(Message):
+        def __init__(self, slot: int) -> None:
+            super().__init__()
+            self.slot = slot
+
+    class OpenScientificModel(Message):
         def __init__(self, slot: int) -> None:
             super().__init__()
             self.slot = slot
@@ -129,6 +142,7 @@ class CampaignOverview(Widget):
         ("inquiries", "Inquiries"),
         ("goal", "Dev / goal"),
         ("official", "Official"),
+        ("model", "Scientific model"),
     )
 
     def __init__(self, folders: list[Path], *, id: str = "campaign-overview") -> None:
@@ -144,7 +158,10 @@ class CampaignOverview(Widget):
         self._source_error = ""
 
     def compose(self) -> ComposeResult:
-        yield Static("Active campaigns · Enter opens campaign", id="overview-title")
+        yield Static(
+            "Active campaigns · Enter opens campaign or scientific model",
+            id="overview-title",
+        )
         yield Static("Loading campaign data...", id="overview-status")
         yield DataTable(id="overview-table", cursor_type="cell", cell_padding=1)
 
@@ -315,7 +332,7 @@ class CampaignOverview(Widget):
                 color = palette.text
                 if value in {"unavailable", "unknown", "—", "not assessed"}:
                     color = palette.muted
-                elif key == "phase":
+                elif key == "phase" or value == MODEL_READY:
                     color = palette.accent
                 elif key == "launcher":
                     color = (
@@ -332,11 +349,15 @@ class CampaignOverview(Widget):
     def on_data_table_cell_selected(self, event: DataTable.CellSelected) -> None:
         if self._matrix:
             slot = event.cell_key.column_key.value
+            row = event.cell_key.row_key.value
         else:
-            key = event.cell_key.row_key.value
-            slot = key.split(":", 1)[0] if key else ""
+            key = event.cell_key.row_key.value or ""
+            slot, _, row = key.partition(":")
         if slot and slot.isdigit() and 1 <= int(slot) <= 5:
-            self.post_message(self.OpenCampaign(int(slot)))
+            if row == "model":
+                self.post_message(self.OpenScientificModel(int(slot)))
+            else:
+                self.post_message(self.OpenCampaign(int(slot)))
         else:
             self.notify("Select a campaign column first.", severity="warning")
 
