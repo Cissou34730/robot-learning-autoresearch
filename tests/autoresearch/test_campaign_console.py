@@ -1864,3 +1864,99 @@ def test_ctrl_q_asks_what_to_do_with_a_campaign_that_did_not_stop(
 
     asyncio.run(ask("k", "kill"))
     asyncio.run(ask("l", "leave"))
+
+
+def test_scientific_model_reader_opens_from_overview_and_campaign_tab(
+    tmp_path, monkeypatch
+):
+    import json
+
+    from textual.widgets import DataTable, Markdown, Static, TabbedContent
+
+    from tests.autoresearch.test_campaign_controller import FakeMachinery
+    from tui import scientific_model
+    from tui.overview import CampaignOverview
+    from tui.scientific_model import MODEL_PATH, ScientificModelReader
+
+    app, layout = _console(tmp_path, FakeMachinery())
+    folder = layout.folder(1)
+    shown = []
+
+    def git_show(arguments, **_):
+        shown.append(arguments)
+        return subprocess.CompletedProcess(
+            arguments, 0, stdout="# Established facts\n\nThe arm reaches.\n", stderr=""
+        )
+
+    monkeypatch.setattr(scientific_model.subprocess, "run", git_show)
+    state_path = folder / "runner" / "state" / "research_state.json"
+    state_path.parent.mkdir(parents=True)
+
+    def write_state(record):
+        state_path.write_text(
+            json.dumps(
+                {
+                    "campaign": {"id": "test"},
+                    "campaign_phase": "startup",
+                    "scientific_model": record,
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    write_state({"status": "pending", "path": MODEL_PATH, "commit": None})
+
+    async def reader(pilot):
+        for _ in range(30):
+            await pilot.pause(0.1)
+            screen = app.screen
+            if (
+                isinstance(screen, ScientificModelReader)
+                and screen.model_view is not None
+            ):
+                return screen
+        raise AssertionError("scientific model reader did not load")
+
+    async def scenario():
+        async with app.run_test(size=(120, 35)) as pilot:
+            await pilot.pause()
+            app._controller.state("campaign-1").stage = "running"
+            app._refresh_status_now()
+            app.query_one(TabbedContent).active = "overview"
+            await pilot.pause()
+            overview = app.query_one(CampaignOverview)
+            table = overview.query_one(DataTable)
+            for _ in range(30):
+                if overview.campaigns:
+                    break
+                await pilot.pause(0.1)
+            row = [key.value for key in table.rows].index("model")
+            table.focus()
+            table.move_cursor(row=row, column=1)
+            await pilot.press("enter")
+            screen = await reader(pilot)
+            assert screen.model_view.status == "pending"
+            assert "not published" in str(
+                screen.query_one("#model-status", Static).content
+            )
+            assert not screen.query_one(Markdown).display
+            await pilot.press("escape")
+            await pilot.pause()
+            assert not isinstance(app.screen, ScientificModelReader)
+            assert app.query_one(TabbedContent).active == "overview"
+
+            commit = "a" * 40
+            write_state({"status": "ready", "path": MODEL_PATH, "commit": commit})
+            app.query_one(TabbedContent).active = "campaign-1"
+            await pilot.pause()
+            await pilot.press("f5")
+            screen = await reader(pilot)
+            assert screen.model_view.status == "ready"
+            assert "The arm reaches." in screen.model_view.text
+            assert shown[-1][-1] == f"{commit}:{MODEL_PATH}"
+            assert screen.query_one(Markdown).display
+            await pilot.press("escape")
+            await pilot.pause()
+            assert not isinstance(app.screen, ScientificModelReader)
+
+    asyncio.run(scenario())

@@ -161,11 +161,17 @@ through `campaign-5`; Tab/Shift+Tab cycle only visible tabs. Launching the conso
 nothing; campaigns run only when a command is submitted.
 
 The overview compares phase, launcher state, campaign elapsed time, evaluation
-progress, inquiry count, development success against the goal and official
-outcome. Phase duration is shown as unavailable because the durable state does
+progress, inquiry count, development success against the goal, official
+outcome and whether the scientific model is published. Phase duration is shown as unavailable because the durable state does
 not record every phase start. At narrow widths the matrix becomes a vertically
 scrollable list. Enter on a campaign cell opens its tab, including one hidden
-by the idle rule. Commands from Overview require an explicit campaign target.
+by the idle rule. Enter on a Scientific model cell instead opens the model
+reader. Commands from Overview require an explicit campaign target.
+
+F5 on a campaign tab opens the same reader. It shows
+`pi_workspace/scientific_model.md` at the commit recorded in the campaign
+state, so later working-copy edits do not appear. It states when the model is
+not published or cannot be read. The reader is read-only and Esc closes it.
 
 Each campaign tab displays its lifecycle phase as an uncoloured letter:
 `A` Analyse, `R` Recipe, `S` Startup, `I` Inquiry, `B` Benchmark, or `?` when

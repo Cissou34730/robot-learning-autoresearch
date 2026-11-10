@@ -157,6 +157,9 @@ campaign report. On narrower terminals the tree appears below the campaign
 context and takes priority over the event log. F6 moves focus between the report
 and tree. The tree links operations only by
 recorded candidate identities and shows unlinked measurements separately.
+**F5** opens the published scientific model of the selected campaign, read
+only, at the commit recorded in the campaign state; from Overview, press Enter
+on the Scientific model row.
 Type `/start` and press Enter to resume the active campaign
 without resetting it. Untargeted commands follow the active campaign tab;
 from Overview they require an explicit target. An explicit range or folder list

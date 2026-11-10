@@ -68,6 +68,16 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**10 November 2026. TUI scientific model reader — Implemented.**
+The overview has a Scientific model row: not published, ready or unavailable.
+Enter on that cell, or F5 on a campaign tab, opens a read-only reader of
+`pi_workspace/scientific_model.md` at the commit recorded in the campaign
+state, not the working file. The reader writes nothing and has no campaign
+control or approval step. Targeted checks cover the recorded-commit read, the
+not-published and error states and both entry points; a published model was
+rendered from a real campaign at 160×45 and 48×16. Operator use remains
+unobserved. Retain pending maintainer use.
+
 **8 November 2026. Scenario and decision focus — Implemented.**
 The scenario asks the scientific model to state task conditions for predicted
 behavior and failures. The startup prompt makes behavior tooling conditional on
