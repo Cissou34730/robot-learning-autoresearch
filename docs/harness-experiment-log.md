@@ -68,39 +68,6 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
-**11 November 2026. Scientific support at recipe handoff — Implemented.**
-Recipe development no longer treats an unchanged training continuation as a
-sufficient reason to deliver. The PI records what the continuation changed and
-decides whether to deliver or to develop the recipe further, using the existing
-`current_synthesis` and `decision_frontier`. Recipe-development guidance now
-asks which experience the evidence covers, whether a signal separated better
-from worse behavior, and whether evidence supports or weakens a learning
-assumption, replacing repeated trace-and-compare text. Delivery keeps PI-authored
-diagnostic Python source under
-`robot_learning/lab/` and includes the existing `decision_frontier` in the four
-handover texts. The handover keeps the existing synthesis, direction, question
-and selected lineage, and adds the frontier; it does not carry all supporting
-artifacts. Variants, other candidates, checkpoints, development operation and
-session history and raw measurements remain excluded. The selected lineage's
-training logs, policy, normalization and training state remain preserved. The delivered lab
-source is PI-editable prior work, not an authority.
-
-Rationale: run 14 campaign 1 showed the useful translation from a quantitative
-bound and logged components to a revised reward (T2 hold component 5.58 against
-the 5.05 single-streak maximum, then T3 hold potential 353/400 against 346/400).
-Two later no-recipe campaigns delivered after unchanged continuations; startup
-in both rebuilt diagnostic tools. A third announced intended delivery before it
-was stopped. The change connects evidence to learning assumptions and keeps
-bounded same-campaign continuity without reversing isolation. Review corrected
-compatibility with existing three-field handovers and restricted lab retention
-to Python source, not historical data. Implementation checks: 30 targeted
-delivery, handover and startup-context tests passed. Touched-file Ruff checks
-passed. The required STE scan retains existing findings in the full contract
-and Python source. The two changed guidance paragraphs report no STE errors
-when checked as prose. Scientific effectiveness and resource use
-are UNTESTED: no campaign has used this wording or handover. Retain pending a
-fresh campaign and maintainer review.
-
 **10 November 2026. TUI scientific model reader — Implemented.**
 The overview has a Scientific model row: not published, ready or unavailable.
 Enter on that cell, or F5 on a campaign tab, opens a read-only reader of
