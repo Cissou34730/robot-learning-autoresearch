@@ -178,9 +178,10 @@ makes them its recipe.
 
 You judge whether the candidate and its recipe are adequate for delivery.
 Before delivery, continue training the selected recipe from its saved
-training checkpoint and compare the continued candidate with its parent.
-The selection of the best-known candidate is not, by itself, evidence of
-learning.
+training checkpoint. Compare the continued candidate with its parent.
+Deliver when continued training gives no further measured gain, or state why
+further training cannot improve the recipe. The selection of the best-known
+candidate is not, by itself, evidence of learning.
 
 The Runner validates the files, not scientific adequacy.
 It does not select a recipe by score or impose a performance threshold.
@@ -189,9 +190,9 @@ Startup receives the best-known candidate as its working and best-known
 candidate. The candidate keeps its saved policy, normalization and training
 state. Startup also receives the lineage of the training runs that produced the
 candidate, the delivered recipe, the same accepted scientific model and your
-handover: `current_synthesis`, `next_direction_or_closure`, `next_question`
-and `decision_frontier`, word for word. It does not receive development
-operation records or other candidates.
+handover: `current_synthesis`, `next_direction_or_closure` and
+`next_question`, word for word. It does not receive development operation
+records or other candidates.
 
 Startup can query the training logs of the operations in the lineage.
 Operation and session IDs continue from recipe development.
@@ -210,7 +211,7 @@ State the questions that the tests answered. Cite supporting operations in
 Use `decision_frontier` for open questions and discriminating evidence.
 Set `next_question` to the next investigation for startup.
 In `next_direction_or_closure`, explain how the recipe supports the analyst's
-initial scientific investigation. Startup receives the four handover texts
+initial scientific investigation. Startup receives the three handover texts
 unchanged with the scientific model. Later evidence can revise their scientific
 judgments.
 

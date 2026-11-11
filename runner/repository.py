@@ -77,9 +77,7 @@ RECIPE_HANDOVER_FIELDS = {
     "current_synthesis",
     "next_direction_or_closure",
     "next_question",
-    "decision_frontier",
 }
-RECIPE_HANDOVER_LEGACY_FIELDS = RECIPE_HANDOVER_FIELDS - {"decision_frontier"}
 STATE_FIELDS = {
     "schema_version",
     "campaign",
@@ -921,14 +919,8 @@ def _validate_campaign_phase(state: dict) -> None:
     if handover is not None:
         if state["recipe_phase"] != "included" or phase == "recipe_development":
             raise ValueError("recipe_handover requires completed recipe development")
-        fields = (
-            RECIPE_HANDOVER_LEGACY_FIELDS
-            if isinstance(handover, dict)
-            and set(handover) == RECIPE_HANDOVER_LEGACY_FIELDS
-            else RECIPE_HANDOVER_FIELDS
-        )
-        _require_exact_fields(handover, fields, "recipe_handover")
-        for name in handover:
+        _require_exact_fields(handover, RECIPE_HANDOVER_FIELDS, "recipe_handover")
+        for name in RECIPE_HANDOVER_FIELDS:
             _nonempty(handover, name, f"recipe handover {name}")
     if state["recipe_phase"] == "skipped" and (
         phase == "recipe_development" or handoff is not None

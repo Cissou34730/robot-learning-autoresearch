@@ -479,7 +479,7 @@ def test_existing_schema8_state_without_recipe_handover_remains_readable():
 
 
 @pytest.mark.parametrize("extra", [False, True])
-def test_recipe_handover_contains_only_the_four_text_fields(extra):
+def test_recipe_handover_contains_only_the_three_text_fields(extra):
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
@@ -489,39 +489,12 @@ def test_recipe_handover_contains_only_the_four_text_fields(extra):
         "current_synthesis": "Recipe summary.\nUnchanged text.",
         "next_direction_or_closure": "Continue from the recipe.",
         "next_question": "What remains unresolved?",
-        "decision_frontier": "Open question.\nDiscriminating evidence.",
     }
     if extra:
         state["recipe_handover"]["operation_records"] = []
         with pytest.raises(ValueError, match="recipe_handover requires exactly"):
             repository.validate_research_state(state, allow_missing_artifact=True)
     else:
-        repository.validate_research_state(state, allow_missing_artifact=True)
-
-
-def test_legacy_three_field_recipe_handover_remains_readable():
-    state = repository.empty_campaign_state(
-        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
-        last_verdict="fresh",
-    )
-    state["campaign_phase"] = "startup"
-    state["recipe_handover"] = {
-        "current_synthesis": "Recipe summary.",
-        "next_direction_or_closure": "Continue from the recipe.",
-        "next_question": "What remains unresolved?",
-    }
-    repository.validate_research_state(state, allow_missing_artifact=True)
-
-
-@pytest.mark.parametrize("handover", [1, ["current_synthesis"]])
-def test_recipe_handover_rejects_non_object_values(handover):
-    state = repository.empty_campaign_state(
-        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
-        last_verdict="fresh",
-    )
-    state["campaign_phase"] = "startup"
-    state["recipe_handover"] = handover
-    with pytest.raises(ValueError, match="recipe_handover requires exactly"):
         repository.validate_research_state(state, allow_missing_artifact=True)
 
 

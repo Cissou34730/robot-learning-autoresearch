@@ -30,15 +30,6 @@ _DEVELOPMENT_DIRECTORY_NAMES = {
     "evaluations",
     "tensorboard",
 }
-# Delivery keeps PI-authored diagnostic source. Variant overlays and runtime
-# output stay development-only.
-_DELIVERY_DIRECTORY_NAMES = _DEVELOPMENT_DIRECTORY_NAMES - {"lab"}
-
-
-def _is_delivery_source(relative: Path) -> bool:
-    if any(part in _DELIVERY_DIRECTORY_NAMES for part in relative.parts):
-        return False
-    return relative.parts[:1] != ("lab",) or relative.suffix.lower() == ".py"
 
 
 def is_recipe_source(relative: str) -> bool:
@@ -324,7 +315,7 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
     package = root / "robot_learning"
     for source in package.rglob("*"):
         relative = source.relative_to(package)
-        if any(part in _DELIVERY_DIRECTORY_NAMES for part in relative.parts):
+        if any(part in _DEVELOPMENT_DIRECTORY_NAMES for part in relative.parts):
             continue
         if source.is_symlink():
             raise RuntimeError("Delivered recipe source cannot contain symbolic links.")
@@ -339,7 +330,7 @@ def _build_public_tree(root: Path, staged: Path, state: dict, parameters: dict) 
         ):
             continue
         relative = Path(logical).relative_to("robot_learning")
-        if not _is_delivery_source(relative):
+        if any(part in _DEVELOPMENT_DIRECTORY_NAMES for part in relative.parts):
             continue
         source = root / logical
         if (

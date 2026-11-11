@@ -100,7 +100,7 @@ End with a substantive section with the heading `## Decision-relevant synthesis`
 _SCIENTIFIC_MODEL_HANDOFF = {
     "included": """The PI receives this section and the full scientific model in the recipe-development session. The PI uses quick tests to develop a recipe that learns and supports your initial scientific question. The PI creates further variants from the test results.
 
-The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the same scientific model, the delivered candidate with its recipe and lineage, and the four-field handover. It starts with fresh operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered candidate and its recipe.""",
+The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the same scientific model, the delivered candidate with its recipe and lineage, and the three-field handover. It starts with fresh operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered candidate and its recipe.""",
     "skipped": """The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.""",
 }
 _SCIENTIFIC_MODEL_RESULT = "The final result is a compact and substantive scientific model. It explains how the complete coupled system works, physically and scientifically."
@@ -323,17 +323,13 @@ def _handoff_context(
             sections.append(lineage)
         handover = state.get("recipe_handover")
         if handover is not None:
-            lines = [
-                "Handover from recipe development, word for word:",
-                f"Delivered recipe: {handover['current_synthesis']}",
-                f"How startup can continue: {handover['next_direction_or_closure']}",
-            ]
-            frontier = handover.get("decision_frontier")
-            if frontier:
-                lines.append(f"Decision frontier: {frontier}")
-            lines.append(f"Proposed question for startup: {handover['next_question']}")
             sections += [
-                "\n".join(lines),
+                (
+                    "Handover from recipe development, word for word:\n"
+                    f"Delivered recipe: {handover['current_synthesis']}\n"
+                    f"How startup can continue: {handover['next_direction_or_closure']}\n"
+                    f"Proposed question for startup: {handover['next_question']}"
+                ),
                 "This handover is a revisable scientific judgment.",
             ]
         return sections
@@ -426,13 +422,11 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "An active change with no benefit is a valid null result."
             ),
             (
-                "Use short training tests. After each test, state which experience "
-                "the evidence covers and which learning assumption it supports "
-                "or weakens. State whether a measured signal separated better "
-                "from worse behavior. State how that "
-                "result affects the next decision. Update the plan before further "
-                "training and create further variants from the test results. Each "
-                "variant can continue from its own saved training checkpoint."
+                "Use short training tests. After each test, state what you "
+                "learned and why you keep or revise each variant. Update the plan "
+                "before further training. Create further variants from the test "
+                "results. Each variant can continue from its own saved training "
+                "checkpoint."
             ),
             (
                 "Fresh training of the same recipe can vary. If this variation "
@@ -456,13 +450,9 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "scientific adequacy."
             ),
             (
-                "Judge delivery from measured evidence that the recipe learns. A "
-                "continuation that gives no further measured gain is evidence "
-                "about that continuation. It does not by itself decide delivery. "
-                "State whether you deliver or develop the recipe further and why, "
-                "using `current_synthesis` and `decision_frontier`. The selection "
-                "of the best-known candidate is not, by itself, evidence of "
-                "learning."
+                "End recipe development on measured evidence that the recipe "
+                "learns. The selection of the best-known candidate is not, by "
+                "itself, evidence of learning."
             ),
             (
                 "Startup receives the best-known candidate as its working and "
@@ -470,10 +460,9 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "normalization and training state. Startup also receives the "
                 "lineage of the training runs that produced the candidate, the "
                 "delivered recipe, the same accepted scientific model and your "
-                "handover: `current_synthesis`, `next_direction_or_closure`, "
-                "`next_question` and `decision_frontier`, word for word. It does "
-                "not receive development operation records or other candidates. "
-                "Development candidates "
+                "handover: `current_synthesis`, `next_direction_or_closure` and "
+                "`next_question`, word for word. It does not receive development "
+                "operation records or other candidates. Development candidates "
                 "remain usable for tests and explicit recipe restoration during "
                 "recipe development. The other candidates are unavailable after "
                 "delivery."

@@ -152,7 +152,6 @@ def _development_delivery(git_repository, monkeypatch):
         "robot_learning/training/train.log": b"private training history\n",
         "robot_learning/training/checkpoints/step-10/model.zip": b"trained policy",
         "robot_learning/lab/trial.py": b"VALUE = 'private'\n",
-        "robot_learning/lab/traces.csv": b"step,value\n1,0.2\n",
         "robot_learning/variants/other/training/reward.py": b"VALUE = 'alternative'\n",
         "pi_workspace/scientific_model.md": b"Accepted model\r\nExact bytes.\r\n",
         "models/candidates/campaign/t1/model.zip": b"old trained policy",
@@ -434,7 +433,6 @@ def test_recipe_delivery_preserves_tracked_canonical_assets_without_training_sta
             "robot_learning/scenario/assets/task.xml",
             "robot_learning/scenario/assets/texture.bin",
             "robot_learning/scenario/assets/targets.jsonl",
-            "robot_learning/lab/trial.py",
         ):
             assert (git_repository / logical).read_bytes() == files[logical]
             repository.require_path_at_commit("HEAD", logical)
@@ -446,8 +444,6 @@ def test_recipe_delivery_preserves_tracked_canonical_assets_without_training_sta
             "robot_learning/training/training_metrics.json",
             "robot_learning/training/train.log",
             "robot_learning/training/checkpoints",
-            "robot_learning/variants",
-            "robot_learning/lab/traces.csv",
         ):
             assert not (git_repository / logical).exists()
         assert (git_repository / "pi_workspace/scientific_model.md").read_bytes() == (
@@ -592,6 +588,7 @@ def test_recipe_delivery_is_fresh_and_development_git_is_private(
         for relative in (
             "models",
             ".copilot",
+            "robot_learning/lab",
             "robot_learning/variants",
             "campaigns/evaluations",
             "campaigns/training_logs",
