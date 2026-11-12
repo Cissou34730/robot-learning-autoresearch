@@ -224,6 +224,31 @@ def test_copilot_sessions_have_no_read_alias():
     assert "providers" not in options
 
 
+@pytest.mark.parametrize("external", [False, True])
+def test_native_editors_are_registered_only_in_the_isolated_worker(external):
+    pytest.importorskip("copilot")
+    args = (
+        opencode_args("opencode/free-model")
+        if external
+        else adapter.parse_args(["p", "--session-id", "s"])
+    )
+    coding = ScientificCoding(None, args, Console())
+    main = adapter.session_options(args, Console(), asyncio.Event(), coding=coding)
+    worker = adapter.coding_session_options(args, coding, Console(), None)
+    editors = {"builtin:apply_patch", "builtin:create", "builtin:edit"}
+    assert editors.isdisjoint(main["available_tools"].to_list())
+    assert main["custom_agents"] == []
+    assert "default_agent" not in main and "default_agent" not in worker
+    assert "builtin:apply_patch" in worker["available_tools"].to_list()
+    if external:
+        assert editors <= set(worker["available_tools"].to_list())
+    assert worker["custom_agents"] == [coding.agent(), coding.reviewer_agent()]
+    assert {tool.name for tool in worker["tools"]} == {"scientific_api_reference"}
+    assert {"apply_patch", "create", "edit"}.isdisjoint(
+        coding.reviewer_agent()["tools"]
+    )
+
+
 @pytest.mark.parametrize("recipe_phase", ["included", "skipped"])
 def test_analyst_sessions_select_the_recipe_phase_system_message(recipe_phase):
     pytest.importorskip("copilot")
@@ -443,30 +468,126 @@ def test_external_pi_coder_uses_the_pi_model_and_the_reviewer_stays_on_copilot()
     assert reviewer["tools"] == REVIEW_TOOLS
     coding.busy, coding.active_handle = True, "child"
     coding.binding = {"allowed_paths": [SOURCE], "read_paths": [SOURCE]}
+    invocation = {"session_id": coding.worker_session_id}
     for tool in ("read", "powershell", "submit_operation"):
         request = {"sessionId": "child", "toolName": tool, "toolArgs": {"path": SOURCE}}
-        assert (
-            coding.pre_tool_use(request, {"session_id": "s"})["permissionDecision"]
-            == "deny"
-        )
+        assert coding.pre_tool_use(request, invocation)["permissionDecision"] == "deny"
     for path, allowed in ((SOURCE, True), ("pi_workspace/scientific_model.md", False)):
         request = {
             "sessionId": "child",
             "toolName": "create",
             "toolArgs": {"path": path},
         }
-        decision = coding.pre_tool_use(request, {"session_id": "s"})
+        decision = coding.pre_tool_use(request, invocation)
         assert (decision is None) is allowed, path
     coding.active_agent = "scientific-reviewer"
     request = {"sessionId": "child", "toolName": "apply_patch", "toolArgs": {}}
-    assert (
-        coding.pre_tool_use(request, {"session_id": "s"})["permissionDecision"]
-        == "deny"
-    )
+    assert coding.pre_tool_use(request, invocation)["permissionDecision"] == "deny"
     copilot = ScientificCoding(
         None, adapter.parse_args(["p", "--session-id", "s"]), Console()
     )
     assert copilot.agent()["tools"] == CODING_TOOLS
+
+
+def test_worker_hooks_keep_main_and_child_authority_separate():
+    coding = ScientificCoding(
+        None, adapter.parse_args(["p", "--session-id", "s"]), Console()
+    )
+    coding.busy, coding.active_handle = True, "child"
+    coding.binding = {"allowed_paths": [SOURCE], "read_paths": [SOURCE]}
+    worker = {"session_id": coding.worker_session_id}
+    main = {"session_id": "s"}
+    start = {"agentName": coding_session.CODER}
+    assert SOURCE in coding.start_hook(start, worker)["additionalContext"]
+    assert "Unauthorized" in coding.start_hook(start, main)["additionalContext"]
+    patch = {
+        "sessionId": "child",
+        "toolName": "apply_patch",
+        "toolArgs": {"input": f"*** Update File: {SOURCE}\n+VALUE = 2\n"},
+    }
+    assert coding.pre_tool_use(patch, worker) is None
+    assert coding.pre_tool_use(patch, main)["permissionDecision"] == "deny"
+    for invocation, allowed in ((worker, True), (main, False)):
+        request = object()
+        coding.permission_requests[id(request)] = (request, "child", coding.binding)
+        if allowed:
+            assert coding.permission_scope(request, invocation) is coding.binding
+        else:
+            with pytest.raises(ValueError):
+                coding.permission_scope(request, invocation)
+    request = {
+        "agentId": "child",
+        "response": '{"summary":"done","unchecked_scope":["No code executed."]}',
+    }
+    assert coding.stop_hook(request, main) is None
+    assert not coding.completed.is_set()
+    assert coding.stop_hook(request, worker) is None
+    assert coding.completed.is_set()
+
+
+@pytest.mark.parametrize(
+    "failure", [None, "worker_create", "conversation", "cancelled"]
+)
+def test_worker_runtime_closes_with_its_parent(monkeypatch, failure):
+    import copilot
+
+    events = []
+
+    class Session:
+        def __init__(self, name):
+            self.name = name
+
+        async def abort(self):
+            events.append(f"{self.name}:abort")
+
+        async def disconnect(self):
+            events.append(f"{self.name}:disconnect")
+
+    class Worker:
+        async def start(self):
+            events.append("worker:start")
+
+        async def create_session(self, *, session_id, **options):
+            assert session_id != "s"
+            assert "default_agent" not in options
+            if failure == "worker_create":
+                raise RuntimeError(failure)
+            return Session("worker")
+
+        async def stop(self):
+            events.append("worker:stop")
+
+    class Parent:
+        async def create_session(self, **options):
+            assert "builtin:apply_patch" not in options["available_tools"].to_list()
+            return Session("pi")
+
+    async def converse(session, args, console, finished, operations):
+        assert session.name == "pi" and operations.coding.session.name == "worker"
+        if failure == "cancelled":
+            raise asyncio.CancelledError
+        if failure == "conversation":
+            raise RuntimeError(failure)
+        return adapter.EXIT_OK, False
+
+    monkeypatch.setattr(copilot, "CopilotClient", lambda **kwargs: Worker())
+    monkeypatch.setattr(adapter, "converse", converse)
+    monkeypatch.setattr(adapter, "stop_requested", lambda: False)
+    args = adapter.parse_args(["p", "--session-id", "s"])
+    run = adapter.run(args, client=Parent(), channel=object(), binding={"state": {}})
+    if failure == "cancelled":
+        with pytest.raises(asyncio.CancelledError):
+            asyncio.run(run)
+    elif failure:
+        with pytest.raises(RuntimeError, match=failure):
+            asyncio.run(run)
+    else:
+        assert asyncio.run(run) == adapter.EXIT_OK
+    assert events[-1] == "pi:disconnect"
+    assert events.index("worker:stop") < events.index("pi:disconnect")
+    if failure != "worker_create":
+        assert "worker:abort" in events and "worker:disconnect" in events
+    assert ("pi:abort" in events) is (failure == "cancelled")
 
 
 @pytest.mark.parametrize(

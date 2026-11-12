@@ -72,6 +72,7 @@ class ScientificCoding:
         self.closed = False
         self.operations = None
         self.session = None
+        self.worker_session_id = str(uuid.uuid4())
         self.bindings: dict[str, dict] = {}
         self.original_requests: dict[str, dict] = {}
         self.review_handles: set[str] = set()
@@ -251,6 +252,8 @@ class ScientificCoding:
                 return deny("This coding/PI context has ended.")
             handle = request.get("sessionId")
             if handle == self.active_handle and self.busy and self.binding is not None:
+                if invocation.get("session_id") != self.worker_session_id:
+                    return deny(CODING_SCOPE_DENIAL)
                 if (
                     self.active_agent == REVIEWER
                     and request.get("toolName") not in REVIEW_TOOLS
@@ -277,14 +280,20 @@ class ScientificCoding:
             or record[0] is not request
             or self.closed
             or not isinstance(invocation, dict)
-            or invocation.get("session_id") != self.args.session_id
+            or invocation.get("session_id")
+            not in {self.args.session_id, self.worker_session_id}
         ):
             raise ValueError(CODING_PERMISSION_DENIAL)
         _, handle, binding = record
-        if handle is None and not self.busy:
+        if (
+            invocation["session_id"] == self.args.session_id
+            and handle is None
+            and not self.busy
+        ):
             return None
         if (
-            self.busy
+            invocation["session_id"] == self.worker_session_id
+            and self.busy
             and self.binding is not None
             and handle is not None
             and handle == self.active_handle
@@ -295,7 +304,7 @@ class ScientificCoding:
 
     def start_hook(self, request, invocation):
         if (
-            invocation.get("session_id") != self.args.session_id
+            invocation.get("session_id") != self.worker_session_id
             or request.get("agentName") != self.active_agent
             or not self.busy
             or self.binding is None
@@ -314,7 +323,7 @@ class ScientificCoding:
 
     def stop_hook(self, request, invocation):
         if (
-            invocation.get("session_id") != self.args.session_id
+            invocation.get("session_id") != self.worker_session_id
             or request.get("agentId") != self.active_handle
             or not self.busy
             or self.closed
@@ -413,7 +422,7 @@ class ScientificCoding:
     async def _prepare(self, params: ScientificCodingParams, invocation):
         self.authorize_parent(invocation)
         if self.session is None or not invocation.tool_call_id:
-            raise ValueError("Native coding requires the bound parent SDK session.")
+            raise ValueError("Native coding requires the bound worker SDK session.")
         await self.session.rpc.tools.initialize_and_validate()
         if self.args.preliminary:
             raise ValueError("Coding is unavailable during preliminary publication.")

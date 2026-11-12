@@ -68,6 +68,28 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**12 November 2026. Copilot CLI 1.0.109 coding isolation — Implemented.**
+The missing-editor failure was reproduced with native inference tool captures:
+the PI editor exclusion also removed the coder's editor. Source-qualified
+exclusions restored editing but exposed the editor to the PI. That workaround
+was rejected.
+
+The existing coder and reviewer now run in a separate Copilot
+runtime per bounded PI context. The PI registers no editor or native agent
+profile. Worker hooks use the worker session ID. Models, scientific prompts,
+file scopes and original PI usage attribution remain unchanged.
+
+A synthetic fixture passed the production coding-tool handoff on 1.0.109:
+actual edit, independent review, then a correction with the same coder and
+reviewer handles. The PI editor catalog remained empty before and after the
+edits. The two handoffs cost 0.369348 AIU.
+
+Targeted runtime tests cover isolation,
+permissions, startup failure and cancellation. This is an implementation check,
+not evidence of scientific effectiveness. No campaign was launched, resumed,
+reset or mutated. This repair does not change the separate TUI formatter failure
+or inquiry turnover.
+
 **10 November 2026. TUI scientific model reader — Implemented.**
 The overview has a Scientific model row: not published, ready or unavailable.
 Enter on that cell, or F5 on a campaign tab, opens a read-only reader of
@@ -1185,6 +1207,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-11-12 | Isolate native coding workers for CLI 1.0.109 | Retain pending campaign observation. A separate worker runtime preserves the coder editor without exposing it to the PI. The reviewer remains read-only. Actual edit, independent review and same-child correction passed on a temporary fixture through the production handoff. Runtime tests cover role and session boundaries and worker cleanup. No scientific prompt, scenario, inquiry limit or campaign artifact changed. |
 | 2026-11-10 | Measurement panels run in parallel | From the duration analysis of the 10 Nov stabilization run: measurements average 2–3.7 evaluation panels, which ran one after another. `execute_measurement` now runs consecutive research and task-reference panels on at most 3 threads (`MEASUREMENT_PANEL_WORKERS`) and records results in request order. `python_module` panels stay sequential. A stop sets an event that each worker's `evaluate_artifact` checks, because only the main thread receives the stop interrupt. Queued panels are cancelled, and completed results after an unfinished panel run again on resume. Seeds, episodes, panels and the 3-checkpoint limit are unchanged. Concurrent panels share one progress row in the TUI timeline (display only). Expected saving: 8–46 min per campaign. Implementation check: new order-and-concurrency test, the crash-recovery test, and a stop reproduction with a real child process (stopped in 0.3 s). Not yet validated by a campaign. No campaign was launched, resumed, reset or mutated. |
 | 2026-11-10 | Trusted-runtime HEAD check batched | The 10 Nov campaign events showed 32–97 s median (max 332 s) between a PI measurement submission and its acceptance, 15–28 min per campaign. Cause: `require_trusted_assessment_runtime`, the integrity check that benchmark, contract and trusted runtime files match Git HEAD, ran 2 Git calls per file for about 29 files, 4 times per acceptance, and acceptance runs twice per submission. `require_paths_at_head` now compares all files with one `ls-tree` and one `hash-object` per repository. The check and its refusals are unchanged. Profiled on N1's M16 request: 50 s to 11 s per acceptance. New real-Git test for match, changed, absent and missing files. Not yet validated by a campaign. No campaign was launched, resumed, reset or mutated. |
 | 2026-11-09 | Revert unvalidated PI guidance, require a continuation check, and discover lineage variants | In response to the 9 Nov comparison, removed the six new `program.md` guidance additions that showed no measurable benefit or had not been tested. Recipe delivery now requires continued training of the selected recipe and comparison with its parent, unless the PI states why further training cannot improve it. `training_log_query` with no variant now lists the available labels. `training_series_statistics` lists the labels and requires the PI to select one. Targeted tests check both paths. The STE check found no new errors in `program.md`; `training.md` has no errors. Not yet validated by a campaign. |

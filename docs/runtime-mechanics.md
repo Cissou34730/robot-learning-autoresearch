@@ -129,6 +129,22 @@ reports support PI review; they do not certify scientific validity.
 
 Reviewer usage is recorded separately from coder and PI usage.
 
+Each bounded PI context owns a separate Copilot runtime and worker session for
+its native coder and reviewer. The main session registers no editor or native
+agent profile. The worker registers only the existing coder tools and API
+reference tool, with the read-only reviewer profile. Starting the worker makes
+no LLM call.
+
+Native hooks and permission callbacks bind to its session ID.
+Tool requests and usage records remain attributed to the original PI context.
+The adapter cancels the children and stops the worker when that context ends,
+including on startup failure or cancellation.
+
+This separation avoids the Copilot CLI 1.0.109 shared-session editor failure.
+Native request captures showed that the main agent's editor exclusions also
+removed the coder's editor. Source-qualified exclusions restored editing but
+exposed the editor to the main agent, so that workaround was rejected.
+
 ## Read and search policy
 
 Read restrictions are tool-level, not an operating-system sandbox. The shared

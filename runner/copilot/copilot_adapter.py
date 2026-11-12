@@ -16,6 +16,7 @@ import time
 
 from runner import typed_events
 from runner.copilot.coding_contracts import (
+    CODING_TOOLS,
     EXTERNAL_EDITORS,
     MAIN_PI_TOOLS,
     RESEARCH_TOOLS,
@@ -166,9 +167,6 @@ def session_options(
     if not args.preliminary and coding is not None:
         tools.append(coding.tool())
         available.add_custom("scientific_coding")
-        available.add_builtin("apply_patch")
-        if external is not None:
-            available.add_builtin(EXTERNAL_EDITORS)
     if not args.preliminary and operations is not None:
         tools.append(operations.tool())
         available.add_custom("submit_operation")
@@ -198,9 +196,7 @@ def session_options(
         "enable_config_discovery": False,
         "enable_on_demand_instruction_discovery": False,
         "mcp_servers": {},
-        "custom_agents": [coding.agent(), coding.reviewer_agent()]
-        if coding is not None
-        else [],
+        "custom_agents": [],
         "memory": {"enabled": False},
         "large_output": {
             "enabled": True,
@@ -220,14 +216,6 @@ def session_options(
     }
     if not args.preliminary:
         options["include_sub_agent_streaming_events"] = True
-        options["default_agent"] = {
-            "excluded_tools": ["apply_patch", *EXTERNAL_EDITORS]
-            if external is not None
-            else ["apply_patch"]
-        }
-        if coding is not None:
-            options["hooks"]["on_subagent_start"] = coding.start_hook
-            options["hooks"]["on_subagent_stop"] = coding.stop_hook
         options["enable_file_hooks"] = False
         options["enable_host_git_operations"] = False
         options["request_extensions"] = False
@@ -237,6 +225,33 @@ def session_options(
                 args.provider_identity, api_key(), args.provider_project
             )
         )
+    return options
+
+
+def coding_session_options(args, coding, console, client) -> dict:
+    from copilot import ToolSet
+
+    worker_args = argparse.Namespace(
+        **{**vars(args), "session_id": coding.worker_session_id}
+    )
+    options = session_options(
+        worker_args, console, asyncio.Event(), coding, coding.operations, client
+    )
+    options["tools"] = [
+        tool for tool in options["tools"] if tool.name == "scientific_api_reference"
+    ]
+    options["available_tools"] = (
+        ToolSet()
+        .add_builtin(
+            [name for name in CODING_TOOLS if name != "scientific_api_reference"]
+        )
+        .add_custom("scientific_api_reference")
+    )
+    if coding.external_pi:
+        options["available_tools"].add_builtin(EXTERNAL_EDITORS)
+    options["custom_agents"] = [coding.agent(), coding.reviewer_agent()]
+    options["hooks"]["on_subagent_start"] = coding.start_hook
+    options["hooks"]["on_subagent_stop"] = coding.stop_hook
     return options
 
 
@@ -501,6 +516,7 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
         coding.operations = operations
     args.operation_submission = operations
     session = None
+    coding_client = None
     abort_session = False
     try:
         if owned_client:
@@ -519,7 +535,13 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
             session_options(args, console, finished, coding, operations, client),
         )
         if coding is not None:
-            coding.session = session
+            # Keep PI tool restrictions out of the native workers' tool registry.
+            coding_client = CopilotClient(working_directory=str(ROOT))
+            await coding_client.start()
+            coding.session = await coding_client.create_session(
+                session_id=coding.worker_session_id,
+                **coding_session_options(args, coding, console, coding_client),
+            )
         try:
             exit_code, abort_session = await converse(
                 session, args, console, finished, operations
@@ -535,12 +557,24 @@ async def run(args, *, client=None, channel=None, binding=None) -> int:
             if coding is not None:
                 await coding.close()
         finally:
-            if owned_client:
-                await shutdown_runtime(client, session, console, abort=abort_session)
-            elif session is not None:
-                if abort_session:
-                    await asyncio.wait_for(session.abort(), SHUTDOWN_TIMEOUT_SECONDS)
-                await asyncio.wait_for(session.disconnect(), SHUTDOWN_TIMEOUT_SECONDS)
+            try:
+                if coding_client is not None:
+                    await shutdown_runtime(
+                        coding_client, coding.session, console, abort=True
+                    )
+            finally:
+                if owned_client:
+                    await shutdown_runtime(
+                        client, session, console, abort=abort_session
+                    )
+                elif session is not None:
+                    if abort_session:
+                        await asyncio.wait_for(
+                            session.abort(), SHUTDOWN_TIMEOUT_SECONDS
+                        )
+                    await asyncio.wait_for(
+                        session.disconnect(), SHUTDOWN_TIMEOUT_SECONDS
+                    )
 
 
 # --- command line and launcher controller ----------------------------------
