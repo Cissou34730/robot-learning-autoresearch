@@ -73,6 +73,10 @@ end-effector position as observations. Network output is the motor command.
 Training uses Stable-Baselines3 PPO with observation normalization.
 The recipe supplies training parameters, periodic checkpoints and reward logging.
 
+The recipe includes `robot_learning/scenario/robot_bench.py`. This module
+applies motor commands to the simulated robot without a policy. It records the
+joint motion and the end-effector motion at each control step.
+
 The recipe includes a training reward. This recipe does not reach the goal by
 itself. It is the base that you develop into a method that reaches the goal.
 Every part of the starting method is a design choice that you can change, not a

@@ -175,7 +175,8 @@ superseded. It does not instruct the Researcher and does not replace
   has its own model and reasoning; `--model`/`--reasoning` set all of them.
   Defaults: `gpt-6-luna`, analyst `max`, others `high`. The hard-coded analyst
   model is removed.
-- **Inherited recipe:** `baseline-distinct-episodes-v4-robot` (v3-robot with a
+- **Inherited recipe:** `baseline-distinct-episodes-v5-robot` (v4-robot plus the
+  open-loop robot bench; v4-robot is v3-robot with a
   required `--timesteps`) is the default recipe reference; the harness
   `contracts/scenario.md` states that this recipe does not reach the goal by
   itself and is the base to develop. This supersedes the v3 reset reference in

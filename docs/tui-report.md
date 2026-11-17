@@ -267,7 +267,7 @@ the interface from opening.
   **F1** opens command help; **F3** opens recent commands and persistent step
   details from this TUI session. The main report does not repeat help as activity.
 - Reset controls select Fresh/Baseline, Clean and RecipeRef/BaselineRef. The
-  default remains Fresh + Clean + `baseline-distinct-episodes-v4-robot` + Force.
+  default remains Fresh + Clean + `baseline-distinct-episodes-v5-robot` + Force.
   Targets and options are logged before execution (`models` has no target).
   Measurements/logs may be deleted; ignored measurements have no reset backup.
   Only the reference field for the selected reset mode is visible. `--clean`
@@ -277,7 +277,7 @@ the interface from opening.
   recipe development.
 - `run` initializes a missing standard folder from the recipe (same as
   `tools.run_parallel`), resets it (`--mode fresh --clean --recipe-ref
-  baseline-distinct-episodes-v4-robot --force`) and launches it. `start`
+  baseline-distinct-episodes-v5-robot --force`) and launches it. `start`
   launches without resetting; `reset` resets without launching; `stop`
   sends the cooperative stop request. All selected resets complete before
   any batch launcher starts. An initialization/reset failure stops further

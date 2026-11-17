@@ -68,6 +68,46 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**17 November 2026. Robot measurements before training — Implemented.**
+Branch `feature/instruction-method`, after the restore `763ff0fec`. Basis, from
+the 25 campaigns of 8-11 November: of 412 PI-built diagnostic module runs, 393
+took a trained policy, 18 took a measurement artifact and none measured the
+robot alone; the analyst has no simulator access; 9 of the 10 passes changed
+the saved runtime and 2 changed a training parameter. The maintainer approved
+four supports. They add text and tools; no existing sentence changes.
+
+- `adc1d3d91`: the analyst proposes `### Proposed robot measurements` (motor
+  commands applied to the simulated robot without a policy, motion recorded)
+  for each physical consequence that can change a first decision. The first PI
+  session measures the robot before its first training run and compares the
+  motion with the scientific model: recipe development, or startup when the
+  campaign has no recipe development. Later sessions do not receive the
+  paragraph.
+- Recipe `baseline-distinct-episodes-v5-robot` (`4e926a4`, parent v4
+  `ffd33f4`): adds `robot_learning/scenario/robot_bench.py`, an open-loop
+  bench. It holds motor commands for control steps from a chosen start and
+  records joint and end-effector motion. It has no target, reward, feedback
+  mode or conclusion. `contracts/scenario.md` names it; harness prompts do not.
+  The tag is in slots 1 to 5; no working tree changed. `run_parallel`, the TUI
+  and `initialize_campaign` default to v5.
+- `27e7387be`: `episode_outcome_breakdown` strata accept an optional second
+  field of the same rows; the result adds one cell for each pair of bins, at
+  most 64. The PI names both fields. The tool contains no scenario term.
+
+Checks: a throwaway campaign initialized from the v5 default in `%TEMP%`
+(import and Fresh reset, no launch) lists the bench as a PI-owned recipe file
+and runs it through the write guard; steady velocity at full command is 10
+rad/s, as gear 5 and damping 0.5 predict. Targeted suites pass, except the
+three known failures (`test_initialize_campaign` real-git cases and the
+`[isolated]` overlay case). STE results of the changed contracts are unchanged.
+
+Limits. No campaign has exercised these changes. The bench is in
+`robot_learning/scenario/`, so a PI edit of it changes the evaluation-semantics
+fingerprint; PI tools belong in `robot_learning/lab/`. The no-recipe side is
+not done: `skeleton-v4` has no bench and its `contracts/scenario.md` does not
+name one, while the shared prompts now ask for robot measurements. The five
+inherited slots still hold the stopped batch below and need a Fresh reset.
+
 **17 November 2026. Interruption recovery and concurrent journal writes — Implemented.**
 The TUI repair required a cooperative stop. On resumption, campaigns `4a7afa97`
 and `256f1aba` refused further operations because their conversations retained
@@ -1302,6 +1342,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-11-17 | Robot measurements before training (`feature/instruction-method`): analyst proposals and first-session paragraph (`adc1d3d91`), open-loop robot bench in recipe v5 (`4e926a4`, default recipe), optional second field in `episode_outcome_breakdown` (`27e7387be`) | Implemented; no campaign has exercised them. Additions only. See Current state, 17 November. |
 | 2026-11-17 | Instruction corrections and contract rewrite reverted (`feature/instruction-method`) | Withdrawn by the maintainer. `contracts/`, `runner/launcher/prompts.py` and `runner/copilot/system_prompt.py` are restored to `d3e63f0f1`, except the recovery paragraph of `instruments.md`. The rewrite changed meanings and was not checked sentence by sentence; the training-length rule had no bound; the basis used the training proxy. See Current state, 17 November. The branch keeps three runtime repairs: rejected-query formatting in the timeline, native append for the Windows event journal, and interruption recovery scoped to one invocation. |
 | 2026-11-17 | PI-facing contracts rewritten shorter and positive; official episode start stated in the harness scenario (`feature/instruction-method`) | Reverted the same day (row above). |
 | 2026-11-17 | Instruction corrections for recipe development, inquiries and the session record (`feature/instruction-method`) | Reverted the same day (row above). |
