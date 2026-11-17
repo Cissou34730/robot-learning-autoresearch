@@ -131,7 +131,7 @@ _CONTRACT_FILES = {
 def inquiry_objective(inquiry_id: object) -> str:
     return (
         f"Advance {text(inquiry_id)} with a session-sized deliverable. The "
-        "deliverable does not need to be a complete answer to the inquiry. Choose "
+        "deliverable can be a part of the answer to the inquiry. Choose "
         "the deliverable from the completed evidence and the remaining scientific "
         "question."
     )
@@ -227,10 +227,10 @@ def _best_evidence(state: dict, checkpoint: object) -> str:
         )
     if completed_events(state):
         return (
-            "campaigns/brief.md contains the evidence of completed operations. No "
-            "candidate has the best-known role."
+            "campaigns/brief.md contains the evidence of completed operations. "
+            "The best-known role is empty."
         )
-    return "No development operation has completed in this campaign."
+    return "The campaign starts: its list of completed development operations is empty."
 
 
 def _checkpoint_text(checkpoint: object, name: str, missing: str) -> str:
@@ -256,7 +256,7 @@ def _inquiry_line(state: dict, transition: Transition | None) -> str:
             "decision."
         )
     return (
-        "None. Before you choose the official assessment or one bounded inquiry, "
+        "Empty. Before you choose the official assessment or one bounded inquiry, "
         "you can measure and give roles that the evidence supports."
     )
 
@@ -288,7 +288,7 @@ def _lineage_text(lineage: dict) -> str:
             + f": {start}, seed {chapter['seed']}, {chapter['training_steps']:,} steps"
             + (f", changes: {changes}" if changes else "")
             + f" -> {chapter['candidate']}"
-            + (f"; {scores}" if scores else "; not measured")
+            + (f"; {scores}" if scores else "; unmeasured")
         )
     return (
         f"Lineage of the delivered candidate {lineage['candidate']}, first "
@@ -307,15 +307,16 @@ def _handoff_context(
                 "recipe and the same accepted scientific model. The candidate is "
                 "your working and best-known candidate, with its saved policy, "
                 "normalization and training state. Its recipe-development results "
-                "are historical evidence, not measurements of this session. Other "
-                "development candidates and operation records are not available in "
-                "this session. Operation identities in the handover and the lineage "
+                "are historical evidence. The measurements of this session start "
+                "now. It is the only development candidate in this session, and "
+                "the handover replaces the development operation records. "
+                "Operation identities in the handover and the lineage "
                 "refer to recipe development."
                 if delivered is not None
                 else "Startup begins from the delivered recipe and the same accepted "
                 "scientific model. Its scientific state is fresh. "
-                "Development candidates and operation records are not available "
-                "in this session. Operation identities in the handover refer to "
+                "The handover replaces the development candidates and operation "
+                "records. Operation identities in the handover refer to "
                 "recipe development."
             )
         ]
@@ -337,8 +338,8 @@ def _handoff_context(
         return [
             (
                 "The inherited recipe is the reference for your first comparison. A "
-                "first experiment that changes several parts of the recipe at once "
-                "gives a result that you cannot attribute to any one of them. After "
+                "result is attributable to one part of the recipe when the "
+                "experiment changes that part alone. After "
                 "the first comparison, choose the size of a change from the "
                 "explanation that it tests."
             )
@@ -348,7 +349,7 @@ def _handoff_context(
         return [
             (
                 "This is the restored scientific handoff from your previous session. "
-                "It is the current scientific state, not the opinion of another PI. "
+                "It is your own current scientific state. "
                 "The current scientific understanding below is the synthesis of that "
                 "session, word for word."
             ),
@@ -360,7 +361,8 @@ def _handoff_context(
                 "Continue from the completed evidence. Treat inherited "
                 "interpretations, research constraints, priorities and proposed next "
                 "actions as revisable scientific judgments. Correct an interpretation "
-                "that the evidence does not support, or a question that the available "
+                "that the evidence contradicts or leaves unsupported, and a question "
+                "that the available "
                 "evidence already settles. Record the correction and its basis."
             ),
         ]
@@ -378,7 +380,8 @@ def _handoff_context(
 
 
 _BEHAVIOR_EVIDENCE = (
-    "Outcome counts show where the policy fails, not why. Base each recipe "
+    "Outcome counts show where the policy fails. Observed behavior shows why. "
+    "Base each recipe "
     "decision on the observed behavior of the robot and the policy. If your "
     "next recipe decision needs more behavior evidence, use, build or adapt "
     "PI-owned tools to record it. Start from the behavior observations that "
@@ -387,7 +390,8 @@ _BEHAVIOR_EVIDENCE = (
     "difference to it, examine the behavior behind the outcomes."
 )
 _RESEARCH_BEHAVIOR_EVIDENCE = (
-    "Outcome counts show where the policy fails, not why. Base each "
+    "Outcome counts show where the policy fails. Observed behavior shows why. "
+    "Base each "
     "interpretation on the observed behavior of the robot and the policy. "
     "If your next startup decision needs more behavior evidence, use, build or "
     "adapt PI-owned tools to record it. "
@@ -407,7 +411,7 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "question, why you chose each variant and the behavior you expect. "
                 "State the observations of robot behavior needed to answer the "
                 "recipe question. "
-                "State what the comparison can distinguish and what it cannot.\n\n"
+                "State what the comparison can distinguish and where its limits are.\n\n"
                 "State the training length and justify it for this test. Explain "
                 "how the results will change your next decision. Use observed "
                 "behavior to test your predictions and guide the explanation and "
@@ -417,19 +421,19 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "Identify the conditions in which each change can affect robot "
                 "behavior. Before you interpret its effect, check that the "
                 "implementation includes the intended change. Check from existing "
-                "evidence that the test reached those conditions. An inactive "
-                "change does not establish that the change has no benefit. "
-                "An active change with no benefit is a valid null result."
+                "evidence that the test reached those conditions. A test of an "
+                "inactive change leaves its benefit unknown. "
+                "An active change with zero benefit is a valid null result."
             ),
             (
                 "Each comparison contains a reference variant. The reference "
                 "variant is the recipe from which the other variants differ.\n\n"
                 "A training test can separate designs only when learning appears "
                 "in it. Choose a training length at which the reference variant "
-                "shows task success in a measurement. When no variant shows task "
-                "success in a measurement, continue training or train longer. Do "
-                "this before you compare variants, reject a variant or create "
-                "further variants."
+                "shows task success in a measurement. While all variants stay at "
+                "zero task success in a measurement, continue training or train "
+                "longer. Do this before you compare variants, reject a variant or "
+                "create further variants."
             ),
             (
                 "After each test, state what you learned and why you keep or "
@@ -455,13 +459,12 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "best-known candidate. The canonical Python source files and "
                 "parameters must be its recipe. `restore_recipe` makes them its "
                 "recipe. You judge whether the candidate and its recipe are "
-                "adequate for delivery. The Runner checks the files, not "
-                "scientific adequacy."
+                "adequate for delivery. The Runner checks the files."
             ),
             (
                 "End recipe development on measured evidence that the recipe "
-                "learns. The selection of the best-known candidate is not, by "
-                "itself, evidence of learning."
+                "learns. Measurements give this evidence, separately from the "
+                "selection of the best-known candidate."
             ),
             (
                 "Startup receives the best-known candidate as its working and "
@@ -470,11 +473,10 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "lineage of the training runs that produced the candidate, the "
                 "delivered recipe, the same accepted scientific model and your "
                 "handover: `current_synthesis`, `next_direction_or_closure` and "
-                "`next_question`, word for word. It does not receive development "
-                "operation records or other candidates. Development candidates "
-                "remain usable for tests and explicit recipe restoration during "
-                "recipe development. The other candidates are unavailable after "
-                "delivery."
+                "`next_question`, word for word. Delivery transfers this candidate "
+                "alone, and the handover replaces the development operation "
+                "records. During recipe development, each development candidate "
+                "remains usable for tests and explicit recipe restoration."
             ),
             (
                 "Compare the task behavior of saved candidates from different "
@@ -503,8 +505,8 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
         [
             (
                 "Base the decision on what the robot and the policy do in the "
-                "remaining failures. Outcome statistics support this decision; they "
-                "do not replace it. State what further work can change in that "
+                "remaining failures. Outcome statistics support this decision. "
+                "State what further work can change in that "
                 "behavior. Then compare the risk of the official assessment with "
                 "what one more inquiry can learn. Explain why the chosen action is "
                 "preferable now."
@@ -566,7 +568,8 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
     if not pstext.same(kind, "startup"):
         lines.append(
             "When evidence resolves or redirects the active inquiry, record that "
-            "decision explicitly. Do not drift to another question."
+            "decision explicitly. Until then, stay on the question of the active "
+            "inquiry."
         )
     return lines
 
@@ -592,14 +595,10 @@ def _legal_operations(
             f"The current session is {text(field(session, 'id'))}. It stays active "
             "until the Runner accepts this checkpoint operation."
         ),
-        "When you open, reframe or close an inquiry, this session does not end.",
+        "After you open, reframe or close an inquiry, this session stays active.",
         (
             "Set completed_operations to exactly: "
             f"{pstext.to_json(items(field(session, 'operation_ids')))}"
-        ),
-        (
-            "In this session, do not request training, measurement, role changes, "
-            "recipe restoration, another inquiry change or the official assessment."
         ),
     ]
     if pstext.same(kind, "goal_review"):
@@ -679,17 +678,17 @@ def scientific_session_prompt(
     synthesis = _checkpoint_text(
         checkpoint,
         "current_synthesis",
-        "No session record contains a synthesis yet.",
+        "The first session record will contain the synthesis.",
     )
     gap = _checkpoint_text(
         checkpoint,
         "current_goal_gap",
-        "No session record contains your interpretation of the goal gap yet.",
+        "The first session record will contain your interpretation of the goal gap.",
     )
     frontier = (
         text(field(checkpoint, "decision_frontier"))
         if pstext.truthy(checkpoint)
-        else "No session record contains a scientific decision frontier yet."
+        else "The first session record will contain the scientific decision frontier."
     )
     objective = (
         transition.objective if transition else text(field(session, "objective"))
@@ -770,7 +769,7 @@ def scientific_session_prompt(
             "effect of each proposed change on the robot's behavior. Use variant "
             "comparisons to test that prediction and guide the next recipe decision. "
             "Revise the design choices "
-            "that observed behavior does not support."
+            "that observed behavior contradicts."
             if pstext.same(kind, "recipe_development")
             else ""
         ),
@@ -786,8 +785,8 @@ def scientific_session_prompt(
                 "scientific distinction or the capability question that should determine "
                 "the initial direction. State which findings would change that decision, "
                 "and how the first action follows from it. Treat the interpretations of "
-                "the scientific model as revisable in light of evidence. Do not require a "
-                "measurement only to restate the scientific model."
+                "the scientific model as revisable in light of evidence. Request a "
+                "measurement when its result can change a decision."
             )
             if pstext.same(kind, "startup")
             else ""
@@ -810,7 +809,7 @@ def scientific_session_prompt(
         *_legal_operations(state, session, availability, transition),
         _training_allocation(kind, transition, context),
         (
-            f"The Runner did not accept the proposed action: {validation_error} "
+            f"The Runner rejected the proposed action: {validation_error} "
             "Correct it, and keep the valid scientific work."
             if validation_error
             else ""
@@ -833,7 +832,7 @@ def repair_prompt(session_prompt: str, pending: dict) -> str:
                 f"{text(field(pending, 'failure'))}"
             ),
             (
-                "This failure is execution history, not scientific evidence. Diagnose "
+                "This failure is execution history. Diagnose "
                 "the cause and correct the scientific implementation, or choose "
                 "another action. Call submit_operation with request=null to accept the "
                 "corrected pending action again, or give a replacement request."

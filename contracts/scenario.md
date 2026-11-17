@@ -33,7 +33,9 @@ The robot definitions are authoritative for physical properties.
 
 Each official episode samples one target with radius uniformly distributed
 from 0.06 to 0.20 m around the robot base, over the full angular range.
-The target remains fixed during the episode.
+The target is in the plane of the arm and remains fixed during the episode.
+Each official episode starts with zero joint positions and zero joint
+velocities.
 
 Robot behavior and policy failures can depend on task conditions, such as the
 target position and episode start. The scientific model states the task
@@ -62,7 +64,7 @@ inverse kinematics or robot model.
 
 The human-authored robot and benchmark contracts fix the official physics,
 episode distribution, interaction rules and success criterion.
-The protected evaluators define the official episode start and target placement.
+The protected evaluators apply the official episode start and target placement.
 
 ## Starting recipe
 
@@ -79,5 +81,6 @@ Every part of the starting method is a design choice that you can change, not a
 property of the robot or an official task requirement.
 
 The research environment starts at zero joint positions and velocities,
-with targets in the arm's plane. These are starting-recipe choices.
-They do not establish the protected evaluators' episode-start conditions.
+with targets in the arm's plane. It uses the official episode start and target
+placement. The research environment is a starting-recipe choice that you can
+change. The official episode start stays the same.

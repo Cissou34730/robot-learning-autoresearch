@@ -5,16 +5,17 @@ all parts.
 
 ## Scientific-model publication
 
-Before other campaign work, `pi_workspace/scientific_model.md` must contain
-four substantive registers: `Established facts`, `Physical consequences`,
+Before other campaign work, `pi_workspace/scientific_model.md` contains four
+substantive registers: `Established facts`, `Physical consequences`,
 `Unknowns` and `Decision-relevant synthesis`. Each register is a level-two
 heading (`##`) with its content under it. Topics in a register use level-three
 headings (`###`).
 
 The analyst writes the scientific model. The scientific model states physical
 consequences and the discriminating evidence between them. The analyst proposes
-an initial scientific question for startup, a first reward and the first variants.
-The PI decides which proposals to implement and how to develop the recipe.
+an initial scientific question for startup, a first reward and the first
+variants. The PI decides which proposals to implement and how to develop the
+recipe.
 
 The synthesis is the last register. It selects the consequences and the
 unknowns that are most likely to change the first decisions of the campaign.
@@ -24,44 +25,36 @@ assumptions, the source references and the discriminating evidence.
 
 The synthesis also includes the invariances of the definitions. For each
 invariance, it states which outcomes the invariance predicts to be equal when
-the episode start and the target are transformed the same way. A measured difference between such
-outcomes, beyond sampling variation, is evidence about the policy, not about
-the task.
+the episode start and the target are transformed the same way. A measured
+difference between such outcomes, beyond sampling variation, is evidence about
+the policy.
 
 The synthesis includes `### Proposed first reward` and
-`### Proposed design variants`. The first reward is a design proposal.
-The variant proposals state an initial scientific question for startup.
-They explain how the first variants can help develop a recipe that supports
-this question.
+`### Proposed design variants`. The first reward is a design proposal. The
+variant proposals state an initial scientific question for startup. They
+explain how the first variants can help develop a recipe that supports this
+question.
 
 Each variant tests a proposed method. The proposals state the recipe questions,
 their physical or learning reasons and the behavior that the analyst expects.
-Training tests give evidence for the next recipe decision. A variant can
-change any PI-owned source file and any parameter.
+Training tests give evidence for the next recipe decision. A variant can change
+any PI-owned source file and any parameter.
 
 The synthesis ends with `### Proposed behavior observations`. A behavior
 observation is a quantity recorded over time during an episode or a training
-run. For each consequential hypothesis, the analyst states the observations that
-distinguish it and a PI-owned tool that can record them. The PI decides which
-tools to build.
+run. For each consequential hypothesis, the analyst states the observations
+that distinguish it and a PI-owned tool that can record them. The PI decides
+which tools to build.
 
 When the campaign includes a recipe-development session, that session receives
-the synthesis and the full scientific model. The PI creates further variants from the test results.
-The PI develops a recipe that learns and supports the initial scientific
-question for startup. The recipe uses knowledge across all tested variants.
-The PI combines design choices supported by the results.
-The PI measures the resulting recipe to demonstrate learning progress.
-
-The startup session receives the unchanged scientific model and the recipe in
-`robot_learning/`. When the campaign includes recipe development, this recipe
-is the recipe of the delivered candidate. Startup also receives that candidate,
-the lineage of the training runs that produced it, and `current_synthesis`,
-`next_direction_or_closure` and `next_question` from recipe development, word for word.
-The PI uses them to establish the initial scientific direction and the first
-useful investigation.
+the synthesis and the full scientific model. The startup session receives the
+unchanged scientific model and the recipe in `robot_learning/`. When the
+campaign includes recipe development, this recipe is the recipe of the
+delivered candidate. Startup also receives that candidate, its lineage and the
+three handover texts from recipe development, word for word.
 
 After acceptance, the scientific model stays fixed for the campaign. Later
 session records preserve or revise its consequential conclusions. The Runner
-checks only that the file exists and that each required register is present
-and not empty. It does not check scientific adequacy. The PI judges the
-soundness of the scientific model when the PI uses it.
+checks that the file exists and that each required register is present and has
+content. The PI judges the soundness of the scientific model when the PI uses
+it.

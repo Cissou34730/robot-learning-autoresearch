@@ -6,7 +6,7 @@ decisions. `contracts/authority.md` defines the ownership and the permissions
 of each role.
 
 This file contains the request envelope, the operations that each session
-accepts and the session record. Read a part below only when you use it:
+accepts and the session record. The parts give the details of each instrument:
 
 - `contracts/instruments/measurement.md` - the measurement operation and the
   artifact contents metadata
@@ -25,8 +25,8 @@ accepts and the session record. Read a part below only when you use it:
 ## Paths and evidence storage
 
 Paths in requests and records are logical paths, relative to the repository.
-The read tools resolve each logical path to its storage location. Read access
-does not give write access.
+The read tools resolve each logical path to its storage location. Write access
+is separate from read access.
 
 The campaign keeps versions of the scientific code and of the operation
 records. The raw measurement artifacts and the training logs stay in the local
@@ -37,8 +37,8 @@ evidence tools read and verify them.
 
 Call `submit_operation` with a `request` that contains one JSON operation
 object. The call applies to the active campaign and session. The Runner
-validates the request and executes it. The object must contain exactly one
-top-level operation kind:
+validates the request and executes it. The object contains exactly one
+top-level operation kind, which wraps the body of the operation:
 
 ```text
 inquiry | measurement | training | checkpoint | model_role |
@@ -47,16 +47,15 @@ restore_recipe | campaign_conclusion
 
 The tool schema shows the exclusive wrappers and the structure of their
 bodies. The Runner checks the structure. Then it validates the operation body
-against the active state. A flat operation record with `kind` and body fields
-is not a submission envelope. The errors identify missing wrappers, extra
-top-level fields or a body that is not an object.
+against the active state. The errors identify missing wrappers, extra
+top-level fields or a body with an incorrect type.
 
 Measurement identities use `M#`. Training identities use `T#`. Other event
-identities use `E#`. Evidence references must identify completed operations.
+identities use `E#`. Evidence references identify completed operations.
 
-`submit_operation` returns one of these: a short factual result, or the exact
-rejection or error. It also returns the operation identity when the operation
-completed, and the changed state. The changed state contains:
+`submit_operation` returns a short factual result, or the exact rejection or
+error. It also returns the operation identity when the operation completed,
+and the changed state. The changed state contains:
 
 - the session identity and kind
 - the list of completed operations
@@ -65,32 +64,31 @@ completed, and the changed state. The changed state contains:
 - the operation kinds that you can submit now
 - a required `checkpoint`, if there is one
 
-The result does not include complete artifact inventories and logs. Read them
-through `artifact_evidence_query` and `training_log_query`. After a normal
-result, continue in the same conversation. When you open, reframe or close an
-inquiry, the `checkpoint` operation is the only next operation. A completed
-`checkpoint` or a request for the official assessment ends the session. The
-next session starts from the durable saved state.
+`artifact_evidence_query` and `training_log_query` read the complete artifact
+inventories and logs. After a normal result, continue in the same
+conversation. After you open, reframe or close an inquiry, the `checkpoint`
+operation is the only next operation. A completed `checkpoint` or a request for
+the official assessment ends the session. The next session starts from the
+durable saved state.
 
 When the Runner rejects a request, correct it in the same conversation. A
 second rejected request ends the session.
 
 `implementation_error` means that an accepted operation failed during its
-execution. It does not diagnose a defect in the source code. Read the actual
-error and the accepted invocation. Then decide if you correct the request or
-change the source code. `artifact_evidence_query` with `action=metadata`, the
+execution. It reports the failure. You find its cause from the actual error and
+the accepted invocation. `artifact_evidence_query` with `action=metadata`, the
 pending `operation_id` and `path=/pending` returns the exact request and its
 resolved measurements.
 
 - To change arguments, submit a replacement envelope.
 - To change source code, use `scientific_coding`. Then submit
-  `{"request": null}` to accept the same pending request again. `null` cannot
-  change arguments.
+  `{"request": null}` to accept the same pending request again. `null` keeps
+  the arguments.
 
-An execution failure is history, not scientific evidence. After one of these
-results, the session accepts no more requests or evidence queries:
-`validation_fatal`, `controller_fatal`, a publication failure, an
-interruption, a final result, or a result that requires recovery.
+An execution failure is execution history. Completed operations give the
+scientific evidence. Each of these results closes the session to requests and
+evidence queries: `validation_fatal`, `controller_fatal`, a publication
+failure, an interruption, a final result, or a result that requires recovery.
 
 ## Operations by session
 
@@ -99,8 +97,8 @@ The operation kinds have these purposes:
 - Inquiry operations open, reframe and close inquiries.
 - Measurement operations record scientific measurements.
 - `research_evaluation` and `task_reference` measure a candidate.
-- `python_module` runs an experiment or an analysis from a PI-owned module. It
-  does not need a candidate.
+- `python_module` runs an experiment or an analysis from a PI-owned module. A
+  candidate is optional.
 - Training operations make candidates.
 - The `checkpoint` operation saves the session record.
 - Role operations (`model_role`) give a role to a candidate or keep a
@@ -108,9 +106,8 @@ The operation kinds have these purposes:
 - Recipe restoration restores recorded PI-owned scientific work.
 - `campaign_conclusion` requests the protected official assessment.
 
-This list does not define a sequence or a preference. `scientific_coding` and
-the evidence tools are tools, not operations. They are available in each PI
-session.
+`scientific_coding` and the evidence tools are tools. They are available in
+each PI session.
 
 The kind of the current session sets the operations that the Runner accepts:
 
@@ -120,19 +117,19 @@ The kind of the current session sets the operations that the Runner accepts:
   restoration and `checkpoint` operations.
 - In a goal-review session, the Runner accepts measurement, role, inquiry open
   and `campaign_conclusion` operations.
-- In a goal-review session, `checkpoint` is available only after you open an
+- In a goal-review session, `checkpoint` is available after you open an
   inquiry.
 - In an inquiry session, the Runner accepts measurement, training, role, recipe
   restoration, inquiry reframe, inquiry close and `checkpoint` operations.
 
-After you open, reframe or close an inquiry, you must submit a `checkpoint`
-before any other operation. `contracts/glossary.md` shows the same rules in a
+After you open, reframe or close an inquiry, the Runner accepts the
+`checkpoint` operation alone. `contracts/glossary.md` shows the same rules in a
 table.
 
 ## Session record
 
-The `checkpoint` operation saves the session record. It does not save policy
-weights. A training checkpoint is a different artifact that training makes.
+The `checkpoint` operation saves the session record. Training saves the policy
+weights, in training checkpoints.
 
 ```json
 {
@@ -157,14 +154,11 @@ weights. A training checkpoint is a different artifact that training makes.
 }
 ```
 
-Each field is required. Each string field must not be empty.
+Each field is required. Each string field contains text.
 
 `current_goal_gap` gives the gap in numbers: the goal from
 `contracts/scenario.md`, the measured result of the best candidate with the
 panels that it combines, and the improvement that the campaign still needs.
-`success_rate_pass_probability` gives the estimated probability to reach a
-success-rate goal from recorded measurements. Each count comes from the record
-of the cited operation and candidate.
 
 `next_question` depends on the kind of session:
 
@@ -182,29 +176,26 @@ method, its recipe and the measured differences that support the selection.
 can distinguish them. `next_direction_or_closure` explains why later inquiries
 will primarily develop the selected method.
 
-The accepted recipe-development `checkpoint` ends the session and initiates recipe delivery.
-The Runner accepts it only when a best-known candidate is assigned and the
-canonical recipe is the recipe of that candidate.
-Delivery contains the best-known candidate with its saved files and the lineage
-of the training runs that produced it. It also contains the canonical source
-files and parameters, the same accepted scientific model and the three handover
-texts. Startup receives `current_synthesis`, `next_direction_or_closure` and
-`next_question` word for word.
+The accepted recipe-development `checkpoint` ends the session and initiates
+recipe delivery. The Runner accepts it when a best-known candidate is assigned
+and the canonical recipe is the recipe of that candidate. Delivery contains the
+best-known candidate with its saved files and the lineage of the training runs
+that produced it. It also contains the canonical source files and parameters,
+the same accepted scientific model and the three handover texts.
 
-Startup starts with fresh operation records. The delivered candidate is its
-working and best-known candidate, and its recipe-development results are
-historical evidence. Other development candidates are not available.
-Operation identities in the handover and the lineage refer to
-recipe development. This handover is a revisable scientific judgment.
-The Runner validates the delivery files, not scientific adequacy.
+Startup receives `current_synthesis`, `next_direction_or_closure` and
+`next_question` word for word. Startup starts with fresh operation records. The
+delivered candidate is its working and best-known candidate, and its only
+development candidate. Its recipe-development results are historical evidence.
+Operation identities in the handover and the lineage refer to recipe
+development. The Runner validates the delivery files.
 
-`completed_operations` must be exactly the completed operation identities of
-the active session. When you open, reframe or close an inquiry, the session
-does not end. The prompt for the `checkpoint` gives the session identity and the
-exact list of operations. The Runner rejects a list that is different and does
-not change the session. Its error gives the session identity, the expected list
-and the submitted list.
+`completed_operations` is exactly the list of the completed operation
+identities of the active session. The prompt for the `checkpoint` gives the
+session identity and the exact list of operations. The Runner rejects a
+different list, and the session stays active. Its error gives the session
+identity, the expected list and the submitted list.
 
-Each evidence reference must identify a completed operation. Artifact paths are
-outputs of operations, not separate evidence references. The accepted session
-record ends the current session.
+Each evidence reference identifies a completed operation. Cite an artifact
+through the operation that wrote it. The accepted session record ends the
+current session.

@@ -96,11 +96,32 @@ Changes to campaign-facing text only:
 - `program.md`: the session-record fields no longer state that they do not
   require matched conditions, one factor at a time or repeated training.
 
-No cost, time or usage information is added. STE: no new errors. Targeted
-prompt and lifecycle tests pass; five schema-6 and scenario-lineage tests fail
-with and without the change. Scientific effectiveness is unobserved. Longer
-recipe-development runs are expected while concurrent variants share CPU
-threads. No campaign was launched, resumed, reset or mutated.
+Rewrite of the PI-facing contracts (second commit on the branch). Every rule is
+kept and stated positively; sentences that only disclaimed are removed.
+
+- `program.md`: 4,271 to 2,825 words, 92 to 0 sentences with a negation. The
+  recipe-development guidance that the session prompt already sends word for
+  word is removed from this file; the continued-training rule before delivery
+  stays. The list of things that the record fields do not require is removed.
+- `instruments.md` and its parts, and `authority.md`: 0 sentences with a
+  negation (before: 18, 30, 24, 7, 18, 50 and 13). Their size changes little
+  (about 5%), because they describe formats and acceptance rules.
+  `instruments.md` no longer states when to use the pass-probability tool.
+- PI session prompts in `runner/launcher/prompts.py`: each negative sentence is
+  restated positively. The analyst prompts, the system prompt identities, the
+  tool descriptions and `glossary.md` are unchanged.
+- The excerpt boundaries of `runner/copilot/coding_contracts.py` and the
+  human-owned path list of `authority.md` are unchanged.
+- `scenario.md` (harness scenario only): states the official episode start,
+  zero joint positions and velocities, and the target in the plane of the arm.
+  The protected evaluators already use them. "Protected start" doubts appeared
+  102 times in 21 of the 25 campaigns. The no-recipe scenario is unchanged and
+  still carries the earlier sentence.
+
+No cost, time or usage information is added. STE: no new errors. Scientific
+effectiveness is unobserved. Longer recipe-development runs are expected while
+concurrent variants share CPU threads. No campaign was launched, resumed,
+reset or mutated.
 
 **12 November 2026. Copilot CLI 1.0.109 coding isolation — Implemented.**
 The missing-editor failure was reproduced with native inference tool captures:
@@ -1241,6 +1262,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-11-17 | PI-facing contracts rewritten shorter and positive; official episode start stated in the harness scenario (`feature/instruction-method`) | Retain pending campaign observation. `program.md` 4,271 to 2,825 words; `program.md`, `instruments.md` and its parts and `authority.md` have 0 sentences with a negation; PI session prompts restated positively; prompt duplicates removed from `program.md`. Rules, formats, excerpt boundaries and the human-owned path list are unchanged. Scenario: episode start and target plane stated. See Current state, 17 November. Text only. |
 | 2026-11-17 | Instruction corrections for recipe development, inquiries and the session record (`feature/instruction-method`) | Retain pending campaign observation. Short-test wording replaced by a reference variant and a training length at which it shows measured task success; behavior tools on need; reference candidate for attribution in inquiries; pass probability only before an assessment request; three method releases removed from the session-record field list. See Current state, 17 November. Text only; no Runner rule, allocation or limit changed. |
 | 2026-11-12 | Isolate native coding workers for CLI 1.0.109 | Retain pending campaign observation. A separate worker runtime preserves the coder editor without exposing it to the PI. The reviewer remains read-only. Actual edit, independent review and same-child correction passed on a temporary fixture through the production handoff. Runtime tests cover role and session boundaries and worker cleanup. No scientific prompt, scenario, inquiry limit or campaign artifact changed. |
 | 2026-11-10 | Measurement panels run in parallel | From the duration analysis of the 10 Nov stabilization run: measurements average 2–3.7 evaluation panels, which ran one after another. `execute_measurement` now runs consecutive research and task-reference panels on at most 3 threads (`MEASUREMENT_PANEL_WORKERS`) and records results in request order. `python_module` panels stay sequential. A stop sets an event that each worker's `evaluate_artifact` checks, because only the main thread receives the stop interrupt. Queued panels are cancelled, and completed results after an unfinished panel run again on resume. Seeds, episodes, panels and the 3-checkpoint limit are unchanged. Concurrent panels share one progress row in the TUI timeline (display only). Expected saving: 8–46 min per campaign. Implementation check: new order-and-concurrency test, the crash-recovery test, and a stop reproduction with a real child process (stopped in 0.3 s). Not yet validated by a campaign. No campaign was launched, resumed, reset or mutated. |
