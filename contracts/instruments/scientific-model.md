@@ -36,7 +36,7 @@ this question.
 
 Each variant tests a proposed method. The proposals state the recipe questions,
 their physical or learning reasons and the behavior that the analyst expects.
-Short training tests give evidence for the next recipe decision. A variant can
+Training tests give evidence for the next recipe decision. A variant can
 change any PI-owned source file and any parameter.
 
 The synthesis ends with `### Proposed behavior observations`. A behavior

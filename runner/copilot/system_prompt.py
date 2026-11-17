@@ -79,7 +79,7 @@ ANALYST_EXPLORATION = {
         "design choices, not properties of the robot. A variant can change any "
         "PI-owned source file and any parameter. The training instrument in the "
         "campaign reference describes the variant capabilities.\n\n"
-        "The PI uses quick variant comparisons before the startup session. "
+        "The PI uses variant comparisons before the startup session. "
         "The PI builds a recipe from knowledge across all tested variants. "
         "The PI combines design choices supported by the results. "
         "The PI measures the resulting recipe to demonstrate learning progress. "

@@ -153,9 +153,18 @@ intended change. Check from existing evidence that the test reached those
 conditions. An inactive change does not establish that the change has no benefit.
 An active change with no benefit is a valid null result.
 
-Use short training tests. After each test, state what you learned and why
-you keep or revise each variant. Create further variants from the test results.
-Update the plan before further training.
+Each comparison contains a reference variant. The reference variant is the
+recipe from which the other variants differ.
+
+A training test can separate designs only when learning appears in it. Choose a
+training length at which the reference variant shows task success in a
+measurement. When no variant shows task success in a measurement, continue
+training or train longer. Do this before you compare variants, reject a variant
+or create further variants.
+
+After each test, state what you learned and why you keep or revise each
+variant. Create further variants from the test results. Update the plan before
+further training.
 
 Each variant can continue from its own saved training checkpoint.
 `contracts/instruments/training.md`
@@ -326,6 +335,10 @@ compared candidates, not of the intended factor alone. A difference between
 candidates that you cannot explain can guide your selection of a candidate. It
 is not an established cause.
 
+Further training alone can change a candidate. To attribute a difference to a
+change, compare the changed candidate with a reference candidate. The reference
+candidate has the same parent, seed and steps, without the change.
+
 A measurement can characterize behavior, compare policies, examine the learning
 dynamics, test an explanation or reveal that the question itself should change.
 
@@ -442,9 +455,6 @@ These field meanings do not require you to:
 
 - inspect unrelated artifact fields exhaustively
 - use a fixed set of diagnostics
-- match the conditions in every experiment
-- change one factor at a time
-- repeat training
 - add an operation
 
 `decision_frontier` records the unresolved scientific distinctions and the

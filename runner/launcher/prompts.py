@@ -73,7 +73,7 @@ The PI trains the policy with reinforcement learning, from the starting recipe t
 
 Propose a first reward under the heading `### Proposed first reward` in the register Decision-relevant synthesis. Give each term as a formula of the quantities that robot_learning/training/reward.py receives, with its weight. For each term, state the behavior that it encourages, the behavior that it makes cheapest and the reason for its weight. State the observations in the first training runs that can show that the reward is wrong. The PI decides whether to implement or revise the proposal. Do not write code.
 
-Propose the first variants for quick learning tests under `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that tests a proposed method. Differences between variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
+Propose the first variants for learning tests under `### Proposed design variants` in the register Decision-relevant synthesis. A variant is a recipe that tests a proposed method. Differences between variants follow from the scientific question. A variant can change any PI-owned source file and any parameter.
 
 Propose an initial scientific question for startup in this section. Explain how the first variants can help develop a recipe that supports this question.
 
@@ -98,7 +98,7 @@ End with a substantive section with the heading `## Decision-relevant synthesis`
     "\n", "\r\n"
 )
 _SCIENTIFIC_MODEL_HANDOFF = {
-    "included": """The PI receives this section and the full scientific model in the recipe-development session. The PI uses quick tests to develop a recipe that learns and supports your initial scientific question. The PI creates further variants from the test results.
+    "included": """The PI receives this section and the full scientific model in the recipe-development session. The PI uses tests to develop a recipe that learns and supports your initial scientific question. The PI creates further variants from the test results.
 
 The recipe uses knowledge across all tested variants. The PI combines design choices supported by the results. The PI measures the resulting recipe to demonstrate learning progress. The startup session then receives the same scientific model, the delivered candidate with its recipe and lineage, and the three-field handover. It starts with fresh operation records. The PI establishes the initial scientific direction and the first useful investigation from the delivered candidate and its recipe.""",
     "skipped": """The PI receives this section as the handoff into the startup session. The section states consequences and discriminating evidence. The PI selects the interventions.""",
@@ -378,13 +378,13 @@ def _handoff_context(
 
 
 _BEHAVIOR_EVIDENCE = (
-    "Outcome counts show where the policy fails, not why. Before your first "
-    "design comparison, you must build or adapt PI-owned tools that record the "
-    "behavior of the robot and the policy. Start from the behavior observations "
-    "that the scientific model proposes. Base each recipe decision on the observed "
-    "behavior. Before a variant test, predict how each variant changes that "
-    "behavior. Before you reject a design or attribute a difference to it, "
-    "examine the behavior behind the outcomes."
+    "Outcome counts show where the policy fails, not why. Base each recipe "
+    "decision on the observed behavior of the robot and the policy. If your "
+    "next recipe decision needs more behavior evidence, use, build or adapt "
+    "PI-owned tools to record it. Start from the behavior observations that "
+    "the scientific model proposes. Before a variant test, predict how each "
+    "variant changes that behavior. Before you reject a design or attribute a "
+    "difference to it, examine the behavior behind the outcomes."
 )
 _RESEARCH_BEHAVIOR_EVIDENCE = (
     "Outcome counts show where the policy fails, not why. Base each "
@@ -422,11 +422,20 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
                 "An active change with no benefit is a valid null result."
             ),
             (
-                "Use short training tests. After each test, state what you "
-                "learned and why you keep or revise each variant. Update the plan "
-                "before further training. Create further variants from the test "
-                "results. Each variant can continue from its own saved training "
-                "checkpoint."
+                "Each comparison contains a reference variant. The reference "
+                "variant is the recipe from which the other variants differ.\n\n"
+                "A training test can separate designs only when learning appears "
+                "in it. Choose a training length at which the reference variant "
+                "shows task success in a measurement. When no variant shows task "
+                "success in a measurement, continue training or train longer. Do "
+                "this before you compare variants, reject a variant or create "
+                "further variants."
+            ),
+            (
+                "After each test, state what you learned and why you keep or "
+                "revise each variant. Update the plan before further training. "
+                "Create further variants from the test results. Each variant can "
+                "continue from its own saved training checkpoint."
             ),
             (
                 "Fresh training of the same recipe can vary. If this variation "
@@ -524,6 +533,10 @@ def _decision_guidance(state: dict, kind: object) -> list[str]:
             (
                 "For a measurement, explain how its possible results would affect your "
                 "choice between the two actions."
+            ),
+            (
+                "Before you request the official assessment, state the estimated "
+                "probability that the best-known candidate reaches the goal."
             ),
             (
                 "Record the chosen action, the official assessment or the inquiry, and "
@@ -735,7 +748,7 @@ def scientific_session_prompt(
         *model_file,
         *_handoff_context(state, kind, checkpoint, synthesis, lineage),
         (
-            "Build the first recipe through quick iterations on variants. "
+            "Build the first recipe through iterations on variants. "
             "Start from the scientific model and the analyst's proposals. You "
             "decide which proposals to implement and how to revise them. The "
             "proposed first reward has the same status as the other proposals. "

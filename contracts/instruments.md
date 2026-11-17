@@ -162,9 +162,9 @@ Each field is required. Each string field must not be empty.
 `current_goal_gap` gives the gap in numbers: the goal from
 `contracts/scenario.md`, the measured result of the best candidate with the
 panels that it combines, and the improvement that the campaign still needs.
-When the goal is a success rate, include the estimated probability to reach it.
-`success_rate_pass_probability` gives this estimate from recorded measurements,
-so that each count comes from the record of the cited operation and candidate.
+`success_rate_pass_probability` gives the estimated probability to reach a
+success-rate goal from recorded measurements. Each count comes from the record
+of the cited operation and candidate.
 
 `next_question` depends on the kind of session:
 

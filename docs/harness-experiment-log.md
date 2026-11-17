@@ -68,6 +68,40 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**17 November 2026. Instruction corrections — Implemented.**
+Branch `feature/instruction-method`, worktree
+`robot-learning-harness-instructions`. Not merged into `harness`.
+
+Basis: review of the 25 campaigns of 8-11 November from their typed event
+feeds. All 86 fresh recipe-development arms ended before the recorded training
+success reached 10%; 76 used 50k steps or less. Fresh 120k runs of the
+inherited recipe first show training success at 65k-81k steps. Recipe
+development compared that recipe at 20k-50k, where it scored 6-52% against
+about 73% at 120k. Decisions also rested on behavior traces of 6-24 episodes,
+and the PIs computed a pass probability 137 times, down to 1e-73.
+
+Changes to campaign-facing text only:
+
+- Recipe development: "Use short training tests" and the "quick" wording are
+  removed. Each comparison contains a reference variant. A test separates
+  designs only at a training length where the reference variant shows task
+  success in a measurement; otherwise the PI trains longer first.
+- Recipe development: PI-owned behavior tools are built when the next decision
+  needs them, as in startup and inquiries, not before the first comparison.
+- Inquiries: a reference candidate with the same parent, seed and steps
+  separates a change from further training.
+- Session record: the pass probability is no longer required in every
+  `current_goal_gap`. The goal-review prompt asks for it before a request for
+  the official assessment.
+- `program.md`: the session-record fields no longer state that they do not
+  require matched conditions, one factor at a time or repeated training.
+
+No cost, time or usage information is added. STE: no new errors. Targeted
+prompt and lifecycle tests pass; five schema-6 and scenario-lineage tests fail
+with and without the change. Scientific effectiveness is unobserved. Longer
+recipe-development runs are expected while concurrent variants share CPU
+threads. No campaign was launched, resumed, reset or mutated.
+
 **12 November 2026. Copilot CLI 1.0.109 coding isolation — Implemented.**
 The missing-editor failure was reproduced with native inference tool captures:
 the PI editor exclusion also removed the coder's editor. Source-qualified
@@ -1207,6 +1241,7 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
+| 2026-11-17 | Instruction corrections for recipe development, inquiries and the session record (`feature/instruction-method`) | Retain pending campaign observation. Short-test wording replaced by a reference variant and a training length at which it shows measured task success; behavior tools on need; reference candidate for attribution in inquiries; pass probability only before an assessment request; three method releases removed from the session-record field list. See Current state, 17 November. Text only; no Runner rule, allocation or limit changed. |
 | 2026-11-12 | Isolate native coding workers for CLI 1.0.109 | Retain pending campaign observation. A separate worker runtime preserves the coder editor without exposing it to the PI. The reviewer remains read-only. Actual edit, independent review and same-child correction passed on a temporary fixture through the production handoff. Runtime tests cover role and session boundaries and worker cleanup. No scientific prompt, scenario, inquiry limit or campaign artifact changed. |
 | 2026-11-10 | Measurement panels run in parallel | From the duration analysis of the 10 Nov stabilization run: measurements average 2–3.7 evaluation panels, which ran one after another. `execute_measurement` now runs consecutive research and task-reference panels on at most 3 threads (`MEASUREMENT_PANEL_WORKERS`) and records results in request order. `python_module` panels stay sequential. A stop sets an event that each worker's `evaluate_artifact` checks, because only the main thread receives the stop interrupt. Queued panels are cancelled, and completed results after an unfinished panel run again on resume. Seeds, episodes, panels and the 3-checkpoint limit are unchanged. Concurrent panels share one progress row in the TUI timeline (display only). Expected saving: 8–46 min per campaign. Implementation check: new order-and-concurrency test, the crash-recovery test, and a stop reproduction with a real child process (stopped in 0.3 s). Not yet validated by a campaign. No campaign was launched, resumed, reset or mutated. |
 | 2026-11-10 | Trusted-runtime HEAD check batched | The 10 Nov campaign events showed 32–97 s median (max 332 s) between a PI measurement submission and its acceptance, 15–28 min per campaign. Cause: `require_trusted_assessment_runtime`, the integrity check that benchmark, contract and trusted runtime files match Git HEAD, ran 2 Git calls per file for about 29 files, 4 times per acceptance, and acceptance runs twice per submission. `require_paths_at_head` now compares all files with one `ls-tree` and one `hash-object` per repository. The check and its refusals are unchanged. Profiled on N1's M16 request: 50 s to 11 s per acceptance. New real-Git test for match, changed, absent and missing files. Not yet validated by a campaign. No campaign was launched, resumed, reset or mutated. |
