@@ -331,6 +331,28 @@ def _patch_detail(arguments: object) -> str:
     )
 
 
+def _episode_outcome_detail(arguments: dict) -> str:
+    measurements = arguments.get("measurements", [])
+    if isinstance(measurements, list):
+        detail = " vs ".join(
+            f"{item.get('operation_id', '-')} {item.get('candidate', '-')}"
+            if isinstance(item, dict)
+            else "invalid measurement"
+            for item in measurements
+        )
+    else:
+        detail = "invalid measurements"
+    strata = arguments.get("strata")
+    if strata is not None:
+        field = (
+            f"strata {strata.get('field', '-')}"
+            if isinstance(strata, dict)
+            else "invalid strata"
+        )
+        return " | ".join(part for part in (detail, field) if part)
+    return detail
+
+
 _TOOL_DETAIL = {
     "artifact_evidence_query": _artifact_query_detail,
     "training_log_query": _training_log_detail,
@@ -341,17 +363,7 @@ _TOOL_DETAIL = {
         f"evidence={len(arguments.get('evidence') or [])} | "
         f"confidence={arguments.get('confidence', '-')}"
     ),
-    "episode_outcome_breakdown": lambda arguments: (
-        " vs ".join(
-            f"{item.get('operation_id', '-')} {item.get('candidate', '-')}"
-            for item in arguments.get("measurements") or []
-        )
-        + (
-            f" | strata {(arguments.get('strata') or {}).get('field', '-')}"
-            if arguments.get("strata")
-            else ""
-        )
-    ),
+    "episode_outcome_breakdown": _episode_outcome_detail,
     "scientific_coding": lambda _: "bounded coding / PI source review required",
     "scientific_api_reference": _api_reference_detail,
     "powershell": _powershell_detail,

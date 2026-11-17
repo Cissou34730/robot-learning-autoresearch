@@ -68,6 +68,27 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**17 November 2026. TUI rejected-query formatting — Implemented.**
+Campaign `4c918366` recorded a rejected `episode_outcome_breakdown` call at
+14:03:25 UTC. Its measurements array contained two objects and seven strings.
+The tool rejected the arguments, but the timeline formatter called `.get()`
+on each string while displaying the failure. Replaying the journal reproduced
+`AttributeError: 'str' object has no attribute 'get'`.
+
+The shared formatter now identifies invalid measurement lists, list entries
+and strata explicitly. The TUI keeps the original rejection and arguments.
+Valid requests retain their summaries. Three regression cases fail before the
+repair. All five campaign journals replay through the repaired reducer
+(5,523 events); existing malformed-journal warnings in slots 2 and 5 remain.
+The combined timeline/runtime check had 97 passes and one failure in the
+unrelated `test_a_long_operation_is_awaited_in_slices` timing assertion.
+The targeted timeline and patch-display checks passed all 51 cases.
+No execution, validation or scientific rule changed.
+
+The maintainer authorized a cooperative stop of all five campaigns before the
+repair, followed by resumption of the same campaign identities without reset.
+The former batch monitor ended normally and wrote all five reports.
+
 **17 November 2026. Instruction corrections — Implemented.**
 Branch `feature/instruction-method`, worktree
 `robot-learning-harness-instructions`. Not merged into `harness`.

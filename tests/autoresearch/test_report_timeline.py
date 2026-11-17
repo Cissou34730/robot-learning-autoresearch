@@ -612,6 +612,71 @@ def test_tool_lifecycle_pairs_by_call_id_and_reports_duration():
     assert not any("END_TOOL_RESULT" in line for line in tools[0].detail)
 
 
+@pytest.mark.parametrize(
+    ("arguments", "diagnostic"),
+    [
+        (
+            {
+                "measurements": [
+                    {"operation_id": "M1", "candidate": "T1:checkpoint-100352"},
+                    "rows",
+                ]
+            },
+            "invalid measurement",
+        ),
+        ({"measurements": "M1"}, "invalid measurements"),
+        (
+            {
+                "measurements": [
+                    {"operation_id": "M1", "candidate": "T1:checkpoint-100352"}
+                ],
+                "strata": ["field"],
+            },
+            "invalid strata",
+        ),
+    ],
+)
+def test_failed_episode_query_preserves_error_with_malformed_arguments(
+    arguments, diagnostic
+):
+    reducer = TimelineReducer()
+    start = datetime(2026, 11, 17, tzinfo=UTC)
+    valid = {
+        "measurements": [{"operation_id": "M1", "candidate": "T1:checkpoint-100352"}],
+        "strata": {"field": "target_radius_cm"},
+    }
+    for kind, seconds, fields in (
+        ("tool_call_started", 0, {"arguments": valid}),
+        (
+            "tool_call_failed",
+            1,
+            {
+                "arguments": arguments,
+                "status": "failed",
+                "error": "Invalid episode query arguments",
+            },
+        ),
+    ):
+        reducer.ingest(
+            _event(
+                kind,
+                start + timedelta(seconds=seconds),
+                {
+                    "name": "episode_outcome_breakdown",
+                    "tool_call_id": "episode-query",
+                    **fields,
+                },
+                session_id="S1",
+            )
+        )
+    tools = [item for item in _walk(reducer.view()[0]) if item.kind == "tool"]
+    assert len(tools) == 1
+    assert tools[0].status == "failed"
+    assert diagnostic in tools[0].summary
+    assert tools[0].detail == ("Error: Invalid episode query arguments",)
+    assert tools[0].payload["arguments"] == arguments
+
+
 def test_tool_rows_shorten_campaign_paths_but_keep_full_arguments(tmp_path):
     reducer = TimelineReducer(tmp_path)
     stamp = datetime(2026, 10, 26, 9, 8, 24, tzinfo=UTC)
