@@ -122,60 +122,46 @@ The maintainer authorized a cooperative stop of all five campaigns before the
 repair, followed by resumption of the same campaign identities without reset.
 The former batch monitor ended normally and wrote all five reports.
 
-**17 November 2026. Instruction corrections — Implemented.**
-Branch `feature/instruction-method`, worktree
-`robot-learning-harness-instructions`. Not merged into `harness`.
+**17 November 2026. Instruction corrections and contract rewrite — Withdrawn.**
+Branch `feature/instruction-method`. Two commits changed campaign-facing text:
+`6f4af483d` (short-test wording replaced by "train until the reference variant
+shows task success", behavior tools on need, an attribution rule for inquiries,
+pass probability only before an assessment request) and `8cdad0f53` (rewrite of
+`program.md`, `instruments.md` and its parts, `authority.md` and the PI session
+prompts without negations, and the official episode start in `scenario.md`).
 
-Basis: review of the 25 campaigns of 8-11 November from their typed event
-feeds. All 86 fresh recipe-development arms ended before the recorded training
-success reached 10%; 76 used 50k steps or less. Fresh 120k runs of the
-inherited recipe first show training success at 65k-81k steps. Recipe
-development compared that recipe at 20k-50k, where it scored 6-52% against
-about 73% at 120k. Decisions also rested on behavior traces of 6-24 episodes,
-and the PIs computed a pass probability 137 times, down to 1e-73.
+The maintainer withdrew both on 17 November. `contracts/`,
+`runner/launcher/prompts.py` and `runner/copilot/system_prompt.py` are restored
+to `d3e63f0f1`, byte for byte, except the recovery paragraph of
+`instruments.md` (entry above). Reasons:
 
-Changes to campaign-facing text only:
+- The rewrite was checked with a negation count and the STE checker only. No
+  sentence-by-sentence comparison of meaning was made. At least two meanings
+  changed: "tends to overstate performance" became "is higher", and "a new
+  description does not establish a new method" became a definition by source
+  code or saved runtime that leaves out parameter changes.
+- The rule "continue training or train longer" had no bound. It pushes a
+  campaign toward training alone.
+- Removing "short" ignored the record of 30 October (`715ae5be2`): without
+  that wording, runs 7 and 8 requested 2.6m to 4.1m steps before any result.
+- The basis "all 86 fresh arms ended before training success reached 10%" used
+  the training proxy. Measured afterwards on the same 25 campaigns: of 266
+  recipe-development panels whose candidate had a proxy below 10%, 88 measured
+  20% or more. In all six inherited campaigns the first comparison (20k-50k
+  steps) had a variant with measured task success (19-88%). Every variant was
+  near zero in 6 of 12 no-recipe first comparisons, and those PIs then
+  continued or lengthened training. The data do not support a change of the
+  short-test wording.
+- Three changes went to five campaigns at once, with no single-campaign trial.
 
-- Recipe development: "Use short training tests" and the "quick" wording are
-  removed. Each comparison contains a reference variant. A test separates
-  designs only at a training length where the reference variant shows task
-  success in a measurement; otherwise the PI trains longer first.
-- Recipe development: PI-owned behavior tools are built when the next decision
-  needs them, as in startup and inquiries, not before the first comparison.
-- Inquiries: a reference candidate with the same parent, seed and steps
-  separates a change from further training.
-- Session record: the pass probability is no longer required in every
-  `current_goal_gap`. The goal-review prompt asks for it before a request for
-  the official assessment.
-- `program.md`: the session-record fields no longer state that they do not
-  require matched conditions, one factor at a time or repeated training.
-
-Rewrite of the PI-facing contracts (second commit on the branch). Every rule is
-kept and stated positively; sentences that only disclaimed are removed.
-
-- `program.md`: 4,271 to 2,825 words, 92 to 0 sentences with a negation. The
-  recipe-development guidance that the session prompt already sends word for
-  word is removed from this file; the continued-training rule before delivery
-  stays. The list of things that the record fields do not require is removed.
-- `instruments.md` and its parts, and `authority.md`: 0 sentences with a
-  negation (before: 18, 30, 24, 7, 18, 50 and 13). Their size changes little
-  (about 5%), because they describe formats and acceptance rules.
-  `instruments.md` no longer states when to use the pass-probability tool.
-- PI session prompts in `runner/launcher/prompts.py`: each negative sentence is
-  restated positively. The analyst prompts, the system prompt identities, the
-  tool descriptions and `glossary.md` are unchanged.
-- The excerpt boundaries of `runner/copilot/coding_contracts.py` and the
-  human-owned path list of `authority.md` are unchanged.
-- `scenario.md` (harness scenario only): states the official episode start,
-  zero joint positions and velocities, and the target in the plane of the arm.
-  The protected evaluators already use them. "Protected start" doubts appeared
-  102 times in 21 of the 25 campaigns. The no-recipe scenario is unchanged and
-  still carries the earlier sentence.
-
-No cost, time or usage information is added. STE: no new errors. Scientific
-effectiveness is unobserved. Longer recipe-development runs are expected while
-concurrent variants share CPU threads. No campaign was launched, resumed,
-reset or mutated.
+Batch of 17 November (five inherited campaigns, recipe development included,
+`4c918366`, `4a7afa97`, `9be4e3c0`, `51185fb5`, `256f1aba`): stopped twice for
+runtime repairs, then stopped by the maintainer at 14:47 UTC. About 69 AIU. It
+ran under three harness commits and is not evidence for any instruction text.
+Readings: recipe-development runs of 100k to 300k steps (20k-50k in earlier
+batches); best research results 97.75%, 94% (delivered), 83% and 73%; one
+campaign completed no operation. Do not resume these campaigns: a new run needs
+a Fresh reset.
 
 **12 November 2026. Copilot CLI 1.0.109 coding isolation — Implemented.**
 The missing-editor failure was reproduced with native inference tool captures:
@@ -1316,8 +1302,9 @@ Newest first.
 
 | Date | Change | Disposition |
 |---|---|---|
-| 2026-11-17 | PI-facing contracts rewritten shorter and positive; official episode start stated in the harness scenario (`feature/instruction-method`) | Retain pending campaign observation. `program.md` 4,271 to 2,825 words; `program.md`, `instruments.md` and its parts and `authority.md` have 0 sentences with a negation; PI session prompts restated positively; prompt duplicates removed from `program.md`. Rules, formats, excerpt boundaries and the human-owned path list are unchanged. Scenario: episode start and target plane stated. See Current state, 17 November. Text only. |
-| 2026-11-17 | Instruction corrections for recipe development, inquiries and the session record (`feature/instruction-method`) | Retain pending campaign observation. Short-test wording replaced by a reference variant and a training length at which it shows measured task success; behavior tools on need; reference candidate for attribution in inquiries; pass probability only before an assessment request; three method releases removed from the session-record field list. See Current state, 17 November. Text only; no Runner rule, allocation or limit changed. |
+| 2026-11-17 | Instruction corrections and contract rewrite reverted (`feature/instruction-method`) | Withdrawn by the maintainer. `contracts/`, `runner/launcher/prompts.py` and `runner/copilot/system_prompt.py` are restored to `d3e63f0f1`, except the recovery paragraph of `instruments.md`. The rewrite changed meanings and was not checked sentence by sentence; the training-length rule had no bound; the basis used the training proxy. See Current state, 17 November. The branch keeps three runtime repairs: rejected-query formatting in the timeline, native append for the Windows event journal, and interruption recovery scoped to one invocation. |
+| 2026-11-17 | PI-facing contracts rewritten shorter and positive; official episode start stated in the harness scenario (`feature/instruction-method`) | Reverted the same day (row above). |
+| 2026-11-17 | Instruction corrections for recipe development, inquiries and the session record (`feature/instruction-method`) | Reverted the same day (row above). |
 | 2026-11-12 | Isolate native coding workers for CLI 1.0.109 | Retain pending campaign observation. A separate worker runtime preserves the coder editor without exposing it to the PI. The reviewer remains read-only. Actual edit, independent review and same-child correction passed on a temporary fixture through the production handoff. Runtime tests cover role and session boundaries and worker cleanup. No scientific prompt, scenario, inquiry limit or campaign artifact changed. |
 | 2026-11-10 | Measurement panels run in parallel | From the duration analysis of the 10 Nov stabilization run: measurements average 2–3.7 evaluation panels, which ran one after another. `execute_measurement` now runs consecutive research and task-reference panels on at most 3 threads (`MEASUREMENT_PANEL_WORKERS`) and records results in request order. `python_module` panels stay sequential. A stop sets an event that each worker's `evaluate_artifact` checks, because only the main thread receives the stop interrupt. Queued panels are cancelled, and completed results after an unfinished panel run again on resume. Seeds, episodes, panels and the 3-checkpoint limit are unchanged. Concurrent panels share one progress row in the TUI timeline (display only). Expected saving: 8–46 min per campaign. Implementation check: new order-and-concurrency test, the crash-recovery test, and a stop reproduction with a real child process (stopped in 0.3 s). Not yet validated by a campaign. No campaign was launched, resumed, reset or mutated. |
 | 2026-11-10 | Trusted-runtime HEAD check batched | The 10 Nov campaign events showed 32–97 s median (max 332 s) between a PI measurement submission and its acceptance, 15–28 min per campaign. Cause: `require_trusted_assessment_runtime`, the integrity check that benchmark, contract and trusted runtime files match Git HEAD, ran 2 Git calls per file for about 29 files, 4 times per acceptance, and acceptance runs twice per submission. `require_paths_at_head` now compares all files with one `ls-tree` and one `hash-object` per repository. The check and its refusals are unchanged. Profiled on N1's M16 request: 50 s to 11 s per acceptance. New real-Git test for match, changed, absent and missing files. Not yet validated by a campaign. No campaign was launched, resumed, reset or mutated. |

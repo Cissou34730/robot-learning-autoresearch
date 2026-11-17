@@ -109,9 +109,10 @@ class OperationSubmission:
                 "work in this invocation after session_ended, validation_fatal, "
                 "controller_fatal, publication_fatal, recovery_required or an "
                 "interruption. Requests and evidence queries close for this "
-                "invocation. The Runner can later resume the scientific session "
+                "invocation. The Runner can later resume the session "
                 "in a new invocation. On resume, its recovered current state "
-                "defines the permitted actions. You judge scientific validity."
+                "defines the permitted actions. No result of a submission "
+                "certifies scientific validity."
             ),
             handler=self.invoke,
             params_type=OperationSubmissionParams,

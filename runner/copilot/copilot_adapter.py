@@ -71,7 +71,7 @@ from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import stop_requested, wait_for_stop_request
 
 RESUMED_STATE_PROMPT = (
-    "\n\nThe Runner resumed this scientific session in a new invocation. "
+    "\n\nThe Runner resumed this session in a new invocation. "
     "An invocation is one active connection to the Runner. The earlier "
     "interruption ended the earlier invocation. Its stop instruction applies "
     "to that invocation alone. The tools are active for this invocation. "
