@@ -85,3 +85,56 @@ def test_recorded_source_lists_the_candidates_measured_on_the_same_episodes():
         "T3:c",
         "T2:a",
     ]
+
+
+def _loaded(outcomes):
+    rows = [
+        {"episode_seed": seed, "a": seed % 2, "b": seed // 2} for seed in range(8)
+    ] + [{"episode_seed": 8, "a": 0}]
+    return {
+        "source": {"operation_id": "M1", "candidate": "T1:x"},
+        "identity": "research_evaluation:s1",
+        "outcomes": outcomes,
+        "document": {"rows": rows},
+    }
+
+
+def test_second_field_divides_each_bin_into_cells():
+    from runner.episode_outcomes import Strata, _strata
+
+    outcomes = {seed: seed < 5 for seed in range(9)}
+    strata = Strata(
+        rows="/rows",
+        field="a",
+        edges=[0, 1, 2],
+        second={"field": "b", "edges": [0, 2, 3]},
+    )
+    result = _strata([_loaded(outcomes)], strata, sorted(outcomes), 0.95)
+
+    assert [entry["episodes"] for entry in result["bins"]] == [5, 4]
+    cells = {
+        (cell["bin"], cell["second_bin"]): (
+            cell["measurements"][0]["successes"],
+            cell["episodes"],
+        )
+        for cell in result["cells"]
+    }
+    assert cells == {
+        ("[0, 1)", "[0, 2)"): (2, 2),
+        ("[0, 1)", "[2, 3]"): (1, 2),
+        ("[1, 2]", "[0, 2)"): (2, 2),
+        ("[1, 2]", "[2, 3]"): (0, 2),
+    }
+    assert result["episodes_without_second_value"] == 1
+    assert result["episodes_outside_second_edges"] == 0
+
+
+def test_second_field_refuses_too_many_cells():
+    from runner.episode_outcomes import Strata
+
+    with pytest.raises(ValueError, match="cells"):
+        Strata(
+            field="a",
+            edges=list(range(11)),
+            second={"field": "b", "edges": list(range(11))},
+        )

@@ -264,6 +264,9 @@ compared on these episodes.
   - `field`: the numeric field of these rows
   - `edges`: from 2 to 21 increasing edges. The last bin includes its upper
     edge.
+  - `second`: optional. A second numeric field of the same rows, with its own
+    `field` and `edges`. The result then adds one cell for each pair of bins.
+    The two fields give a maximum of 64 cells.
 - `confidence`: the level of the two-sided interval, from 0.5 to 0.999
 
 The Runner verifies the fingerprint of each artifact. It checks its episode

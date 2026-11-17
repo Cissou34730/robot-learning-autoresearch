@@ -69,7 +69,8 @@ EPISODE_OUTCOME_DESCRIPTION = (
     "counts (both, first only, second only, neither), an exact sign test and the "
     "share of the first measurement among the discordant episodes, where only one "
     "succeeds. Optional strata divide each result into bins of a numeric "
-    "per-episode field (rows path, field and edges that you choose)."
+    "per-episode field (rows path, field and edges that you choose). An optional "
+    "second field of the same rows divides each bin again."
 )
 
 API_REFERENCE_DESCRIPTION = (

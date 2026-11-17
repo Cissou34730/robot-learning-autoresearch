@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 from contextlib import ExitStack
+from itertools import pairwise
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -16,6 +17,31 @@ from runner.proportion_interval import (
     recorded_measurement,
     wilson_interval,
 )
+
+MAX_CELLS = 64
+
+
+def _require_increasing(edges: list[float]) -> None:
+    if not all(math.isfinite(edge) for edge in edges) or any(
+        upper <= lower for lower, upper in pairwise(edges)
+    ):
+        raise ValueError("edges must be finite and strictly increasing")
+
+
+class SecondField(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    field: str = Field(min_length=1, description="Second numeric field of those rows.")
+    edges: list[float] = Field(
+        min_length=2,
+        max_length=21,
+        description="Increasing bin edges; the last bin includes its upper edge.",
+    )
+
+    @model_validator(mode="after")
+    def validate_edges(self) -> SecondField:
+        _require_increasing(self.edges)
+        return self
 
 
 class Strata(BaseModel):
@@ -31,13 +57,22 @@ class Strata(BaseModel):
         max_length=21,
         description="Increasing bin edges; the last bin includes its upper edge.",
     )
+    second: SecondField | None = Field(
+        default=None,
+        description=(
+            "Optional second field of the same rows. The result then adds one "
+            f"cell for each pair of bins, at most {MAX_CELLS} cells."
+        ),
+    )
 
     @model_validator(mode="after")
     def validate_edges(self) -> Strata:
-        if not all(math.isfinite(edge) for edge in self.edges) or any(
-            upper <= lower for lower, upper in zip(self.edges, self.edges[1:])
+        _require_increasing(self.edges)
+        if (
+            self.second is not None
+            and (len(self.edges) - 1) * (len(self.second.edges) - 1) > MAX_CELLS
         ):
-            raise ValueError("edges must be finite and strictly increasing")
+            raise ValueError(f"the two fields give more than {MAX_CELLS} cells")
         return self
 
 
@@ -182,21 +217,47 @@ def _bin_label(edges: list[float], index: int) -> str:
     return f"[{edges[index]:g}, {edges[index + 1]:g}{closing}"
 
 
-def _strata(
-    loaded: list[dict], strata: Strata, seeds: list[int], confidence: float
-) -> dict:
+def _field_values(document: Any, rows: str, field: str) -> dict[int, float]:
     values: dict[int, float] = {}
     fields: set[str] = set()
-    for row in _pointer_value(loaded[0]["document"], strata.rows):
+    for row in _pointer_value(document, rows):
         fields.update(row)
-        value = _number(row.get(strata.field))
+        value = _number(row.get(field))
         if value is not None:
             values[int(scalar_value(row["episode_seed"]))] = value
     if not values:
         raise KeyError(
-            f"numeric {strata.field!r} in rows at {strata.rows}; "
-            f"row fields: {sorted(fields)}"
+            f"numeric {field!r} in rows at {rows}; row fields: {sorted(fields)}"
         )
+    return values
+
+
+def _bin_index(edges: list[float], value: float) -> int | None:
+    if value < edges[0] or value > edges[-1]:
+        return None
+    last = len(edges) - 2
+    return next(
+        position
+        for position in range(last + 1)
+        if value < edges[position + 1] or position == last
+    )
+
+
+def _group_entry(loaded: list[dict], group: list[int], confidence: float) -> dict:
+    entry: dict[str, Any] = {
+        "episodes": len(group),
+        "measurements": [_rate(item["outcomes"], group, confidence) for item in loaded],
+    }
+    if len(loaded) == 2:
+        entry["paired"] = _paired(loaded, group, confidence)
+    return entry
+
+
+def _strata(
+    loaded: list[dict], strata: Strata, seeds: list[int], confidence: float
+) -> dict:
+    document = loaded[0]["document"]
+    values = _field_values(document, strata.rows, strata.field)
     edges = strata.edges
     groups: list[list[int]] = [[] for _ in edges[:-1]]
     outside = without_value = 0
@@ -205,37 +266,57 @@ def _strata(
         if value is None:
             without_value += 1
             continue
-        if value < edges[0] or value > edges[-1]:
+        index = _bin_index(edges, value)
+        if index is None:
             outside += 1
             continue
-        index = next(
-            position
-            for position in range(len(groups))
-            if value < edges[position + 1] or position == len(groups) - 1
-        )
         groups[index].append(seed)
-    bins = []
-    for index, group in enumerate(groups):
-        entry: dict[str, Any] = {
-            "bin": _bin_label(edges, index),
-            "episodes": len(group),
-            "measurements": [
-                _rate(item["outcomes"], group, confidence) for item in loaded
-            ],
-        }
-        if len(loaded) == 2:
-            entry["paired"] = _paired(loaded, group, confidence)
-        bins.append(entry)
-    return {
+    result = {
         "values_from": {
             **loaded[0]["source"],
             "rows": strata.rows,
             "field": strata.field,
         },
-        "bins": bins,
+        "bins": [
+            {"bin": _bin_label(edges, index), **_group_entry(loaded, group, confidence)}
+            for index, group in enumerate(groups)
+        ],
         "episodes_outside_edges": outside,
         "episodes_without_value": without_value,
     }
+    if strata.second is None:
+        return result
+    second = strata.second
+    second_values = _field_values(document, strata.rows, second.field)
+    cells: dict[tuple[int, int], list[int]] = {
+        (index, other): []
+        for index in range(len(groups))
+        for other in range(len(second.edges) - 1)
+    }
+    second_outside = second_without_value = 0
+    for index, group in enumerate(groups):
+        for seed in group:
+            value = second_values.get(seed)
+            if value is None:
+                second_without_value += 1
+                continue
+            other = _bin_index(second.edges, value)
+            if other is None:
+                second_outside += 1
+                continue
+            cells[(index, other)].append(seed)
+    result["second_field"] = second.field
+    result["cells"] = [
+        {
+            "bin": _bin_label(edges, index),
+            "second_bin": _bin_label(second.edges, other),
+            **_group_entry(loaded, group, confidence),
+        }
+        for (index, other), group in cells.items()
+    ]
+    result["episodes_outside_second_edges"] = second_outside
+    result["episodes_without_second_value"] = second_without_value
+    return result
 
 
 def query_episode_outcomes(args: dict[str, Any], campaign_id: str = "") -> str:
