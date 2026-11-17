@@ -39,6 +39,12 @@ their physical or learning reasons and the behavior that the analyst expects.
 Short training tests give evidence for the next recipe decision. A variant can
 change any PI-owned source file and any parameter.
 
+The synthesis includes `### Proposed robot measurements`. A robot measurement
+applies motor commands to the simulated robot without a policy and records the
+motion. For each physical consequence that can change a first decision, the
+analyst states the robot measurement that can confirm or revise it. The PI
+decides which measurements to run.
+
 The synthesis ends with `### Proposed behavior observations`. A behavior
 observation is a quantity recorded over time during an episode or a training
 run. For each consequential hypothesis, the analyst states the observations that
