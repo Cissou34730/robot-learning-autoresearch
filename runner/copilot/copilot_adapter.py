@@ -71,9 +71,15 @@ from runner.event_contract import PREPARATION_SESSION
 from runner.stop_control import stop_requested, wait_for_stop_request
 
 RESUMED_STATE_PROMPT = (
-    "\n\nRecovered current Runner state (factual metadata, not new "
-    "scientific evidence). Automatic pending-work replay is disabled; "
-    "continue from this durable state, not an unfinished old tool call:\n"
+    "\n\nThe Runner resumed this scientific session in a new invocation. "
+    "An invocation is one active connection to the Runner. The earlier "
+    "interruption ended the earlier invocation. Its stop instruction applies "
+    "to that invocation alone. The tools are active for this invocation. "
+    "Use the recovered current Runner state below to choose a permitted "
+    "next action from allowed_operations. Completed operations stay complete. "
+    "Automatic replay of unfinished old tool calls stays disabled. "
+    "This state is factual metadata. Scientific evidence comes from completed "
+    "operations and their artifacts:\n"
 )
 
 CONTINUE_PROMPT = (

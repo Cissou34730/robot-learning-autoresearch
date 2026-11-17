@@ -68,6 +68,39 @@ This review does not certify compliance with the official ASD-STE100 dictionary.
 
 ## Current state
 
+**17 November 2026. Interruption recovery and concurrent journal writes — Implemented.**
+The TUI repair required a cooperative stop. On resumption, campaigns `4a7afa97`
+and `256f1aba` refused further operations because their conversations retained
+an `interrupted` response. The tool description and instrument contract said
+that this response ended the session. The controller had already created a new
+operation binding for the resumed invocation, but the resume prompt supplied
+state without resolving the scope of the old stop instruction.
+
+The tool contract and resume prompt now scope a stop to its invocation, one
+active connection to the Runner. A resumed invocation uses its recovered
+current state and permitted operations. Checkpoints still end scientific
+sessions. Automatic replay of unfinished calls stays disabled.
+
+The journals of slots 2 and 5 also contained five malformed line fragments.
+This is a separate Windows append race: CRT `O_APPEND` seeks to the end before
+writing, so concurrent handles can overwrite each other's records. A local
+small-record reproduction produced 3,425 valid records out of 7,200 writes,
+plus 1,271 malformed lines, while all emitters reported zero failures.
+Synchronizing the existing multi-process test reproduced the failure for both
+large records and small records from multiple threads.
+
+Windows journal handles now use native `FILE_APPEND_DATA`, which appends in
+the kernel. The same reproduction then wrote all 7,200 records, valid and
+unique. Targeted journal, runtime and timeline checks passed 108 cases; the
+unrelated timing test noted below was deselected. The suite used the existing
+replay campaign as its fixture, with no recipe-development event namespace.
+STE found zero errors in the changed instrument contract.
+
+The historical journals remain unchanged. The reader continues to report
+their malformed lines. Campaign IDs and completed scientific records are
+preserved. The maintainer authorized this repair; all running campaigns
+stopped cooperatively before edits.
+
 **17 November 2026. TUI rejected-query formatting — Implemented.**
 Campaign `4c918366` recorded a rejected `episode_outcome_breakdown` call at
 14:03:25 UTC. Its measurements array contained two objects and seven strings.

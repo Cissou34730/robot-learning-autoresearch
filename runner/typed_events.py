@@ -195,11 +195,42 @@ def current_context() -> dict[str, str]:
     return dict(_owner)
 
 
+def _append_descriptor(path: Path) -> int:
+    if os.name != "nt":
+        return os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o666)
+
+    import ctypes
+    import msvcrt
+    from ctypes import wintypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    create_file = kernel32.CreateFileW
+    create_file.argtypes = (
+        wintypes.LPCWSTR,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.LPVOID,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.HANDLE,
+    )
+    create_file.restype = wintypes.HANDLE
+    # FILE_APPEND_DATA appends in the kernel. CRT O_APPEND seeks before writing,
+    # so separate handles can overwrite each other's records on Windows.
+    handle = create_file(str(path), 0x4, 0x3, None, 4, 0x80, None)
+    if handle == wintypes.HANDLE(-1).value:
+        raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        return msvcrt.open_osfhandle(handle, os.O_WRONLY | os.O_BINARY)
+    except OSError:
+        kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+        kernel32.CloseHandle(handle)
+        raise
+
+
 def _append(path: Path, data: bytes) -> None:
     """Append one whole record with a single binary write."""
-    descriptor = os.open(
-        path, os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_BINARY", 0), 0o666
-    )
+    descriptor = _append_descriptor(path)
     try:
         view = memoryview(data)
         while view:

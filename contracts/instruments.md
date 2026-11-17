@@ -86,9 +86,14 @@ resolved measurements.
   the arguments.
 
 An execution failure is execution history. Completed operations give the
-scientific evidence. Each of these results closes the session to requests and
-evidence queries: `validation_fatal`, `controller_fatal`, a publication
-failure, an interruption, a final result, or a result that requires recovery.
+scientific evidence. An invocation is one active connection to the Runner.
+Each of these results closes that invocation to requests and evidence queries:
+`validation_fatal`, `controller_fatal`, a publication failure, an interruption,
+a final result, or a result that requires recovery.
+
+The Runner can resume a scientific session in a new invocation. On resume, the
+recovered current state defines the permitted actions and the completed work.
+The stop instruction of an earlier invocation applies to that invocation alone.
 
 ## Operations by session
 

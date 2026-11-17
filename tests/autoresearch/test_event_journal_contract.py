@@ -5,6 +5,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -253,32 +254,64 @@ def test_a_launcher_failure_is_owned_by_the_session_in_progress_and_so_is_the_st
 
 
 WRITER = """
-import sys
+import sys, threading, time
 from runner import typed_events
 
-path, name, count, size = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+path, name = sys.argv[1:3]
+count, size, threads = map(int, sys.argv[3:6])
+start = float(sys.argv[6])
 typed_events.configure(path)
 typed_events.set_campaign("campaign-1")
-for index in range(count):
-    typed_events.emit(
-        "notice", {"writer": name, "index": index, "filler": "x" * size}
-    )
+ready = threading.Barrier(threads)
+def write(thread):
+    ready.wait()
+    while time.monotonic() < start:
+        time.sleep(0.001)
+    for index in range(count):
+        typed_events.emit(
+            "notice",
+            {
+                "writer": f"{name}-{thread}",
+                "index": index,
+                "filler": "x" * (size + index % 200),
+            },
+        )
+workers = [threading.Thread(target=write, args=(i,)) for i in range(threads)]
+for worker in workers:
+    worker.start()
+for worker in workers:
+    worker.join()
 assert typed_events.failures == 0
 """
 
 
-def test_concurrent_writers_never_tear_a_record(tmp_path):
+@pytest.mark.parametrize(("threads", "count", "size"), [(1, 30, 60000), (3, 200, 200)])
+def test_concurrent_writers_never_tear_a_record(tmp_path, threads, count, size):
     path = tmp_path / "shared.jsonl"
+    start = time.monotonic() + 2
     processes = [
         subprocess.Popen(
-            [sys.executable, "-c", WRITER, str(path), f"w{number}", "30", "60000"],
+            [
+                sys.executable,
+                "-c",
+                WRITER,
+                str(path),
+                f"w{number}",
+                str(count),
+                str(size),
+                str(threads),
+                str(start),
+            ],
             cwd=RUNNER.parent,
         )
         for number in range(3)
     ]
     assert [process.wait(timeout=120) for process in processes] == [0, 0, 0]
     records = [json.loads(line) for line in path.read_text("utf-8").splitlines()]
-    assert len(records) == 90
+    assert len(records) == 3 * threads * count
     assert {(r["payload"]["writer"], r["payload"]["index"]) for r in records} == {
-        (f"w{number}", index) for number in range(3) for index in range(30)
+        (f"w{number}-{thread}", index)
+        for number in range(3)
+        for thread in range(threads)
+        for index in range(count)
     }

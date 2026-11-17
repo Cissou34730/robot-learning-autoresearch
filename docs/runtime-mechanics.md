@@ -172,6 +172,18 @@ It does not replay a tool call or fabricate checkpoint content. Main SDK
 resumes disable automatic unfinished-work continuation; the resume prompt
 includes current durable Runner metadata.
 
+An invocation is one active controller connection. An interruption closes that
+invocation's operation binding. A later invocation resumes the same scientific
+session with a new binding. The tool contract and the resume prompt scope the
+earlier stop instruction to the earlier invocation. The recovered current
+state determines which operations the PI can submit.
+
+On Windows, the event journal opens its write handles with native
+`FILE_APPEND_DATA`. The kernel appends concurrent records from the launcher,
+Runner and SDK threads. CRT `O_APPEND` uses a seek before the write and can
+overwrite another writer's record. The journal reader reports existing malformed
+lines. Resuming a campaign leaves those historical lines unchanged.
+
 ## Recipe and candidate delivery
 
 New state uses schema 8 and `recipe_phase`, either `"included"` (the default)
