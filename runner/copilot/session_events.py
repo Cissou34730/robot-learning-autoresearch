@@ -97,15 +97,13 @@ def event_handler(
     return on_event
 
 
-def _read_denial(request, scope, coding, coding_paths, read_paths, preliminary):
+def _read_denial(request, scope, coding_paths, read_paths, preliminary):
     paths = frozenset(scope["read_paths"]) if scope is not None else read_paths
     scoped = coding_paths is not None or scope is not None
     if scoped and _repository_relative_target(request.path) not in paths:
         reason = CODING_SCOPE_DENIAL
     else:
         reason = file_read_denial(request.path, preliminary=preliminary)
-    if coding is not None and coding.busy and scope is None:
-        reason = CODING_SCOPE_DENIAL
     resolved = getattr(request, "resolved_path", None)
     if resolved:
         reason = reason or file_read_denial(resolved, preliminary=preliminary)
@@ -162,9 +160,7 @@ def permission_handler(
                 return reject(request, CODING_PERMISSION_DENIAL)
         reason = None
         if isinstance(request, PermissionRequestRead):
-            reason = _read_denial(
-                request, scope, coding, coding_paths, read_paths, preliminary
-            )
+            reason = _read_denial(request, scope, coding_paths, read_paths, preliminary)
         elif isinstance(request, PermissionRequestWrite):
             reason = _write_denial(request, scope, coding_paths, preliminary)
         elif isinstance(request, PermissionRequestShell):

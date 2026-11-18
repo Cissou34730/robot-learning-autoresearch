@@ -137,6 +137,9 @@ no LLM call.
 
 Native hooks and permission callbacks bind to its session ID.
 Tool requests and usage records remain attributed to the original PI context.
+While a coder or reviewer runs, the PI keeps its read-only tools under its
+normal read policy. Its editors, coding requests and operation submissions are
+refused until the child ends.
 The adapter cancels the children and stops the worker when that context ends,
 including on startup failure or cancellation.
 

@@ -54,6 +54,21 @@ REVIEWER = "scientific-reviewer"
 CHILD_HEARTBEAT_SECONDS = 60
 NO_CHECK_EXECUTED = "No scientific check has been executed by this tool."
 TERMINAL_TASK_STATES = {"cancelled", "completed", "failed"}
+# While a coding child runs, the PI keeps its read-only tools under its own path policy.
+PI_READ_TOOLS = frozenset(
+    {
+        "view",
+        "read",
+        "rg",
+        "glob",
+        "artifact_evidence_query",
+        "training_log_query",
+        "training_series_statistics",
+        "success_rate_pass_probability",
+        "episode_outcome_breakdown",
+        "scientific_api_reference",
+    }
+)
 CHILD_USAGE_FIELDS = (
     "input_tokens",
     "output_tokens",
@@ -265,7 +280,9 @@ class ScientificCoding:
                     operations=self.operations,
                     json_editors=self.external_pi,
                 )(request, invocation)
-            if handle != self.args.session_id or self.busy or self.closed:
+            if handle != self.args.session_id or (
+                self.busy and request.get("toolName") not in PI_READ_TOOLS
+            ):
                 return deny("Unknown child or coding/Runner context is locked.")
             if request.get("toolName") == "read" and self.external_pi:
                 request = {**request, "toolName": "view"}
@@ -285,10 +302,12 @@ class ScientificCoding:
         ):
             raise ValueError(CODING_PERMISSION_DENIAL)
         _, handle, binding = record
+        from copilot.session_events import PermissionRequestRead
+
         if (
             invocation["session_id"] == self.args.session_id
             and handle is None
-            and not self.busy
+            and (not self.busy or isinstance(request, PermissionRequestRead))
         ):
             return None
         if (

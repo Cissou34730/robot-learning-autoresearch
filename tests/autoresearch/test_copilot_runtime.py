@@ -5,6 +5,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from copilot.session_events import PermissionRequestRead, PermissionRequestWrite
 
 from runner import paths
 from runner.copilot import coding_session
@@ -507,6 +508,22 @@ def test_worker_hooks_keep_main_and_child_authority_separate():
     }
     assert coding.pre_tool_use(patch, worker) is None
     assert coding.pre_tool_use(patch, main)["permissionDecision"] == "deny"
+    pi = {"sessionId": "s", "toolName": "view", "toolArgs": {"path": SOURCE}}
+    assert coding.pre_tool_use(pi, main) is None
+    for tool, path in (("view", "AGENTS.md"), ("scientific_coding", SOURCE)):
+        pi = {"sessionId": "s", "toolName": tool, "toolArgs": {"path": path}}
+        assert coding.pre_tool_use(pi, main)["permissionDecision"] == "deny"
+    read = PermissionRequestRead(intention="read", path=SOURCE)
+    write = PermissionRequestWrite(
+        can_offer_session_approval=False, diff="", file_name=SOURCE, intention="edit"
+    )
+    for request, allowed in ((read, True), (write, False)):
+        coding.permission_requests[id(request)] = (request, None, None)
+        if allowed:
+            assert coding.permission_scope(request, main) is None
+        else:
+            with pytest.raises(ValueError):
+                coding.permission_scope(request, main)
     for invocation, allowed in ((worker, True), (main, False)):
         request = object()
         coding.permission_requests[id(request)] = (request, "child", coding.binding)
